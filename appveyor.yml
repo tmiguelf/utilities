@@ -11,8 +11,8 @@ build_script:
     msbuild /t:Build /p:Configuration=Release "./CoreLib.sln" -maxcpucount
 
 test_script:
-    ./Runtime/win_x64_Release/CoreLib_Test.exe --gtest_output="xml:Corelib_result.xml"
-    ./Runtime/win_x64_Release/CoreLib_benchmark_charconv.exe > CoreLib_charconv_benchmark.txt
+    - '&"./Runtime/win_x64_Release/CoreLib_Test.exe" --gtest_output="xml:Corelib_result.xml"'
+    - '&"./Runtime/win_x64_Release/CoreLib_benchmark_charconv.exe" > CoreLib_charconv_benchmark.txt'
 
 artifacts:
   - path: Corelib_result.xml
