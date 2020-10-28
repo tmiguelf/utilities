@@ -1,0 +1,21 @@
+version: '{build}-{branch}'
+
+os: Visual Studio 2019
+
+install:
+    git submodule update --init --depth 1
+
+build: off
+
+build_script:
+    msbuild /t:Build /p:Configuration=Release "./CoreLib.sln" -maxcpucount
+
+test_script:
+    ./Runtime/win_x64_Release/CoreLib_Test.exe --gtest_output="xml:Corelib_result.xml"
+    ./Runtime/win_x64_Release/CoreLib_benchmark_charconv.exe > CoreLib_charconv_benchmark.txt
+
+artifacts:
+  - path: Corelib_result.xml
+    name: test_results
+  - path: CoreLib_charconv_benchmark.txt
+    name: test_results
