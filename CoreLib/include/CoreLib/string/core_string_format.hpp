@@ -104,7 +104,7 @@ namespace core
 	std::u8string ANSI_to_UTF8(std::u8string_view p_input);
 
 	///	\brief	Converts a UTF16 string to UTF8.
-	///			Failure can occur if input string has an invalid UTF16 sequences, or has code points not representable in 8bits
+	///			Failure can occur if input string has an invalid UTF16 sequences
 	encodeResult<char8_t> UTF16_to_UTF8(std::u16string_view p_input);
 
 	///	\brief	Converts a UCS2 string to UTF8.
@@ -174,20 +174,11 @@ namespace core
 	std::u32string UCS2_to_UCS4(std::u16string_view p_input);
 
 
-
-
-
-
-
-
-
-
 	///	\brief	Converts a UTF8 string to ANSI.
 	///	\param[in]	p_input - UTF8 sequence to convert
 	///	\param[in]	p_placeHolder - Replacement character to be used when a UTF8 sequence is not valid or the codepoint can not be encoded in ANSI
 	///	\warning	Input does not require to have all valid Unicode code points, or convert to valid ASCII (7bit).
 	std::u8string UTF8_to_ANSI_faulty(std::u8string_view p_input, char8_t p_placeHolder);
-
 
 	///	\brief	Converts a UTF16 string to ANSI.
 	///	\param[in]	p_input - UTF16 sequence to convert
@@ -195,19 +186,63 @@ namespace core
 	///	\warning	Input does not require to convert to valid ASCII.
 	std::u8string UTF16_to_ANSI_faulty(std::u16string_view p_input, char8_t p_placeHolder);
 
-
 	///	\brief	Converts a UCS2 string to ANSI.
 	///	\param[in]	p_input - UCS2 sequence to convert
 	///	\param[in]	p_placeHolder - Replacement character to be used when codepoint can not be encoded in ANSI
 	///	\warning	Input does not require to have all valid Unicode code points, or convert to valid ASCII.
 	std::u8string UCS2_to_ANSI_faulty(std::u16string_view p_input, char8_t p_placeHolder);
 
-
 	///	\brief	Converts a UCS4 (or UTF32) string to ANSI.
 	///	\param[in]	p_input - UCS4 (or UTF32) sequence to convert
 	///	\param[in]	p_placeHolder - Replacement character to be used when the codepoint can not be encoded in ANSI
 	///	\warning	Input does not require to have all valid Unicode code points, or convert to valid ASCII.
 	std::u8string UCS4_to_ANSI_faulty(std::u32string_view p_input, char8_t p_placeHolder);
+
+	///	\brief	Converts a UTF16 string to UTF8.
+	///	\param[in]	p_input - UTF16 sequence to convert
+	///	\param[in]	p_placeHolder - Replacement codepoint to be used when a UTF16 sequence is invalid
+	///	\warning	Output does not require to have all valid Unicode code points.
+	std::u8string UTF16_to_UTF8_faulty(std::u16string_view p_input, char32_t p_placeHolder);
+
+	///	\brief	Converts a UTF8 string to UTF16.
+	///	\param[in]	p_input - UTF8 sequence to convert
+	///	\param[in]	p_placeHolder - Replacement codepoint to be used when a UTF8 sequence is invalid,
+	///								or code point can not be represented in UTF16
+	///								If replacement codepoint is not representable in UTF16, nothing is used
+	///	\warning	Input does not require to have all valid Unicode code points
+	std::u16string UTF8_to_UTF16_faulty(std::u8string_view p_input, char32_t p_placeHolder);
+
+	///	\brief	Converts a UCS2 string to UTF16.
+	///	\param[in]	p_input - UCS2 sequence to convert
+	///	\param[in]	p_placeHolder - Replacement codepoint to be used when code point can not be represented in UTF16
+	///								If replacement codepoint is not representable in UTF16, nothing is used
+	std::u16string UCS2_to_UTF16_faulty(std::u16string_view p_input, char32_t p_placeHolder);
+
+	///	\brief	Converts a UCS4 (or UTF32) string to UTF16.
+	///	\param[in]	p_input - UCS4 (or UTF32) sequence to convert
+	///	\param[in]	p_placeHolder - Replacement codepoint to be used when a code point can not be represented in UTF16
+	///								If replacement codepoint is not representable in UTF16, nothing is used
+	///	\warning	Input does not require to have all valid Unicode code points
+	std::u16string UCS4_to_UTF16_faulty(std::u32string_view p_input, char32_t p_placeHolder);
+
+	///	\brief	Converts a UTF8 string to UCS2.
+	///	\param[in]	p_input - UTF8 sequence to convert
+	///	\param[in]	p_placeHolder - Replacement codepoint to be used when a UTF8 sequence is invalid,
+	///								or code point can not be represented in UCS2.
+	///	\warning	Input/Output does not require to have all valid Unicode code points.
+	std::u16string UTF8_to_UCS2_faulty(std::u8string_view p_input, char16_t p_placeHolder);
+
+	///	\brief	Converts a UTF16 string to UCS2.
+	///	\param[in]	p_input - UTF16 sequence to convert
+	///	\param[in]	p_placeHolder - Replacement codepoint to be used when a UTF16 sequence is invalid,
+	///								or code point can not be represented in UCS2.
+	std::u16string UTF16_to_UCS2_faulty(std::u16string_view p_input, char16_t p_placeHolder);
+
+	///	\brief	Converts a UCS4 (or UTF32) string to UCS2.
+	///	\param[in]	p_input - UCS4 (or UTF32) sequence to convert
+	///	\param[in]	p_placeHolder - Replacement codepoint to be used when a code point can not be represented in UCS2
+	///	\warning	Input/Output does not require to have all valid Unicode code points.
+	std::u16string UCS4_to_UCS2_faulty(std::u32string_view p_input, char16_t p_placeHolder);
 
 	///	\brief	Converts a UTF8 string to ANSI.
 	///	\param[in]	p_input - UTF8 sequence to convert
@@ -222,27 +257,20 @@ namespace core
 	std::u32string UTF16_to_UCS4_faulty(std::u16string_view p_input, char32_t p_placeHolder);
 
 
-
-
-
-
-
-
-
 	///	\brief	Converts a code point to UTF8
 	///	\param[in]	p_char - Code point to convert
 	///	\param[out]	p_output - Resulting UTF8 encoding. Not Null terminated
 	///	\return		The number of bytes (char8_t blocks) used, in the output encoding.
 	///	\warning	Input/Output does not require to encode a valid Unicode code point. Never fails.
 	//
-	uint8_t __Encode_UTF8(char32_t p_char, std::span<char8_t, 7> p_output);
+	uint8_t encode_UTF8(char32_t p_char, std::span<char8_t, 7> p_output);
 
 	///	\brief	Converts a code point to UTF16
 	///	\param[in]	p_char - Code point to convert
 	///	\param[out]	p_output - Resulting UTF16 encoding. Not Null terminated
 	///	\return		The number of char16_t blocks used, in the output encoding. Or 0 on failure.
 	//
-	uint8_t __Encode_UTF16(char32_t p_char, std::span<char16_t, 2> p_output);
+	uint8_t encode_UTF16(char32_t p_char, std::span<char16_t, 2> p_output);
 
 	//======== ======== Compliance
 
