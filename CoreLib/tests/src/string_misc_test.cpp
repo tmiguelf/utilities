@@ -46,6 +46,8 @@ static stream_t& operator << (stream_t& p_stream, const std::u8string& p_str)
 #include <gtest/gtest.h>
 #include <CoreLib/string/core_string_misc.hpp>
 
+namespace text_misc
+{
 
 TEST(string_misc, toLowerCaseX)
 {
@@ -143,3 +145,5 @@ TEST(string_misc, string_star_match)
 		}
 	}
 }
+
+} //namespace text_formating

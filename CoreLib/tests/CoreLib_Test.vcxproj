@@ -22,6 +22,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\core_endian_test.cpp" />
     <ClCompile Include="src\string_format_test.cpp" />
     <ClCompile Include="src\string_misc_test.cpp" />
     <ClCompile Include="src\string_numeric_test.cpp" />
