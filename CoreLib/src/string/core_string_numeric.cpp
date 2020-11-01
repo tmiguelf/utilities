@@ -30,10 +30,7 @@
 #include <array>
 #include <charconv>
 #include <limits>
-
-#ifdef _WIN32
-#include <intrin.h>
-#endif
+#include <bit>
 
 namespace core
 {
@@ -545,19 +542,14 @@ namespace core_p
 	template <typename char_T, typename num_T>
 	static inline uintptr_t uint2hex(num_T p_val, std::span<char_T, to_hex_chars_max_digits_v<num_T>> p_str)
 	{
-	
-		//skip ahead algorithm
-		uint32_t index = 0;
+		uint8_t index;
 		if(p_val)
 		{
-#ifdef _WIN32
-			static_assert(sizeof(unsigned long) == sizeof(uint32_t));
-			_BitScanReverse64(reinterpret_cast<unsigned long*>(&index), p_val);
-			index /= 4;
-#else
-			index = (63 - __builtin_clzll(p_val)) / 4;
-#endif
+			//skip ahead algorithm
+			constexpr uint8_t lastBit = sizeof(num_T) * 8 - 1;
+			index = (lastBit - static_cast<uint8_t>(std::countl_zero<num_T>(p_val))) / 4;
 		}
+		else index = 0;
 	
 		char_T* pivot = p_str.data();
 	

@@ -27,9 +27,7 @@
 
 #include <CoreLib/string/core_string_format.hpp>
 
-#ifdef _WIN32
-#include <intrin.h>
-#endif
+#include <bit>
 
 namespace core
 {
@@ -501,26 +499,18 @@ bool UTF8_valid(std::u8string_view p_input)
 	{
 		if(*pos & 0x80)
 		{
-			uint32_t index = 0;
-#ifdef _WIN32
-			static_assert(sizeof(unsigned long) == sizeof(uint32_t));
-			if(!_BitScanReverse(reinterpret_cast<unsigned long*>(&index), ~*pos & 0xFF)) return false;
-#else
-			uint32_t test = ~*pos & 0xFF;
-			if(!test) return false;
-			index = 31 - __builtin_clz(test);
-#endif
+			uint32_t index = static_cast<uint32_t>(std::countl_one<uint8_t>(*pos));
 
-			if(end - pos <= (5 - index)) return false;
+			if(end - pos < index) return false;
 			switch(index)
 			{
-				case 0:
+				case 7:
 					if((*(++pos) & 0xC0) != 0x80 || ((*pos & 0x3F)  > 0x03)) return false;
-				case 1:	if((*(++pos) & 0xC0) != 0x80) return false;
-				case 2:	if((*(++pos) & 0xC0) != 0x80) return false;
-				case 3:	if((*(++pos) & 0xC0) != 0x80) return false;
-				case 4:	if((*(++pos) & 0xC0) != 0x80) return false;
+				case 6:	if((*(++pos) & 0xC0) != 0x80) return false;
 				case 5:	if((*(++pos) & 0xC0) != 0x80) return false;
+				case 4:	if((*(++pos) & 0xC0) != 0x80) return false;
+				case 3:	if((*(++pos) & 0xC0) != 0x80) return false;
+				case 2:	if((*(++pos) & 0xC0) != 0x80) return false;
 					break;
 				default:
 					return false;
@@ -528,80 +518,6 @@ bool UTF8_valid(std::u8string_view p_input)
 		}
 	}
 	return true;
-
-	//old more logical algorithm
-#if 0
-	const char8_t* pos = p_input.data();
-	const char8_t* const end = pos + p_input.size();
-	for(; pos < end; ++pos)
-	{
-		if(*pos & 0x80)
-		{
-			if((*pos & 0xC0) == 0x80)
-			{
-				return false;
-			}
-			if((*pos & 0xE0) == 0xC0) //level 1
-			{
-				if(	1 >= end - pos ||
-					(*++pos & 0xC0) != 0x80 )return false;
-				++pos;
-				continue;
-			}
-			if((*pos & 0xF0) == 0xE0) //level 2
-			{
-				if(	2 >= end - pos			||
-					(*++pos & 0xC0) != 0x80	||
-					(*++pos & 0xC0) != 0x80	) return false;
-				pos += 2;
-				continue;
-			}
-			if((*pos & 0xF8) == 0xF0) //level 3
-			{
-				if(	3 >= end - pos			||
-					(*++pos & 0xC0) != 0x80	||
-					(*++pos & 0xC0) != 0x80	||
-					(*++pos & 0xC0) != 0x80	) return false;
-				pos += 3;
-				continue;
-			}
-			if((*pos & 0xFC) == 0xF8) //level 4
-			{
-				if(	4 >= end - pos			||
-					(*++pos & 0xC0) != 0x80	||
-					(*++pos & 0xC0) != 0x80	||
-					(*++pos & 0xC0) != 0x80	||
-					(*++pos & 0xC0) != 0x80	) return false;
-				pos += 4;
-				continue;
-			}
-			if((*pos & 0xFE) == 0xFC) //level 5
-			{
-				if(	5 >= end - pos			||
-					(*++pos & 0xC0) != 0x80	||
-					(*++pos & 0xC0) != 0x80	||
-					(*++pos & 0xC0) != 0x80	||
-					(*++pos & 0xC0) != 0x80	||
-					(*++pos & 0xC0) != 0x80	) return false;
-				continue;
-			}
-			if((*pos & 0xFF) == 0xFE) //level 6
-			{
-				if(	6 >= end - pos			||
-					(*++pos & 0x3F)  > 0x03	||
-					(  *pos & 0xC0) != 0x80	||
-					(*++pos & 0xC0) != 0x80	||
-					(*++pos & 0xC0) != 0x80	||
-					(*++pos & 0xC0) != 0x80	||
-					(*++pos & 0xC0) != 0x80	||
-					(*++pos & 0xC0) != 0x80	) return false;
-				continue;
-			}
-			return false;
-		}
-	}
-	return true;
-#endif
 }
 
 bool ASCII_Compliant(std::u8string_view p_input)

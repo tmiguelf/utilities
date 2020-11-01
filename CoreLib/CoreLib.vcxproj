@@ -51,11 +51,15 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core_DLL.cpp" />
     <ClCompile Include="src\string\core_string_format.cpp" />
     <ClCompile Include="src\string\core_string_misc.cpp" />
     <ClCompile Include="src\string\core_string_numeric.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\CoreLib\Core_Alloca.hpp" />
+    <ClInclude Include="include\CoreLib\Core_DLL.hpp" />
+    <ClInclude Include="include\CoreLib\Core_Endian.hpp" />
     <ClInclude Include="include\CoreLib\Core_String.hpp" />
     <ClInclude Include="include\CoreLib\string\core_string_format.hpp" />
     <ClInclude Include="include\CoreLib\string\core_string_misc.hpp" />

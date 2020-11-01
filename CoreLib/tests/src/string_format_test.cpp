@@ -33,6 +33,9 @@
 
 #include <CoreLib/string/core_string_format.hpp>
 
+namespace text_formating
+{
+
 TEST(string_format, UTF8_to_ANSI)
 {
 	std::vector<std::pair<std::vector<char8_t>, std::vector<char8_t>>> goodCases =
@@ -1059,3 +1062,5 @@ TEST(string_format, UTF8_valid)
 		ASSERT_TRUE(core::UTF8_valid({tcase.data(), tcase.size()}));
 	}
 }
+
+} //namespace text_formating

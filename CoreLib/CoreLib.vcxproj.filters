@@ -40,6 +40,15 @@
     <ClInclude Include="include\CoreLib\Core_String.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\CoreLib\Core_Alloca.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\Core_DLL.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\Core_Endian.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\string\core_string_format.cpp">
@@ -50,6 +59,9 @@
     </ClCompile>
     <ClCompile Include="src\string\core_string_numeric.cpp">
       <Filter>Source Files\string</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core_DLL.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
