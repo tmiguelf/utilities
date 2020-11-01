@@ -28,10 +28,11 @@
 
 #pragma once
 
+#include <bit>
 #include <cstdint>
 #include <type_traits>
 
-#include <bit>
+#include "Core_Type.hpp"
 
 #ifdef _WIN32
 #	include	<stdlib.h>
@@ -166,21 +167,6 @@ struct endianess_uint_align
 template<typename T>
 using endianess_uint_align_t = typename endianess_uint_align<T>::type;
 } //namespace _p
-
-
-template <typename T_out, typename T>
-typename std::enable_if_t<
-	std::is_trivially_move_constructible_v<T_out> &&
-	std::is_trivially_destructible_v<T_out> &&
-	std::is_trivially_move_constructible_v<T> &&
-	std::is_trivially_destructible_v<T> &&
-	sizeof(T) == sizeof(T_out) &&
-	alignof(T) == alignof(T)
-	, T_out&&>
-	rvalue_reinterpret_cast(T&& p_in)
-{
-	return reinterpret_cast<T_out&&>(p_in);
-}
 
 template<typename T, std::enable_if_t<_p::endian_supported_type_v<T>, int> = 0>
 inline constexpr T byte_swap(const T& p_value)
