@@ -33,9 +33,8 @@
 
 namespace core
 {
-
 template <typename T_out, typename T>
-typename std::enable_if_t<
+[[nodiscard]] typename std::enable_if_t<
 	std::is_trivially_move_constructible_v<T_out> &&
 	std::is_trivially_destructible_v<T_out> &&
 	std::is_trivially_move_constructible_v<T> &&
@@ -47,6 +46,26 @@ typename std::enable_if_t<
 {
 	return reinterpret_cast<T_out&&>(p_in);
 }
+
+
+namespace literals
+{
+	constexpr uint8_t	operator "" _ui8	(unsigned long long int p_var)	{ return static_cast<uint8_t>	(p_var); }
+	constexpr uint16_t	operator "" _ui16	(unsigned long long int p_var)	{ return static_cast<uint16_t>	(p_var); }
+	constexpr uint32_t	operator "" _ui32	(unsigned long long int p_var)	{ return static_cast<uint32_t>	(p_var); }
+	constexpr uint64_t	operator "" _ui64	(unsigned long long int p_var)	{ return static_cast<uint64_t>	(p_var); }
+	constexpr int8_t	operator "" _i8		(unsigned long long int p_var)	{ return static_cast<int8_t>	(p_var); }
+	constexpr int16_t	operator "" _i16	(unsigned long long int p_var)	{ return static_cast<int16_t>	(p_var); }
+	constexpr int32_t	operator "" _i32	(unsigned long long int p_var)	{ return static_cast<int32_t>	(p_var); }
+	constexpr int64_t	operator "" _i64	(unsigned long long int p_var)	{ return static_cast<int64_t>	(p_var); }
+	constexpr float		operator "" _fp32	(unsigned long long int p_var)	{ return static_cast<float>		(p_var); }
+	constexpr float		operator "" _fp32	(long double p_var)				{ return static_cast<float>		(p_var); }
+	constexpr double	operator "" _fp64	(unsigned long long int p_var)	{ return static_cast<double>	(p_var); }
+	constexpr double	operator "" _fp64	(long double p_var)				{ return static_cast<double>	(p_var); }
+	constexpr uintptr_t	operator "" _uip	(unsigned long long int p_var)	{ return static_cast<uintptr_t>	(p_var); }
+	constexpr intptr_t	operator "" _ip		(unsigned long long int p_var)	{ return static_cast<intptr_t>	(p_var); }
+}
+
 }
 
 #define CORE_MAKE_ENUM_FLAG(TYPE) \

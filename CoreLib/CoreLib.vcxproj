@@ -68,6 +68,7 @@
     <ClInclude Include="include\CoreLib\Core_Thread.hpp" />
     <ClInclude Include="include\CoreLib\Core_Time.hpp" />
     <ClInclude Include="include\CoreLib\Core_Type.hpp" />
+    <ClInclude Include="include\CoreLib\string\core_os_string.hpp" />
     <ClInclude Include="include\CoreLib\string\core_string_format.hpp" />
     <ClInclude Include="include\CoreLib\string\core_string_misc.hpp" />
     <ClInclude Include="include\CoreLib\string\core_string_numeric.hpp" />

@@ -144,7 +144,7 @@ SYNC_Error Semaphore::createSemaphore(std::u8string& p_name, uint32_t p_range)
 	return SYNC_Error::NoErr;
 }
 
-SYNC_Error Semaphore::createSemaphoreW(std::u16string& p_name, uint32_t p_range)
+SYNC_Error Semaphore::createSemaphore(std::u16string& p_name, uint32_t p_range)
 {
 	destroySemaphore();
 #ifdef __CORE_EXTENDED_ERROR__

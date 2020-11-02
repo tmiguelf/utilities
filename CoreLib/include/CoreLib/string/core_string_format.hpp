@@ -81,128 +81,128 @@ namespace core
 	///	\brief	Converts a UTF8 string to ANSI.
 	///			Failure can occur if input string has an invalid UTF8 sequences, or has code points not representable in 8bits
 	///	\warning	Input does not require to have all valid Unicode code points, or convert to valid ASCII (7bit).
-	encodeResult<char8_t> UTF8_to_ANSI(std::u8string_view p_input);
+	[[nodiscard]] encodeResult<char8_t> UTF8_to_ANSI(std::u8string_view p_input);
 
 	///	\brief	Converts a UTF16 string to ANSI.
 	///			Failure can occur if input string has an invalid UTF16 sequences, or has code points not representable in 8bits
 	///	\warning	Input does not require to convert to valid ASCII (7bit).
-	encodeResult<char8_t> UTF16_to_ANSI(std::u16string_view p_input);
+	[[nodiscard]] encodeResult<char8_t> UTF16_to_ANSI(std::u16string_view p_input);
 	
 	///	\brief	Converts a UCS2 string to ANSI.
 	///				Failure can occur if input string has code points not representable in 8bits
 	///	\warning	Input does not require to have all valid Unicode code points, or convert to valid ASCII (7bit).
-	encodeResult<char8_t> UCS2_to_ANSI(std::u16string_view p_input);
+	[[nodiscard]] encodeResult<char8_t> UCS2_to_ANSI(std::u16string_view p_input);
 
 	///	\brief	Converts a UCS4 (or UTF32) string to ANSI.
 	///			Failure can occur if input string has code points not representable in 8bits
 	///	\warning	Input does not require to have all valid Unicode code points, or convert to valid ASCII (7bit).
-	encodeResult<char8_t> UCS4_to_ANSI(std::u32string_view p_input);
+	[[nodiscard]] encodeResult<char8_t> UCS4_to_ANSI(std::u32string_view p_input);
 
 	///	\brief	Converts a ANSI string to UTF8.
 	///			Note: always convertible.
 	///	\warning	Input does not require to have all valid ASCII (7bit) code points.
-	std::u8string ANSI_to_UTF8(std::u8string_view p_input);
+	[[nodiscard]] std::u8string ANSI_to_UTF8(std::u8string_view p_input);
 
 	///	\brief	Converts a UTF16 string to UTF8.
 	///			Failure can occur if input string has an invalid UTF16 sequences
-	encodeResult<char8_t> UTF16_to_UTF8(std::u16string_view p_input);
+	[[nodiscard]] encodeResult<char8_t> UTF16_to_UTF8(std::u16string_view p_input);
 
 	///	\brief	Converts a UCS2 string to UTF8.
 	///			Note: always convertible.
 	///	\warning	Input/Output does not require to have all valid Unicode code points.
-	std::u8string UCS2_to_UTF8(std::u16string_view p_input);
+	[[nodiscard]] std::u8string UCS2_to_UTF8(std::u16string_view p_input);
 
 	///	\brief	Converts a UCS4 (or UTF32) string to UTF8.
 	///			Note: always convertible.
 	///	\warning	Input/Output does not require to have all valid Unicode code points.
-	std::u8string UCS4_to_UTF8(std::u32string_view p_input);
+	[[nodiscard]] std::u8string UCS4_to_UTF8(std::u32string_view p_input);
 
 	///	\brief	Converts a ANSI string to UTF16.
 	///			Note: always convertible.
 	///	\warning	Input does not require to have all valid ASCII code points.
-	std::u16string ANSI_to_UTF16(std::u8string_view p_input);
+	[[nodiscard]] std::u16string ANSI_to_UTF16(std::u8string_view p_input);
 
 	///	\brief	Converts a UTF8 string to UTF16.
 	///			Failure can occur if input string has an invalid UTF8 sequences, or has code points not representable in UTF16
-	encodeResult<char16_t> UTF8_to_UTF16(std::u8string_view p_input);
+	[[nodiscard]] encodeResult<char16_t> UTF8_to_UTF16(std::u8string_view p_input);
 
 	///	\brief	Converts a UCS2 string to UTF16.
 	///			Failure can occur if input string has code points not representable in UTF16
-	encodeResult<char16_t> UCS2_to_UTF16(std::u16string_view p_input);
+	[[nodiscard]] encodeResult<char16_t> UCS2_to_UTF16(std::u16string_view p_input);
 
 	///	\brief	Converts a UCS4 (or UTF32) string to UTF16.
 	///			Failure can occur if input string has code points not representable in UTF16
-	encodeResult<char16_t> UCS4_to_UTF16(std::u32string_view p_input);
+	[[nodiscard]] encodeResult<char16_t> UCS4_to_UTF16(std::u32string_view p_input);
 
 	///	\brief	Converts a ANSI string to UCS2.
 	///			Note: always convertible.
 	///	\warning	Input does not require to have all valid ASCII code points.
-	std::u16string ANSI_to_UCS2(std::u8string_view p_input);
+	[[nodiscard]] std::u16string ANSI_to_UCS2(std::u8string_view p_input);
 
 	///	\brief	Converts a UTF8 string to UCS2.
 	///			Failure can occur if input string has an invalid UTF8 sequences, or has code points not representable in 16bits
 	///	\warning	Input/Output does not require to have all valid Unicode code points.
-	encodeResult<char16_t> UTF8_to_UCS2(std::u8string_view p_input);
+	[[nodiscard]] encodeResult<char16_t> UTF8_to_UCS2(std::u8string_view p_input);
 
 	///	\brief	Converts a UTF16 string to UCS2.
 	///			Failure can occur if input string has an invalid UTF16 sequences, or has code points not representable in 16bits
-	encodeResult<char16_t> UTF16_to_UCS2(std::u16string_view p_input);
+	[[nodiscard]] encodeResult<char16_t> UTF16_to_UCS2(std::u16string_view p_input);
 
 	///	\brief	Converts a UCS4 (or UTF32) string to UCS2.
 	///			Failure can occur if input string has code points not representable in 16bits
 	///	\warning	Input/Output does not require to have all valid Unicode code points.
-	encodeResult<char16_t> UCS4_to_UCS2(std::u32string_view p_input);
+	[[nodiscard]] encodeResult<char16_t> UCS4_to_UCS2(std::u32string_view p_input);
 
 	///	\brief	Converts a ANSI string to UCS4 (or UTF32).
 	///			Note: always convertible.
 	///	\warning	Input does not require to have all valid ASCII code points.
-	std::u32string ANSI_to_UCS4(std::u8string_view p_input);
+	[[nodiscard]] std::u32string ANSI_to_UCS4(std::u8string_view p_input);
 
 	///	\brief	Converts a UTF8 string to UCS4 (or UTF32).
 	///			Failure can occur if input string has an invalid UTF8 sequences.
 	///	\warning	Input/Output does not require to have all valid Unicode code points.
-	encodeResult<char32_t> UTF8_to_UCS4(std::u8string_view p_input);
+	[[nodiscard]] encodeResult<char32_t> UTF8_to_UCS4(std::u8string_view p_input);
 
 	///	\brief	Converts a UTF16 string to UCS4 (or UTF32).
 	///			Failure can occur if input string has an invalid UTF16 sequences
 	///	\warning	Input/Output does not require to have all valid Unicode code points.
-	encodeResult<char32_t> UTF16_to_UCS4(std::u16string_view p_input);
+	[[nodiscard]] encodeResult<char32_t> UTF16_to_UCS4(std::u16string_view p_input);
 
 	///	\brief	Converts a UCS2 string to UCS4 (or UTF32).
 	///			Note: always convertible.
 	///	\warning	Input/Output does not require to have all valid Unicode code points.
-	std::u32string UCS2_to_UCS4(std::u16string_view p_input);
+	[[nodiscard]] std::u32string UCS2_to_UCS4(std::u16string_view p_input);
 
 
 	///	\brief	Converts a UTF8 string to ANSI.
 	///	\param[in]	p_input - UTF8 sequence to convert
 	///	\param[in]	p_placeHolder - Replacement character to be used when a UTF8 sequence is not valid or the codepoint can not be encoded in ANSI
 	///	\warning	Input does not require to have all valid Unicode code points, or convert to valid ASCII (7bit).
-	std::u8string UTF8_to_ANSI_faulty(std::u8string_view p_input, char8_t p_placeHolder);
+	[[nodiscard]] std::u8string UTF8_to_ANSI_faulty(std::u8string_view p_input, char8_t p_placeHolder);
 
 	///	\brief	Converts a UTF16 string to ANSI.
 	///	\param[in]	p_input - UTF16 sequence to convert
 	///	\param[in]	p_placeHolder - Replacement character to be used when a UTF16 sequence is not valid or the codepoint can not be encoded in ANSI
 	///	\warning	Input does not require to convert to valid ASCII.
-	std::u8string UTF16_to_ANSI_faulty(std::u16string_view p_input, char8_t p_placeHolder);
+	[[nodiscard]] std::u8string UTF16_to_ANSI_faulty(std::u16string_view p_input, char8_t p_placeHolder);
 
 	///	\brief	Converts a UCS2 string to ANSI.
 	///	\param[in]	p_input - UCS2 sequence to convert
 	///	\param[in]	p_placeHolder - Replacement character to be used when codepoint can not be encoded in ANSI
 	///	\warning	Input does not require to have all valid Unicode code points, or convert to valid ASCII.
-	std::u8string UCS2_to_ANSI_faulty(std::u16string_view p_input, char8_t p_placeHolder);
+	[[nodiscard]] std::u8string UCS2_to_ANSI_faulty(std::u16string_view p_input, char8_t p_placeHolder);
 
 	///	\brief	Converts a UCS4 (or UTF32) string to ANSI.
 	///	\param[in]	p_input - UCS4 (or UTF32) sequence to convert
 	///	\param[in]	p_placeHolder - Replacement character to be used when the codepoint can not be encoded in ANSI
 	///	\warning	Input does not require to have all valid Unicode code points, or convert to valid ASCII.
-	std::u8string UCS4_to_ANSI_faulty(std::u32string_view p_input, char8_t p_placeHolder);
+	[[nodiscard]] std::u8string UCS4_to_ANSI_faulty(std::u32string_view p_input, char8_t p_placeHolder);
 
 	///	\brief	Converts a UTF16 string to UTF8.
 	///	\param[in]	p_input - UTF16 sequence to convert
 	///	\param[in]	p_placeHolder - Replacement codepoint to be used when a UTF16 sequence is invalid
 	///	\warning	Output does not require to have all valid Unicode code points.
-	std::u8string UTF16_to_UTF8_faulty(std::u16string_view p_input, char32_t p_placeHolder);
+	[[nodiscard]] std::u8string UTF16_to_UTF8_faulty(std::u16string_view p_input, char32_t p_placeHolder);
 
 	///	\brief	Converts a UTF8 string to UTF16.
 	///	\param[in]	p_input - UTF8 sequence to convert
@@ -210,51 +210,51 @@ namespace core
 	///								or code point can not be represented in UTF16
 	///								If replacement codepoint is not representable in UTF16, nothing is used
 	///	\warning	Input does not require to have all valid Unicode code points
-	std::u16string UTF8_to_UTF16_faulty(std::u8string_view p_input, char32_t p_placeHolder);
+	[[nodiscard]] std::u16string UTF8_to_UTF16_faulty(std::u8string_view p_input, char32_t p_placeHolder);
 
 	///	\brief	Converts a UCS2 string to UTF16.
 	///	\param[in]	p_input - UCS2 sequence to convert
 	///	\param[in]	p_placeHolder - Replacement codepoint to be used when code point can not be represented in UTF16
 	///								If replacement codepoint is not representable in UTF16, nothing is used
-	std::u16string UCS2_to_UTF16_faulty(std::u16string_view p_input, char32_t p_placeHolder);
+	[[nodiscard]] std::u16string UCS2_to_UTF16_faulty(std::u16string_view p_input, char32_t p_placeHolder);
 
 	///	\brief	Converts a UCS4 (or UTF32) string to UTF16.
 	///	\param[in]	p_input - UCS4 (or UTF32) sequence to convert
 	///	\param[in]	p_placeHolder - Replacement codepoint to be used when a code point can not be represented in UTF16
 	///								If replacement codepoint is not representable in UTF16, nothing is used
 	///	\warning	Input does not require to have all valid Unicode code points
-	std::u16string UCS4_to_UTF16_faulty(std::u32string_view p_input, char32_t p_placeHolder);
+	[[nodiscard]] std::u16string UCS4_to_UTF16_faulty(std::u32string_view p_input, char32_t p_placeHolder);
 
 	///	\brief	Converts a UTF8 string to UCS2.
 	///	\param[in]	p_input - UTF8 sequence to convert
 	///	\param[in]	p_placeHolder - Replacement codepoint to be used when a UTF8 sequence is invalid,
 	///								or code point can not be represented in UCS2.
 	///	\warning	Input/Output does not require to have all valid Unicode code points.
-	std::u16string UTF8_to_UCS2_faulty(std::u8string_view p_input, char16_t p_placeHolder);
+	[[nodiscard]] std::u16string UTF8_to_UCS2_faulty(std::u8string_view p_input, char16_t p_placeHolder);
 
 	///	\brief	Converts a UTF16 string to UCS2.
 	///	\param[in]	p_input - UTF16 sequence to convert
 	///	\param[in]	p_placeHolder - Replacement codepoint to be used when a UTF16 sequence is invalid,
 	///								or code point can not be represented in UCS2.
-	std::u16string UTF16_to_UCS2_faulty(std::u16string_view p_input, char16_t p_placeHolder);
+	[[nodiscard]] std::u16string UTF16_to_UCS2_faulty(std::u16string_view p_input, char16_t p_placeHolder);
 
 	///	\brief	Converts a UCS4 (or UTF32) string to UCS2.
 	///	\param[in]	p_input - UCS4 (or UTF32) sequence to convert
 	///	\param[in]	p_placeHolder - Replacement codepoint to be used when a code point can not be represented in UCS2
 	///	\warning	Input/Output does not require to have all valid Unicode code points.
-	std::u16string UCS4_to_UCS2_faulty(std::u32string_view p_input, char16_t p_placeHolder);
+	[[nodiscard]] std::u16string UCS4_to_UCS2_faulty(std::u32string_view p_input, char16_t p_placeHolder);
 
 	///	\brief	Converts a UTF8 string to ANSI.
 	///	\param[in]	p_input - UTF8 sequence to convert
 	///	\param[in]	p_placeHolder - Replacement character to be used when a UTF8 sequence is not valid
 	///	\warning	Input does not require to have all valid Unicode code points.
-	std::u32string UTF8_to_UCS4_faulty(std::u8string_view p_input, char32_t p_placeHolder);
+	[[nodiscard]] std::u32string UTF8_to_UCS4_faulty(std::u8string_view p_input, char32_t p_placeHolder);
 
 	///	\brief	Converts a UTF8 string to ANSI.
 	///	\param[in]	p_input - UTF8 sequence to convert
 	///	\param[in]	p_placeHolder - Replacement character to be used when a UTF16 sequence is not valid
 	///	\warning	Input does not require to have all valid Unicode code points
-	std::u32string UTF16_to_UCS4_faulty(std::u16string_view p_input, char32_t p_placeHolder);
+	[[nodiscard]] std::u32string UTF16_to_UCS4_faulty(std::u16string_view p_input, char32_t p_placeHolder);
 
 
 	///	\brief	Converts a code point to UTF8
@@ -278,17 +278,17 @@ namespace core
 	///	\param[in]	p_char - Character to check
 	///	\return true if input is a valid Unicode code point, false if otherwise.
 	//
-	inline constexpr bool UNICODE_Compliant(char32_t p_char) { return !((p_char > 0xD7FF && p_char < 0xE000) || p_char > 0x10FFFF); }
+	[[nodiscard]] inline constexpr bool UNICODE_Compliant(char32_t p_char) { return !((p_char > 0xD7FF && p_char < 0xE000) || p_char > 0x10FFFF); }
 
 	///	\brief	Checks if a given character is a valid ASCII character (i.e. Only first 7bits are used).
 	///	\param[in] p_char - Character to check
 	///	\return true if character is ASCII compliant, false if otherwise.
 	//
-	inline constexpr bool ASCII_Compliant(char32_t p_char) { return p_char < 0x80; }
+	[[nodiscard]] inline constexpr bool ASCII_Compliant(char32_t p_char) { return p_char < 0x80; }
 
 	///	\brief	Same as \ref core::ASCII_Compliant(char32_t).
 	//
-	inline constexpr bool ASCII_Compliant(char8_t p_char) { return p_char < 0x80; }
+	[[nodiscard]] inline constexpr bool ASCII_Compliant(char8_t p_char) { return p_char < 0x80; }
 
 	///	\brief	Checks if string has a valid UTF8 and Unicode encoding.
 	///	\param[in]	p_str - String to check
@@ -296,7 +296,7 @@ namespace core
 	///	\return true if input has a valid encoding, false if otherwise.
 	///	\note		Agnostic to null termination.
 	//
-	bool UTF8_UNICODE_Compliant(std::u8string_view p_str);
+	[[nodiscard]] bool UTF8_UNICODE_Compliant(std::u8string_view p_str);
 
 	///	\brief	Checks if string has a valid UTF16 encoding.
 	///	\param[in]	p_str - String to check
@@ -304,7 +304,7 @@ namespace core
 	///	\return true if input has a valid encoding, false if otherwise.
 	///	\note		Agnostic to null termination.
 	//
-	bool UTF16_UNICODE_Compliant(std::u16string_view p_str);
+	[[nodiscard]] bool UTF16_UNICODE_Compliant(std::u16string_view p_str);
 
 	///	\brief	Checks if string has a valid UCS2 and Unicode encoding.
 	///	\param[in]	p_str - String to check
@@ -312,7 +312,7 @@ namespace core
 	///	\return true if input has a valid encoding, false if otherwise.
 	///	\note		Agnostic to null termination.
 	//
-	bool UCS2_UNICODE_Compliant(std::u16string_view p_str);
+	[[nodiscard]] bool UCS2_UNICODE_Compliant(std::u16string_view p_str);
 
 	///	\brief	Checks if string has a valid UCS4 (or UTF32) and Unicode encoding.
 	///	\param[in]	p_str - String to check
@@ -320,7 +320,7 @@ namespace core
 	///	\return true if input has a valid encoding, false if otherwise.
 	///	\note		Agnostic to null termination.
 	//
-	bool UCS4_UNICODE_Compliant(std::u32string_view p_str);
+	[[nodiscard]] bool UCS4_UNICODE_Compliant(std::u32string_view p_str);
 
 	///	\brief	Checks if a given string encodes a valid ASCII sequence.
 	///	\param[in]	p_str - String to check
@@ -328,11 +328,11 @@ namespace core
 	///	\return		true if string is ASCII compliant. false if otherwise.
 	///	\note		Agnostic to null termination.
 	//
-	bool ASCII_Compliant(std::u8string_view p_str);
+	[[nodiscard]] bool ASCII_Compliant(std::u8string_view p_str);
 
 	///	\brief	Same as \ref core::ASCII_Compliant(const char8_t*, size_t), but for char32_t.
 	//
-	bool ASCII_Compliant(std::u32string_view p_str);
+	[[nodiscard]] bool ASCII_Compliant(std::u32string_view p_str);
 
 	///	\brief	Checks if string has a valid UTF8 encoding without it necessarily encoding a valid Unicode code point.
 	///	\param[in]	p_str - String to check
@@ -340,9 +340,9 @@ namespace core
 	///	\return true if input has a valid encoding, false if otherwise.
 	///	\note		Agnostic to null termination.
 	//
-	bool UTF8_valid(std::u8string_view p_str);
+	[[nodiscard]] bool UTF8_valid(std::u8string_view p_str);
 
 	///	\brief	Same as \ref UTF16_UNICODE_Compliant. UTF16 can only encode valid Unicode code points.
 	//
-	inline bool UTF16_valid(std::u16string_view p_str) { return UTF16_UNICODE_Compliant(p_str); }
+	[[nodiscard]] inline bool UTF16_valid(std::u16string_view p_str) { return UTF16_UNICODE_Compliant(p_str); }
 }	//namespace core

@@ -119,7 +119,7 @@ public:
 	Thread();
 
 	///	\note
-	///		If a thread has been launched, but it has neither been joined (\ref Wait4Thread) or detached (\ref DetachThread),
+	///		If a thread has been launched, but it has neither been \ref join or \ref detach
 	///		the destructor will detach the thread.
 	~Thread();
 
@@ -128,26 +128,26 @@ public:
 	///	\param[in] p_function	- The function to call
 	///	\param[in] p_param		- Additional argument to be passed to the user function.
 	///
-	///	\return		\ref Error_None if the thread was launched successfully, other \ref Errror code on failure.
+	///	\return		\ref Error_None if the thread was launched successfully, other \ref Error code on failure.
 	///
 	///	\remarks
 	///			When a thread is successfully created, the thread objects goes into an "occupied" state.
-	///			The user he user must either use join (\ref Wait4Thread) or detach (\ref DetachThread)
+	///			The user he user must either use \ref join or \ref detach
 	///			the thread in order to avoid resource leaks and return this object to a "reusable" state.
-	Error createThread	(void (*p_function)(void *), void* p_param);
+	Error createThread(void (*p_function)(void *), void* p_param);
 
 	///	\brief Tries to join a thread
 	///
 	///	\param[in] p_function	- The function to call
 	///	\param[in] p_param		- Additional argument to be passed to the user function.
 	///
-	///	\return		\ref Error_None if the thread has been sucessfully joined or the object was in the "free" state.
-	///				\ref Error_Timeout if the specified timeout period is reached before the thread was successfully joined.
+	///	\return		\ref Error::None if the thread has been sucessfully joined or the object was in the "free" state.
+	///				\ref Error::Timeout if the specified timeout period is reached before the thread was successfully joined.
 	///				Other \ref Error code on failure.
 	///
 	///	\remarks
 	///			You should not attempt to join a thread that has been detached
-	Error join	(uint32_t p_time = Infinite);
+	Error join(uint32_t p_time = Infinite);
 
 	/// \brief Detaches the thread.
 	///			After this call, the user no longer needs to keep track of the thread handle.
@@ -156,7 +156,7 @@ public:
 
 	///	\brief Checks if this object is safe to be re-used
 	///	\return true if no thread is associated to this object or the thread is detached.
-	bool joinable		() const;
+	[[nodiscard]] bool joinable() const;
 
 	///	\brief Request the operating system to schedule the thread only on specific core encoded in the bit mask
 	///
@@ -170,13 +170,13 @@ public:
 
 #ifdef _WIN32
 	///	\return Operating system given number for this thread
-	uint32_t id			() const;
+	[[nodiscard]] inline uint32_t id() const;
 
 	//this method is mostly sugestive, it is not enforceable
 	Error _setPreferedProcessor(uint8_t p_num);
 #else
 	///	\return Operating system given number for this thread
-	pthread_t id			() const;
+	[[nodiscard]] pthread_t id() const;
 #endif
 
 	///	\brief Spawns a thread and gives it to user control via an object method
@@ -189,7 +189,7 @@ public:
 	///
 	///	\remarks
 	///			When a thread is successfully created, the thread objects goes into an "occupied" state.
-	///			The user he user must either use join (\ref Wait4Thread) or detach (\ref DetachThread)
+	///			The user he user must either use \ref join or \ref detach
 	///			the thread in order to avoid resource leaks and return this object to a "reusable" state.
 	template <class T>
 	Error createThread(T* p_object, void (T::*p_method)(void *), void* p_param)
@@ -212,10 +212,10 @@ inline uint32_t	Thread::id			() const { return m_id;					}
 inline bool		Thread::joinable	() const { return m_handle != nullptr;	}
 
 ///	\brief Gets the current thread ID as seen by the OS
-uint32_t	currentThreadId	();
+[[nodiscard]] uint32_t currentThreadId();
 
 ///	\brief Yields the currently alloted time slot for the current thread
-void		thread_YieldSelf	();
+void thread_YieldSelf();
 
 ///	\brief Suspends the thread execution by a number of milliseconds
 ///
@@ -225,7 +225,7 @@ void		thread_YieldSelf	();
 ///			The time the thread actually sleeps for is not accurate.
 ///			The thread may wake up later than the requested time depending on the operating system scheduling
 ///			The thread may wake up earlier in case an alertable interrupt occurs
-void		milliSleep			(uint16_t p_time);
+void milliSleep(uint16_t p_time);
 
 #else
 
@@ -235,10 +235,10 @@ inline bool			Thread::joinable	() const { return m_hasThread;	}
 
 ///	\brief Gets the current thread ID as seen by the OS
 //
-inline pthread_t	currentThreadId	() { return syscall(SYS_gettid); }
+[[nodiscard]] inline pthread_t currentThreadId() { return syscall(SYS_gettid); }
 
 ///	\brief Yields the currently alloted time slot for the current thread
-inline void		thread_YieldSelf	() { pthread_yield(); }
+inline void thread_YieldSelf() { pthread_yield(); }
 
 
 ///	\brief Suspends the thread execution by a number of milliseconds
@@ -249,7 +249,7 @@ inline void		thread_YieldSelf	() { pthread_yield(); }
 ///			The time the thread actually sleeps for is not accurate.
 ///			The thread may wake up later than the requested time depending on the operating system scheduling
 ///			The thread may wake up earlier in case an alertable interrupt occurs
-inline void		milliSleep			(uint16_t p_time) { usleep(p_time * 1000); }
+inline void milliSleep(uint16_t p_time) { usleep(p_time * 1000); }
 
 #endif
 

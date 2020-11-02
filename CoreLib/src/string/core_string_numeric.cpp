@@ -185,7 +185,7 @@ namespace core_p
 				}
 			}
 
-			r_val = r_val * 10 + t_val;
+			r_val = static_cast<uint_T>(r_val * 10 + t_val);
 		}
 
 		return r_val;
@@ -230,7 +230,7 @@ namespace core_p
 						return std::errc::value_too_large;
 					}
 				}
-				r_val = r_val * 10 - t_val;
+				r_val = static_cast<int_T>(r_val * 10 - t_val);
 			}
 			while(++pivot < end);
 		}
@@ -260,7 +260,7 @@ namespace core_p
 						return std::errc::value_too_large;
 					}
 				}
-				r_val = r_val * 10 + t_val;
+				r_val = static_cast<int_T>(r_val * 10 + t_val);
 			}
 			while(++pivot < end);
 		}
@@ -309,7 +309,7 @@ namespace core_p
 				return std::errc::illegal_byte_sequence;
 			}
 
-			r_val = r_val * 0x10 + static_cast<uint_T>(t_val);
+			r_val = static_cast<uint_T>(r_val * 0x10 + static_cast<uint_T>(t_val));
 		}
 
 		return r_val;
@@ -419,9 +419,11 @@ from_chars_result<T> from_chars(std::basic_string_view<char8_t> p_str) { return 
 template<typename T, typename>
 from_chars_result<T> from_chars(std::basic_string_view<char32_t> p_str) { return core_p::help_from_chars<T>::from_chars(p_str) ; }
 
+#if defined(_MSC_BUILD)
 template from_chars_result<long double	> from_chars<long double>(std::basic_string_view<char8_t>);
 template from_chars_result<double		> from_chars<double		>(std::basic_string_view<char8_t>);
 template from_chars_result<float		> from_chars<float		>(std::basic_string_view<char8_t>);
+#endif
 template from_chars_result<uint64_t		> from_chars<uint64_t	>(std::basic_string_view<char8_t>);
 template from_chars_result<uint32_t		> from_chars<uint32_t	>(std::basic_string_view<char8_t>);
 template from_chars_result<uint16_t		> from_chars<uint16_t	>(std::basic_string_view<char8_t>);
@@ -431,9 +433,11 @@ template from_chars_result<int32_t		> from_chars<int32_t	>(std::basic_string_vie
 template from_chars_result<int16_t		> from_chars<int16_t	>(std::basic_string_view<char8_t>);
 template from_chars_result<int8_t		> from_chars<int8_t		>(std::basic_string_view<char8_t>);
 
+#if defined(_MSC_BUILD)
 template from_chars_result<long double	> from_chars<long double>(std::basic_string_view<char32_t>);
 template from_chars_result<double		> from_chars<double		>(std::basic_string_view<char32_t>);
 template from_chars_result<float		> from_chars<float		>(std::basic_string_view<char32_t>);
+#endif
 template from_chars_result<uint64_t		> from_chars<uint64_t	>(std::basic_string_view<char32_t>);
 template from_chars_result<uint32_t		> from_chars<uint32_t	>(std::basic_string_view<char32_t>);
 template from_chars_result<uint16_t		> from_chars<uint16_t	>(std::basic_string_view<char32_t>);
@@ -504,7 +508,6 @@ namespace core_p
 	template <typename char_T, typename num_T>
 	static inline uintptr_t int2dec(num_T p_val, std::span<char_T, to_chars_max_digits_v<num_T>> p_str)
 	{
-		constexpr uintptr_t size = to_chars_max_digits_v<num_T>;
 		if(p_val < 0)
 		{
 			p_str[0] = '-';
@@ -547,7 +550,7 @@ namespace core_p
 		{
 			//skip ahead algorithm
 			constexpr uint8_t lastBit = sizeof(num_T) * 8 - 1;
-			index = (lastBit - static_cast<uint8_t>(std::countl_zero<num_T>(p_val))) / 4;
+			index = static_cast<uint8_t>((lastBit - static_cast<uint8_t>(std::countl_zero<num_T>(p_val))) / 4);
 		}
 		else index = 0;
 	
@@ -732,9 +735,11 @@ template uintptr_t to_chars(int8_t		, std::span<char8_t, to_chars_max_digits_v<i
 template uintptr_t to_chars(int16_t		, std::span<char8_t, to_chars_max_digits_v<int16_t		>>);
 template uintptr_t to_chars(int32_t		, std::span<char8_t, to_chars_max_digits_v<int32_t		>>);
 template uintptr_t to_chars(int64_t		, std::span<char8_t, to_chars_max_digits_v<int64_t		>>);
+#if defined(_MSC_BUILD)
 template uintptr_t to_chars(float		, std::span<char8_t, to_chars_max_digits_v<float		>>);
 template uintptr_t to_chars(double		, std::span<char8_t, to_chars_max_digits_v<double		>>);
 template uintptr_t to_chars(long double	, std::span<char8_t, to_chars_max_digits_v<long double	>>);
+#endif
 
 template uintptr_t to_chars(uint8_t		, std::span<char32_t, to_chars_max_digits_v<uint8_t		>>);
 template uintptr_t to_chars(uint16_t	, std::span<char32_t, to_chars_max_digits_v<uint16_t	>>);
@@ -744,10 +749,11 @@ template uintptr_t to_chars(int8_t		, std::span<char32_t, to_chars_max_digits_v<
 template uintptr_t to_chars(int16_t		, std::span<char32_t, to_chars_max_digits_v<int16_t		>>);
 template uintptr_t to_chars(int32_t		, std::span<char32_t, to_chars_max_digits_v<int32_t		>>);
 template uintptr_t to_chars(int64_t		, std::span<char32_t, to_chars_max_digits_v<int64_t		>>);
+#if defined(_MSC_BUILD)
 template uintptr_t to_chars(float		, std::span<char32_t, to_chars_max_digits_v<float		>>);
 template uintptr_t to_chars(double		, std::span<char32_t, to_chars_max_digits_v<double		>>);
 template uintptr_t to_chars(long double	, std::span<char32_t, to_chars_max_digits_v<long double	>>);
-
+#endif
 
 template uintptr_t to_hex_chars(uint8_t , std::span<char8_t, to_hex_chars_max_digits_v<uint8_t >>);
 template uintptr_t to_hex_chars(uint16_t, std::span<char8_t, to_hex_chars_max_digits_v<uint16_t>>);
@@ -779,9 +785,11 @@ template std::basic_string<char8_t> to_chars<char8_t>(int8_t		p_val);
 template std::basic_string<char8_t> to_chars<char8_t>(int16_t		p_val);
 template std::basic_string<char8_t> to_chars<char8_t>(int32_t		p_val);
 template std::basic_string<char8_t> to_chars<char8_t>(int64_t		p_val);
+#if defined(_MSC_BUILD)
 template std::basic_string<char8_t> to_chars<char8_t>(float			p_val);
 template std::basic_string<char8_t> to_chars<char8_t>(double		p_val);
 template std::basic_string<char8_t> to_chars<char8_t>(long double	p_val);
+#endif
 
 template std::basic_string<char32_t> to_chars<char32_t>(uint8_t		p_val);
 template std::basic_string<char32_t> to_chars<char32_t>(uint16_t	p_val);
@@ -791,10 +799,11 @@ template std::basic_string<char32_t> to_chars<char32_t>(int8_t		p_val);
 template std::basic_string<char32_t> to_chars<char32_t>(int16_t		p_val);
 template std::basic_string<char32_t> to_chars<char32_t>(int32_t		p_val);
 template std::basic_string<char32_t> to_chars<char32_t>(int64_t		p_val);
+#if defined(_MSC_BUILD)
 template std::basic_string<char32_t> to_chars<char32_t>(float		p_val);
 template std::basic_string<char32_t> to_chars<char32_t>(double		p_val);
 template std::basic_string<char32_t> to_chars<char32_t>(long double	p_val);
-
+#endif
 
 template std::basic_string<char8_t> to_hex_chars<char8_t>(uint8_t  p_val);
 template std::basic_string<char8_t> to_hex_chars<char8_t>(uint16_t p_val);

@@ -40,8 +40,8 @@
 
 namespace core
 {
+
 /// \brief Synchronization error codes
-//
 enum class SYNC_Error: uint8_t
 {
 	NoErr				= 0x00,
@@ -58,7 +58,6 @@ enum class SYNC_Error: uint8_t
 ///	\brief	Encapsulates a mutex
 ///			Mutex needs to be created before use, instantiating a class does not create the mutex
 ///			mutex is destroyed if it goes out of scope
-//
 class Mutex
 {
 #ifdef _WIN32
@@ -74,29 +73,24 @@ public:
 
 	///	\brief		Creates the mutex
 	///	\return		0 on success, or an error code from \ref CORE_ERROR::SYNC
-	//
 	core::SYNC_Error createMutex();
 
 	///	\brief		Destroys the mutex
 	///	\return		0 on success, or an error code from \ref CORE_ERROR::SYNC
-	//
 	core::SYNC_Error destroyMutex();
 	
 	///	\brief	Locks the mutex
 	///	\return		0 on success, or an error code from \ref CORE_ERROR::SYNC
-	//
 	core::SYNC_Error lock();
 
 	///	\brief		Attempts to acquire the mutex in a non locking form
 	///	\return		0 is returned if mutex is acquired, if mutex is already locked CORE_ERROR::SYNC_WouldBlock is returned
 	///				on error a code from \ref CORE_ERROR::SYNC is returned
-	//
 	[[nodiscard]]
 	core::SYNC_Error tryLock();
 
 	///	\brief		Unlocks the mutex
 	///	\return		0 on success, or an error code from \ref CORE_ERROR::SYNC
-	//
 	core::SYNC_Error unlock();
 
 
@@ -107,7 +101,6 @@ public:
 	///			as an argument and locks it.
 	///			When this class goes out of scope (and the object is destroyed)
 	///			the lock is released.
-	//
 	class ScopeLocker
 	{
 		Mutex& m_mux;
@@ -122,7 +115,6 @@ public:
 ///	\brief	Encapsulates a Semaphore
 ///			Semaphore needs to be created before use, instantiating a class does not create the semaphore
 ///			Semaphore is destroyed if it goes out of scope
-//
 class Semaphore
 {
 #ifdef _WIN32
@@ -138,50 +130,42 @@ public:
 	~Semaphore();
 
 	///	\brief		Creates a named semaphore
-	///	\return		0 on success, or an error code from \ref CORE_ERROR::SYNC
-	//
+	///	\return		0 on success, or an error code from \ref SYNC_Error
 	core::SYNC_Error createSemaphore(std::u8string& p_name, uint32_t p_range);
 	
 	#ifdef _WIN32
 	///	\brief		Creates a named semaphore
-	///	\return		0 on success, or an error code from \ref CORE_ERROR::SYNC
+	///	\return		0 on success, or an error code from \ref SYNC_Error
 	///	\note		Windows only
-	//
-	core::SYNC_Error createSemaphoreW(std::u16string& p_name, uint32_t p_range);
+	core::SYNC_Error createSemaphore(std::u16string& p_name, uint32_t p_range);
 	#endif
 
 	///	\brief		Creates an unnamed semaphore
-	///	\return		0 on success, or an error code from \ref CORE_ERROR::SYNC
-	//
+	///	\return		0 on success, or an error code from \ref SYNC_Error
 	core::SYNC_Error createSemaphore(uint32_t p_range);
 
 	///	\brief		Destroys the semaphore
-	///	\return		0 on success, or an error code from \ref CORE_ERROR::SYNC
-	//
+	///	\return		0 on success, or an error code from \ref SYNC_Error
 	core::SYNC_Error destroySemaphore();
 
 	///	\brief	tries to acquire the semaphore in a blocking way
-	///	\return	0 on success, or an error code from \ref CORE_ERROR::SYNC
-	//
+	///	\return	0 on success, or an error code from \ref SYNC_Error
 	core::SYNC_Error wait();
 
 	///	\brief		Attempts to acquire the semaphore in a non locking form
-	///	\return		0 is returned if semaphore is acquired, if semaphore is already maxed CORE_ERROR::SYNC_WouldBlock is returned
-	///				on error a code from \ref CORE_ERROR::SYNC is returned
-	//
+	///	\return		0 is returned if semaphore is acquired, if semaphore is already maxed SYNC_Error::WouldBlock is returned
+	///				on error a code from \ref SYNC_Error is returned
 	[[nodiscard]]
 	core::SYNC_Error tryWait();
 
 	///	\brief	releases the semaphore
-	///	\return	0 on success, or an error code from \ref CORE_ERROR::SYNC
-	//
+	///	\return	0 on success, or an error code from \ref SYNC_Error
 	core::SYNC_Error post();
 };
 
 ///	\brief	Encapsulates an event trap i.e. on call thread blocks execution until a separate thread signals it.
 ///			EventTrap needs to be created before use, instantiating a class does not create the EventTrap.
 ///			EventTrap is destroyed if it goes out of scope.
-//
 class EventTrap
 {
 private:
@@ -204,41 +188,33 @@ public:
 	~EventTrap();
 
 	///	\brief		Creates the trap
-	///	\return		0 on success, or an error code from \ref CORE_ERROR::SYNC
-	//
+	///	\return		0 on success, or an error code from \ref SYNC_Error
 	core::SYNC_Error createTrap();
 	
 	///	\brief		Destroys the trap
-	//
 	void destroyTrap();
 
 	///	\brief		Clears the unlock flag, subsequent calls to \ref Wait and \ref TimedWait will block
-	///	\return		0 on success, or an error code from \ref CORE_ERROR::SYNC
-	//
+	///	\return		0 on success, or an error code from \ref SYNC_Error
 	core::SYNC_Error reset();
 
 	///	\brief		Signals the trap to be unlocked
-	///	\return		0 on success, or an error code from \ref CORE_ERROR::SYNC
-	//
+	///	\return		0 on success, or an error code from \ref SYNC_Error
 	core::SYNC_Error signal();
 	//byte_t	BroadCast();
 
 	///	\brief		Blocks the execution of the thread until the trap is unlocked
-	///	\return		0 on success, or an error code from \ref CORE_ERROR::SYNC
-	//
+	///	\return		0 on success, or an error code from \ref SYNC_Error
 	core::SYNC_Error wait();
 	
 	///	\brief		Blocks the execution of the thread until the trap is unlocked or a timeout value is reached
 	///	\param		p_miliseconds	time in milliseconds to wait before returning prematurely
-	///	\return		0 if unlocked via a signal, \ref CORE_ERROR::SYNC_TimeOut if unlocked via timer, or an error code from \ref CORE_ERROR::SYNC.
-	//
+	///	\return		0 if unlocked via a signal, \ref SYNC_Error::TimeOut if unlocked via timer, or an error code from \ref SYNC_Error.
 	core::SYNC_Error timedWait(uint32_t p_miliseconds);
 	//byte_t	Peek();
 };
 
 ///	\brief	Uses atomic bool to implement simple spinlock
-///			
-//
 class AtomicSpinLock
 {
 private:
@@ -250,21 +226,18 @@ public:
 	/// \note	Each call to lock() must have a subsequent call to unlock()
 	/// \warning
 	///		There are no deadlock safety checks, including calls on the same thread.
-	//
-	inline void lock   () { while(m_lock.test_and_set(std::memory_order::memory_order_acquire)); }
+	inline void lock   () { while(m_lock.test_and_set(std::memory_order_acquire)); }
 
 	/// \brief		Releases the lock.
 	/// \warning	This happens regardless of either or not the current thread has acquired the lock.
-	//
-	inline void unlock () { m_lock.clear(std::memory_order::memory_order_release); }
+	inline void unlock () { m_lock.clear(std::memory_order_release); }
 
 	/// \brief	Attempts to acquire the lock
 	/// \note
 	///			If lock is acquired there should be a subsequent call to unlock(),
 	///			otherwise it should not.
 	/// \return	true if lock was acquired sucessfully, false if otherwise
-	//
-	inline bool tryLock() { return !m_lock.test_and_set(std::memory_order::memory_order_acquire); }
+	inline bool tryLock() { return !m_lock.test_and_set(std::memory_order_acquire); }
 
 public:
 
@@ -274,7 +247,6 @@ public:
 	///			as an argument and locks it.
 	///			When this class goes out of scope (and the object is destroyed)
 	///			the lock is released.
-	//
 	class ScopeLocker
 	{
 		AtomicSpinLock& m_lock;
@@ -282,7 +254,6 @@ public:
 		inline ScopeLocker(AtomicSpinLock& p_mux): m_lock(p_mux) { p_mux.lock(); }
 		inline ~ScopeLocker() { m_lock.unlock(); }
 	};
-
 };
 
 }	//namespace core

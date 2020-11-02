@@ -37,9 +37,6 @@ namespace core
 /// \brief holds date and time data
 struct DateTime
 {
-
-	inline DateTime& operator = (const DateTime& p_other) = default;
-
 	struct
 	{
 		uint16_t	year;		//!< 0 = Year 0
@@ -86,7 +83,7 @@ public:
 	void		set();
 
 	/// \brief gets currently elapsed time, 1ns resolution, granularity depends on system
-	uint64_t	elapsed();
+	[[nodiscard]] uint64_t elapsed();
 };
 
 /// \brief	The Core_TrackChrono is an high precision real time chronometer.
@@ -113,7 +110,7 @@ private:
 public:
 
 	/// \brief Checks if chronometer is in the paused state
-	inline bool	is_paused() const { return m_isPaused; }
+	[[nodiscard]] inline bool is_paused() const { return m_isPaused; }
 	
 	/// \brief Sets counter to 0 and sets counter state to paused
 	inline void clear	()
@@ -132,7 +129,7 @@ public:
 	void		restart	();
 
 	/// \brief Reads current value on the chronometer, 1ns resolution, granularity depends on system
-	uint64_t	read	() const;
+	[[nodiscard]] uint64_t read() const;
 
 	/// \brief Sets the current readout to the input value (1ns resolution)
 	void		set		(uint64_t p_value);
@@ -140,12 +137,12 @@ public:
 
 ///\brief Current time-stamp, 1ns resolution, granularity depends on system
 ///	\warning	Value may overflow before reaching uint64_t limit.
-uint64_t clockStamp();
+[[nodiscard]] uint64_t clockStamp();
 
 /// \brief	gets the current local date and time based on internal clock
-DateTime dateTimeLocal();
+[[nodiscard]] DateTime dateTimeLocal();
 
 /// \brief	gets the current UTC date and time based on internal clock
-DateTime dateTimeUTC();
+[[nodiscard]] DateTime dateTimeUTC();
 
 } //namespace core

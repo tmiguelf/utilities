@@ -37,7 +37,6 @@
 /// \n
 namespace core
 {
-
 	template <typename>
 	struct from_chars_supported { static constexpr bool value = false; };
 
@@ -49,9 +48,15 @@ namespace core
 	template <> struct from_chars_supported<int32_t>		{ static constexpr bool value = true; };
 	template <> struct from_chars_supported<uint64_t>		{ static constexpr bool value = true; };
 	template <> struct from_chars_supported<int64_t>		{ static constexpr bool value = true; };
+
+// :(
+// I need floating point charconv but only MSVC seems to support it
+#if defined(_MSC_BUILD)
 	template <> struct from_chars_supported<float>			{ static constexpr bool value = true; };
 	template <> struct from_chars_supported<double>			{ static constexpr bool value = true; };
 	template <> struct from_chars_supported<long double>	{ static constexpr bool value = true; };
+#endif
+
 
 	template <typename T>
 	constexpr bool from_chars_supported_v = from_chars_supported<T>::value;
@@ -69,11 +74,9 @@ namespace core
 
 	namespace core_p
 	{
-	template <typename T>
-	constexpr bool is_supported_char_v = std::is_same_v<T, char8_t> || std::is_same_v<T, char32_t>;
+		template <typename T>
+		constexpr bool is_supported_char_v = std::is_same_v<T, char8_t> || std::is_same_v<T, char32_t>;
 	} //namespace core_p
-
-
 
 
 	//from_chars_result
@@ -95,10 +98,10 @@ namespace core
 		inline constexpr from_chars_result(const from_chars_result&) = default;
 		inline constexpr from_chars_result& operator = (const from_chars_result&) = default;
 
-		inline constexpr bool		has_value	()			const { return m_errorCode == std::errc{}; }
-		inline constexpr T			value		()			const { return m_value; }
-		inline constexpr T			value_or	(T p_alt)	const { return has_value() ? m_value : p_alt; }
-		inline constexpr std::errc	error_code	()			const { return m_errorCode; }
+		[[nodiscard]] inline constexpr bool		has_value	()			const { return m_errorCode == std::errc{}; }
+		[[nodiscard]] inline constexpr T			value		()			const { return m_value; }
+		[[nodiscard]] inline constexpr T			value_or	(T p_alt)	const { return has_value() ? m_value : p_alt; }
+		[[nodiscard]] inline constexpr std::errc	error_code	()			const { return m_errorCode; }
 
 	private:
 		T m_value{};
@@ -108,32 +111,32 @@ namespace core
 	//======== ======== ======== From String ======== ======== ========
 
 	template <typename T = char32_t>
-	inline bool isDigit		(T p_char) { return (p_char >= '0' && p_char <= '9'); }
+	[[nodiscard]] inline bool isDigit		(T p_char) { return (p_char >= '0' && p_char <= '9'); }
 
 	template <typename T = char32_t>
-	inline bool isXDigit	(T p_char) { return isDigit(p_char) || (p_char >= 'A' && p_char <= 'F') || (p_char >= 'a' && p_char <= 'f'); }
+	[[nodiscard]] inline bool isXDigit	(T p_char) { return isDigit(p_char) || (p_char >= 'A' && p_char <= 'F') || (p_char >= 'a' && p_char <= 'f'); }
 
-	bool is_uint	(std::basic_string_view<char8_t>	p_str);
-	bool is_uint	(std::basic_string_view<char32_t>	p_str);
-	bool is_int		(std::basic_string_view<char8_t>	p_str);
-	bool is_int		(std::basic_string_view<char32_t>	p_str);
-	bool is_hex		(std::basic_string_view<char8_t>	p_str);
-	bool is_hex		(std::basic_string_view<char32_t>	p_str);
+	[[nodiscard]] bool is_uint	(std::basic_string_view<char8_t>	p_str);
+	[[nodiscard]] bool is_uint	(std::basic_string_view<char32_t>	p_str);
+	[[nodiscard]] bool is_int		(std::basic_string_view<char8_t>	p_str);
+	[[nodiscard]] bool is_int		(std::basic_string_view<char32_t>	p_str);
+	[[nodiscard]] bool is_hex		(std::basic_string_view<char8_t>	p_str);
+	[[nodiscard]] bool is_hex		(std::basic_string_view<char32_t>	p_str);
 
 	//bool is_number	(std::basic_string_view<char8_t>	p_str);
 	//bool is_number	(std::basic_string_view<char32_t>	p_str);
 
 	template<typename T, typename = std::enable_if_t<from_chars_supported_v<T>, void>>
-	from_chars_result<T> from_chars(std::basic_string_view<char8_t> p_str);
+	[[nodiscard]] from_chars_result<T> from_chars(std::basic_string_view<char8_t> p_str);
 
 	template<typename T, typename = std::enable_if_t<from_chars_supported_v<T>, void>>
-	from_chars_result<T> from_chars(std::basic_string_view<char32_t> p_str);
+	[[nodiscard]] from_chars_result<T> from_chars(std::basic_string_view<char32_t> p_str);
 
 	template<typename T, typename = std::enable_if_t<from_hex_chars_supported_v<T>, void>>
-	from_chars_result<T> from_hex_chars(std::basic_string_view<char8_t> p_str);
+	[[nodiscard]] from_chars_result<T> from_hex_chars(std::basic_string_view<char8_t> p_str);
 
 	template<typename T, typename = std::enable_if_t<from_hex_chars_supported_v<T>, void>>
-	from_chars_result<T> from_hex_chars(std::basic_string_view<char32_t> p_str);
+	[[nodiscard]] from_chars_result<T> from_hex_chars(std::basic_string_view<char32_t> p_str);
 
 	//======== ======== ======== To String ======== ======== ========
 
@@ -200,7 +203,7 @@ namespace core
 
 	template <typename char_T, typename num_T,
 		typename = std::enable_if_t<core_p::is_supported_char_v<char_T> && from_chars_supported_v<num_T>, void>>
-	std::basic_string<char_T> to_chars(num_T p_val);
+	[[nodiscard]] std::basic_string<char_T> to_chars(num_T p_val);
 
 	template <typename char_T, typename num_T,
 		typename = std::enable_if_t<core_p::is_supported_char_v<char_T> && from_chars_supported_v<num_T>, void>>
@@ -208,7 +211,7 @@ namespace core
 
 	template <typename char_T, typename num_T,
 		typename = std::enable_if_t<core_p::is_supported_char_v<char_T> && from_hex_chars_supported_v<num_T>, void>>
-	std::basic_string<char_T> to_hex_chars(num_T p_val);
+	[[nodiscard]] std::basic_string<char_T> to_hex_chars(num_T p_val);
 
 
 	template <typename char_T, typename num_T,
@@ -217,6 +220,6 @@ namespace core
 
 	template <typename char_T, typename num_T,
 		typename = std::enable_if_t<core_p::is_supported_char_v<char_T> && from_hex_chars_supported_v<num_T>, void>>
-	std::basic_string<char_T> to_hex_chars_fix(num_T p_val);
+	[[nodiscard]] std::basic_string<char_T> to_hex_chars_fix(num_T p_val);
 
 }	//namespace core
