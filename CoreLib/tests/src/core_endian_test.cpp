@@ -53,7 +53,7 @@ consteval std::pair<T, T> getTestCase_const()
 template<typename T, std::enable_if_t<sizeof(T) == sizeof(uint64_t), int> = 0>
 consteval std::pair<T, T> getTestCase_const()
 {
-	return {static_cast<const T>(uint64_t{0x0123456789ABCDEF}), static_cast<const T>(uint64_t{0xEFCDAB8967452301})};
+	return {static_cast<const T>(uint64_t{0x01456789ABCDEF23}), static_cast<const T>(uint64_t{0x23EFCDAB89674501})};
 }
 
 
@@ -78,7 +78,7 @@ std::pair<T, T> getTestCase()
 template<typename T, std::enable_if_t<sizeof(T) == sizeof(uint64_t), int> = 0>
 std::pair<T, T> getTestCase()
 {
-	return {core::rvalue_reinterpret_cast<const T>(uint64_t{0x0123456789ABCDEF}), core::rvalue_reinterpret_cast<const T>(uint64_t{0xEFCDAB8967452301})};
+	return {core::rvalue_reinterpret_cast<const T>(0x0123456789ABCDEF), core::rvalue_reinterpret_cast<const T>(0xEFCDAB8967452301)};
 }
 
 enum class enumu8 : uint8_t {};
@@ -119,8 +119,8 @@ TEST(core_endian, validateTestCase)
 
 	{
 		std::pair<float, float> res = getTestCase<float>();
-		ASSERT_EQ(res.first,	float{2.9988165e-38});
-		ASSERT_EQ(res.second,	float{9.3095191e+23});
+		ASSERT_EQ(res.first,	float{2.9988165e-38f});
+		ASSERT_EQ(res.second,	float{9.3095191e+23f});
 	}
 
 	{
@@ -233,7 +233,6 @@ TYPED_TEST(endian_conv_constexpr_T, endian_big2host)
 		static_assert(result == tcase.first, "Test failed");
 	}
 }
-
 
 template<typename T>
 class endian_conv_T : public testing::Test {

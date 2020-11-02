@@ -91,7 +91,7 @@ public:
 	///	\note
 	///		- On Windows it encapsulates GetProcAddress
 	///		- On Linux it encapsulates dlsym
-	void* resolve(std::u8string_view p_name) const;
+	[[nodiscard]] void* resolve(std::u8string_view p_name) const;
 };
 
 } //namespace core

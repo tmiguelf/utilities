@@ -44,7 +44,7 @@ namespace core
 namespace _p
 {
 	///	\brief Swaps the byte order of a 2Byte variable
-	inline constexpr uint16_t byte_swap_16(uint16_t p_in)
+	[[nodiscard]] inline constexpr uint16_t byte_swap_16(uint16_t p_in)
 	{
 	#ifdef _WIN32
 		if(std::is_constant_evaluated())
@@ -61,7 +61,7 @@ namespace _p
 	}
 
 	///	\brief Reverses the byte order of a 4Byte variable
-	inline constexpr uint32_t byte_swap_32(uint32_t p_in)
+	[[nodiscard]] inline constexpr uint32_t byte_swap_32(uint32_t p_in)
 	{
 	#ifdef _WIN32
 		if(std::is_constant_evaluated())
@@ -83,7 +83,7 @@ namespace _p
 
 
 	///	\brief Reverses the byte order of a 8Byte variable
-	inline constexpr uint64_t byte_swap_64(uint64_t p_in)
+	[[nodiscard]] inline constexpr uint64_t byte_swap_64(uint64_t p_in)
 	{
 	#ifdef _WIN32
 		if(std::is_constant_evaluated())
@@ -122,7 +122,7 @@ namespace _p
 	template<typename T> struct assist_underlying_type<T, std::enable_if_t<std::is_enum_v<T>, void>> { using type = std::underlying_type_t<T>; };
 
 	template<typename T>
-	constexpr bool endian_supported_type_v = endian_supported_base_type_v<assist_underlying_type<T>::type>;
+	constexpr bool endian_supported_type_v = endian_supported_base_type_v<typename assist_underlying_type<T>::type>;
 
 
 template<uintptr_t, uintptr_t>
@@ -169,7 +169,7 @@ using endianess_uint_align_t = typename endianess_uint_align<T>::type;
 } //namespace _p
 
 template<typename T, std::enable_if_t<_p::endian_supported_type_v<T>, int> = 0>
-inline constexpr T byte_swap(const T& p_value)
+[[nodiscard]] inline constexpr T byte_swap(const T& p_value)
 {
 	if constexpr(std::is_same_v<uint8_t, _p::endianess_uint_align_t<T>>)
 	{
@@ -187,20 +187,22 @@ inline constexpr T byte_swap(const T& p_value)
 	{
 		return static_cast<const T>(_p::byte_swap_64(static_cast<const uint64_t>(p_value)));
 	}
+#if !defined(__GNUG__) // :(
 	else
 	{
 		static_assert(false, "Unsuported type");
 	}
+#endif
 }
 
 template<typename T, std::enable_if_t<_p::is_endian_runtime_exclusive_v<T>, int> = 0>
-inline T byte_swap(const T& p_value)
+[[nodiscard]] inline T byte_swap(const T& p_value)
 {
 	return rvalue_reinterpret_cast<const T>(byte_swap(reinterpret_cast<const _p::endianess_uint_align_t<T>&>(p_value)));
 }
 
 template <typename T, std::enable_if_t<_p::endian_supported_type_v<T>, int> = 0>
-inline constexpr T endian_host2little(T p_in)
+[[nodiscard]] inline constexpr T endian_host2little(T p_in)
 {
 	if constexpr(std::endian::native == std::endian::little)
 	{
@@ -210,21 +212,23 @@ inline constexpr T endian_host2little(T p_in)
 	{
 		return byte_swap(p_in);
 	}
+#if !defined(__GNUG__) // :(
 	else
 	{
 		static_assert(false, "Unsuported host endianess");
 	}
+#endif
 }
 
 template <typename T, std::enable_if_t<_p::endian_supported_type_v<T>, int> = 0>
-inline constexpr T endian_little2host(T p_in)
+[[nodiscard]] inline constexpr T endian_little2host(T p_in)
 {
 	return endian_host2little(p_in);
 }
 
 
 template <typename T, std::enable_if_t<_p::endian_supported_type_v<T>, int> = 0>
-inline constexpr T endian_host2big(T p_in)
+[[nodiscard]] inline constexpr T endian_host2big(T p_in)
 {
 	if constexpr(std::endian::native == std::endian::little)
 	{
@@ -234,20 +238,22 @@ inline constexpr T endian_host2big(T p_in)
 	{
 		return p_in;
 	}
+#if !defined(__GNUG__) // :(
 	else
 	{
 		static_assert(false, "Unsuported host endianess");
 	}
+#endif
 }
 
 template <typename T, std::enable_if_t<_p::endian_supported_type_v<T>, int> = 0>
-inline constexpr T endian_big2host(T p_in)
+[[nodiscard]] inline constexpr T endian_big2host(T p_in)
 {
 	return endian_host2big(p_in);
 }
 
 template <typename T, std::enable_if_t<_p::is_endian_runtime_exclusive_v<T>, int> = 0>
-inline T endian_host2little(T p_in)
+[[nodiscard]] inline T endian_host2little(T p_in)
 {
 	if constexpr(std::endian::native == std::endian::little)
 	{
@@ -257,20 +263,22 @@ inline T endian_host2little(T p_in)
 	{
 		return byte_swap(p_in);
 	}
+#if !defined(__GNUG__) // :(
 	else
 	{
 		static_assert(false, "Unsuported host endianess");
 	}
+#endif
 }
 
 template <typename T, std::enable_if_t<_p::is_endian_runtime_exclusive_v<T>, int> = 0>
-inline T endian_little2host(T p_in)
+[[nodiscard]] inline T endian_little2host(T p_in)
 {
 	return endian_host2little(p_in);
 }
 
 template <typename T, std::enable_if_t<_p::is_endian_runtime_exclusive_v<T>, int> = 0>
-inline T endian_host2big(T p_in)
+[[nodiscard]] inline T endian_host2big(T p_in)
 {
 	if constexpr(std::endian::native == std::endian::little)
 	{
@@ -280,14 +288,16 @@ inline T endian_host2big(T p_in)
 	{
 		return p_in;
 	}
+#if !defined(__GNUG__) // :(
 	else
 	{
 		static_assert(false, "Unsuported host endianess");
 	}
+#endif
 }
 
 template <typename T, std::enable_if_t<_p::is_endian_runtime_exclusive_v<T>, int> = 0>
-inline T endian_big2host(T p_in)
+[[nodiscard]] inline T endian_big2host(T p_in)
 {
 	return endian_host2big(p_in);
 }

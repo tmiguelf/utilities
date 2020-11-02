@@ -424,13 +424,13 @@ bool UTF8_UNICODE_Compliant(std::u8string_view p_input)
 				const char8_t* decode = pos;
 
 				if(end - pos < 3			||	//validate size
-					((*pos++ & 0x0F) == 0) && ((*pos & 0x3F) < 0x20) || //validate range
+					(((*pos++ & 0x0F) == 0) && ((*pos & 0x3F) < 0x20)) || //validate range
 					(*pos & 0xC0) != 0x80	||	//validate encoding
 					(*++pos & 0xC0) != 0x80) return false;
 
 				char16_t temp = (*decode & 0x0F);
-				temp = temp << 6 | (*++decode & 0x3F);
-				temp = temp << 6 | (*++decode & 0x3F);
+				temp = static_cast<char16_t>(temp << 6 | (*++decode & 0x3F));
+				temp = static_cast<char16_t>(temp << 6 | (*++decode & 0x3F));
 
 				if(temp > 0xD7FF && temp < 0xE000) return false;
 			}
@@ -438,7 +438,7 @@ bool UTF8_UNICODE_Compliant(std::u8string_view p_input)
 			{
 				const char8_t* decode = pos;
 				if(end - pos < 4			||	//validate size
-					((*pos++ & 0x07) == 0) && ((*pos & 0x3F) < 0x10) ||	//validate range
+					(((*pos++ & 0x07) == 0) && ((*pos & 0x3F) < 0x10)) ||	//validate range
 					(*pos & 0xC0) != 0x80 ||	//validate encoding
 					(*++pos & 0xC0) != 0x80 ||
 					(*++pos & 0xC0) != 0x80) return false;

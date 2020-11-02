@@ -61,6 +61,9 @@
     <ClInclude Include="include\CoreLib\Core_Type.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\CoreLib\string\core_os_string.hpp">
+      <Filter>Header Files\string</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\string\core_string_format.cpp">

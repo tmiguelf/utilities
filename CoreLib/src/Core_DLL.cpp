@@ -32,6 +32,7 @@
 #	include <windows.h>
 #else
 #	include <dlfcn.h>
+#	include <cstring>
 #endif
 
 namespace core

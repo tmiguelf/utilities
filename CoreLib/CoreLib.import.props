@@ -8,4 +8,10 @@
 	<ImportGroup Label="PropertySheets">
 		<Import Project="$(MSBuildThisFileDirectory)CoreLib.include.props" />
 	</ImportGroup>
+	<ItemDefinitionGroup>
+		<Link>
+			<LibraryDependencies Condition="'$(TargetOS)'=='Linux'">pthread;%(LibraryDependencies)</LibraryDependencies>
+			<AdditionalDependencies Condition="'$(TargetOS)'=='Windows'">Ws2_32.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+		</Link>
+	</ItemDefinitionGroup>
 </Project>

@@ -33,6 +33,11 @@
 #include <array>
 #include <limits>
 #include <type_traits>
+#include <string_view>
+
+#include <CoreLib/Core_Type.hpp>
+
+using namespace core::literals;
 
 //======== ======== ======== Stream helper ======== ======== ========
 
@@ -245,10 +250,10 @@ static const std::vector<uint64_t> u_numbers =
 	999999999999999999,
 	1000000000000000000,
 	9223372036854775807,
-	9223372036854775808,
-	9999999999999999999,
-	10000000000000000000,
-	18446744073709551615
+	9223372036854775808_ui64,
+	9999999999999999999_ui64,
+	10000000000000000000_ui64,
+	18446744073709551615_ui64
 };
 
 const std::vector<std::string> badCases_s =
@@ -466,9 +471,11 @@ using DecTypes = ::testing::Types<
 	std::pair<int16_t		, char8_t>,
 	std::pair<int32_t		, char8_t>,
 	std::pair<int64_t		, char8_t>,
+#if defined(_MSC_BUILD)
 	std::pair<float			, char8_t>,
 	std::pair<double		, char8_t>,
 	std::pair<long double	, char8_t>,
+#endif
 	std::pair<uint8_t		, char32_t>,
 	std::pair<uint16_t		, char32_t>,
 	std::pair<uint32_t		, char32_t>,
@@ -476,10 +483,13 @@ using DecTypes = ::testing::Types<
 	std::pair<int8_t		, char32_t>,
 	std::pair<int16_t		, char32_t>,
 	std::pair<int32_t		, char32_t>,
-	std::pair<int64_t		, char32_t>,
-	std::pair<float			, char32_t>,
+	std::pair<int64_t		, char32_t>
+#if defined(_MSC_BUILD)
+	,std::pair<float			, char32_t>,
 	std::pair<double		, char32_t>,
-	std::pair<long double	, char32_t>>;
+	std::pair<long double	, char32_t>
+#endif
+>;
 TYPED_TEST_SUITE(charconv_Decimal_T, DecTypes);
 
 TYPED_TEST(charconv_Decimal_T, from_string_good)
