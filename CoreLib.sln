@@ -17,6 +17,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CoreLib_Test", "CoreLib\tes
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CoreLib_benchmark_charconv", "CoreLib\benchmarks\CoreLib_benchmark_charconv\CoreLib_benchmark_charconv.vcxproj", "{085670CC-B4A6-4EE8-AE6F-7B9FC34FC1DE}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MathLib", "MathLib\MathLib.vcxproj", "{77943016-2D04-4451-96CB-9FDCBB6B9C8C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MathLibTest", "MathLib\Tests\MathLibTest.vcxproj", "{F0920B5D-5D5E-4F37-B9DA-45B73E241C09}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -83,6 +87,24 @@ Global
 		{085670CC-B4A6-4EE8-AE6F-7B9FC34FC1DE}.WSL_Release|x64.ActiveCfg = WSL_Release|x64
 		{085670CC-B4A6-4EE8-AE6F-7B9FC34FC1DE}.WSL_Release|x64.Build.0 = WSL_Release|x64
 		{085670CC-B4A6-4EE8-AE6F-7B9FC34FC1DE}.WSL_Release|x64.Deploy.0 = WSL_Release|x64
+		{77943016-2D04-4451-96CB-9FDCBB6B9C8C}.Debug|x64.ActiveCfg = Debug|x64
+		{77943016-2D04-4451-96CB-9FDCBB6B9C8C}.Debug|x64.Build.0 = Debug|x64
+		{77943016-2D04-4451-96CB-9FDCBB6B9C8C}.Release|x64.ActiveCfg = Release|x64
+		{77943016-2D04-4451-96CB-9FDCBB6B9C8C}.Release|x64.Build.0 = Release|x64
+		{77943016-2D04-4451-96CB-9FDCBB6B9C8C}.WSL_Debug|x64.ActiveCfg = WSL_Debug|x64
+		{77943016-2D04-4451-96CB-9FDCBB6B9C8C}.WSL_Debug|x64.Build.0 = WSL_Debug|x64
+		{77943016-2D04-4451-96CB-9FDCBB6B9C8C}.WSL_Release|x64.ActiveCfg = WSL_Release|x64
+		{77943016-2D04-4451-96CB-9FDCBB6B9C8C}.WSL_Release|x64.Build.0 = WSL_Release|x64
+		{F0920B5D-5D5E-4F37-B9DA-45B73E241C09}.Debug|x64.ActiveCfg = Debug|x64
+		{F0920B5D-5D5E-4F37-B9DA-45B73E241C09}.Debug|x64.Build.0 = Debug|x64
+		{F0920B5D-5D5E-4F37-B9DA-45B73E241C09}.Release|x64.ActiveCfg = Release|x64
+		{F0920B5D-5D5E-4F37-B9DA-45B73E241C09}.Release|x64.Build.0 = Release|x64
+		{F0920B5D-5D5E-4F37-B9DA-45B73E241C09}.WSL_Debug|x64.ActiveCfg = WSL_Debug|x64
+		{F0920B5D-5D5E-4F37-B9DA-45B73E241C09}.WSL_Debug|x64.Build.0 = WSL_Debug|x64
+		{F0920B5D-5D5E-4F37-B9DA-45B73E241C09}.WSL_Debug|x64.Deploy.0 = WSL_Debug|x64
+		{F0920B5D-5D5E-4F37-B9DA-45B73E241C09}.WSL_Release|x64.ActiveCfg = WSL_Release|x64
+		{F0920B5D-5D5E-4F37-B9DA-45B73E241C09}.WSL_Release|x64.Build.0 = WSL_Release|x64
+		{F0920B5D-5D5E-4F37-B9DA-45B73E241C09}.WSL_Release|x64.Deploy.0 = WSL_Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
