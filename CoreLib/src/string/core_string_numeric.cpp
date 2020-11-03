@@ -163,7 +163,7 @@ namespace core_p
 		uintptr_t size = p_str.size();
 		if(size == 0)
 		{
-			return std::errc::illegal_byte_sequence;
+			return std::errc::invalid_argument;
 		}
 
 		uint_T	r_val = 0;
@@ -173,7 +173,7 @@ namespace core_p
 		{
 			if(!isDigit(tchar))
 			{
-				return std::errc::illegal_byte_sequence;
+				return std::errc::invalid_argument;
 			}
 			t_val = static_cast<uint8_t>(tchar - '0');
 
@@ -198,7 +198,7 @@ namespace core_p
 		uintptr_t size = p_str.size();
 		if(size == 0)
 		{
-			return std::errc::illegal_byte_sequence;
+			return std::errc::invalid_argument;
 		}
 
 		const char_T* pivot	= p_str.data();
@@ -211,14 +211,14 @@ namespace core_p
 		{
 			if(++pivot >= end)
 			{
-				return std::errc::illegal_byte_sequence;
+				return std::errc::invalid_argument;
 			}
 
 			do
 			{
 				if(!isDigit(*pivot))
 				{
-					return std::errc::illegal_byte_sequence;
+					return std::errc::invalid_argument;
 				}
 
 				t_val = static_cast<uint8_t>(*pivot - '0');
@@ -240,7 +240,7 @@ namespace core_p
 			{
 				if(++pivot >= end)
 				{
-					return std::errc::illegal_byte_sequence;
+					return std::errc::invalid_argument;
 				}
 			}
 
@@ -248,7 +248,7 @@ namespace core_p
 			{
 				if(!isDigit(*pivot))
 				{
-					return std::errc::illegal_byte_sequence;
+					return std::errc::invalid_argument;
 				}
 
 				t_val = static_cast<uint8_t>(*pivot - '0');
@@ -275,7 +275,7 @@ namespace core_p
 		uintptr_t size = p_str.size();
 		if(size == 0)
 		{
-			return std::errc::illegal_byte_sequence;
+			return std::errc::invalid_argument;
 		}
 
 		uint_T	r_val = 0;
@@ -306,7 +306,7 @@ namespace core_p
 			}
 			else
 			{
-				return std::errc::illegal_byte_sequence;
+				return std::errc::invalid_argument;
 			}
 
 			r_val = static_cast<uint_T>(r_val * 0x10 + static_cast<uint_T>(t_val));
@@ -320,7 +320,7 @@ namespace core_p
 	{
 		if(p_str.empty())
 		{
-			return std::errc::illegal_byte_sequence;
+			return std::errc::invalid_argument;
 		}
 
 		fp_T					ret;
@@ -340,7 +340,7 @@ namespace core_p
 			return ret;
 		}
 
-		return std::errc::illegal_byte_sequence;
+		return std::errc::invalid_argument;
 	}
 
 	template<typename fp_T>
@@ -349,7 +349,7 @@ namespace core_p
 		for(const char32_t t_char: p_str)
 		{
 			//last allowable character also checks that conversion to to char8_t will not alias
-			if(t_char > 'e') return std::errc::illegal_byte_sequence;
+			if(t_char > 'e') return std::errc::invalid_argument;
 		}
 
 		std::u8string buff;

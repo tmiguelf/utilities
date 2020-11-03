@@ -64,6 +64,9 @@
     <ClInclude Include="include\CoreLib\string\core_os_string.hpp">
       <Filter>Header Files\string</Filter>
     </ClInclude>
+    <ClInclude Include="include\CoreLib\Core_Net.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\string\core_string_format.cpp">
@@ -85,6 +88,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core_Time.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core_Net.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
