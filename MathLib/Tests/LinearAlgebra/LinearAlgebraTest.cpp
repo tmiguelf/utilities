@@ -25,8 +25,6 @@
 ///		SOFTWARE.
 //======== ======== ======== ======== ======== ======== ======== ========
 
-#pragma once
-
 #include <gtest/gtest.h>
 
 #include <MathLib/LinearAlgebra/Vector.hpp>

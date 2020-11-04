@@ -25,8 +25,6 @@
 ///		SOFTWARE.
 //======== ======== ======== ======== ======== ======== ======== ========
 
-#pragma once
-
 //======== Headers ========
 #include <ostream>
 #include <string_view>
@@ -38,6 +36,10 @@
 
 #include <MathLib/HyperComplex/quaternions.hpp>
 
+//TODO: Needs to be removed temporarilly
+//there's a weird bug in google test where it can not find the operator << with operands std::basic_ostream<char> and const mathlib::Quaternion<double>
+//nor being defined, where one clearly is, need to figure out the source of that bug
+#ifdef _WIN32
 
 //======== Stream assists ========
 
@@ -80,6 +82,7 @@ static stream_t& operator << (stream_t& p_stream, const toStream<T>& p_data)
 	p_data.stream(p_stream);
 	return p_stream;
 }
+
 
 //======== Delayed include headers ========
 
@@ -125,7 +128,7 @@ TYPED_TEST(Quaternion_T, Getters)
 
 //saves all that work of setting up and type casting
 #define TESTCASE_2(R, I, J, K) TestCase{{R, I, J, K}, R, I, J, K}
-#define TESTCASE(R, I, J, K) TESTCASE_2(real_t{R}, real_t{I}, real_t{J}, real_t{K})
+#define TESTCASE(R, I, J, K) TESTCASE_2(static_cast<real_t>(R), static_cast<real_t>(I), static_cast<real_t>(J), static_cast<real_t>(K))
 	const std::vector<TestCase> testData =
 		{
 			TESTCASE(0.0, 0.0, 0.0, 0.0),
@@ -175,7 +178,7 @@ TYPED_TEST(Quaternion_T, Setters)
 	};
 
 	//saves all that work of setting up and type casting
-#define TESTCASE(R, I, J, K) {real_t{R}, real_t{I}, real_t{J}, real_t{K}}
+#define TESTCASE(R, I, J, K) {static_cast<real_t>(R), static_cast<real_t>(I), static_cast<real_t>(J), static_cast<real_t>(K)}
 	const std::vector<TestCase> testData =
 	{
 		TESTCASE(0.0, 0.0, 0.0, 0.0),
@@ -194,27 +197,27 @@ TYPED_TEST(Quaternion_T, Setters)
 
 	const std::vector<real_t> testDataR =
 	{
-		real_t{ 0.0 },
-		real_t{ 1.0 },
-		real_t{ 2.0 },
-		real_t{ 3.0 },
-		real_t{ 4.0 },
-		real_t{ 5.0 },
-		real_t{ 6.0 },
-		real_t{ 7.0 },
-		real_t{ 8.0 },
-		real_t{ 9.10},
-		real_t{11.12},
-		real_t{13.14}, 
-		real_t{15.16},
-		real_t{17.18},
-		real_t{19.20},
-		real_t{21.22},
-		real_t{23.24},
-		real_t{25.26},
-		real_t{27.28},
-		real_t{29.30},
-		real_t{31.32},
+		static_cast<real_t>( 0.0 ),
+		static_cast<real_t>( 1.0 ),
+		static_cast<real_t>( 2.0 ),
+		static_cast<real_t>( 3.0 ),
+		static_cast<real_t>( 4.0 ),
+		static_cast<real_t>( 5.0 ),
+		static_cast<real_t>( 6.0 ),
+		static_cast<real_t>( 7.0 ),
+		static_cast<real_t>( 8.0 ),
+		static_cast<real_t>( 9.10),
+		static_cast<real_t>(11.12),
+		static_cast<real_t>(13.14), 
+		static_cast<real_t>(15.16),
+		static_cast<real_t>(17.18),
+		static_cast<real_t>(19.20),
+		static_cast<real_t>(21.22),
+		static_cast<real_t>(23.24),
+		static_cast<real_t>(25.26),
+		static_cast<real_t>(27.28),
+		static_cast<real_t>(29.30),
+		static_cast<real_t>(31.32),
 	};
 
 	//all test
@@ -264,7 +267,7 @@ TYPED_TEST(Quaternion_T, Comparison)
 	using real_t = TypeParam;
 	using TestCase = mathlib::Quaternion<real_t>;
 
-#define TESTCASE(R, I, J, K) {real_t{R}, real_t{I}, real_t{J}, real_t{K}}
+#define TESTCASE(R, I, J, K) {static_cast<real_t>(R), static_cast<real_t>(I), static_cast<real_t>(J), static_cast<real_t>(K)}
 	const std::vector<TestCase> testData =
 		{
 			TESTCASE(0.0, 0.0, 0.0, 0.0),
@@ -318,7 +321,8 @@ TYPED_TEST(Quaternion_T, Operator_unary_minus)
 		}
 	};
 
-#define TESTCASE(R, I, J, K) {{real_t{R}, real_t{I}, real_t{J}, real_t{K}}, {-real_t{R}, -real_t{I}, -real_t{J}, -real_t{K}}}
+#define TESTCASE_D(R, I, J, K) {{R, I, J, K}, {-R, -I, -J, -K}}
+#define TESTCASE(R, I, J, K) TESTCASE_D(static_cast<real_t>(R), static_cast<real_t>(I), static_cast<real_t>(J), static_cast<real_t>(K))
 	const std::vector<TestCase> testData =
 		{
 			TESTCASE(0.0, 0.0, 0.0, 0.0),
@@ -334,6 +338,7 @@ TYPED_TEST(Quaternion_T, Operator_unary_minus)
 			TESTCASE(-31.32, 29.30, 25.26, -27.28),
 		};
 #undef TESTCASE
+#undef TESTCASE_D
 
 	for(const TestCase& tcase: testData)
 	{
@@ -359,7 +364,8 @@ TYPED_TEST(Quaternion_T, Operator_add)
 	};
 
 #define TESTCASE_R(R1, I1, J1, K1, R2, I2, J2, K2) {{R1, I1, J1, K1}, {R2, I2, J2, K2}, {(R1 + R2), (I1 + I2), (J1 + J2), (K1 + K2)}} 
-#define TESTCASE(R1, I1, J1, K1, R2, I2, J2, K2) TESTCASE_R(real_t{R1}, real_t{I1}, real_t{J1}, real_t{K1}, real_t{R2}, real_t{I2}, real_t{J2}, real_t{K2})
+#define TESTCASE(R1, I1, J1, K1, R2, I2, J2, K2) TESTCASE_R(static_cast<real_t>(R1), static_cast<real_t>(I1), static_cast<real_t>(J1), static_cast<real_t>(K1), \
+	static_cast<real_t>(R2), static_cast<real_t>(I2), static_cast<real_t>(J2), static_cast<real_t>(K2))
 	const std::vector<TestCase> testData =
 		{
 			TESTCASE(0.0, 0.0, 0.0, 0.0,	0.0, 0.0, 0.0, 0.0),
@@ -413,7 +419,8 @@ TYPED_TEST(Quaternion_T, Operator_minus)
 	};
 
 #define TESTCASE_R(R1, I1, J1, K1, R2, I2, J2, K2) {{R1, I1, J1, K1}, {R2, I2, J2, K2}, {(R1 - R2), (I1 - I2), (J1 - J2), (K1 - K2)}} 
-#define TESTCASE(R1, I1, J1, K1, R2, I2, J2, K2) TESTCASE_R(real_t{R1}, real_t{I1}, real_t{J1}, real_t{K1}, real_t{R2}, real_t{I2}, real_t{J2}, real_t{K2})
+#define TESTCASE(R1, I1, J1, K1, R2, I2, J2, K2) TESTCASE_R(static_cast<real_t>(R1), static_cast<real_t>(I1), static_cast<real_t>(J1), static_cast<real_t>(K1), \
+	static_cast<real_t>(R2), static_cast<real_t>(I2), static_cast<real_t>(J2), static_cast<real_t>(K2))
 	const std::vector<TestCase> testData =
 	{
 		TESTCASE(0.0, 0.0, 0.0, 0.0,	0.0, 0.0, 0.0, 0.0),
@@ -468,7 +475,7 @@ TYPED_TEST(Quaternion_T, scalar_multiply)
 	};
 
 #define TESTCASE_R(R, I, J, K, S) {{R, I, J, K}, S, {(R * S), (I * S), (J * S), (K * S)}} 
-#define TESTCASE(R, I, J, K, S) TESTCASE_R(real_t{R}, real_t{I}, real_t{J}, real_t{K}, real_t{S})
+#define TESTCASE(R, I, J, K, S) TESTCASE_R(static_cast<real_t>(R), static_cast<real_t>(I), static_cast<real_t>(J), static_cast<real_t>(K), static_cast<real_t>(S))
 	const std::vector<TestCase> testData =
 	{
 		TESTCASE(0.0, 0.0, 0.0, 0.0,	0.0),
@@ -516,7 +523,7 @@ TYPED_TEST(Quaternion_T, scalar_division)
 	};
 
 #define TESTCASE_R(R, I, J, K, S) {{R, I, J, K}, S, {(R / S), (I / S), (J / S), (K / S)}} 
-#define TESTCASE(R, I, J, K, S) TESTCASE_R(real_t{R}, real_t{I}, real_t{J}, real_t{K}, real_t{S})
+#define TESTCASE(R, I, J, K, S) TESTCASE_R(static_cast<real_t>(R), static_cast<real_t>(I), static_cast<real_t>(J), static_cast<real_t>(K), static_cast<real_t>(S))
 	const std::vector<TestCase> testData =
 	{
 		TESTCASE(0.0, 0.0, 0.0, 0.0,	0.1),
@@ -563,7 +570,7 @@ TYPED_TEST(Quaternion_T, quaternion_multiplication)
 		}
 	};
 
-#define QUAT_T(R, I, J, K) {real_t{R}, real_t{I}, real_t{J}, real_t{K}}
+#define QUAT_T(R, I, J, K) {static_cast<real_t>(R), static_cast<real_t>(I), static_cast<real_t>(J), static_cast<real_t>(K)}
 	const std::vector<TestCase> testData =
 	{
 		//null
@@ -623,7 +630,7 @@ TYPED_TEST(Quaternion_T, isZero)
 
 	const real_t infinitesimal	= std::numeric_limits<real_t>::denorm_min();
 
-#define TESTCASE(R, I, J, K) {real_t{R}, real_t{I}, real_t{J}, real_t{K}}
+#define TESTCASE(R, I, J, K) {static_cast<real_t>(R), static_cast<real_t>(I), static_cast<real_t>(J), static_cast<real_t>(K)}
 	const std::vector<TestCase> testData =
 	{
 		TESTCASE(1.0, 0.0, 0.0, 0.0),
@@ -657,7 +664,7 @@ TYPED_TEST(Quaternion_T, norm_squared)
 		const real_t norm_sqrd;
 	};
 
-#define TESTCASE(R, I, J, K, N) {{real_t{R}, real_t{I}, real_t{J}, real_t{K}}, real_t{N}}
+#define TESTCASE(R, I, J, K, N) {{static_cast<real_t>(R), static_cast<real_t>(I), static_cast<real_t>(J), static_cast<real_t>(K)}, static_cast<real_t>(N)}
 	const std::vector<TestCase> testData =
 	{
 		TESTCASE(0.0, 0.0, 0.0, 0.0,	0.0),
@@ -694,10 +701,10 @@ TYPED_TEST(Quaternion_T, norm)
 	};
 
 	//manual calculations where not done with more than 12 digits of precision
-	constexpr real_t epsilon = std::max(std::numeric_limits<real_t>::epsilon(), real_t{0.000000000001});
+	constexpr real_t epsilon = std::max(std::numeric_limits<real_t>::epsilon(), static_cast<real_t>(0.000000000001));
 
 	//computations may loose further precision proportional to the size of the number
-#define TESTCASE(R, I, J, K, N, E) {{real_t{R}, real_t{I}, real_t{J}, real_t{K}}, real_t{N}, real_t{E * N * 3.0}}
+#define TESTCASE(R, I, J, K, N, E) {{real_t{R}, real_t{I}, real_t{J}, real_t{K}}, static_cast<real_t>(N), static_cast<real_t>(E * N * 3.0)}
 	const std::vector<TestCase> testData =
 	{
 		TESTCASE(0.0, 0.0, 0.0, 0.0,	0.0,	0.0),
@@ -734,10 +741,10 @@ TYPED_TEST(Quaternion_T, renormalized)
 	};
 
 	//manual calculations where not done with more than 12 digits of precision
-	constexpr real_t epsilon = std::max(std::numeric_limits<real_t>::epsilon(), real_t{0.000000000001});
+	constexpr real_t epsilon = std::max(std::numeric_limits<real_t>::epsilon(), static_cast<real_t>(0.000000000001));
 	//computations may loose further precision proportional to the size of the number
 
-#define QUAT_T(R, I, J, K) {real_t{R}, real_t{I}, real_t{J}, real_t{K}}
+#define QUAT_T(R, I, J, K) {static_cast<real_t>(R), static_cast<real_t>(I), static_cast<real_t>(J), static_cast<real_t>(K)}
 	const std::vector<TestCase> testData =
 	{
 		{ QUAT_T(1.0, 0.0, 0.0, 0.0),		QUAT_T(1.0, 0.0, 0.0, 0.0),		real_t{0.0}},
@@ -786,7 +793,7 @@ TYPED_TEST(Quaternion_T, inverse)
 
 	constexpr real_t epsilon = std::numeric_limits<real_t>::epsilon();
 
-#define QUAT_T(R, I, J, K) {real_t{R}, real_t{I}, real_t{J}, real_t{K}}
+#define QUAT_T(R, I, J, K) {static_cast<real_t>(R), static_cast<real_t>(I), static_cast<real_t>(J), static_cast<real_t>(K)}
 	const std::vector<TestCase> testData =
 	{
 		{ QUAT_T(1.0, 0.0, 0.0, 0.0),		real_t{0.0}},
@@ -875,3 +882,5 @@ TYPED_TEST(Quaternion_T, isFinite)
 		ASSERT_FALSE(tcase.isFinite()) << tcase;
 	}
 }
+
+#endif

@@ -233,7 +233,7 @@ public:
 	}
 
 //-------- transformations --------
-	inline T norm() const { return sqrt(norm_squared()); }
+	inline T norm() const { return std::sqrt(norm_squared()); }
 
 	std::optional<Quaternion> renormalized() const
 	{

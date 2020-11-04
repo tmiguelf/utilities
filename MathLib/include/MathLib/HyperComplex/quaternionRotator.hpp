@@ -62,8 +62,8 @@ public:
 
 		if(norm > 0.0)
 		{
-			T S = sin(norm / T{2.0});
-			T C = cos(norm / T{2.0});
+			T S = std::sin(norm / T{2.0});
+			T C = std::cos(norm / T{2.0});
 
 			m_identity = Quaternion<T>{C, (vx / norm) * S, (vy / norm) * S, (vz / norm) * S};
 		}

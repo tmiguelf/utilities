@@ -25,8 +25,6 @@
 ///		SOFTWARE.
 //======== ======== ======== ======== ======== ======== ======== ========
 
-#pragma once
-
 #include <cmath>
 #include <vector>
 #include <limits>
@@ -50,20 +48,30 @@ using stream_t = std::basic_ostream<char>;
 //======== Stream assists ========
 
 //For some reason if this is not defined before #include <gtest/gtest.h> then template resolution will fail
+#ifdef _WIN32
 static stream_t& operator << (stream_t& p_stream, const std::u8string& p_str)
 {
 	p_stream.write(reinterpret_cast<const char*>(p_str.data()), p_str.size());
 	return p_stream;
 }
+#endif
 
 template<typename T>
 static stream_t& operator << (stream_t& p_stream, const typename mathlib::Vector<T, 3>& p_data)
 {
+#ifdef _WIN32
 	p_stream
 		<< "["
 		<< core::to_chars<char8_t>(p_data[0]) << "; "
 		<< core::to_chars<char8_t>(p_data[1]) << "; "
 		<< core::to_chars<char8_t>(p_data[2]) << "]";
+#else
+	p_stream
+		<< "["
+		<< p_data[0] << "; "
+		<< p_data[1] << "; "
+		<< p_data[2] << "]";
+#endif
 	return p_stream;
 }
 
@@ -145,7 +153,11 @@ TYPED_TEST(QuaternionRotator_T, Rotator)
 
 		void stream(stream_t& p_stream) const
 		{
+#ifdef _WIN32
 			p_stream << "R: " << rotationAxis << " A: " << core::to_chars<char8_t>(rotationValue);
+#else
+			p_stream << "R: " << rotationAxis << " A: " << rotationValue;
+#endif
 		}
 
 		void permutate()
