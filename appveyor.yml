@@ -8,7 +8,7 @@ install:
 build: off
 
 build_script:
-    msbuild /t:Build /p:Configuration=Release "./CoreLib.sln" -maxcpucount
+    # msbuild /t:Build /p:Configuration=Release "./CoreLib.sln" -maxcpucount
 
 test_script:
     - ls "C:/Program Files (x86)/Microsoft Visual Studio/2019"
