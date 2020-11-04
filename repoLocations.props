@@ -3,5 +3,6 @@
 	<PropertyGroup Label="UserMacros">
 		<CoreLibPath>$(MSBuildThisFileDirectory)CoreLib/</CoreLibPath>
 		<MathLibPath>$(MSBuildThisFileDirectory)MathLib/</MathLibPath>
+		<versionPath>$(MSBuildThisFileDirectory)version/</versionPath>
 	</PropertyGroup>
 </Project>

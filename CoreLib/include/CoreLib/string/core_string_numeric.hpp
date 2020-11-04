@@ -98,7 +98,7 @@ namespace core
 		inline constexpr from_chars_result(const from_chars_result&) = default;
 		inline constexpr from_chars_result& operator = (const from_chars_result&) = default;
 
-		[[nodiscard]] inline constexpr bool		has_value	()			const { return m_errorCode == std::errc{}; }
+		[[nodiscard]] inline constexpr bool			has_value	()			const { return m_errorCode == std::errc{}; }
 		[[nodiscard]] inline constexpr T			value		()			const { return m_value; }
 		[[nodiscard]] inline constexpr T			value_or	(T p_alt)	const { return has_value() ? m_value : p_alt; }
 		[[nodiscard]] inline constexpr std::errc	error_code	()			const { return m_errorCode; }
@@ -118,10 +118,10 @@ namespace core
 
 	[[nodiscard]] bool is_uint	(std::basic_string_view<char8_t>	p_str);
 	[[nodiscard]] bool is_uint	(std::basic_string_view<char32_t>	p_str);
-	[[nodiscard]] bool is_int		(std::basic_string_view<char8_t>	p_str);
-	[[nodiscard]] bool is_int		(std::basic_string_view<char32_t>	p_str);
-	[[nodiscard]] bool is_hex		(std::basic_string_view<char8_t>	p_str);
-	[[nodiscard]] bool is_hex		(std::basic_string_view<char32_t>	p_str);
+	[[nodiscard]] bool is_int	(std::basic_string_view<char8_t>	p_str);
+	[[nodiscard]] bool is_int	(std::basic_string_view<char32_t>	p_str);
+	[[nodiscard]] bool is_hex	(std::basic_string_view<char8_t>	p_str);
+	[[nodiscard]] bool is_hex	(std::basic_string_view<char32_t>	p_str);
 
 	//bool is_number	(std::basic_string_view<char8_t>	p_str);
 	//bool is_number	(std::basic_string_view<char32_t>	p_str);
