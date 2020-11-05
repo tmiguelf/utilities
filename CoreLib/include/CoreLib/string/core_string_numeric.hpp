@@ -34,6 +34,8 @@
 #include <system_error>
 #include <type_traits>
 
+#include <CoreLib/Core_Alternate.hpp>
+
 /// \n
 namespace core
 {
@@ -88,25 +90,7 @@ namespace core
 	/// \brief 
 	///		Auxiliary structure to return an optional result from a potentially failing conversion function
 	template <typename T, typename = std::enable_if_t<from_chars_supported_v<T>, void>>
-	class from_chars_result
-	{
-	public:
-		inline constexpr from_chars_result()					: m_errorCode{std::errc::invalid_argument} {}
-		inline constexpr from_chars_result(std::errc p_code)	: m_errorCode{p_code} {}
-		inline constexpr from_chars_result(T p_val)				: m_value{p_val} {}
-
-		inline constexpr from_chars_result(const from_chars_result&) = default;
-		inline constexpr from_chars_result& operator = (const from_chars_result&) = default;
-
-		[[nodiscard]] inline constexpr bool			has_value	()			const { return m_errorCode == std::errc{}; }
-		[[nodiscard]] inline constexpr T			value		()			const { return m_value; }
-		[[nodiscard]] inline constexpr T			value_or	(T p_alt)	const { return has_value() ? m_value : p_alt; }
-		[[nodiscard]] inline constexpr std::errc	error_code	()			const { return m_errorCode; }
-
-	private:
-		T m_value{};
-		std::errc m_errorCode{};
-	};
+	using from_chars_result = alternate<T, std::errc, std::errc{}, std::errc::invalid_argument>;
 
 	//======== ======== ======== From String ======== ======== ========
 
