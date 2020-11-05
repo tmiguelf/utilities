@@ -35,6 +35,8 @@
 #include <string_view>
 #include <span>
 
+#include <CoreLib/Core_Alternate.hpp>
+
 //BOM
 //	UTF8:		EF BB BF
 //	UTF16 BE:	FE FF
@@ -56,25 +58,7 @@ namespace core
 	///		a reference to a std::basic_string container.
 	///		The class has been designed such that move semantics can be used on value()
 	template<typename T>
-	class encodeResult
-	{
-	public:
-		inline encodeResult() = default;
-		inline encodeResult(encodeResult&&) = default;
-		inline encodeResult(std::basic_string<T>&& p_val)
-			: m_value{std::move(p_val)}
-			, m_has_value{true}
-		{}
-
-		bool has_value() const { return m_has_value; }
-		std::basic_string<T>& value() { return m_value; }
-
-		const std::basic_string<T>& value() const { return m_value; }
-
-	private:
-		std::basic_string<T> m_value;
-		bool m_has_value = false;
-	};
+	using encodeResult = alternate<std::basic_string<T>, bool, true, false>;
 
 	//======== ======== Conversion
 
