@@ -120,7 +120,7 @@ template<typename num_T>
 class toStream<num_T, std::enable_if_t<from_chars_supported_v<num_T>, void>>
 {
 public:
-	toStream(num_T p_data): m_data{p_data}{}
+	constexpr toStream(num_T p_data): m_data{p_data}{}
 	inline void stream(std::ostream& p_stream) const
 	{
 		num2stream(p_stream, m_data);

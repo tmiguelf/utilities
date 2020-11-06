@@ -27,6 +27,7 @@
 
 //======== Headers ========
 #include <ostream>
+
 #include <string_view>
 #include <string>
 #include <vector>
@@ -36,17 +37,12 @@
 
 #include <MathLib/HyperComplex/quaternions.hpp>
 
-//TODO: Needs to be removed temporarilly
-//there's a weird bug in google test where it can not find the operator << with operands std::basic_ostream<char> and const mathlib::Quaternion<double>
-//nor being defined, where one clearly is, need to figure out the source of that bug
-#ifdef _WIN32
-
 using core::toStream;
 
 //======== Stream assists ========
 
 template<typename T>
-static std::ostream& operator << (std::ostream& p_stream, const mathlib::Quaternion<T>& p_data)
+void quaternion_stream(std::ostream& p_stream, const mathlib::Quaternion<T>& p_data)
 {
 	p_stream
 		<< "["
@@ -54,13 +50,15 @@ static std::ostream& operator << (std::ostream& p_stream, const mathlib::Quatern
 		<< toStream{p_data.i()} << "i; "
 		<< toStream{p_data.j()} << "j; "
 		<< toStream{p_data.k()} << "k]";
-	return p_stream;
 }
 
 //======== Delayed include headers ========
 
 //For some reason if <gtest/gtest.h> is included before the operator << definitions, template resolution will fail
 #include <gtest/gtest.h>
+
+namespace mathlib
+{
 
 //======== ======== ======== Typed test suit  ======== ======== ========
 
@@ -82,7 +80,7 @@ TYPED_TEST(Quaternion_T, Getters)
 
 	struct TestCase
 	{
-		const mathlib::Quaternion<real_t> m_testObj;
+		const Quaternion<real_t> m_testObj;
 		const real_t m_r;
 		const real_t m_i;
 		const real_t m_j;
@@ -196,7 +194,7 @@ TYPED_TEST(Quaternion_T, Setters)
 	//all test
 	for(const TestCase& tcase: testData)
 	{
-		mathlib::Quaternion<real_t> testObj;
+		Quaternion<real_t> testObj;
 		testObj.set(tcase.m_r, tcase.m_i, tcase.m_j, tcase.m_k);
 		ASSERT_EQ(testObj.r(), tcase.m_r) << "All set " << toStream{tcase, TestCase::stream};
 		ASSERT_EQ(testObj.i(), tcase.m_i) << "All set " << toStream{tcase, TestCase::stream};
@@ -207,20 +205,20 @@ TYPED_TEST(Quaternion_T, Setters)
 	//individual test
 	for(const real_t& tcase: testDataR)
 	{
-		mathlib::Quaternion<real_t> testR{-41.0, 42.0, -43.0, 44.0};
-		mathlib::Quaternion<real_t> testI{-41.0, 42.0, -43.0, 44.0};
-		mathlib::Quaternion<real_t> testJ{-41.0, 42.0, -43.0, 44.0};
-		mathlib::Quaternion<real_t> testK{-41.0, 42.0, -43.0, 44.0};
+		Quaternion<real_t> testR{-41.0, 42.0, -43.0, 44.0};
+		Quaternion<real_t> testI{-41.0, 42.0, -43.0, 44.0};
+		Quaternion<real_t> testJ{-41.0, 42.0, -43.0, 44.0};
+		Quaternion<real_t> testK{-41.0, 42.0, -43.0, 44.0};
 		testR.setR(tcase);
 		testI.setI(tcase);
 		testJ.setJ(tcase); 
 		testK.setK(tcase);
 
 		//independence test
-		ASSERT_EQ(testR, (mathlib::Quaternion<real_t>{tcase, 42.0, -43.0, 44.0} )) << toStream{tcase};
-		ASSERT_EQ(testI, (mathlib::Quaternion<real_t>{-41.0, tcase, -43.0, 44.0})) << toStream{tcase};
-		ASSERT_EQ(testJ, (mathlib::Quaternion<real_t>{-41.0, 42.0, tcase, 44.0} )) << toStream{tcase};
-		ASSERT_EQ(testK, (mathlib::Quaternion<real_t>{-41.0, 42.0, -43.0, tcase})) << toStream{tcase};
+		ASSERT_EQ(testR, (Quaternion<real_t>{tcase, 42.0, -43.0, 44.0} )) << toStream{tcase};
+		ASSERT_EQ(testI, (Quaternion<real_t>{-41.0, tcase, -43.0, 44.0})) << toStream{tcase};
+		ASSERT_EQ(testJ, (Quaternion<real_t>{-41.0, 42.0, tcase, 44.0} )) << toStream{tcase};
+		ASSERT_EQ(testK, (Quaternion<real_t>{-41.0, 42.0, -43.0, tcase})) << toStream{tcase};
 
 		//negated test
 		testR.setR(-tcase);
@@ -228,17 +226,17 @@ TYPED_TEST(Quaternion_T, Setters)
 		testJ.setJ(-tcase); 
 		testK.setK(-tcase);
 
-		ASSERT_EQ(testR, (mathlib::Quaternion<real_t>{-tcase, 42.0, -43.0, 44.0} )) << toStream{tcase};
-		ASSERT_EQ(testI, (mathlib::Quaternion<real_t>{-41.0, -tcase, -43.0, 44.0})) << toStream{tcase};
-		ASSERT_EQ(testJ, (mathlib::Quaternion<real_t>{-41.0, 42.0, -tcase, 44.0} )) << toStream{tcase};
-		ASSERT_EQ(testK, (mathlib::Quaternion<real_t>{-41.0, 42.0, -43.0, -tcase})) << toStream{tcase};
+		ASSERT_EQ(testR, (Quaternion<real_t>{-tcase, 42.0, -43.0, 44.0} )) << toStream{tcase};
+		ASSERT_EQ(testI, (Quaternion<real_t>{-41.0, -tcase, -43.0, 44.0})) << toStream{tcase};
+		ASSERT_EQ(testJ, (Quaternion<real_t>{-41.0, 42.0, -tcase, 44.0} )) << toStream{tcase};
+		ASSERT_EQ(testK, (Quaternion<real_t>{-41.0, 42.0, -43.0, -tcase})) << toStream{tcase};
 	}
 }
 
 TYPED_TEST(Quaternion_T, Comparison)
 {
 	using real_t = TypeParam;
-	using TestCase = mathlib::Quaternion<real_t>;
+	using TestCase = Quaternion<real_t>;
 
 #define TESTCASE(R, I, J, K) {static_cast<real_t>(R), static_cast<real_t>(I), static_cast<real_t>(J), static_cast<real_t>(K)}
 	const std::vector<TestCase> testData =
@@ -264,17 +262,17 @@ TYPED_TEST(Quaternion_T, Comparison)
 		//before case
 		for(size_t j = 0; j < i; ++j)
 		{
-			ASSERT_FALSE(testData[i] == testData[j]) << "Case " << testData[i] << " == " << testData[j];
-			ASSERT_TRUE(testData[i] != testData[j]) << "Case " << testData[i] << " != " << testData[j];
+			ASSERT_FALSE(testData[i] == testData[j]) << "Case " << toStream{testData[i], quaternion_stream} << " == " << toStream{testData[j], quaternion_stream};
+			ASSERT_TRUE (testData[i] != testData[j]) << "Case " << toStream{testData[i], quaternion_stream} << " != " << toStream{testData[j], quaternion_stream};
 		}
 
-		ASSERT_TRUE(testData[i] == testData[i]) << "Case " << testData[i] << " == self";
-		ASSERT_FALSE(testData[i] != testData[i]) << "Case " << testData[i] << " != self";
+		ASSERT_TRUE (testData[i] == testData[i]) << "Case " << toStream{testData[i], quaternion_stream} << " == self";
+		ASSERT_FALSE(testData[i] != testData[i]) << "Case " << toStream{testData[i], quaternion_stream} << " != self";
 
 		for(size_t j = i + 1; j < caseSize; ++j)
 		{
-			ASSERT_FALSE(testData[i] == testData[j]) << "Case " << testData[i] << " == " << testData[j];
-			ASSERT_TRUE(testData[i] != testData[j]) << "Case " << testData[i] << " != " << testData[j];
+			ASSERT_FALSE(testData[i] == testData[j]) << "Case " << toStream{testData[i], quaternion_stream} << " == " << toStream{testData[j], quaternion_stream};
+			ASSERT_TRUE (testData[i] != testData[j]) << "Case " << toStream{testData[i], quaternion_stream} << " != " << toStream{testData[j], quaternion_stream};
 		}
 	}
 }
@@ -285,12 +283,12 @@ TYPED_TEST(Quaternion_T, Operator_unary_minus)
 
 	struct TestCase
 	{
-		const mathlib::Quaternion<real_t> m_sideA;
-		const mathlib::Quaternion<real_t> m_sideB;
+		const Quaternion<real_t> m_sideA;
+		const Quaternion<real_t> m_sideB;
 
 		static void stream(std::ostream& p_stream, const TestCase& p_case)
 		{
-			p_stream << p_case.m_sideA << ' ' << p_case.m_sideB;
+			p_stream << toStream{p_case.m_sideA, quaternion_stream} << ' ' << toStream{p_case.m_sideB, quaternion_stream};
 		}
 	};
 
@@ -326,13 +324,13 @@ TYPED_TEST(Quaternion_T, Operator_add)
 
 	struct TestCase
 	{
-		const mathlib::Quaternion<real_t> m_A;
-		const mathlib::Quaternion<real_t> m_B;
-		const mathlib::Quaternion<real_t> m_sum;
+		const Quaternion<real_t> m_A;
+		const Quaternion<real_t> m_B;
+		const Quaternion<real_t> m_sum;
 
 		static void stream(std::ostream& p_stream, const TestCase& p_case)
 		{
-			p_stream << p_case.m_A << " " << p_case.m_B;
+			p_stream << toStream{p_case.m_A, quaternion_stream} << " " << toStream{p_case.m_B, quaternion_stream};
 		}
 	};
 
@@ -363,12 +361,12 @@ TYPED_TEST(Quaternion_T, Operator_add)
 	for(const TestCase& tcase: testData)
 	{
 		{
-			mathlib::Quaternion<real_t> tval{tcase.m_A};
+			Quaternion<real_t> tval{tcase.m_A};
 			tval += tcase.m_B;
 			ASSERT_EQ(tval, tcase.m_sum) << "A += B - " << toStream{tcase, TestCase::stream};
 		}
 		{
-			mathlib::Quaternion<real_t> tval{tcase.m_B};
+			Quaternion<real_t> tval{tcase.m_B};
 			tval += tcase.m_A;
 			ASSERT_EQ(tval, tcase.m_sum) << "B += A" << toStream{tcase, TestCase::stream};
 		}
@@ -381,13 +379,13 @@ TYPED_TEST(Quaternion_T, Operator_minus)
 
 	struct TestCase
 	{
-		const mathlib::Quaternion<real_t> m_A;
-		const mathlib::Quaternion<real_t> m_B;
-		const mathlib::Quaternion<real_t> m_sub;
+		const Quaternion<real_t> m_A;
+		const Quaternion<real_t> m_B;
+		const Quaternion<real_t> m_sub;
 
 		static void stream(std::ostream& p_stream, const TestCase& p_case)
 		{
-			p_stream << p_case.m_A << " " << p_case.m_B;
+			p_stream << toStream{p_case.m_A, quaternion_stream} << " " << toStream{p_case.m_B, quaternion_stream};
 		}
 	};
 
@@ -418,12 +416,12 @@ TYPED_TEST(Quaternion_T, Operator_minus)
 	for(const TestCase& tcase: testData)
 	{
 		{
-			mathlib::Quaternion<real_t> tval{tcase.m_A};
+			Quaternion<real_t> tval{tcase.m_A};
 			tval -= tcase.m_B;
 			ASSERT_EQ(tval, tcase.m_sub) << "A-=B - " << toStream{tcase, TestCase::stream};
 		}
 		{
-			mathlib::Quaternion<real_t> tval{tcase.m_B};
+			Quaternion<real_t> tval{tcase.m_B};
 			tval -= tcase.m_A;
 			ASSERT_EQ(tval, -tcase.m_sub) << "B-=A - " << toStream{tcase, TestCase::stream};
 		}
@@ -437,13 +435,13 @@ TYPED_TEST(Quaternion_T, scalar_multiply)
 
 	struct TestCase
 	{
-		const mathlib::Quaternion<real_t>	m_quat;
-		const real_t						m_scalar;
-		const mathlib::Quaternion<real_t>	m_result;
+		const Quaternion<real_t>	m_quat;
+		const real_t				m_scalar;
+		const Quaternion<real_t>	m_result;
 
 		static void stream(std::ostream& p_stream, const TestCase& p_case)
 		{
-			p_stream << p_case.m_quat << " x " << toStream{p_case.m_scalar};
+			p_stream << toStream{p_case.m_quat, quaternion_stream} << " x " << toStream{p_case.m_scalar};
 		}
 	};
 
@@ -472,7 +470,7 @@ TYPED_TEST(Quaternion_T, scalar_multiply)
 
 	for(const TestCase& tcase: testData)
 	{
-		mathlib::Quaternion<real_t> test{tcase.m_quat};
+		Quaternion<real_t> test{tcase.m_quat};
 		test *= tcase.m_scalar;
 		ASSERT_EQ(test, tcase.m_result) << "*= - " << toStream{tcase, TestCase::stream};
 	}
@@ -485,13 +483,13 @@ TYPED_TEST(Quaternion_T, scalar_division)
 
 	struct TestCase
 	{
-		const mathlib::Quaternion<real_t>	m_quat;
-		const real_t						m_scalar;
-		const mathlib::Quaternion<real_t>	m_result;
+		const Quaternion<real_t>	m_quat;
+		const real_t				m_scalar;
+		const Quaternion<real_t>	m_result;
 
 		static void stream(std::ostream& p_stream, const TestCase& p_case)
 		{
-			p_stream << p_case.m_quat << " / " << toStream{p_case.m_scalar};
+			p_stream << toStream{p_case.m_quat, quaternion_stream} << " / " << toStream{p_case.m_scalar};
 		}
 	};
 
@@ -520,7 +518,7 @@ TYPED_TEST(Quaternion_T, scalar_division)
 
 	for(const TestCase& tcase: testData)
 	{
-		mathlib::Quaternion<real_t> test{tcase.m_quat};
+		Quaternion<real_t> test{tcase.m_quat};
 		test /= tcase.m_scalar;
 		ASSERT_EQ(test, tcase.m_result) << "/= - " << toStream{tcase, TestCase::stream};
 	}
@@ -533,13 +531,13 @@ TYPED_TEST(Quaternion_T, quaternion_multiplication)
 
 	struct TestCase
 	{
-		const mathlib::Quaternion<real_t> m_first;
-		const mathlib::Quaternion<real_t> m_second;
-		const mathlib::Quaternion<real_t> m_result;
+		const Quaternion<real_t> m_first;
+		const Quaternion<real_t> m_second;
+		const Quaternion<real_t> m_result;
 
 		static void stream(std::ostream& p_stream, const TestCase& p_case)
 		{
-			p_stream << p_case.m_first << " " << p_case.m_second;
+			p_stream << toStream{p_case.m_first, quaternion_stream} << " " << toStream{p_case.m_second, quaternion_stream};
 		}
 	};
 
@@ -577,7 +575,7 @@ TYPED_TEST(Quaternion_T, quaternion_multiplication)
 
 	for(const TestCase& tcase: testData)
 	{
-		const mathlib::Quaternion<real_t> res = tcase.m_first * tcase.m_second;
+		const Quaternion<real_t> res = tcase.m_first * tcase.m_second;
 
 		ASSERT_NEAR(static_cast<double>(res.r()), static_cast<double>(tcase.m_result.r()), epsilon) << "* " << toStream{tcase, TestCase::stream};
 		ASSERT_NEAR(static_cast<double>(res.i()), static_cast<double>(tcase.m_result.i()), epsilon) << "* " << toStream{tcase, TestCase::stream};
@@ -587,7 +585,7 @@ TYPED_TEST(Quaternion_T, quaternion_multiplication)
 
 	for(const TestCase& tcase: testData)
 	{
-		mathlib::Quaternion<real_t> res{tcase.m_first};
+		Quaternion<real_t> res{tcase.m_first};
 		res *= tcase.m_second;
 		ASSERT_NEAR(static_cast<double>(res.r()), static_cast<double>(tcase.m_result.r()), epsilon) << "*= " << toStream{tcase, TestCase::stream};
 		ASSERT_NEAR(static_cast<double>(res.i()), static_cast<double>(tcase.m_result.i()), epsilon) << "*= " << toStream{tcase, TestCase::stream};
@@ -599,7 +597,7 @@ TYPED_TEST(Quaternion_T, quaternion_multiplication)
 TYPED_TEST(Quaternion_T, isZero)
 {
 	using real_t = TypeParam;
-	using TestCase = mathlib::Quaternion<real_t>;
+	using TestCase = Quaternion<real_t>;
 
 	const real_t infinitesimal	= std::numeric_limits<real_t>::denorm_min();
 
@@ -617,13 +615,13 @@ TYPED_TEST(Quaternion_T, isZero)
 #undef TESTCASE
 
 	{
-		constexpr mathlib::Quaternion<real_t> qt0 {real_t{0}, real_t{0}, real_t{0}, real_t{0}};
-		ASSERT_TRUE(qt0.isZero()) << qt0;
+		constexpr Quaternion<real_t> qt0 {real_t{0}, real_t{0}, real_t{0}, real_t{0}};
+		ASSERT_TRUE(qt0.isZero()) << toStream{qt0, quaternion_stream};
 	}
 
 	for(const TestCase& tcase: testData)
 	{
-		ASSERT_FALSE(tcase.isZero()) << tcase;
+		ASSERT_FALSE(tcase.isZero()) << toStream{tcase, quaternion_stream};
 	}
 }
 
@@ -633,7 +631,7 @@ TYPED_TEST(Quaternion_T, norm_squared)
 
 	struct TestCase
 	{
-		const mathlib::Quaternion<real_t> m_quat;
+		const Quaternion<real_t> m_quat;
 		const real_t norm_sqrd;
 	};
 
@@ -658,7 +656,7 @@ TYPED_TEST(Quaternion_T, norm_squared)
 
 	for(const TestCase& tcase: testData)
 	{
-		ASSERT_EQ(tcase.m_quat.norm_squared(), tcase.norm_sqrd) << tcase.m_quat;
+		ASSERT_EQ(tcase.m_quat.norm_squared(), tcase.norm_sqrd) << toStream{tcase.m_quat, quaternion_stream};
 	}
 }
 
@@ -668,7 +666,7 @@ TYPED_TEST(Quaternion_T, norm)
 
 	struct TestCase
 	{
-		const mathlib::Quaternion<real_t> m_quat;
+		const Quaternion<real_t> m_quat;
 		const real_t norm;
 		const real_t error;
 	};
@@ -698,7 +696,7 @@ TYPED_TEST(Quaternion_T, norm)
 
 	for(const TestCase& tcase: testData)
 	{
-		ASSERT_NEAR(static_cast<double>(tcase.m_quat.norm()), static_cast<double>(tcase.norm), static_cast<double>(tcase.error)) << tcase.m_quat;
+		ASSERT_NEAR(static_cast<double>(tcase.m_quat.norm()), static_cast<double>(tcase.norm), static_cast<double>(tcase.error)) << toStream{tcase.m_quat, quaternion_stream};
 	}
 }
 
@@ -708,8 +706,8 @@ TYPED_TEST(Quaternion_T, renormalized)
 
 	struct TestCase
 	{
-		const mathlib::Quaternion<real_t> m_quat;
-		const mathlib::Quaternion<real_t> m_result;
+		const Quaternion<real_t> m_quat;
+		const Quaternion<real_t> m_result;
 		const real_t m_error;
 	};
 
@@ -736,20 +734,20 @@ TYPED_TEST(Quaternion_T, renormalized)
 #undef QUAT_T
 
 	{
-		mathlib::Quaternion<real_t> qt0{0.0, 0.0, 0.0, 0.0};
-		std::optional<mathlib::Quaternion<real_t>> val = qt0.renormalized();
+		Quaternion<real_t> qt0{0.0, 0.0, 0.0, 0.0};
+		std::optional<Quaternion<real_t>> val = qt0.renormalized();
 		ASSERT_FALSE(val.has_value());
 	}
 
 	for(const TestCase& tcase: testData)
 	{
-		std::optional<mathlib::Quaternion<real_t>> res = tcase.m_quat.renormalized();
+		std::optional<Quaternion<real_t>> res = tcase.m_quat.renormalized();
 		ASSERT_TRUE(res.has_value());
-		mathlib::Quaternion<real_t> val = res.value();
-		ASSERT_NEAR(static_cast<double>(val.r()), static_cast<double>(tcase.m_result.r()), static_cast<double>(tcase.m_error)) << tcase.m_quat;
-		ASSERT_NEAR(static_cast<double>(val.i()), static_cast<double>(tcase.m_result.i()), static_cast<double>(tcase.m_error)) << tcase.m_quat;
-		ASSERT_NEAR(static_cast<double>(val.j()), static_cast<double>(tcase.m_result.j()), static_cast<double>(tcase.m_error)) << tcase.m_quat;
-		ASSERT_NEAR(static_cast<double>(val.k()), static_cast<double>(tcase.m_result.k()), static_cast<double>(tcase.m_error)) << tcase.m_quat;
+		Quaternion<real_t> val = res.value();
+		ASSERT_NEAR(static_cast<double>(val.r()), static_cast<double>(tcase.m_result.r()), static_cast<double>(tcase.m_error)) << toStream{tcase.m_quat, quaternion_stream};
+		ASSERT_NEAR(static_cast<double>(val.i()), static_cast<double>(tcase.m_result.i()), static_cast<double>(tcase.m_error)) << toStream{tcase.m_quat, quaternion_stream};
+		ASSERT_NEAR(static_cast<double>(val.j()), static_cast<double>(tcase.m_result.j()), static_cast<double>(tcase.m_error)) << toStream{tcase.m_quat, quaternion_stream};
+		ASSERT_NEAR(static_cast<double>(val.k()), static_cast<double>(tcase.m_result.k()), static_cast<double>(tcase.m_error)) << toStream{tcase.m_quat, quaternion_stream};
 	}
 }
 
@@ -760,7 +758,7 @@ TYPED_TEST(Quaternion_T, inverse)
 
 	struct TestCase
 	{
-		const mathlib::Quaternion<real_t> m_quat;
+		const Quaternion<real_t> m_quat;
 		const real_t m_error;
 	};
 
@@ -785,22 +783,22 @@ TYPED_TEST(Quaternion_T, inverse)
 #undef QUAT_T
 
 	{
-		mathlib::Quaternion<real_t> qt0{0.0, 0.0, 0.0, 0.0};
-		std::optional<mathlib::Quaternion<real_t>> res = qt0.inverse();
+		Quaternion<real_t> qt0{0.0, 0.0, 0.0, 0.0};
+		std::optional<Quaternion<real_t>> res = qt0.inverse();
 		ASSERT_FALSE(res.has_value());
 	}
 
 	for(const TestCase& tcase: testData)
 	{
-		std::optional<mathlib::Quaternion<real_t>> res = tcase.m_quat.inverse();
+		std::optional<Quaternion<real_t>> res = tcase.m_quat.inverse();
 		ASSERT_TRUE(res.has_value());
 
-		const mathlib::Quaternion<real_t> val = res.value() * tcase.m_quat;
+		const Quaternion<real_t> val = res.value() * tcase.m_quat;
 
-		ASSERT_NEAR(static_cast<double>(val.r()), 1.0, static_cast<double>(tcase.m_error)) << tcase.m_quat;
-		ASSERT_NEAR(static_cast<double>(val.i()), 0.0, static_cast<double>(tcase.m_error)) << tcase.m_quat;
-		ASSERT_NEAR(static_cast<double>(val.j()), 0.0, static_cast<double>(tcase.m_error)) << tcase.m_quat;
-		ASSERT_NEAR(static_cast<double>(val.k()), 0.0, static_cast<double>(tcase.m_error)) << tcase.m_quat;
+		ASSERT_NEAR(static_cast<double>(val.r()), 1.0, static_cast<double>(tcase.m_error)) << toStream{tcase.m_quat, quaternion_stream};
+		ASSERT_NEAR(static_cast<double>(val.i()), 0.0, static_cast<double>(tcase.m_error)) << toStream{tcase.m_quat, quaternion_stream};
+		ASSERT_NEAR(static_cast<double>(val.j()), 0.0, static_cast<double>(tcase.m_error)) << toStream{tcase.m_quat, quaternion_stream};
+		ASSERT_NEAR(static_cast<double>(val.k()), 0.0, static_cast<double>(tcase.m_error)) << toStream{tcase.m_quat, quaternion_stream};
 	}
 }
 
@@ -808,7 +806,7 @@ TYPED_TEST(Quaternion_T, inverse)
 TYPED_TEST(Quaternion_T, isFinite)
 {
 	using real_t = TypeParam;
-	using TestCase = mathlib::Quaternion<real_t>;
+	using TestCase = Quaternion<real_t>;
 
 	const real_t nan			= std::numeric_limits<real_t>::quiet_NaN();
 	const real_t infinity		= std::numeric_limits<real_t>::infinity();
@@ -847,13 +845,13 @@ TYPED_TEST(Quaternion_T, isFinite)
 
 	for(const TestCase& tcase: testDataPositive)
 	{
-		ASSERT_TRUE(tcase.isFinite()) << tcase;
+		ASSERT_TRUE(tcase.isFinite()) << toStream{tcase, quaternion_stream};
 	}
 
 	for(const TestCase& tcase: testDataNegative)
 	{
-		ASSERT_FALSE(tcase.isFinite()) << tcase;
+		ASSERT_FALSE(tcase.isFinite()) << toStream{tcase, quaternion_stream};
 	}
 }
 
-#endif
+} //namespace mathlib

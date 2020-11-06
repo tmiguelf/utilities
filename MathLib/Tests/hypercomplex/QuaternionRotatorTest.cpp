@@ -44,7 +44,7 @@
 using core::toStream;
 
 template<typename T>
-static std::ostream& operator << (std::ostream& p_stream, const typename mathlib::Vector<T, 3>& p_data)
+static std::ostream& operator << (std::ostream& p_stream, const mathlib::Vector<T, 3>& p_data)
 {
 	p_stream
 		<< "["
