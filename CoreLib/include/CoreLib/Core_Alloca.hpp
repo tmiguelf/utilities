@@ -26,6 +26,8 @@
 ///		SOFTWARE.
 //======== ======== ======== ======== ======== ======== ======== ========
 
+#pragma once
+
 #ifdef _WIN32
 #include <malloc.h>
 #define core_alloca(SIZE) _alloca(SIZE)

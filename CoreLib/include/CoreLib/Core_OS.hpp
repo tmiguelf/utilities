@@ -48,4 +48,26 @@ env_result	machine_name();
 
 std::filesystem::path applicationPath();
 
+
+template<>
+class toStream<std::filesystem::path>
+{
+public:
+	toStream(const std::filesystem::path& p_data): m_data{p_data}{}
+	inline void stream(std::ostream& p_stream) const
+	{
+#ifdef _WIN32
+		const std::wstring& native = m_data.native();
+		const std::u8string res = UTF16_to_UTF8_faulty({reinterpret_cast<const char16_t*>(native.data()), native.size()}, '?');
+		p_stream.write(reinterpret_cast<const char*>(res.data()), res.size());
+#else
+		const std::string& native = m_data.native();
+		p_stream.write(native.data(), native.size());
+#endif
+	}
+
+private:
+	const std::filesystem::path& m_data;
+};
+
 } //namespace core

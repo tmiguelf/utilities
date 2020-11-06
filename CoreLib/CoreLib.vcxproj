@@ -54,6 +54,7 @@
     <ClCompile Include="src\Core_DLL.cpp" />
     <ClCompile Include="src\Core_Net.cpp" />
     <ClCompile Include="src\Core_OS.cpp" />
+    <ClCompile Include="src\Core_StackTrace.cpp" />
     <ClCompile Include="src\Core_Sync.cpp" />
     <ClCompile Include="src\Core_Thread.cpp" />
     <ClCompile Include="src\Core_Time.cpp" />
@@ -68,6 +69,7 @@
     <ClInclude Include="include\CoreLib\Core_Endian.hpp" />
     <ClInclude Include="include\CoreLib\Core_Net.hpp" />
     <ClInclude Include="include\CoreLib\Core_OS.hpp" />
+    <ClInclude Include="include\CoreLib\Core_StackTrace.hpp" />
     <ClInclude Include="include\CoreLib\Core_String.hpp" />
     <ClInclude Include="include\CoreLib\Core_Sync.hpp" />
     <ClInclude Include="include\CoreLib\Core_Thread.hpp" />
@@ -77,6 +79,8 @@
     <ClInclude Include="include\CoreLib\string\core_string_format.hpp" />
     <ClInclude Include="include\CoreLib\string\core_string_misc.hpp" />
     <ClInclude Include="include\CoreLib\string\core_string_numeric.hpp" />
+    <ClInclude Include="include\CoreLib\string\core_string_streamers.hpp" />
+    <ClInclude Include="include\CoreLib\string\core_string_tostream.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="CoreLib.import.props" />
