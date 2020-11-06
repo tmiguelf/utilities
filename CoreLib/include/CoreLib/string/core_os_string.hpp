@@ -29,11 +29,14 @@
 ///			extra information regarding he nature of the failure
 //======== ======== ======== ======== ======== ======== ======== ========
 
+#pragma once
+
 #include <string>
 #include <string_view>
 #include <initializer_list>
 
 #include "core_string_format.hpp"
+#include "core_string_tostream.hpp"
 
 namespace core
 {
@@ -156,6 +159,35 @@ public:
 
 private:
 	std::u8string m_string;
+};
+
+template<>
+class toStream<os_string_win>
+{
+public:
+	toStream(const os_string_win& p_data): m_data{p_data}{}
+	inline void stream(std::ostream& p_stream) const
+	{
+		const std::u8string& res =  core::UTF16_to_UTF8_faulty(m_data.native(), '?');
+		p_stream.write(reinterpret_cast<const char*>(res.data()), res.size());
+	}
+
+private:
+	const os_string_win& m_data;
+};
+
+template<>
+class toStream<os_string_unix>
+{
+public:
+	toStream(const os_string_unix& p_data): m_data{p_data}{}
+	inline void stream(std::ostream& p_stream) const
+	{
+		p_stream.write(reinterpret_cast<const char*>(m_data.data()), m_data.size());
+	}
+
+private:
+	const os_string_unix& m_data;
 };
 
 #ifdef _WIN32

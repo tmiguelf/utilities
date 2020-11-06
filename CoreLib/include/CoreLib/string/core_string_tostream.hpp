@@ -1,7 +1,5 @@
 //======== ======== ======== ======== ======== ======== ======== ========
 ///	\file
-///		Provides string conversion functions to be able to handle UNICODE,
-///		as well as other string utilities.
 ///
 ///	\author Tiago Freire
 ///
@@ -25,14 +23,52 @@
 ///		LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 ///		OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ///		SOFTWARE.
-///
+///		
 ///	\todo	Provide a comprehensive and consistent set of error codes, to give
 ///			extra information regarding he nature of the failure
 //======== ======== ======== ======== ======== ======== ======== ========
 
 #pragma once
 
-#include "string/core_string_format.hpp"
-#include "string/core_string_numeric.hpp"
-#include "string/core_string_misc.hpp"
-#include "string/core_string_streamers.hpp"
+#include <ostream>
+#include <type_traits>
+
+namespace core
+{
+
+enum class toStreamForwardMethod:uint8_t {};
+
+template<typename, typename = void>
+class toStream;
+
+//CTAD deduction guide
+template <typename T> toStream(T) -> toStream<std::remove_cvref_t<T>>;
+template <typename T> toStream(T, void(*)(std::ostream&, const std::remove_cvref_t<T>&)) -> toStream<std::remove_cvref_t<T>, toStreamForwardMethod>;
+
+template<typename T>
+class toStream<T, toStreamForwardMethod>
+{
+public:
+	using method_t = void (*)(std::ostream&, const T&);
+
+public:
+	toStream(T p_data, method_t p_method): m_data{p_data}, m_method{p_method}{}
+	inline void stream(std::ostream& p_stream) const
+	{
+		m_method(p_stream, m_data);
+	}
+
+private:
+	const T m_data;
+	method_t m_method;
+};
+
+} //namespace core
+
+template<typename T1, typename T2>
+static std::ostream& operator << (std::ostream& p_stream, const core::toStream<T1, T2>& p_data)
+{
+	p_data.stream(p_stream);
+	return p_stream;
+}
+

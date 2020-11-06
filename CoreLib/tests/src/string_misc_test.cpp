@@ -31,20 +31,14 @@
 #include <ostream>
 #include <string>
 
+#include <CoreLib/string/core_string_streamers.hpp>
 
-//======== ======== ======== Stream helper ======== ======== ========
-
-using stream_t = std::basic_ostream<char>;
-
-static stream_t& operator << (stream_t& p_stream, const std::u8string& p_str)
-{
-	p_stream.write(reinterpret_cast<const char*>(p_str.data()), p_str.size());
-	return p_stream;
-}
-
+using core::toStream;
 
 #include <gtest/gtest.h>
 #include <CoreLib/string/core_string_misc.hpp>
+
+
 
 namespace text_misc
 {
@@ -59,7 +53,7 @@ TEST(string_misc, toLowerCaseX)
 	for(const std::pair<std::u8string, std::u8string>& tcase : testCases)
 	{
 		std::u8string result = core::toLowerCaseX(tcase.first);
-		ASSERT_EQ(result, tcase.second) << "Case \"" << tcase.second << '\"';
+		ASSERT_EQ(result, tcase.second) << "Case \"" << toStream{tcase.second} << '\"';
 	}
 }
 
@@ -74,7 +68,7 @@ TEST(string_misc, toUpperCaseX)
 	for(const std::pair<std::u8string, std::u8string>& tcase : testCases)
 	{
 		std::u8string result = core::toUpperCaseX(tcase.first);
-		ASSERT_EQ(result, tcase.second) << "Case \"" << tcase.second << '\"';
+		ASSERT_EQ(result, tcase.second) << "Case \"" << toStream{tcase.second} << '\"';
 	}
 }
 
@@ -133,7 +127,7 @@ TEST(string_misc, string_star_match)
 	{
 		for(const std::u8string& tcase : pattern.second)
 		{
-			ASSERT_TRUE(core::string_star_match(tcase, pattern.first)) << "Case \"" << pattern.first << "\" and \"" << tcase << "\"";
+			ASSERT_TRUE(core::string_star_match(tcase, pattern.first)) << "Case \"" << toStream{pattern.first} << "\" and \"" << toStream{tcase} << "\"";
 		}
 	}
 
@@ -141,7 +135,7 @@ TEST(string_misc, string_star_match)
 	{
 		for(const std::u8string& tcase : pattern.second)
 		{
-			ASSERT_FALSE(core::string_star_match(tcase, pattern.first)) << "Case \"" << pattern.first << "\" and \"" << tcase << "\"";
+			ASSERT_FALSE(core::string_star_match(tcase, pattern.first)) << "Case \"" << toStream{pattern.first} << "\" and \"" << toStream{tcase} << "\"";
 		}
 	}
 }
