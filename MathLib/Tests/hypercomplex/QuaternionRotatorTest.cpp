@@ -70,7 +70,7 @@ protected:
 	QuaternionRotator_T() {}
 };
 
-using TestTypes = ::testing::Types<float, double, long double>;
+using TestTypes = ::testing::Types<float, double/*, long double*/>;
 TYPED_TEST_SUITE(QuaternionRotator_T, TestTypes);
 
 
