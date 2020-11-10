@@ -68,7 +68,7 @@ protected:
 	Quaternion_T() {}
 };
 
-using TestTypes = ::testing::Types<float, double, long double>;
+using TestTypes = ::testing::Types<float, double/*, long double*/>;
 TYPED_TEST_SUITE(Quaternion_T, TestTypes);
 
 
