@@ -3,18 +3,26 @@ version: '{build}-{branch}'
 os: Visual Studio 2019 Preview
 
 install:
-    git submodule update --init --depth 1
+    - wsl sudo sed --in-place 's/focal/groovy/g' /etc/apt/sources.list
+    - wsl sudo apt update
+    - wsl sudo apt install -y g++
+    - git submodule update --init --depth 1
 
 build: off
 
 build_script:
-    msbuild /t:Build /p:Configuration=Release "./CoreLib.sln" -maxcpucount
+    - msbuild /t:Build /p:Configuration=Release "./CoreLib.sln" -maxcpucount
+    - msbuild /t:Build /p:Configuration=WSL_Release "./CoreLib.sln" -maxcpucount
 
 test_script:
     - '&"./Runtime/win_x64_Release/CoreLib_Test.exe" --gtest_output="xml:Corelib_result.xml"'
     - '&"./Runtime/win_x64_Release/MathLibTest.exe" --gtest_output="xml:MathLib_result.xml"'
     - '&"./Runtime/win_x64_Release/CoreLib_benchmark_charconv.exe" > CoreLib_charconv_benchmark.txt'
     - more CoreLib_charconv_benchmark.txt
+    - wsl /mnt/c/projects/utilities/Runtime/lin_x86_64_Release/CoreLib_Test.out --gtest_output="xml:/mnt/c/projects/Corelib_result_linux.xml"'
+    - wsl /mnt/c/projects/utilities/Runtime/lin_x86_64_Release/MathLibTest.out --gtest_output="xml:/mnt/c/projects/MathLib_result_linux.xml"'
+    - wsl /mnt/c/projects/utilities/Runtime/lin_x86_64_Release/CoreLib_benchmark_charconv.out > CoreLib_charconv_benchmark_linux.txt
+    - more CoreLib_charconv_benchmark_linux.txt
 
 artifacts:
   - path: Corelib_result.xml
@@ -22,4 +30,10 @@ artifacts:
   - path: MathLib_result.xml
     name: test_results
   - path: CoreLib_charconv_benchmark.txt
+    name: test_results
+  - path: Corelib_result_linux.xml
+    name: test_results
+  - path: MathLib_result_linux.xml
+    name: test_results
+  - path: CoreLib_charconv_benchmark_linux.txt
     name: test_results
