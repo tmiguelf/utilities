@@ -441,7 +441,7 @@ namespace core_p
 		///		On blocking sockets, this call will block until data is ready to be read on the socket.
 		///		On a non-blocking socket this can return \ref core::NET_Error::NET_WouldBlock if no data is ready to be read
 		//
-		NET_Error Receive			(uint8_t* p_data, uintptr_t& p_size);
+		NET_Error Receive			(void* p_data, uintptr_t& p_size);
 
 		///	\brief Checks the size of the next data pack ready to be received on the socket
 		///	\param[out] p_size - Returns the size of the packet
@@ -533,7 +533,7 @@ namespace core_p
 		///		If an error is returned \ref p_context is left unchanged, so if this is 0 before calling,
 		///		and remains 0 after the call but an error is returned, this means that no data was sent.
 		//
-		NET_Error Send_context	(const uint8_t* p_buffer, const uintptr_t p_size, uintptr_t& p_context);
+		NET_Error Send_context	(const void* p_buffer, const uintptr_t p_size, uintptr_t& p_context);
 		
 		///	\brief Sends data over the socket using a size tracking algorithm to handle unsent data
 		///
@@ -554,7 +554,7 @@ namespace core_p
 		///		sent and adjust the buffer for the next send call.
 		///		If an error is returned \ref p_sent is left unchanged.
 		//
-		NET_Error Send_size			(const uint8_t* p_buffer, const uintptr_t p_size, uintptr_t& p_sent);
+		NET_Error Send_size			(const void* p_buffer, const uintptr_t p_size, uintptr_t& p_sent);
 
 		///	\brief Receives data pending on the socket using a context algorithm to handle unreceived data
 		///	\param[in] p_buffer - p_buffer to receive the data
@@ -590,7 +590,7 @@ namespace core_p
 		///		If an error is returned \ref p_context is left unchanged, so if this is 0 before calling,
 		///		and remains 0 after the call but an error is returned, this means that no data was received.
 		//
-		NET_Error Receive_context	(uint8_t* p_buffer, const uintptr_t p_size, uintptr_t& p_context);
+		NET_Error Receive_context	(void* p_buffer, const uintptr_t p_size, uintptr_t& p_context);
 
 		///	\brief Receives data pending on the socket using a size tracking algorithm to handle unreceived data
 		///	\param[in] p_buffer - p_buffer to receive the data
@@ -611,7 +611,7 @@ namespace core_p
 		///		received and adjust the buffer for the next send call.
 		///		If an error is returned \ref p_received is left unchanged.
 		//
-		NET_Error Receive_size		(uint8_t* p_buffer, const uintptr_t p_size, uintptr_t& p_received);
+		NET_Error Receive_size		(void* p_buffer, const uintptr_t p_size, uintptr_t& p_received);
 
 		///	\brief Turns on or off the Nagle's algorithm on the socket. By default the Nagle's algorithm is on.
 		///	\param[in] p_useNagle - If true turns on the Nagle's algorithm, if false turns off the Nagle's algorithm
@@ -717,7 +717,7 @@ namespace core_p
 		///		On a non-blocking socket this can return \ref core::NET_Error::NET_WouldBlock
 		///		if data could not be sent at tthe time without blocking.
 		//
-		NET_Error Send		(const uint8_t* p_data, const uintptr_t p_size, const IPv4_netAddr& p_IP, const uint16_t p_Port, const uint8_t p_repeat = 0);
+		NET_Error Send		(const void* p_data, const uintptr_t p_size, const IPv4_netAddr& p_IP, const uint16_t p_Port, const uint8_t p_repeat = 0);
 		
 		///	\brief Collects the data pending on the socket, and retrieves address of the sender
 		///	\param[out] p_data - pointer to buffer that receives the data
@@ -732,7 +732,7 @@ namespace core_p
 		///		On blocking sockets, this call will block until data is ready to be read on the socket.
 		///		On a non-blocking socket this can return \ref core::NET_Error::NET_WouldBlock if no data is ready to be read.
 		//
-		NET_Error Receive	(uint8_t* p_data, uintptr_t& p_size, IPv4_netAddr& p_other_IP, uint16_t& p_other_port);
+		NET_Error Receive	(void* p_data, uintptr_t& p_size, IPv4_netAddr& p_other_IP, uint16_t& p_other_port);
 
 		///	\brief Checks the size of the next data pack ready to be received on the socket as well as the address of the sender
 		///	\param[out] p_size - Returns the size of the packet
@@ -770,7 +770,7 @@ namespace core_p
 		///	\remarks
 		///		Has the same properties as \ref Send, except the data payload is managed internally by the method.
 		//
-		NET_Error WakeOnLan_password(std::span<const uint8_t, 6> p_MacAddress, const IPv4_netAddr& p_subNet, const uint16_t* p_port = nullptr, const uint8_t* p_password = nullptr, const uint16_t p_password_size = 0);
+		NET_Error WakeOnLan_password(std::span<const uint8_t, 6> p_MacAddress, const IPv4_netAddr& p_subNet, const uint16_t* p_port = nullptr, const void* p_password = nullptr, const uint16_t p_password_size = 0);
 
 		///	\brief Swaps this socket with another
 		//
@@ -848,7 +848,7 @@ namespace core_p
 		///		On a non-blocking socket this can return \ref core::NET_Error::NET_WouldBlock
 		///		if data could not be sent at tthe time without blocking.
 		//
-		NET_Error Send		(const uint8_t* p_data, const uintptr_t p_size, const IPv6_netAddr& p_IP, const uint16_t p_Port, const uint8_t p_repeat = 0);
+		NET_Error Send		(const void* p_data, const uintptr_t p_size, const IPv6_netAddr& p_IP, const uint16_t p_Port, const uint8_t p_repeat = 0);
 
 		///	\brief Collects the data pending on the socket, and retrieves address of the sender
 		///	\param[out] p_data - pointer to buffer that receives the data
@@ -863,7 +863,7 @@ namespace core_p
 		///		On blocking sockets, this call will block until data is ready to be read on the socket.
 		///		On a non-blocking socket this can return \ref core::NET_Error::NET_WouldBlock if no data is ready to be read.
 		//
-		NET_Error Receive	(uint8_t* p_data, uintptr_t& p_size, IPv6_netAddr& p_other_IP, uint16_t& p_other_port);
+		NET_Error Receive	(void* p_data, uintptr_t& p_size, IPv6_netAddr& p_other_IP, uint16_t& p_other_port);
 
 		///	\brief Checks the size of the next data pack ready to be received on the socket as well as the address of the sender
 		///	\param[out] p_size - Returns the size of the packet
@@ -901,7 +901,7 @@ namespace core_p
 		///	\remarks
 		///		Has the same properties as \ref Send, except the data payload is managed internally by the method.
 		//
-		NET_Error WakeOnLan_password(std::span<const uint8_t, 6> p_MacAddress, const IPv6_netAddr& p_subNet, const uint16_t* p_port = nullptr, const uint8_t* p_password = nullptr, const uint16_t p_password_size = 0);
+		NET_Error WakeOnLan_password(std::span<const uint8_t, 6> p_MacAddress, const IPv6_netAddr& p_subNet, const uint16_t* p_port = nullptr, const void* p_password = nullptr, const uint16_t p_password_size = 0);
 
 		///	\brief Swaps this socket with another
 		//
@@ -1318,7 +1318,7 @@ namespace core_p
 		///		if data could not be sent at tthe time without blocking.
 		///		IPv4 sockets can not send to IPv6 networks and vice-versa.
 		//
-		NET_Error Send(const uint8_t* p_data, const uintptr_t p_size, const IP_netAddr& p_IP, const uint16_t p_Port, const uint8_t p_repeat = 0);
+		NET_Error Send(const void* p_data, const uintptr_t p_size, const IP_netAddr& p_IP, const uint16_t p_Port, const uint8_t p_repeat = 0);
 
 		///	\brief Collects the data pending on the socket, and retrieves address of the sender
 		///	\param[out] p_data - pointer to buffer that receives the data
@@ -1333,7 +1333,7 @@ namespace core_p
 		///		On blocking sockets, this call will block until data is ready to be read on the socket.
 		///		On a non-blocking socket this can return \ref core::NET_Error::NET_WouldBlock if no data is ready to be read.
 		//
-		NET_Error Receive	(uint8_t* p_data, uintptr_t& p_size, IP_netAddr& p_other_IP, uint16_t& p_other_port);
+		NET_Error Receive	(void* p_data, uintptr_t& p_size, IP_netAddr& p_other_IP, uint16_t& p_other_port);
 
 		///	\brief Checks the size of the next data pack ready to be received on the socket as well as the address of the sender
 		///	\param[out] p_size - Returns the size of the packet
@@ -1371,7 +1371,7 @@ namespace core_p
 		///	\remarks
 		///		Has the same properties as \ref Send, except the data payload is managed internally by the method.
 		//
-		NET_Error WakeOnLan_password(std::span<const uint8_t, 6> p_MacAddress, const IP_netAddr& p_subNet, const uint16_t* p_port = nullptr, const uint8_t* p_password = nullptr, const uint16_t p_password_size = 0);
+		NET_Error WakeOnLan_password(std::span<const uint8_t, 6> p_MacAddress, const IP_netAddr& p_subNet, const uint16_t* p_port = nullptr, const void* p_password = nullptr, const uint16_t p_password_size = 0);
 
 		///	\brief Retrieves the Internet Protocol version currently used on this socket.
 		///	\return \ref IPv

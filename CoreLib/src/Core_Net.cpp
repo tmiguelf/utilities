@@ -481,7 +481,7 @@ namespace core
 		return NET_Error::NoErr;
 	}
 
-	static inline NET_Error Core_PeekSizeIPv6(const SocketHandle_t p_sock, uintptr_t& p_size, uint8_t* p_rawAddr, uint16_t& p_port)
+	static inline NET_Error Core_PeekSizeIPv6(const SocketHandle_t p_sock, uintptr_t& p_size, void* p_rawAddr, uint16_t& p_port)
 	{
 		int		addr_size;
 		u_long	size = 0;
@@ -722,7 +722,7 @@ namespace core
 		return NET_Error::NoErr;
 	}
 
-	static inline NET_Error Core_PeekSizeIPv6(const SocketHandle_t p_sock, uintptr_t& p_size, uint8_t* p_rawAddr, uint16_t& p_port)
+	static inline NET_Error Core_PeekSizeIPv6(const SocketHandle_t p_sock, uintptr_t& p_size, void* p_rawAddr, uint16_t& p_port)
 	{
 		socklen_t		addr_size;
 		int				size = 0;
@@ -781,7 +781,7 @@ namespace core
 		return NET_Error::NoErr;
 	}
 
-	static inline NET_Error Core_GetAddressIPv6(const SocketHandle_t p_sock, uint8_t* p_rawGroup, uint16_t& p_port)
+	static inline NET_Error Core_GetAddressIPv6(const SocketHandle_t p_sock, void* p_rawGroup, uint16_t& p_port)
 	{
 		sockaddr_in6	addr_info6;
 		CoreSockLen_t	len;
@@ -815,7 +815,7 @@ namespace core
 		return NET_Error::NoErr;
 	}
 
-	static inline NET_Error Core_GetPeerAddressIPv6(const SocketHandle_t p_sock, uint8_t* p_rawGroup, uint16_t& p_port)
+	static inline NET_Error Core_GetPeerAddressIPv6(const SocketHandle_t p_sock, void* p_rawGroup, uint16_t& p_port)
 	{
 		sockaddr_in6 addr_info6;
 		CoreSockLen_t len;
@@ -930,7 +930,7 @@ namespace core
 	//========			Send and Receive			========
 	//========	========	========	========	========
 
-	static inline NET_Error Core_Send_size(const SocketHandle_t p_sock, const uint8_t* p_buffer, uintptr_t p_size, uintptr_t& p_sent)
+	static inline NET_Error Core_Send_size(const SocketHandle_t p_sock, const void* p_buffer, uintptr_t p_size, uintptr_t& p_sent)
 	{
 #ifdef _WIN32
 		if(p_size > std::numeric_limits<int>::max()) p_size = std::numeric_limits<int>::max();
@@ -950,7 +950,7 @@ namespace core
 		return NET_Error::NoErr;
 	}
 
-	static inline NET_Error Core_Send_context(const SocketHandle_t p_sock, const uint8_t* p_buffer, const uintptr_t p_size, uintptr_t& p_context)
+	static inline NET_Error Core_Send_context(const SocketHandle_t p_sock, const void* p_buffer, const uintptr_t p_size, uintptr_t& p_context)
 	{
 		if(p_context >= p_size) return NET_Error::Invalid_Option;
 
@@ -958,9 +958,9 @@ namespace core
 
 #ifdef _WIN32
 		if(currentSize > std::numeric_limits<int>::max()) currentSize = std::numeric_limits<int>::max();
-		int ret = send(p_sock, reinterpret_cast<const char*>(p_buffer + p_context), static_cast<int>(currentSize), 0);
+		int ret = send(p_sock, reinterpret_cast<const char*>(p_buffer) + p_context, static_cast<int>(currentSize), 0);
 #else
-		intptr_t ret = send(p_sock, reinterpret_cast<const char*>(p_buffer + p_context), currentSize, 0);
+		intptr_t ret = send(p_sock, reinterpret_cast<const char*>(p_buffer) + p_context, currentSize, 0);
 #endif
 		if(ret == SOCKET_ERROR)
 		{
@@ -981,7 +981,7 @@ namespace core
 		return NET_Error::NoErr;
 	}
 
-	static inline NET_Error Core_Receive_size(const SocketHandle_t p_sock, uint8_t* p_buffer, uintptr_t p_size, uintptr_t& p_received)
+	static inline NET_Error Core_Receive_size(const SocketHandle_t p_sock, void* p_buffer, uintptr_t p_size, uintptr_t& p_received)
 	{
 #ifdef _WIN32
 		if(p_size > std::numeric_limits<int>::max()) p_size = std::numeric_limits<int>::max();
@@ -1008,16 +1008,16 @@ namespace core
 		return NET_Error::Connection;
 	}
 
-	static inline NET_Error Core_Receive_context(const SocketHandle_t p_sock, uint8_t* p_buffer, const uintptr_t p_size, uintptr_t& p_context)
+	static inline NET_Error Core_Receive_context(const SocketHandle_t p_sock, void* p_buffer, const uintptr_t p_size, uintptr_t& p_context)
 	{
 		if(p_context >= p_size) return NET_Error::Invalid_Option;
 
 		uintptr_t currentSize = p_size - p_context;
 #ifdef _WIN32
 		if(currentSize > std::numeric_limits<int>::max()) currentSize = std::numeric_limits<int>::max();
-		int ret = recv(p_sock, reinterpret_cast<char*>(p_buffer + p_context), static_cast<int>(currentSize), 0);
+		int ret = recv(p_sock, reinterpret_cast<char*>(p_buffer) + p_context, static_cast<int>(currentSize), 0);
 #else
-		intptr_t ret = recv(p_sock, reinterpret_cast<char*>(p_buffer + p_context), currentSize, 0);
+		intptr_t ret = recv(p_sock, reinterpret_cast<char*>(p_buffer) + p_context, currentSize, 0);
 #endif
 		if(ret == SOCKET_ERROR)
 		{
@@ -1046,7 +1046,7 @@ namespace core
 		return NET_Error::Connection;
 	}
 
-	static inline NET_Error Core_SendToIPv4(const SocketHandle_t p_sock, const uint8_t* p_data, uintptr_t p_size, const uint32_t p_rawAddr, const uint16_t p_port, const uint8_t p_repeat)
+	static inline NET_Error Core_SendToIPv4(const SocketHandle_t p_sock, const void* p_data, uintptr_t p_size, const uint32_t p_rawAddr, const uint16_t p_port, const uint8_t p_repeat)
 	{
 		uint8_t		count = 0;
 		sockaddr_in	addr_info4;
@@ -1081,7 +1081,7 @@ namespace core
 		return sentOnce ? NET_Error::NoErr : NET_Error::Unknown;
 	}
 
-	static inline NET_Error Core_SendToIPv6(const SocketHandle_t p_sock, const uint8_t* p_data, uintptr_t p_size, std::span<const uint8_t, 16> p_rawAddr, const uint16_t p_port, const uint8_t p_repeat)
+	static inline NET_Error Core_SendToIPv6(const SocketHandle_t p_sock, const void* p_data, uintptr_t p_size, std::span<const uint8_t, 16> p_rawAddr, const uint16_t p_port, const uint8_t p_repeat)
 	{
 		uint8_t			count = 0;
 		sockaddr_in6	addr_info6{};
@@ -1117,7 +1117,7 @@ namespace core
 
 	}
 
-	static inline NET_Error Core_ReceiveFrom(const SocketHandle_t p_sock, uint8_t* p_data, uintptr_t& p_size)
+	static inline NET_Error Core_ReceiveFrom(const SocketHandle_t p_sock, void* p_data, uintptr_t& p_size)
 	{
 #ifdef _WIN32
 		uintptr_t size = p_size;
@@ -1138,7 +1138,7 @@ namespace core
 		return NET_Error::NoErr;
 	}
 
-	static inline NET_Error Core_ReceiveFromIPv4(const SocketHandle_t p_sock, uint8_t* p_data, uintptr_t& p_size, uint32_t& p_rawAddr, uint16_t& p_port)
+	static inline NET_Error Core_ReceiveFromIPv4(const SocketHandle_t p_sock, void* p_data, uintptr_t& p_size, uint32_t& p_rawAddr, uint16_t& p_port)
 	{
 		sockaddr_in		addr_info4{};
 		CoreSockLen_t	addr_size = sizeof(sockaddr_in);
@@ -1164,7 +1164,7 @@ namespace core
 		return NET_Error::NoErr;
 	}
 
-	static inline NET_Error Core_ReceiveFromIPv6(const SocketHandle_t p_sock, uint8_t* p_data, uintptr_t& p_size, uint8_t* p_rawAddr, uint16_t& p_port)
+	static inline NET_Error Core_ReceiveFromIPv6(const SocketHandle_t p_sock, void* p_data, uintptr_t& p_size, void* p_rawAddr, uint16_t& p_port)
 	{
 		sockaddr_in6	addr_info6{};
 		CoreSockLen_t	addr_size = sizeof(sockaddr_in6);
@@ -1246,7 +1246,7 @@ namespace core
 		return ret;
 	}
 
-	static inline NET_Error Core_WakeOnLanIPv4(const SocketHandle_t p_sock, std::span<const uint8_t, 6> p_MacAddress, const uint32_t p_rawAddr, const uint16_t* p_port, const uint8_t* p_password, const uint16_t p_password_size)
+	static inline NET_Error Core_WakeOnLanIPv4(const SocketHandle_t p_sock, std::span<const uint8_t, 6> p_MacAddress, const uint32_t p_rawAddr, const uint16_t* p_port, const void* p_password, const uint16_t p_password_size)
 	{
 		uint16_t	payload_size = 102;
 		uint8_t		payload[CORE_NET_MAX_DATA_LEN];
@@ -1285,7 +1285,7 @@ namespace core
 		return ret;
 	}
 
-	static inline NET_Error Core_WakeOnLanIPv6(const SocketHandle_t p_sock, std::span<const uint8_t, 6> p_MacAddress, std::span<const uint8_t, 16> p_rawAddr, const uint16_t* p_port, const uint8_t* p_password, const uint16_t p_password_size)
+	static inline NET_Error Core_WakeOnLanIPv6(const SocketHandle_t p_sock, std::span<const uint8_t, 6> p_MacAddress, std::span<const uint8_t, 16> p_rawAddr, const uint16_t* p_port, const void* p_password, const uint16_t p_password_size)
 	{
 		uint16_t	payload_size = 102;
 		uint8_t		payload[CORE_NET_MAX_DATA_LEN];
@@ -1329,7 +1329,7 @@ namespace core
 	//========		IP String Conversions			========
 	//========	========	========	========	========
 
-	static inline bool Core_fromStringIPv4(std::u8string_view p_address, uint8_t* p_raw)
+	static inline bool Core_fromStringIPv4(std::u8string_view p_address, void* p_raw)
 	{
 		size_t		i, pos1, pos2 = 0;
 		uint8_t		t_byteField[4];
@@ -1678,7 +1678,7 @@ namespace core_p
 		return Core_setBrodCasting(m_sock, p_broadcast);
 	}
 
-	NET_Error NetUDP_p::Receive(uint8_t* p_data, uintptr_t& p_size)
+	NET_Error NetUDP_p::Receive(void* p_data, uintptr_t& p_size)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_ReceiveFrom(m_sock, p_data, p_size);
@@ -1713,22 +1713,22 @@ namespace core_p
 		return Core_TCP_NonBlock_Connect_state(m_sock);
 	}
 
-	NET_Error NetTCP_C_p::Send_context(const uint8_t* p_buffer, const uintptr_t p_size, uintptr_t& p_context)
+	NET_Error NetTCP_C_p::Send_context(const void* p_buffer, const uintptr_t p_size, uintptr_t& p_context)
 	{
 		return Core_Send_context(m_sock, p_buffer, p_size, p_context);
 	}
 
-	NET_Error NetTCP_C_p::Send_size(const uint8_t* p_buffer, const uintptr_t p_size, uintptr_t& p_sent)
+	NET_Error NetTCP_C_p::Send_size(const void* p_buffer, const uintptr_t p_size, uintptr_t& p_sent)
 	{
 		return Core_Send_size(m_sock, p_buffer, p_size, p_sent);
 	}
 
-	NET_Error NetTCP_C_p::Receive_context(uint8_t* p_buffer, const uintptr_t p_size, uintptr_t& p_context)
+	NET_Error NetTCP_C_p::Receive_context(void* p_buffer, const uintptr_t p_size, uintptr_t& p_context)
 	{
 		return Core_Receive_context(m_sock, p_buffer, p_size, p_context);
 	}
 
-	NET_Error NetTCP_C_p::Receive_size(uint8_t* p_buffer, const uintptr_t p_size, uintptr_t& p_received)
+	NET_Error NetTCP_C_p::Receive_size(void* p_buffer, const uintptr_t p_size, uintptr_t& p_received)
 	{
 		return Core_Receive_size(m_sock, p_buffer, p_size, p_received);
 	}
@@ -1809,13 +1809,13 @@ namespace core_p
 		return Core_GetAddressIPv4(m_sock, p_IP.ui32Type, p_Port);
 	}
 
-	NET_Error NetUDP_V4::Send(const uint8_t* p_data, const uintptr_t p_size, const IPv4_netAddr& p_IP, const uint16_t p_Port, const uint8_t p_repeat)
+	NET_Error NetUDP_V4::Send(const void* p_data, const uintptr_t p_size, const IPv4_netAddr& p_IP, const uint16_t p_Port, const uint8_t p_repeat)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_SendToIPv4(m_sock, p_data, p_size, p_IP.ui32Type, p_Port, p_repeat);
 	}
 
-	NET_Error NetUDP_V4::Receive(uint8_t* p_data, uintptr_t& p_size, IPv4_netAddr& p_other_IP, uint16_t& p_other_port)
+	NET_Error NetUDP_V4::Receive(void* p_data, uintptr_t& p_size, IPv4_netAddr& p_other_IP, uint16_t& p_other_port)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_ReceiveFromIPv4(m_sock, p_data, p_size, p_other_IP.ui32Type, p_other_port);
@@ -1833,7 +1833,7 @@ namespace core_p
 		return Core_WakeOnLanIPv4(m_sock, p_MacAddress, p_subNet.ui32Type, p_port);
 	}
 
-	NET_Error NetUDP_V4::WakeOnLan_password(std::span<const uint8_t, 6> p_MacAddress, const IPv4_netAddr& p_subNet, const uint16_t* p_port, const uint8_t* p_password, const uint16_t p_password_size)
+	NET_Error NetUDP_V4::WakeOnLan_password(std::span<const uint8_t, 6> p_MacAddress, const IPv4_netAddr& p_subNet, const uint16_t* p_port, const void* p_password, const uint16_t p_password_size)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_WakeOnLanIPv4(m_sock, p_MacAddress, p_subNet.ui32Type, p_port, p_password, p_password_size);
@@ -1897,13 +1897,13 @@ namespace core_p
 		return Core_GetAddressIPv6(m_sock, p_IP.byteField, p_Port);
 	}
 
-	NET_Error NetUDP_V6::Send(const uint8_t* p_data, const uintptr_t p_size, const IPv6_netAddr& p_IP, const uint16_t p_Port, const uint8_t p_repeat)
+	NET_Error NetUDP_V6::Send(const void* p_data, const uintptr_t p_size, const IPv6_netAddr& p_IP, const uint16_t p_Port, const uint8_t p_repeat)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_SendToIPv6(m_sock, p_data, p_size, p_IP.byteField, p_Port, p_repeat);
 	}
 
-	NET_Error NetUDP_V6::Receive(uint8_t* p_data, uintptr_t& p_size, IPv6_netAddr& p_other_IP, uint16_t& p_other_port)
+	NET_Error NetUDP_V6::Receive(void* p_data, uintptr_t& p_size, IPv6_netAddr& p_other_IP, uint16_t& p_other_port)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_ReceiveFromIPv6(m_sock, p_data, p_size, p_other_IP.byteField, p_other_port);
@@ -1921,7 +1921,7 @@ namespace core_p
 		return Core_WakeOnLanIPv6(m_sock, p_MacAddress, p_subNet.byteField, p_port);
 	}
 
-	NET_Error NetUDP_V6::WakeOnLan_password(std::span<const uint8_t, 6> p_MacAddress, const IPv6_netAddr& p_subNet, const uint16_t* p_port, const uint8_t* p_password, const uint16_t p_password_size)
+	NET_Error NetUDP_V6::WakeOnLan_password(std::span<const uint8_t, 6> p_MacAddress, const IPv6_netAddr& p_subNet, const uint16_t* p_port, const void* p_password, const uint16_t p_password_size)
 	{
 		return Core_WakeOnLanIPv6(m_sock, p_MacAddress, p_subNet.byteField, p_port, p_password, p_password_size);
 	}
@@ -2473,7 +2473,7 @@ namespace core_p
 		return NET_Error::NoErr;
 	}
 
-	NET_Error NetUDP::Send(const uint8_t* p_data, const uintptr_t p_size, const IP_netAddr& p_IP, const uint16_t p_Port, const uint8_t p_repeat)
+	NET_Error NetUDP::Send(const void* p_data, const uintptr_t p_size, const IP_netAddr& p_IP, const uint16_t p_Port, const uint8_t p_repeat)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		const IPv ver = p_IP.version();
@@ -2488,7 +2488,7 @@ namespace core_p
 		return Core_SendToIPv6(m_sock, p_data, p_size, p_IP.v6.byteField, p_Port, p_repeat);
 	}
 
-	NET_Error NetUDP::Receive(uint8_t* p_data, uintptr_t& p_size, IP_netAddr& p_other_IP, uint16_t& p_other_port)
+	NET_Error NetUDP::Receive(void* p_data, uintptr_t& p_size, IP_netAddr& p_other_IP, uint16_t& p_other_port)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 
@@ -2532,7 +2532,7 @@ namespace core_p
 		return Core_WakeOnLanIPv6(m_sock, p_MacAddress, p_subNet.v6.byteField, p_port);
 	}
 
-	NET_Error NetUDP::WakeOnLan_password(std::span<const uint8_t, 6> p_MacAddress, const IP_netAddr& p_subNet, const uint16_t* p_port, const uint8_t* p_password, const uint16_t p_password_size)
+	NET_Error NetUDP::WakeOnLan_password(std::span<const uint8_t, 6> p_MacAddress, const IP_netAddr& p_subNet, const uint16_t* p_port, const void* p_password, const uint16_t p_password_size)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		const IPv ver = p_subNet.version();
