@@ -35,7 +35,7 @@
 #include <string_view>
 #include <initializer_list>
 
-#include "core_string_format.hpp"
+#include "core_string_encoding.hpp"
 #include "core_string_tostream.hpp"
 
 namespace core

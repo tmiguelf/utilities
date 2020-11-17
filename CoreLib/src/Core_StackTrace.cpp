@@ -45,7 +45,7 @@
 #include <CoreLib/Core_OS.hpp>
 #include <CoreLib/Core_Time.hpp>
 
-#include "CoreLib/string/core_string_format.hpp"
+#include "CoreLib/string/core_string_encoding.hpp"
 #include "CoreLib/string/core_string_numeric.hpp"
 #include "CoreLib/string/core_string_streamers.hpp"
 

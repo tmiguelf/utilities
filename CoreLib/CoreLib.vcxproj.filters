@@ -28,9 +28,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\CoreLib\string\core_string_format.hpp">
-      <Filter>Header Files\string</Filter>
-    </ClInclude>
     <ClInclude Include="include\CoreLib\string\core_string_misc.hpp">
       <Filter>Header Files\string</Filter>
     </ClInclude>
@@ -82,11 +79,11 @@
     <ClInclude Include="include\CoreLib\string\core_string_streamers.hpp">
       <Filter>Header Files\string</Filter>
     </ClInclude>
+    <ClInclude Include="include\CoreLib\string\core_string_encoding.hpp">
+      <Filter>Header Files\string</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\string\core_string_format.cpp">
-      <Filter>Source Files\string</Filter>
-    </ClCompile>
     <ClCompile Include="src\string\core_string_misc.cpp">
       <Filter>Source Files\string</Filter>
     </ClCompile>
@@ -113,6 +110,9 @@
     </ClCompile>
     <ClCompile Include="src\Core_StackTrace.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\string\core_string_encoding.cpp">
+      <Filter>Source Files\string</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
