@@ -95,10 +95,10 @@ namespace core
 	//======== ======== ======== From String ======== ======== ========
 
 	template <typename T = char32_t>
-	[[nodiscard]] inline bool isDigit		(T p_char) { return (p_char >= '0' && p_char <= '9'); }
+	[[nodiscard]] inline bool is_digit		(T p_char) { return (p_char >= '0' && p_char <= '9'); }
 
 	template <typename T = char32_t>
-	[[nodiscard]] inline bool isXDigit	(T p_char) { return isDigit(p_char) || (p_char >= 'A' && p_char <= 'F') || (p_char >= 'a' && p_char <= 'f'); }
+	[[nodiscard]] inline bool is_xdigit	(T p_char) { return is_digit(p_char) || (p_char >= 'A' && p_char <= 'F') || (p_char >= 'a' && p_char <= 'f'); }
 
 	[[nodiscard]] bool is_uint	(std::basic_string_view<char8_t>	p_str);
 	[[nodiscard]] bool is_uint	(std::basic_string_view<char32_t>	p_str);

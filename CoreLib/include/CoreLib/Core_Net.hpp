@@ -51,7 +51,6 @@ namespace core
 {
 
 	/// \brief Network error codes
-	//
 	enum class NET_Error: uint8_t
 	{
 		NoErr					= 0x00,	//!< The operation completed as intended
@@ -82,7 +81,6 @@ namespace core
 #endif
 
 	/// \brief provides a wrapper for a IPv4 address
-	//
 	struct IPv4_netAddr
 	{
 		union
@@ -100,30 +98,24 @@ namespace core
 		///	\brief Tries to initialize address from string
 		///	\param[in] p_address - String in dot-decimal notation
 		///	\return true if string contains valid IP in dot-decimal notation
-		//
-		bool fromString		(std::u8string_view	p_address);
+		bool from_string(std::u8string_view	p_address);
 
 		///	\brief Outputs current IP into a string
 		///	\param[out] p_address - Non-null-terminated string in dot-decimal notation. Buffer size must be at least 15 Bytes
 		///	\return Number of output bytes used
-		//
-		uintptr_t toString	(std::span<char8_t, 15> p_output) const;
+		uintptr_t to_string(std::span<char8_t, 15> p_output) const;
 
-		///	\brief Inline version of IPv4_netAddr::toString(const std::string&)
-		//
-		std::u8string toString() const;
+		///	\brief Inline version of IPv4_netAddr::to_string(std::span<char8_t, 15>)
+		std::u8string to_string() const;
 
 		///	\brief Sets IP to "Any address" (i.e. 0.0.0.0)
-		//
-		void setAny			();
+		void set_any();
 
 		///	\brief Swaps this IP with another
-		//
-		void swap			(IPv4_netAddr& p_other);
+		void swap(IPv4_netAddr& p_other);
 
 		///	\brief  Checks if IP is set to 0.0.0.0
-		//
-		bool is_null		() const;
+		bool is_null() const;
 
 		IPv4_netAddr&	operator =	(const IPv4_netAddr& p_other);
 		IPv4_netAddr&	operator |=	(const IPv4_netAddr& p_other);
@@ -139,7 +131,6 @@ namespace core
 	};
 
 	/// \brief provides a wrapper for a IPv6 address
-	//
 	struct IPv6_netAddr
 	{
 		union
@@ -157,30 +148,23 @@ namespace core
 		///	\brief Tries to initialize the address from string
 		///	\param[in] p_address - String in RFC 5952 standard
 		///	\return true if string contains valid IP in RFC5952 standard
-		//
-		bool fromString	(std::u8string_view	p_address);
-
+		bool from_string(std::u8string_view	p_address);
 
 		///	\brief Outputs current IP into a string
 		///	\param[out] p_address - Non-null-terminated string in RFC5952 standard notation. Buffer size must be at least 39 Bytes
 		///	\return Number of output bytes used
-		//
-		uintptr_t toString	(std::span<char8_t, 39> p_output) const;
+		uintptr_t to_string(std::span<char8_t, 39> p_output) const;
 
-		///	\brief Inline version of IPv6_netAddr::toString(const std::string&)
-		//
-		std::u8string toString	() const;
+		///	\brief Inline version of IPv6_netAddr::to_string(std::span<char8_t, 39>)
+		std::u8string to_string() const;
 
 		///	\brief Sets IP to "Any address" (i.e. ::0)
-		//
-		void setAny		();
+		void set_any();
 
 		///	\brief Swaps this IP with another
-		//
 		void swap(IPv6_netAddr& p_other);
 
 		///	\brief Checks if IP is set to ::0
-		//
 		bool is_null() const;
 
 		IPv6_netAddr&	operator =	(const IPv6_netAddr& p_other);
@@ -218,7 +202,6 @@ namespace core
 		};
 
 		/// \brief Indetifies the IP versionof this object
-		//
 		enum class IPv: uint8_t
 		{
 			None	= 0,	//!< IP version is not set
@@ -236,58 +219,46 @@ namespace core
 		///	\brief Tries to initialize an IPv4 address from string
 		///	\param[in] p_address - String in dot-decimal
 		///	\return true if string contains valid IPv4 in dot-decimal
-		//
-		bool fromStringV4	(std::u8string_view p_address);
+		bool from_string_v4(std::u8string_view p_address);
 
 		///	\brief Tries to initialize an IPv6 address from string
 		///	\param[in] p_address - String in RFC 5952
 		///	\return true if string contains valid IPv6 in RFC5952
-		//
-		bool fromStringV6	(std::u8string_view p_address);
+		bool from_string_v6(std::u8string_view p_address);
 
 		///	\brief Tries to initialize the address from string
 		///	\param[in] p_address - String in dot-decimal or RFC 5952
 		///	\return true if string contains valid IPv4 in dot-decimal or IPv6 in RFC5952
-		//
-		bool fromString		(std::u8string_view p_address);
+		bool from_string(std::u8string_view p_address);
 
 		///	\brief Outputs current IP into a string
 		///	\param[out] p_address - Non-null-terminated string in dot-decimal for IPv4 address, in RFC5952 for IPv6, or empty if neither. Buffer size must be at least 39 Bytes
 		///	\return Number of output bytes used
-		//
-		uintptr_t	toString	(std::span<char8_t, 39> p_output) const;
+		uintptr_t to_string(std::span<char8_t, 39> p_output) const;
 
-		///	\brief Inline version of IPv6_netAddr::toString(const std::string&)
-		//
-		std::u8string	toString	() const;
+		///	\brief Inline version of IPv6_netAddr::to_string(std::span<char8_t, 39>)
+		std::u8string to_string() const;
 
 		///	\brief Sets address to IPv4 any address (0.0.0.0)
-		//
-		void setAny_V4		();
+		void set_any_v4();
 
 		///	\brief Sets address to IPv6 any address (::0)
-		//
-		void setAny_V6		();
+		void set_any_v6();
 
 		///	\brief Sets address to IPv4 loopback address (127.0.0.1)
-		//
-		void setLoopBack_V4	();
+		void set_loopback_v4();
 
 		///	\brief Sets address to IPv6 loopback address (::1)
-		//
-		void setLoopBack_V6	();
+		void set_loopback_v6();
 
 		///	\brief Swaps this IP with another
-		//
 		void swap(IP_netAddr& p_other);
 
 		///	\brief  Checks if IP is set to 0
-		//
-		bool is_null	() const;
+		bool is_null() const;
 
 		///	\brief  Checks if  object is set to either IPv4 or IPv6 address
-		//
-		bool is_valid	() const;
+		bool is_valid() const;
 
 		IP_netAddr&	operator =	(const IP_netAddr&) = default;
 
@@ -304,11 +275,9 @@ namespace core
 
 		///	\brief The IP version of this address
 		/// \return \ref core::IP_netAddr::IPv
-		//
 		IPv version() const;
 
 		///	\brief Resets the object to no IP
-		//
 		void clear();
 	};
 
@@ -320,14 +289,12 @@ namespace core
 namespace core_p
 {
 	///	\brief Private class to implement generic socket functionality
-	//
 	class Net_Socket
 	{
 		friend class NetTCP_S;
 	public:
 		
 		/// \brief identifies local socket communication endpoints
-		//
 		enum class Endpoint: uint8_t
 		{
 			Receive	= 0x01,
@@ -343,32 +310,28 @@ namespace core_p
 
 		///	\brief Checks if the socket is in use
 		///	\return true if socket is in use
-		//
-		bool isOpen() const;
+		bool is_open() const;
 
 		///	\brief Closes a previously open socket
-		///	\return \ref core::NET_Error specifically it return \ref core::NET_Error::NET_NoErr if the socket is successfully released.
+		///	\return \ref core::NET_Error specifically it return \ref core::NET_Error::NoErr if the socket is successfully released.
 		///	\remarks
 		///		It closes the socket if one was previously open.
 		///		This function may fail or block depending on the blocking and linger properties set for the socket.
 		///		For more details please see:
 		///			https://docs.microsoft.com/en-us/windows/desktop/api/winsock/nf-winsock-closesocket
 		///			https://linux.die.net/man/7/socket
-		//
-		NET_Error CloseSocket	();
+		NET_Error close();
 
 		///	\brief Sets the blocking mode of the socket. Sockets are by default blocking.
 		///	\param[in] p_blocking - If true sets the socket to blocking, if false sets the socket to non-blocking
 		///	\return \ref core::NET_Error
-		//
-		NET_Error SetBlocking		(const bool p_blocking);
+		NET_Error set_blocking(const bool p_blocking);
 
 		///	\brief Marks the socket address to allow re-use. Sockets by default do not allow re-use.
 		///	\param[in] p_blocking - If true sets the socket address to permitted for re-use, if false revokes this permission.
 		///	\return \ref core::NET_Error
 		///	\remark There is never an absolute guarantee that the address is not re-used.
-		//
-		NET_Error SetReuseAddress	(const bool p_reuse);
+		NET_Error set_reuse_address	(const bool p_reuse);
 
 		///	\brief Sets the linger structure for the socket
 		///	\return \ref core::NET_Error
@@ -376,28 +339,24 @@ namespace core_p
 		///		For more details pelase see:
 		///			https://docs.microsoft.com/en-us/windows/desktop/api/winsock/nf-winsock-closesocket
 		///			https://linux.die.net/man/7/socket
-		//
-		NET_Error SetLinger			(const bool p_linger, const uint16_t p_timeout);
+		NET_Error set_linger			(const bool p_linger, const uint16_t p_timeout);
 
 		///	\brief Used to wait until data arrives on the reading end of the socket
 		///	\param[in] p_microseconds - Time in microseconds to wait for data to arrive at the socket before abandoning the operation
-		///	\return \ref core::NET_Error, more specifically \ref core::NET_Error::NET_NoErr on success,
-		///		and \ref core::NET_Error::NET_WouldBlock if the operation was abandoned. Or other for any other errors.
+		///	\return \ref core::NET_Error, more specifically \ref core::NET_Error::NoErr on success,
+		///		and \ref core::NET_Error::WouldBlock if the operation was abandoned. Or other for any other errors.
 		///
 		///	\remarks
 		///			If input time is larger than std::numeric_limits<long>::max() x 1000000,
 		///			then the call will block indefinitely on blocking sockets.
-		//
-		NET_Error Poll(const uint64_t p_microseconds);
+		NET_Error poll(const uint64_t p_microseconds);
 
 		///	\brief Closes the communication on a specific endpoint of the socket
 		///	\param[in] p_direction - core::core_p::Net_Socket::Endpoint_t, Endpoint to close the communication on.
 		///	\return \ref core::NET_Error
-		//
 		NET_Error shutdown(const Endpoint p_direction);
 
 		///	\brief Swaps this socket with another
-		//
 		void swap(Net_Socket& p_other);
 
 	private:
@@ -408,25 +367,23 @@ namespace core_p
 	};
 
 	///	\brief Private class to implement generic UDP functionality
-	//
 	class NetUDP_p: protected Net_Socket
 	{
 	protected:
 		NetUDP_p() = default;
 
 	public:
-		using Net_Socket::isOpen;
-		using Net_Socket::SetBlocking;
-		using Net_Socket::SetReuseAddress;
-		using Net_Socket::SetLinger;
-		using Net_Socket::Poll;
+		using Net_Socket::is_open;
+		using Net_Socket::set_blocking;
+		using Net_Socket::set_reuse_address;
+		using Net_Socket::set_linger;
+		using Net_Socket::poll;
 		using Net_Socket::shutdown;
 
 		///	\brief Sets/Unsets the broadcast mode on the socket
 		///	\param[in] p_broadcast - if true turns the broadcast mode on, if false turns it of
 		///	\return \ref core::NET_Error
-		//
-		NET_Error SetBroadcasting	(const bool p_broadcast);
+		NET_Error set_broadcasting(const bool p_broadcast);
 
 		///	\brief Reads data ready to be received on the socket
 		///	\param[out] p_data - pointer to buffer that receives the data
@@ -439,9 +396,8 @@ namespace core_p
 		///	\remarks
 		///		If the buffer is not big enough to receive the incoming data, the data will be truncated.
 		///		On blocking sockets, this call will block until data is ready to be read on the socket.
-		///		On a non-blocking socket this can return \ref core::NET_Error::NET_WouldBlock if no data is ready to be read
-		//
-		NET_Error Receive			(void* p_data, uintptr_t& p_size);
+		///		On a non-blocking socket this can return \ref core::NET_Error::WouldBlock if no data is ready to be read
+		NET_Error receive(void* p_data, uintptr_t& p_size);
 
 		///	\brief Checks the size of the next data pack ready to be received on the socket
 		///	\param[out] p_size - Returns the size of the packet
@@ -449,44 +405,40 @@ namespace core_p
 		///
 		///	\remarks
 		///		On blocking sockets, this call will block until data is ready to be read on the socket.
-		///		On a non-blocking socket this can return \ref core::NET_Error::NET_WouldBlock if no data is ready to be read.
-		//
-		NET_Error PeekSize			(uintptr_t& p_size);
+		///		On a non-blocking socket this can return \ref core::NET_Error::WouldBlock if no data is ready to be read.
+		NET_Error peek_size(uintptr_t& p_size);
 	};
 
 	///	\brief Private class to implement generic TCP server functionality
-	//
 	class NetTCP_S_p: protected Net_Socket
 	{
 	protected:
 		NetTCP_S_p() = default;
 
 	public:
-		using Net_Socket::isOpen;
-		using Net_Socket::SetBlocking;
-		using Net_Socket::SetLinger;
-		using Net_Socket::Poll;
+		using Net_Socket::is_open;
+		using Net_Socket::set_blocking;
+		using Net_Socket::set_linger;
+		using Net_Socket::poll;
 		using Net_Socket::shutdown;
 
 		///	\brief Sets the socket into listening mode
 		///	\param[in] p_max_connections - Number of connections allowed to be pending on the socket before starting to refuse them
 		///	\return \ref core::NET_Error
-		//
-		NET_Error Listen(const int p_max_connections);
+		NET_Error listen(const int p_max_connections);
 	};
 
 	///	\brief Private class to implement generic TCP client functionality
-	//
 	class NetTCP_C_p: protected Net_Socket
 	{
 	protected:
 		NetTCP_C_p() = default;
 
 	public:
-		using Net_Socket::isOpen;
-		using Net_Socket::SetBlocking;
-		using Net_Socket::SetLinger;
-		using Net_Socket::Poll;
+		using Net_Socket::is_open;
+		using Net_Socket::set_blocking;
+		using Net_Socket::set_linger;
+		using Net_Socket::poll;
 		using Net_Socket::shutdown;
 		//using Net_Socket::SetReuseAddress;
 
@@ -498,8 +450,7 @@ namespace core_p
 		///		a thus this method is required in order to check when the connection is finally established (or otherwise failed).
 		///		Calling this function on a blocking socket, or after there has been previously confirmed, produces undefined behaviour.
 		///		You should not use this function to confirm if the connection is still valid after traffic has occured.
-		//
-		NET_Error NonBlock_Connect_state();
+		NET_Error nonblock_connect_state();
 
 		///	\brief Sends data over the socket using a context algorithm to handle unsent data
 		///	\param[in] p_buffer - p_buffer containing the data to send
@@ -509,7 +460,7 @@ namespace core_p
 		///
 		///	\remarks
 		///		On blocking sockets, this call will block until data is sent (which may be less than the amount requested).
-		///		On a non-blocking socket this can return \ref core::NET_Error::NET_WouldBlock indicating
+		///		On a non-blocking socket this can return \ref core::NET_Error::WouldBlock indicating
 		///		that the request could not be serviced at the moment without blocking.
 		///		When a data sent is requested on a TCP socket it is not guaranteed that the system
 		///		is capable of processing the full amount of data, and the system can return having
@@ -523,7 +474,7 @@ namespace core_p
 		///		The idea is that the user should pass the same buffer, with the same size, with this
 		///		updated context in order to keep sending the data until it's complete.
 		///		Once all data is sent \ref p_context will be 0. If after returning, the return code is
-		///		\ref core::NET_Error::NET_NoErr and \ref p_context is 0, this means that all data was
+		///		\ref core::NET_Error::NoErr and \ref p_context is 0, this means that all data was
 		///		captured, and that the user is free to try and send new data.
 		///		For example, if a user wants to sent 500B but only 200B are able to proccessed at the moment,
 		///		before the call \ref p_context starts at 0 and becomes 200 after the call. When the user calls
@@ -532,8 +483,7 @@ namespace core_p
 		///		\ref p_context becomes 0 again.
 		///		If an error is returned \ref p_context is left unchanged, so if this is 0 before calling,
 		///		and remains 0 after the call but an error is returned, this means that no data was sent.
-		//
-		NET_Error Send_context	(const void* p_buffer, const uintptr_t p_size, uintptr_t& p_context);
+		NET_Error send_context(const void* p_buffer, const uintptr_t p_size, uintptr_t& p_context);
 		
 		///	\brief Sends data over the socket using a size tracking algorithm to handle unsent data
 		///
@@ -544,7 +494,7 @@ namespace core_p
 		///
 		///	\remarks
 		///		On blocking sockets, this call will block until data is sent (which may be less than the amount requested).
-		///		On a non-blocking socket this can return \ref core::NET_Error::NET_WouldBlock indicating
+		///		On a non-blocking socket this can return \ref core::NET_Error::WouldBlock indicating
 		///		that the request could not be serviced at the moment without blocking.
 		///		When a data sent is requested on a TCP socket it is not guaranteed that the system
 		///		is capable of processing the full amount of data, and the system can return having
@@ -553,8 +503,7 @@ namespace core_p
 		///		With a size type algorithm the user is responsible for keeping track of the data that was already
 		///		sent and adjust the buffer for the next send call.
 		///		If an error is returned \ref p_sent is left unchanged.
-		//
-		NET_Error Send_size			(const void* p_buffer, const uintptr_t p_size, uintptr_t& p_sent);
+		NET_Error send_size(const void* p_buffer, const uintptr_t p_size, uintptr_t& p_sent);
 
 		///	\brief Receives data pending on the socket using a context algorithm to handle unreceived data
 		///	\param[in] p_buffer - p_buffer to receive the data
@@ -564,7 +513,7 @@ namespace core_p
 		///
 		///	\remarks
 		///		On blocking sockets, this call will block until data is received (which may be less than the amount requested).
-		///		On a non-blocking socket this can return \ref core::NET_Error::NET_WouldBlock indicating
+		///		On a non-blocking socket this can return \ref core::NET_Error::WouldBlock indicating
 		///		that the request could not be serviced at the moment without blocking.
 		///		When a data receive is requested on a TCP socket it is not guaranteed that the system
 		///		has the full amount pending on the socket, and can return having received less data than what was
@@ -578,7 +527,7 @@ namespace core_p
 		///		The idea is that the user should pass the same buffer, with the same size, with this
 		///		updated context in order to keep feeling the buffer until it's complete.
 		///		Once all data is received \ref p_context will be 0. If after returning, the return code is
-		///		\ref core::NET_Error::NET_NoErr and \ref p_context is 0, this means that all requested data was
+		///		\ref core::NET_Error::NoErr and \ref p_context is 0, this means that all requested data was
 		///		received.
 		///		This type of algorithm is ideal in situations where the amount of data to be received is known in advance
 		///		by an agreed upon prootocol common on both ends.
@@ -589,8 +538,7 @@ namespace core_p
 		///		if on this call all remaing 300B are received, then \ref p_context becomes 0 again.
 		///		If an error is returned \ref p_context is left unchanged, so if this is 0 before calling,
 		///		and remains 0 after the call but an error is returned, this means that no data was received.
-		//
-		NET_Error Receive_context	(void* p_buffer, const uintptr_t p_size, uintptr_t& p_context);
+		NET_Error receive_context(void* p_buffer, const uintptr_t p_size, uintptr_t& p_context);
 
 		///	\brief Receives data pending on the socket using a size tracking algorithm to handle unreceived data
 		///	\param[in] p_buffer - p_buffer to receive the data
@@ -600,7 +548,7 @@ namespace core_p
 		///
 		///	\remarks
 		///		On blocking sockets, this call will block until data is received (which may be less than the amount requested).
-		///		On a non-blocking socket this can return \ref core::NET_Error::NET_WouldBlock indicating
+		///		On a non-blocking socket this can return \ref core::NET_Error::WouldBlock indicating
 		///		that the request could not be serviced at the moment without blocking.
 		///		When a data receive is requested on a TCP socket it is not guaranteed that the system
 		///		has the full amount pending on the socket, and can return having received less data than what was
@@ -610,8 +558,7 @@ namespace core_p
 		///		With a size type algorithm the user is responsible for keeping track of the data that was already
 		///		received and adjust the buffer for the next send call.
 		///		If an error is returned \ref p_received is left unchanged.
-		//
-		NET_Error Receive_size		(void* p_buffer, const uintptr_t p_size, uintptr_t& p_received);
+		NET_Error receive_size(void* p_buffer, const uintptr_t p_size, uintptr_t& p_received);
 
 		///	\brief Turns on or off the Nagle's algorithm on the socket. By default the Nagle's algorithm is on.
 		///	\param[in] p_useNagle - If true turns on the Nagle's algorithm, if false turns off the Nagle's algorithm
@@ -622,8 +569,7 @@ namespace core_p
 		///		more data to send, allowing the system to concatenate messages togheter in the same packet thus reducing
 		///		network traffic, but at the cost of a time delay.
 		///		Please see: https://en.wikipedia.org/wiki/Nagle%27s_algorithm
-		//
-		NET_Error SetNagle	(const bool p_useNagle);
+		NET_Error set_nagle(const bool p_useNagle);
 
 		///	\brief Turns on or off 'Keep Alive' packets on a tcp connection
 		///	\param[in] p_keepAlive - If true truns On Keep Alive, if false turns it off
@@ -639,15 +585,13 @@ namespace core_p
 		///			https://docs.microsoft.com/en-us/windows/win32/winsock/so-keepalive
 		///			https://linux.die.net/man/7/tcp
 		///		for more information.
-		//
-		NET_Error SetKeepAlive(const bool p_keepAlive, const uint32_t p_probePeriod, const uint32_t p_maxProbes);
+		NET_Error set_keep_alive(const bool p_keepAlive, const uint32_t p_probePeriod, const uint32_t p_maxProbes);
 	};
 
 } //namesapce core_p
 
 
 	/// \brief provides a UDP IPv4 interface
-	//
 	class NetUDP_V4: public core_p::NetUDP_p
 	{
 	public:
@@ -657,52 +601,47 @@ namespace core_p
 		NetUDP_V4() = default;
 		NetUDP_V4(NetUDP_V4&& p_other);
 
-		using Net_Socket::CloseSocket;
-		using NetUDP_p::PeekSize;
-		using NetUDP_p::Receive;
+		using Net_Socket::close;
+		using NetUDP_p::peek_size;
+		using NetUDP_p::receive;
 
 		///	\brief Creates the socket
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
 		//
-		NET_Error OpenSocket	(const bool p_blocking = true);
+		NET_Error open(const bool p_blocking = true);
 
-		///	\brief Binds a previously created socket with \ref OpenSocket to a specific network interface
+		///	\brief Binds a previously created socket with \ref open to a specific network interface
 		///	\param[in] p_IP - IP address of the interface to bind too. If 0.0.0.0 is used, then the socket is bound to any address
 		///	\param[in] p_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\return \ref core::NET_Error
-		//
-		NET_Error Bind			(const IPv4_netAddr& p_IP, const uint16_t p_Port);
+		NET_Error bind(const IPv4_netAddr& p_IP, const uint16_t p_Port);
 
-		///	\brief performs both a \ref OpenSocket and \ref Bind
+		///	\brief performs both a \ref open and \ref bind
 		///	\param[in] p_IP - IP address of the interface to bind too. If 0.0.0.0 is used, then the socket is bound to any address
 		///	\param[in] p_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
-		//
-		NET_Error OpenAndBind	(const IPv4_netAddr& p_IP, const uint16_t p_Port, bool p_blocking = true);
+		NET_Error open_bind(const IPv4_netAddr& p_IP, const uint16_t p_Port, bool p_blocking = true);
 
 		///	\brief Joins a multicast group
 		///	\param[in] p_group - address of the multicast group
-		///	\param[in] p_interface - address of the interface to use (in raw form).  If 0 is used, then the socket uses the default interface.
+		///	\param[in] p_interface - address of the interface to use (in raw form). If 0 is used, then the socket uses the default interface.
 		///	\return \ref core::NET_Error
-		///	\remarks Must be called after a socket has been created (\ref OpenSocket), but before it is bound (\ref Bind)
-		//
-		NET_Error JoinMulticastGroup(const IPv4_netAddr& p_group, const uint32_t p_interface);
+		///	\remarks Must be called after a socket has been created (\ref open), but before it is bound (\ref bind)
+		NET_Error join_multicast_group(const IPv4_netAddr& p_group, const uint32_t p_interface);
 
 		///	\brief leaves a multicast group
 		///	\param[in] p_group - address of the multicast group
 		///	\param[in] p_interface - address of the interface to use (in raw form). If 0 is used, then the socket uses the default interface.
 		///	\return \ref core::NET_Error
-		//
-		NET_Error LeaveMulticastGroup(const IPv4_netAddr& p_group, const uint32_t p_interface);
+		NET_Error leave_multicast_group(const IPv4_netAddr& p_group, const uint32_t p_interface);
 
 		///	\brief Gets the address information of the interface. Usefull if an implicit binding is used.
 		///	\param[in] p_IP - receives the IP address
 		///	\param[in] p_Port - receives the port number
 		///	\return \ref core::NET_Error
-		//
-		NET_Error GetAddress		(IPv4_netAddr& p_IP, uint16_t& p_Port);
+		NET_Error get_address(IPv4_netAddr& p_IP, uint16_t& p_Port);
 
 		///	\brief Sends data to the network
 		///	\param[in] p_data - buffer containing the data to send
@@ -714,10 +653,9 @@ namespace core_p
 		///	\remarks
 		///		An implicit bind will be made on the socket if it hasn't be bound before.
 		///		On blocking sockets, this call will block until the data has been sent.
-		///		On a non-blocking socket this can return \ref core::NET_Error::NET_WouldBlock
+		///		On a non-blocking socket this can return \ref core::NET_Error::WouldBlock
 		///		if data could not be sent at tthe time without blocking.
-		//
-		NET_Error Send		(const void* p_data, const uintptr_t p_size, const IPv4_netAddr& p_IP, const uint16_t p_Port, const uint8_t p_repeat = 0);
+		NET_Error send(const void* p_data, const uintptr_t p_size, const IPv4_netAddr& p_IP, const uint16_t p_Port, const uint8_t p_repeat = 0);
 		
 		///	\brief Collects the data pending on the socket, and retrieves address of the sender
 		///	\param[out] p_data - pointer to buffer that receives the data
@@ -730,9 +668,8 @@ namespace core_p
 		///
 		///	\remarks
 		///		On blocking sockets, this call will block until data is ready to be read on the socket.
-		///		On a non-blocking socket this can return \ref core::NET_Error::NET_WouldBlock if no data is ready to be read.
-		//
-		NET_Error Receive	(void* p_data, uintptr_t& p_size, IPv4_netAddr& p_other_IP, uint16_t& p_other_port);
+		///		On a non-blocking socket this can return \ref core::NET_Error::WouldBlock if no data is ready to be read.
+		NET_Error receive(void* p_data, uintptr_t& p_size, IPv4_netAddr& p_other_IP, uint16_t& p_other_port);
 
 		///	\brief Checks the size of the next data pack ready to be received on the socket as well as the address of the sender
 		///	\param[out] p_size - Returns the size of the packet
@@ -742,9 +679,8 @@ namespace core_p
 		///
 		///	\remarks
 		///		On blocking sockets, this call will block until data is ready to be read on the socket.
-		///		On a non-blocking socket this can return \ref core::NET_Error::NET_WouldBlock if no data is ready to be read.
-		//
-		NET_Error PeekSize	(uintptr_t& p_size, IPv4_netAddr& p_other_IP, uint16_t& p_other_port);
+		///		On a non-blocking socket this can return \ref core::NET_Error::WouldBlock if no data is ready to be read.
+		NET_Error peek_size(uintptr_t& p_size, IPv4_netAddr& p_other_IP, uint16_t& p_other_port);
 
 		///	\brief Sends a magic packet commonly used for Wake On Lan
 		///	\param[in] p_MacAddress - The MAC address of the interface to wake up
@@ -754,9 +690,8 @@ namespace core_p
 		///	\return \ref core::NET_Error
 		///
 		///	\remarks
-		///		Has the same properties as \ref Send, except the data payload is managed internally by the method.
-		//
-		NET_Error WakeOnLan			(std::span<const uint8_t, 6> p_MacAddress, const IPv4_netAddr& p_subNet, const uint16_t* p_port = nullptr);
+		///		Has the same properties as \ref send, except the data payload is managed internally by the method.
+		NET_Error WakeOnLan(std::span<const uint8_t, 6> p_MacAddress, const IPv4_netAddr& p_subNet, const uint16_t* p_port = nullptr);
 
 		///	\brief Sends a magic packet commonly used for Wake On Lan on systems with password
 		///	\param[in] p_MacAddress - The MAC address of the interface to wake up
@@ -768,12 +703,10 @@ namespace core_p
 		///	\return \ref core::NET_Error
 		///
 		///	\remarks
-		///		Has the same properties as \ref Send, except the data payload is managed internally by the method.
-		//
+		///		Has the same properties as \ref send, except the data payload is managed internally by the method.
 		NET_Error WakeOnLan_password(std::span<const uint8_t, 6> p_MacAddress, const IPv4_netAddr& p_subNet, const uint16_t* p_port = nullptr, const void* p_password = nullptr, const uint16_t p_password_size = 0);
 
 		///	\brief Swaps this socket with another
-		//
 		void swap(NetUDP_V4& p_other);
 	};
 
@@ -788,52 +721,46 @@ namespace core_p
 		NetUDP_V6() = default;
 		NetUDP_V6(NetUDP_V6&& p_other);
 
-		using Net_Socket::CloseSocket;
-		using NetUDP_p::PeekSize;
-		using NetUDP_p::Receive;
+		using Net_Socket::close;
+		using NetUDP_p::peek_size;
+		using NetUDP_p::receive;
 
 		///	\brief Creates the socket
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
-		//
-		NET_Error OpenSocket	(const bool p_blocking = true);
+		NET_Error open(const bool p_blocking = true);
 
-		///	\brief Binds a previously created socket with \ref OpenSocket to a specific network interface
+		///	\brief Binds a previously created socket with \ref open to a specific network interface
 		///	\param[in] p_IP - IP address of the interface to bind too. If ::0 is used, then the socket is bound to any address
 		///	\param[in] p_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\return \ref core::NET_Error
-		//
-		NET_Error Bind			(const IPv6_netAddr& p_IP, const uint16_t p_Port);
+		NET_Error bind(const IPv6_netAddr& p_IP, const uint16_t p_Port);
 
-		///	\brief performs both a \ref OpenSocket and \ref Bind
+		///	\brief performs both a \ref open and \ref bind
 		///	\param[in] p_IP - IP address of the interface to bind too. If ::0 is used, then the socket is bound to any address
 		///	\param[in] p_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
-		//
-		NET_Error OpenAndBind	(const IPv6_netAddr& p_IP, const uint16_t p_Port, const bool p_blocking = true);
+		NET_Error open_bind(const IPv6_netAddr& p_IP, const uint16_t p_Port, const bool p_blocking = true);
 
 		///	\brief Joins a multicast group
 		///	\param[in] p_group - address of the multicast group
 		///	\param[in] p_interface - Interface index to use. If 0 is used, then the socket picks up the default.
 		///	\return \ref core::NET_Error
-		///	\remarks Must be called after a socket has been created (\ref OpenSocket), but before it is bound (\ref Bind)
-		//
-		NET_Error JoinMulticastGroup(const IPv6_netAddr& p_group, const uint32_t p_interface);
+		///	\remarks Must be called after a socket has been created (\ref open), but before it is bound (\ref bind)
+		NET_Error join_multicast_group(const IPv6_netAddr& p_group, const uint32_t p_interface);
 
 		///	\brief Leavess a multicast group
 		///	\param[in] p_group - address of the multicast group
 		///	\param[in] p_interface - Interface index to use. If 0 is used, then the socket picks up the default.
 		///	\return \ref core::NET_Error
-		//
-		NET_Error LeaveMulticastGroup(const IPv6_netAddr& p_group, const uint32_t p_interface);
+		NET_Error leave_multicast_group(const IPv6_netAddr& p_group, const uint32_t p_interface);
 
 		///	\brief Gets the address information of the interface. Usefull if an implicit binding is used.
 		///	\param[in] p_IP - receives the IP address
 		///	\param[in] p_Port - receives the port number
 		///	\return \ref core::NET_Error
-		//
-		NET_Error GetAddress		(IPv6_netAddr&	p_IP, uint16_t& p_Port);
+		NET_Error get_address(IPv6_netAddr&	p_IP, uint16_t& p_Port);
 
 		///	\brief Sends data to the network
 		///	\param[in] p_data - buffer containing the data to send
@@ -845,10 +772,9 @@ namespace core_p
 		///	\remarks
 		///		An implicit bind will be made on the socket if it hasn't be bound before.
 		///		On blocking sockets, this call will block until the data has been sent.
-		///		On a non-blocking socket this can return \ref core::NET_Error::NET_WouldBlock
+		///		On a non-blocking socket this can return \ref core::NET_Error::WouldBlock
 		///		if data could not be sent at tthe time without blocking.
-		//
-		NET_Error Send		(const void* p_data, const uintptr_t p_size, const IPv6_netAddr& p_IP, const uint16_t p_Port, const uint8_t p_repeat = 0);
+		NET_Error send(const void* p_data, const uintptr_t p_size, const IPv6_netAddr& p_IP, const uint16_t p_Port, const uint8_t p_repeat = 0);
 
 		///	\brief Collects the data pending on the socket, and retrieves address of the sender
 		///	\param[out] p_data - pointer to buffer that receives the data
@@ -861,9 +787,8 @@ namespace core_p
 		///
 		///	\remarks
 		///		On blocking sockets, this call will block until data is ready to be read on the socket.
-		///		On a non-blocking socket this can return \ref core::NET_Error::NET_WouldBlock if no data is ready to be read.
-		//
-		NET_Error Receive	(void* p_data, uintptr_t& p_size, IPv6_netAddr& p_other_IP, uint16_t& p_other_port);
+		///		On a non-blocking socket this can return \ref core::NET_Error::WouldBlock if no data is ready to be read.
+		NET_Error receive(void* p_data, uintptr_t& p_size, IPv6_netAddr& p_other_IP, uint16_t& p_other_port);
 
 		///	\brief Checks the size of the next data pack ready to be received on the socket as well as the address of the sender
 		///	\param[out] p_size - Returns the size of the packet
@@ -873,9 +798,8 @@ namespace core_p
 		///
 		///	\remarks
 		///		On blocking sockets, this call will block until data is ready to be read on the socket.
-		///		On a non-blocking socket this can return \ref core::NET_Error::NET_WouldBlock if no data is ready to be read.
-		//
-		NET_Error PeekSize	(uintptr_t& p_size, IPv6_netAddr& p_other_IP, uint16_t& p_other_port);
+		///		On a non-blocking socket this can return \ref core::NET_Error::WouldBlock if no data is ready to be read.
+		NET_Error peek_size(uintptr_t& p_size, IPv6_netAddr& p_other_IP, uint16_t& p_other_port);
 
 		///	\brief Sends a magic packet commonly used for Wake On Lan
 		///	\param[in] p_MacAddress - The MAC address of the interface to wake up
@@ -885,8 +809,7 @@ namespace core_p
 		///	\return \ref core::NET_Error
 		///
 		///	\remarks
-		///		Has the same properties as \ref Send, except the data payload is managed internally by the method.
-		//
+		///		Has the same properties as \ref send, except the data payload is managed internally by the method.
 		NET_Error WakeOnLan(std::span<const uint8_t, 6> p_MacAddress, const IPv6_netAddr& p_subNet, const uint16_t* p_port = nullptr);
 		
 		///	\brief Sends a magic packet commonly used for Wake On Lan on systems with password
@@ -899,12 +822,10 @@ namespace core_p
 		///	\return \ref core::NET_Error
 		///
 		///	\remarks
-		///		Has the same properties as \ref Send, except the data payload is managed internally by the method.
-		//
+		///		Has the same properties as \ref send, except the data payload is managed internally by the method.
 		NET_Error WakeOnLan_password(std::span<const uint8_t, 6> p_MacAddress, const IPv6_netAddr& p_subNet, const uint16_t* p_port = nullptr, const void* p_password = nullptr, const uint16_t p_password_size = 0);
 
 		///	\brief Swaps this socket with another
-		//
 		void swap(NetUDP_V6& p_other);
 	};
 
@@ -912,7 +833,6 @@ namespace core_p
 	class NetTCP_C_V6;
 
 	/// \brief provides a TCP IPv4 server interface
-	//
 	class NetTCP_S_V4: public core_p::NetTCP_S_p
 	{
 	public:
@@ -922,44 +842,40 @@ namespace core_p
 		NetTCP_S_V4() = default;
 		NetTCP_S_V4(NetTCP_S_V4&& p_other);
 
-		using Net_Socket::CloseSocket;
+		using Net_Socket::close;
 
 		///	\brief Creates the socket
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
-		//
-		NET_Error OpenSocket		(const bool p_blocking = true);
+		NET_Error open(const bool p_blocking = true);
 
-		///	\brief Binds a previously created socket with \ref OpenSocket to a specific network interface
+		///	\brief Binds a previously created socket with \ref open to a specific network interface
 		///	\param[in] p_IP - IP address of the interface to bind too. If 0.0.0.0 is used, then the socket is bound to any address
 		///	\param[in] p_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\return \ref core::NET_Error
-		//
-		NET_Error Bind				(const IPv4_netAddr& p_IP, const uint16_t p_Port);
+		NET_Error bind(const IPv4_netAddr& p_IP, const uint16_t p_Port);
 
-		///	\brief performs both a \ref OpenSocket and \ref Bind
+		///	\brief performs both a \ref open and \ref bind
 		///	\param[in] p_IP - IP address of the interface to bind too. If 0.0.0.0 is used, then the socket is bound to any address
 		///	\param[in] p_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
 		//
-		NET_Error OpenAndBind	(const IPv4_netAddr& p_IP, const uint16_t p_Port, bool p_blocking = true);
+		NET_Error open_bind(const IPv4_netAddr& p_IP, const uint16_t p_Port, bool p_blocking = true);
 
-		///	\brief performs a \ref OpenSocket, \ref Bind, and \ref listen in one method
+		///	\brief performs a \ref open, \ref bind, and \ref listen in one method
 		///	\param[in] p_IP - IP address of the interface to bind too. If 0.0.0.0 is used, then the socket is bound to any address
 		///	\param[in] p_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\param[in] p_max_connections - Number of connections allowed to be pending on the socket before starting to refuse them
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
-		//
-		NET_Error OpenBindAndListen	(const IPv4_netAddr& p_IP, const uint16_t p_Port, const int p_max_connections, const bool p_blocking = true);
+		NET_Error open_bind_listen(const IPv4_netAddr& p_IP, const uint16_t p_Port, const int p_max_connections, const bool p_blocking = true);
 
 		///	\brief Accepts a connection request pending on the socket.
 		///	\param[out] p_Client - A client object that will manage the client communication. Object must be unused.
 		///	\param[in] p_blocking - Determines if the new socket should be a blocking or non-blocking
 		///	\return \ref core::NET_Error
-		//
-		NET_Error Accept		(NetTCP_C_V4& p_Client, const bool p_blocking = true);
+		NET_Error accept(NetTCP_C_V4& p_Client, const bool p_blocking = true);
 
 		///	\brief Accepts a connection request pending on the socket.
 		///	\param[out] p_Client - A client object that will manage the client communication. Object must be unused.
@@ -967,23 +883,19 @@ namespace core_p
 		///	\param[out] p_other_port - The peer's port number
 		///	\param[in] p_blocking - Determines if the new socket should be a blocking or non-blocking
 		///	\return \ref core::NET_Error
-		//
-		NET_Error Accept		(NetTCP_C_V4& p_Client, IPv4_netAddr& p_other_IP, uint16_t& p_other_port, const bool p_blocking = true);
+		NET_Error accept(NetTCP_C_V4& p_Client, IPv4_netAddr& p_other_IP, uint16_t& p_other_port, const bool p_blocking = true);
 
-		///	\brief Gets the address information of the interface. Usefull if \ref Bind is used without specifying the address.
+		///	\brief Gets the address information of the interface. Usefull if \ref bind is used without specifying the address.
 		///	\param[in] p_IP - receives the IP address
 		///	\param[in] p_Port - receives the port number
 		///	\return \ref core::NET_Error
-		//
-		NET_Error GetAddress	(IPv4_netAddr& p_IP, uint16_t& p_Port);
+		NET_Error get_address(IPv4_netAddr& p_IP, uint16_t& p_Port);
 
 		///	\brief Swaps this socket with another
-		//
 		void swap(NetTCP_S_V4& p_other);
 	};
 
 	/// \brief provides a TCP IPv6 server interface
-	//
 	class NetTCP_S_V6: public core_p::NetTCP_S_p
 	{
 	public:
@@ -993,37 +905,33 @@ namespace core_p
 		NetTCP_S_V6() = default;
 		NetTCP_S_V6(NetTCP_S_V6&& p_other);
 
-		using Net_Socket::CloseSocket;
+		using Net_Socket::close;
 
 		///	\brief Creates the socket
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
-		//
-		NET_Error OpenSocket		(const bool p_blocking = true);
+		NET_Error open(const bool p_blocking = true);
 
-		///	\brief Binds a previously created socket with \ref OpenSocket to a specific network interface
+		///	\brief Binds a previously created socket with \ref open to a specific network interface
 		///	\param[in] p_IP - IP address of the interface to bind too. If ::0 is used, then the socket is bound to any address
 		///	\param[in] p_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\return \ref core::NET_Error
-		//
-		NET_Error Bind				(const IPv6_netAddr& p_IP, const uint16_t p_Port);
+		NET_Error bind(const IPv6_netAddr& p_IP, const uint16_t p_Port);
 
-		///	\brief performs both a \ref OpenSocket and \ref Bind
+		///	\brief performs both a \ref open and \ref bind
 		///	\param[in] p_IP - IP address of the interface to bind too. If ::0 is used, then the socket is bound to any address
 		///	\param[in] p_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
-		//
-		NET_Error OpenAndBind	(const IPv6_netAddr& p_IP, const uint16_t p_Port, bool p_blocking = true);
+		NET_Error open_bind(const IPv6_netAddr& p_IP, const uint16_t p_Port, bool p_blocking = true);
 
-		///	\brief performs a \ref OpenSocket, \ref Bind, and \ref listen in one method
+		///	\brief performs a \ref open, \ref bind, and \ref listen in one method
 		///	\param[in] p_IP - IP address of the interface to bind too. If ::0 is used, then the socket is bound to any address
 		///	\param[in] p_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\param[in] p_max_connections - Number of connections allowed to be pending on the socket before starting to refuse them
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
-		//
-		NET_Error OpenBindAndListen	(const IPv6_netAddr& p_IP, const uint16_t p_Port, const int p_max_connections, const bool p_blocking = true);
+		NET_Error open_bind_listen(const IPv6_netAddr& p_IP, const uint16_t p_Port, const int p_max_connections, const bool p_blocking = true);
 
 		///	\brief Accepts a connection request pending on the socket.
 		///	\param[out] p_Client - A client object that will manage the client communication. Object must be unused.
@@ -1031,9 +939,8 @@ namespace core_p
 		///	\return \ref core::NET_Error
 		///	\remarks
 		///		On blocking sockets, this call will block until a clients is pending to connect.
-		///		On a non-blocking socket this can return \ref core::NET_Error::NET_WouldBlock if no client is pending.
-		//
-		NET_Error Accept		(NetTCP_C_V6& p_Client, const bool p_blocking = true);
+		///		On a non-blocking socket this can return \ref core::NET_Error::WouldBlock if no client is pending.
+		NET_Error accept(NetTCP_C_V6& p_Client, const bool p_blocking = true);
 
 		///	\brief Accepts a connection request pending on the socket.
 		///	\param[out] p_Client - A client object that will manage the client communication. Object must be unused.
@@ -1043,19 +950,17 @@ namespace core_p
 		///	\return \ref core::NET_Error
 		///	\remarks
 		///		On blocking sockets, this call will block until a clients is pending to connect.
-		///		On a non-blocking socket this can return \ref core::NET_Error::NET_WouldBlock if no client is pending.
-		//
-		NET_Error Accept		(NetTCP_C_V6& p_Client, IPv6_netAddr& p_other_IP, uint16_t& p_other_port, const bool p_blocking = true);
+		///		On a non-blocking socket this can return \ref core::NET_Error::WouldBlock if no client is pending.
+		NET_Error accept(NetTCP_C_V6& p_Client, IPv6_netAddr& p_other_IP, uint16_t& p_other_port, const bool p_blocking = true);
 
-		///	\brief Gets the address information of the interface. Usefull if \ref Bind is used without specifying the address.
+		///	\brief Gets the address information of the interface. Usefull if \ref bind is used without specifying the address.
 		///	\param[in] p_IP - receives the IP address
 		///	\param[in] p_Port - receives the port number
 		///	\return \ref core::NET_Error
 		//
-		NET_Error GetAddress	(IPv6_netAddr& p_IP, uint16_t& p_Port);
+		NET_Error get_address(IPv6_netAddr& p_IP, uint16_t& p_Port);
 
 		///	\brief Swaps this socket with another
-		//
 		void swap(NetTCP_S_V6& p_other);
 	};
 
@@ -1072,43 +977,39 @@ namespace core_p
 		NetTCP_C_V4() = default;
 		NetTCP_C_V4(NetTCP_C_V4&& p_other);
 
-		using Net_Socket::CloseSocket;
+		using Net_Socket::close;
 
 		///	\brief Creates the socket
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
-		//
-		NET_Error OpenSocket		(const bool p_blocking = true);
+		NET_Error open(const bool p_blocking = true);
 
-		///	\brief Binds a previously created socket with \ref OpenSocket to a specific network interface
+		///	\brief Binds a previously created socket with \ref open to a specific network interface
 		///	\param[in] p_IP - IP address of the interface to bind too. If 0.0.0.0 is used, then the socket is bound to any address
 		///	\param[in] p_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\return \ref core::NET_Error
-		//
-		NET_Error Bind				(const IPv4_netAddr& my_IP, const uint16_t my_Port);
+		NET_Error bind(const IPv4_netAddr& my_IP, const uint16_t my_Port);
 
-		///	\brief Connects a previously created socket with \ref OpenSocket to a server.
+		///	\brief Connects a previously created socket with \ref open to a server.
 		///	\param[in] dest_IP - IP address of the server to connect too.
 		///	\param[in] dest_Port - Port number to the server to connect too.
 		///	\return \ref core::NET_Error
 		///	\remarks
 		///		An implicit bind will be made on the socket if it hasn't be bound before.
 		///		On blocking sockets, this call will block until the connection is established.
-		///		On a non-blocking socket this can return \ref core::NET_Error::NET_WouldBlock if the connection
+		///		On a non-blocking socket this can return \ref core::NET_Error::WouldBlock if the connection
 		///		could not be completed immediately. The user must then use \ref NonBlock_Connect_state to check
 		///		when the connections is actually established.
-		//
-		NET_Error Connect			(const IPv4_netAddr& dest_IP, const uint16_t dest_Port);
+		NET_Error connect(const IPv4_netAddr& dest_IP, const uint16_t dest_Port);
 
-		///	\brief performs both a \ref OpenSocket and \ref Bind
+		///	\brief performs both a \ref open and \ref bind
 		///	\param[in] my_IP - IP address of the interface to bind too. If 0.0.0.0 is used, then the socket is bound to any address
 		///	\param[in] my_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
-		//
-		NET_Error OpenAndBind	(const IPv4_netAddr& my_IP, const uint16_t my_Port, bool p_blocking = true);
+		NET_Error open_bind(const IPv4_netAddr& my_IP, const uint16_t my_Port, bool p_blocking = true);
 
-		///	\brief performs a \ref OpenSocket, \ref Bind, and \ref Connect in one method
+		///	\brief performs a \ref open, \ref bind, and \ref connect in one method
 		///	\param[in] my_IP - IP address of the interface to bind too. If 0.0.0.0 is used, then the socket is bound to any address
 		///	\param[in] my_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\param[in] dest_IP - IP address of the server to connect too.
@@ -1118,33 +1019,28 @@ namespace core_p
 		///	\remarks
 		///		An implicit bind will be made on the socket if it hasn't be bound before.
 		///		On blocking sockets, this call will block until the connection is established.
-		///		On a non-blocking socket this can return \ref core::NET_Error::NET_WouldBlock if the connection
+		///		On a non-blocking socket this can return \ref core::NET_Error::WouldBlock if the connection
 		///		could not be completed immediately. The user must then use \ref NonBlock_Connect_state to check
 		///		when the connections is actually established.
-		//
-		NET_Error OpenBindAndConnect(const IPv4_netAddr& my_IP, const uint16_t my_Port, const IPv4_netAddr& dest_IP, const uint16_t dest_Port, const bool p_blocking = true);
+		NET_Error open_bind_connect(const IPv4_netAddr& my_IP, const uint16_t my_Port, const IPv4_netAddr& dest_IP, const uint16_t dest_Port, const bool p_blocking = true);
 
-		///	\brief Gets the address information of the interface. Usefull if \ref Bind is used without specifying the address.
+		///	\brief Gets the address information of the interface. Usefull if \ref bind is used without specifying the address.
 		///	\param[in] p_IP - receives the IP address
 		///	\param[in] p_Port - receives the port number
 		///	\return \ref core::NET_Error
-		//
-		NET_Error GetAddress	(IPv4_netAddr& p_IP, uint16_t& p_Port);
+		NET_Error get_address(IPv4_netAddr& p_IP, uint16_t& p_Port);
 
 		///	\brief Gets the peer's address information.
 		///	\param[in] p_IP - receives the IP address
 		///	\param[in] p_Port - receives the port number
 		///	\return \ref core::NET_Error
-		//
-		NET_Error GetPeerAddress(IPv4_netAddr& p_IP, uint16_t& p_Port);
+		NET_Error get_peer_address(IPv4_netAddr& p_IP, uint16_t& p_Port);
 
 		///	\brief Swaps this socket with another
-		//
 		void swap(NetTCP_C_V4& p_other);
 	};
 
 	/// \brief provides a TCP IPv6 client interface
-	//
 	class NetTCP_C_V6: public core_p::NetTCP_C_p
 	{
 		friend class NetTCP_S_V6;
@@ -1156,43 +1052,39 @@ namespace core_p
 		NetTCP_C_V6() = default;
 		NetTCP_C_V6(NetTCP_C_V6&& p_other);
 
-		using Net_Socket::CloseSocket;
+		using Net_Socket::close;
 
 		///	\brief Creates the socket
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
-		//
-		NET_Error OpenSocket		(const bool p_blocking = true);
+		NET_Error open(const bool p_blocking = true);
 
-		///	\brief Binds a previously created socket with \ref OpenSocket to a specific network interface
+		///	\brief Binds a previously created socket with \ref open to a specific network interface
 		///	\param[in] p_IP - IP address of the interface to bind too. If ::0 is used, then the socket is bound to any address
 		///	\param[in] p_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\return \ref core::NET_Error
-		//
-		NET_Error Bind				(const IPv6_netAddr& my_IP, const uint16_t my_Port);
+		NET_Error bind(const IPv6_netAddr& my_IP, const uint16_t my_Port);
 
-		///	\brief Connects a previously created socket with \ref OpenSocket to a server.
+		///	\brief Connects a previously created socket with \ref open to a server.
 		///	\param[in] dest_IP - IP address of the server to connect too.
 		///	\param[in] dest_Port - Port number to the server to connect too.
 		///	\return \ref core::NET_Error
 		///	\remarks
 		///		An implicit bind will be made on the socket if it hasn't be bound before.
 		///		On blocking sockets, this call will block until the connection is established.
-		///		On a non-blocking socket this can return \ref core::NET_Error::NET_WouldBlock if the connection
+		///		On a non-blocking socket this can return \ref core::NET_Error::WouldBlock if the connection
 		///		could not be completed immediately. The user must then use \ref NonBlock_Connect_state to check
 		///		when the connections is actually established.
-		//
-		NET_Error Connect		(const IPv6_netAddr& dest_IP, const uint16_t dest_Port);
+		NET_Error connect (const IPv6_netAddr& dest_IP, const uint16_t dest_Port);
 
-		///	\brief performs both a \ref OpenSocket and \ref Bind
+		///	\brief performs both a \ref open and \ref bind
 		///	\param[in] my_IP - IP address of the interface to bind too. If ::0 is used, then the socket is bound to any address
 		///	\param[in] my_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
-		//
-		NET_Error OpenAndBind	(const IPv6_netAddr& my_IP, const uint16_t my_Port, bool p_blocking = true);
+		NET_Error open_bind(const IPv6_netAddr& my_IP, const uint16_t my_Port, bool p_blocking = true);
 
-		///	\brief performs a \ref OpenSocket, \ref Bind, and \ref Connect in one method
+		///	\brief performs a \ref open, \ref bind, and \ref connect in one method
 		///	\param[in] my_IP - IP address of the interface to bind too. If ::0 is used, then the socket is bound to any address
 		///	\param[in] my_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\param[in] dest_IP - IP address of the server to connect too.
@@ -1202,28 +1094,24 @@ namespace core_p
 		///	\remarks
 		///		An implicit bind will be made on the socket if it hasn't be bound before.
 		///		On blocking sockets, this call will block until the connection is established.
-		///		On a non-blocking socket this can return \ref core::NET_Error::NET_WouldBlock if the connection
+		///		On a non-blocking socket this can return \ref core::NET_Error::WouldBlock if the connection
 		///		could not be completed immediately. The user must then use \ref NonBlock_Connect_state to check
 		///		when the connections is actually established.
-		//
-		NET_Error OpenBindAndConnect(const IPv6_netAddr& my_IP, const uint16_t my_Port, const IPv6_netAddr& dest_IP, const uint16_t dest_Port, const bool p_blocking = true);
+		NET_Error open_bind_connect(const IPv6_netAddr& my_IP, const uint16_t my_Port, const IPv6_netAddr& dest_IP, const uint16_t dest_Port, const bool p_blocking = true);
 
-		///	\brief Gets the address information of the interface. Usefull if \ref Bind is used without specifying the address.
+		///	\brief Gets the address information of the interface. Usefull if \ref bind is used without specifying the address.
 		///	\param[in] p_IP - receives the IP address
 		///	\param[in] p_Port - receives the port number
 		///	\return \ref core::NET_Error
-		//
-		NET_Error GetAddress	(IPv6_netAddr& p_IP, uint16_t& p_Port);
+		NET_Error get_address	(IPv6_netAddr& p_IP, uint16_t& p_Port);
 
 		///	\brief Gets the peer's address information.
 		///	\param[in] p_IP - receives the IP address
 		///	\param[in] p_Port - receives the port number
 		///	\return \ref core::NET_Error
-		//
-		NET_Error GetPeerAddress(IPv6_netAddr& p_IP, uint16_t& p_Port);
+		NET_Error get_peer_address(IPv6_netAddr& p_IP, uint16_t& p_Port);
 
 		///	\brief Swaps this socket with another
-		//
 		void swap(NetTCP_C_V6& p_other);
 	};
 
@@ -1231,7 +1119,6 @@ namespace core_p
 	//========= ======== ======== IPv Neutral ========= ======== ========
 
 	/// \brief Provides an IPv agnostic UDP interface
-	//
 	class NetUDP: public core_p::NetUDP_p
 	{
 	public:
@@ -1245,64 +1132,57 @@ namespace core_p
 		NetUDP();
 		NetUDP(NetUDP&& p_other);
 
-		using NetUDP_p::PeekSize;
-		using NetUDP_p::Receive;
+		using NetUDP_p::peek_size;
+		using NetUDP_p::receive;
 
 		///	\brief Closes a previously open socket
-		///	\return \ref core::NET_Error specifically it return \ref core::NET_Error::NET_NoErr if the socket is successfully released.
+		///	\return \ref core::NET_Error specifically it return \ref core::NET_Error::NoErr if the socket is successfully released.
 		///	\remarks
 		///		It closes the socket if one was previously open.
 		///		This function may fail or block depending on the blocking and linger properties set for the socket.
 		///		For more details please see:
 		///			https://docs.microsoft.com/en-us/windows/desktop/api/winsock/nf-winsock-closesocket
 		///			https://linux.die.net/man/7/socket
-		//
-		NET_Error CloseSocket		();
+		NET_Error close();
 
 		///	\brief Creates the socket
 		///	\param[in] p_ipV - Internet Protocol version too use for this socket
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
 		///	\remarks System should not mix IPv4 and IPv6 protocols
-		//
-		NET_Error OpenSocket		(const IPv p_ipV, const bool p_blocking = true);
+		NET_Error open(const IPv p_ipV, const bool p_blocking = true);
 
-		///	\brief Binds a previously created socket with \ref OpenSocket to a specific network interface
+		///	\brief Binds a previously created socket with \ref open to a specific network interface
 		///	\param[in] p_IP - IP address of the interface to bind too. If 0.0.0.0 (on IPv4) or ::0 (on IPv6) is used, then the socket is bound to any address
 		///	\param[in] p_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\return \ref core::NET_Error
-		//
-		NET_Error Bind				(const IP_netAddr& p_IP, const uint16_t p_Port);
+		NET_Error bind(const IP_netAddr& p_IP, const uint16_t p_Port);
 
-		///	\brief performs both a \ref OpenSocket and \ref Bind
+		///	\brief performs both a \ref open and \ref bind
 		///	\param[in] p_IP - IP address of the interface to bind too. If 0.0.0.0 (on IPv4) or ::0 (on IPv6) is used, then the socket is bound to any address
 		///	\param[in] p_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
-		//
-		NET_Error OpenAndBind		(const IP_netAddr& p_IP, const uint16_t p_Port, const bool p_blocking = true);
+		NET_Error open_bind(const IP_netAddr& p_IP, const uint16_t p_Port, const bool p_blocking = true);
 
 		///	\brief Joins a multicast group
 		///	\param[in] p_group - address of the multicast group
 		///	\param[in] p_interface - On IPv4 it represents the RAW address of the interface in integer form, on IPv6 it represents the interface index. If 0 is used, then the socket uses the default interface.
 		///	\return \ref core::NET_Error
-		///	\remarks Must be called after a socket has been created (\ref OpenSocket), but before it is bound (\ref Bind)
-		//
-		NET_Error JoinMulticastGroup(const IP_netAddr& p_group, const uint32_t p_interface);
+		///	\remarks Must be called after a socket has been created (\ref open), but before it is bound (\ref bind)
+		NET_Error join_multicast_group(const IP_netAddr& p_group, const uint32_t p_interface);
 
 		///	\brief Leaves a multicast group
 		///	\param[in] p_group - address of the multicast group
 		///	\param[in] p_interface - On IPv4 it represents the RAW address of the interface in integer form, on IPv6 it represents the interface index. If 0 is used, then the socket uses the default interface.
 		///	\return \ref core::NET_Error
-		//
-		NET_Error LeaveMulticastGroup(const IP_netAddr& p_group, const uint32_t p_interface);
+		NET_Error leave_multicast_group(const IP_netAddr& p_group, const uint32_t p_interface);
 
 		///	\brief Gets the address information of the interface. Usefull if an implicit binding is used.
 		///	\param[in] p_IP - receives the IP address
 		///	\param[in] p_Port - receives the port number
 		///	\return \ref core::NET_Error
-		//
-		NET_Error GetAddress		(IP_netAddr& p_IP, uint16_t& p_Port);
+		NET_Error get_address(IP_netAddr& p_IP, uint16_t& p_Port);
 
 		///	\brief Sends data to the network
 		///	\param[in] p_data - buffer containing the data to send
@@ -1314,11 +1194,10 @@ namespace core_p
 		///	\remarks
 		///		An implicit bind will be made on the socket if it hasn't be bound before.
 		///		On blocking sockets, this call will block until the data has been sent.
-		///		On a non-blocking socket this can return \ref core::NET_Error::NET_WouldBlock
+		///		On a non-blocking socket this can return \ref core::NET_Error::WouldBlock
 		///		if data could not be sent at tthe time without blocking.
 		///		IPv4 sockets can not send to IPv6 networks and vice-versa.
-		//
-		NET_Error Send(const void* p_data, const uintptr_t p_size, const IP_netAddr& p_IP, const uint16_t p_Port, const uint8_t p_repeat = 0);
+		NET_Error send(const void* p_data, const uintptr_t p_size, const IP_netAddr& p_IP, const uint16_t p_Port, const uint8_t p_repeat = 0);
 
 		///	\brief Collects the data pending on the socket, and retrieves address of the sender
 		///	\param[out] p_data - pointer to buffer that receives the data
@@ -1331,9 +1210,8 @@ namespace core_p
 		///
 		///	\remarks
 		///		On blocking sockets, this call will block until data is ready to be read on the socket.
-		///		On a non-blocking socket this can return \ref core::NET_Error::NET_WouldBlock if no data is ready to be read.
-		//
-		NET_Error Receive	(void* p_data, uintptr_t& p_size, IP_netAddr& p_other_IP, uint16_t& p_other_port);
+		///		On a non-blocking socket this can return \ref core::NET_Error::WouldBlock if no data is ready to be read.
+		NET_Error receive(void* p_data, uintptr_t& p_size, IP_netAddr& p_other_IP, uint16_t& p_other_port);
 
 		///	\brief Checks the size of the next data pack ready to be received on the socket as well as the address of the sender
 		///	\param[out] p_size - Returns the size of the packet
@@ -1343,9 +1221,8 @@ namespace core_p
 		///
 		///	\remarks
 		///		On blocking sockets, this call will block until data is ready to be read on the socket.
-		///		On a non-blocking socket this can return \ref core::NET_Error::NET_WouldBlock if no data is ready to be read.
-		//
-		NET_Error PeekSize	(uintptr_t& p_size, IP_netAddr& p_other_IP, uint16_t& p_other_port);
+		///		On a non-blocking socket this can return \ref core::NET_Error::WouldBlock if no data is ready to be read.
+		NET_Error peek_size(uintptr_t& p_size, IP_netAddr& p_other_IP, uint16_t& p_other_port);
 
 		///	\brief Sends a magic packet commonly used for Wake On Lan
 		///	\param[in] p_MacAddress - The MAC address of the interface to wake up
@@ -1355,9 +1232,8 @@ namespace core_p
 		///	\return \ref core::NET_Error
 		///
 		///	\remarks
-		///		Has the same properties as \ref Send, except the data payload is managed internally by the method.
-		//
-		NET_Error WakeOnLan			(std::span<const uint8_t, 6> p_MacAddress, const IP_netAddr& p_subNet, const uint16_t* p_port = nullptr);
+		///		Has the same properties as \ref send, except the data payload is managed internally by the method.
+		NET_Error WakeOnLan(std::span<const uint8_t, 6> p_MacAddress, const IP_netAddr& p_subNet, const uint16_t* p_port = nullptr);
 
 		///	\brief Sends a magic packet commonly used for Wake On Lan on systems with password
 		///	\param[in] p_MacAddress - The MAC address of the interface to wake up
@@ -1369,19 +1245,16 @@ namespace core_p
 		///	\return \ref core::NET_Error
 		///
 		///	\remarks
-		///		Has the same properties as \ref Send, except the data payload is managed internally by the method.
-		//
+		///		Has the same properties as \ref send, except the data payload is managed internally by the method.
 		NET_Error WakeOnLan_password(std::span<const uint8_t, 6> p_MacAddress, const IP_netAddr& p_subNet, const uint16_t* p_port = nullptr, const void* p_password = nullptr, const uint16_t p_password_size = 0);
 
 		///	\brief Retrieves the Internet Protocol version currently used on this socket.
 		///	\return \ref IPv
 		///
 		///	\remarks System should not mix IPv4 and IPv6 protocols
-		//
 		IPv IPversion() const;
 
 		///	\brief Swaps this socket with another
-		//
 		void swap(NetUDP& p_other);
 	};
 
@@ -1404,54 +1277,48 @@ namespace core_p
 		NetTCP_S(NetTCP_S&& p_other);
 
 		///	\brief Closes a previously open socket
-		///	\return \ref core::NET_Error specifically it return \ref core::NET_Error::NET_NoErr if the socket is successfully released.
+		///	\return \ref core::NET_Error specifically it return \ref core::NET_Error::NoErr if the socket is successfully released.
 		///	\remarks
 		///		It closes the socket if one was previously open.
 		///		This function may fail or block depending on the blocking and linger properties set for the socket.
 		///		For more details please see:
 		///			https://docs.microsoft.com/en-us/windows/desktop/api/winsock/nf-winsock-closesocket
 		///			https://linux.die.net/man/7/socket
-		//
-		NET_Error CloseSocket		();
+		NET_Error close();
 
 		///	\brief Creates the socket
 		///	\param[in] p_ipV - Internet Protocol version too use for this socket
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
 		///	\remarks System should not mix IPv4 and IPv6 protocols
-		//
-		NET_Error OpenSocket		(const IPv p_ipV, const bool p_blocking = true);
+		NET_Error open(const IPv p_ipV, const bool p_blocking = true);
 
-		///	\brief Binds a previously created socket with \ref OpenSocket to a specific network interface
+		///	\brief Binds a previously created socket with \ref open to a specific network interface
 		///	\param[in] p_IP - IP address of the interface to bind too. If 0.0.0.0 (on IPv4) or ::0 (on IPv6) is used, then the socket is bound to any address
 		///	\param[in] p_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\return \ref core::NET_Error
-		//
-		NET_Error Bind				(const IP_netAddr& p_IP, const uint16_t p_Port);
+		NET_Error bind(const IP_netAddr& p_IP, const uint16_t p_Port);
 
-		///	\brief performs both a \ref OpenSocket and \ref Bind
+		///	\brief performs both a \ref open and \ref bind
 		///	\param[in] p_IP - IP address of the interface to bind too. If 0.0.0.0 (on IPv4) or ::0 (on IPv6) is used, then the socket is bound to any address
 		///	\param[in] p_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
-		//
-		NET_Error OpenAndBind		(const IP_netAddr& p_IP, const uint16_t p_Port, const bool p_blocking = true);
+		NET_Error open_bind(const IP_netAddr& p_IP, const uint16_t p_Port, const bool p_blocking = true);
 
-		///	\brief performs a \ref OpenSocket, \ref Bind, and \ref listen in one method
+		///	\brief performs a \ref open, \ref bind, and \ref listen in one method
 		///	\param[in] p_IP - IP address of the interface to bind too. If 0.0.0.0 (on IPv4) or ::0 (on IPv6) is used, then the socket is bound to any address
 		///	\param[in] p_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\param[in] p_max_connections - Number of connections allowed to be pending on the socket before starting to refuse them
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
-		//
-		NET_Error OpenBindAndListen	(const IP_netAddr& p_IP, const uint16_t p_Port, const int p_max_connections, const bool p_blocking = true);
+		NET_Error open_bind_listen(const IP_netAddr& p_IP, const uint16_t p_Port, const int p_max_connections, const bool p_blocking = true);
 
 		///	\brief Accepts a connection request pending on the socket.
 		///	\param[out] p_Client - A client object that will manage the client communication. Object must be unused.
 		///	\param[in] p_blocking - Determines if the new socket should be a blocking or non-blocking
 		///	\return \ref core::NET_Error
-		//
-		NET_Error Accept		(NetTCP_C& p_Client, const bool p_blocking = true);
+		NET_Error accept(NetTCP_C& p_Client, const bool p_blocking = true);
 
 		///	\brief Accepts a connection request pending on the socket.
 		///	\param[out] p_Client - A client object that will manage the client communication. Object must be unused.
@@ -1459,30 +1326,25 @@ namespace core_p
 		///	\param[out] p_other_port - The peer's port number
 		///	\param[in] p_blocking - Determines if the new socket should be a blocking or non-blocking
 		///	\return \ref core::NET_Error
-		//
-		NET_Error Accept		(NetTCP_C& p_Client, IP_netAddr& p_other_IP, uint16_t& p_other_port, const bool p_blocking = true);
+		NET_Error accept(NetTCP_C& p_Client, IP_netAddr& p_other_IP, uint16_t& p_other_port, const bool p_blocking = true);
 
-		///	\brief Gets the address information of the interface. Usefull if \ref Bind is used without specifying the address.
+		///	\brief Gets the address information of the interface. Usefull if \ref bind is used without specifying the address.
 		///	\param[in] p_IP - receives the IP address
 		///	\param[in] p_Port - receives the port number
 		///	\return \ref core::NET_Error
-		//
-		NET_Error GetAddress	(IP_netAddr& p_IP, uint16_t& p_Port);
+		NET_Error get_address(IP_netAddr& p_IP, uint16_t& p_Port);
 
 		///	\brief Retrieves the Internet Protocol version currently used on this socket.
 		///	\return \ref IPv
 		///
 		///	\remarks System should not mix IPv4 and IPv6 protocols
-		//
 		IPv IPversion() const;
 
 		///	\brief Swaps this socket with another
-		//
 		void swap(NetTCP_S& p_other);
 	};
 
 	/// \brief Provides an IPv agnostic TCP client interface
-	//
 	class NetTCP_C: public core_p::NetTCP_C_p
 	{
 		friend class NetTCP_S;
@@ -1498,53 +1360,48 @@ namespace core_p
 		NetTCP_C(NetTCP_C&& p_other);
 
 		///	\brief Closes a previously open socket
-		///	\return \ref core::NET_Error specifically it return \ref core::NET_Error::NET_NoErr if the socket is successfully released.
+		///	\return \ref core::NET_Error specifically it return \ref core::NET_Error::NoErr if the socket is successfully released.
 		///	\remarks
 		///		It closes the socket if one was previously open.
 		///		This function may fail or block depending on the blocking and linger properties set for the socket.
 		///		For more details please see:
 		///			https://docs.microsoft.com/en-us/windows/desktop/api/winsock/nf-winsock-closesocket
 		///			https://linux.die.net/man/7/socket
-		//
-		NET_Error CloseSocket		();
+		NET_Error close();
 
 		///	\brief Creates the socket
 		///	\param[in] p_ipV - Internet Protocol version too use for this socket
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
 		///	\remarks System should not mix IPv4 and IPv6 protocols
-		//
-		NET_Error OpenSocket		(const IPv p_ipV, const bool p_blocking = true);
+		NET_Error open(const IPv p_ipV, const bool p_blocking = true);
 
-		///	\brief Binds a previously created socket with \ref OpenSocket to a specific network interface
+		///	\brief Binds a previously created socket with \ref open to a specific network interface
 		///	\param[in] p_IP - IP address of the interface to bind too. If 0.0.0.0 (on IPv4) or ::0 (on IPv6) is used, then the socket is bound to any address
 		///	\param[in] p_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\return \ref core::NET_Error
-		//
-		NET_Error Bind				(const IP_netAddr& my_IP, const uint16_t my_Port);
+		NET_Error bind(const IP_netAddr& my_IP, const uint16_t my_Port);
 
-		///	\brief Connects a previously created socket with \ref OpenSocket to a server.
+		///	\brief Connects a previously created socket with \ref open to a server.
 		///	\param[in] dest_IP - IP address of the server to connect too.
 		///	\param[in] dest_Port - Port number to the server to connect too.
 		///	\return \ref core::NET_Error
 		///	\remarks
 		///		An implicit bind will be made on the socket if it hasn't be bound before.
 		///		On blocking sockets, this call will block until the connection is established.
-		///		On a non-blocking socket this can return \ref core::NET_Error::NET_WouldBlock if the connection
+		///		On a non-blocking socket this can return \ref core::NET_Error::WouldBlock if the connection
 		///		could not be completed immediately. The user must then use \ref NonBlock_Connect_state to check
 		///		when the connections is actually established.
-		//
-		NET_Error Connect			(const IP_netAddr& dest_IP, const uint16_t dest_Port);
+		NET_Error connect(const IP_netAddr& dest_IP, const uint16_t dest_Port);
 
-		///	\brief performs both a \ref OpenSocket and \ref Bind
+		///	\brief performs both a \ref open and \ref bind
 		///	\param[in] p_IP - IP address of the interface to bind too. If 0.0.0.0 (on IPv4) or ::0 (on IPv6) is used, then the socket is bound to any address
 		///	\param[in] p_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
-		//
-		NET_Error OpenAndBind		(const IP_netAddr& my_IP, const uint16_t my_Port, const bool p_blocking = true);
+		NET_Error open_bind(const IP_netAddr& my_IP, const uint16_t my_Port, const bool p_blocking = true);
 
-		///	\brief performs a \ref OpenSocket, \ref Bind, and \ref Connect in one method
+		///	\brief performs a \ref open, \ref bind, and \ref connect in one method
 		///	\param[in] my_IP - IP address of the interface to bind too.  If 0.0.0.0 (on IPv4) or ::0 (on IPv6) is used, then the socket is bound to any address
 		///	\param[in] my_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\param[in] dest_IP - IP address of the server to connect too.
@@ -1554,35 +1411,30 @@ namespace core_p
 		///	\remarks
 		///		An implicit bind will be made on the socket if it hasn't be bound before.
 		///		On blocking sockets, this call will block until the connection is established.
-		///		On a non-blocking socket this can return \ref core::NET_Error::NET_WouldBlock if the connection
+		///		On a non-blocking socket this can return \ref core::NET_Error::WouldBlock if the connection
 		///		could not be completed immediately. The user must then use \ref NonBlock_Connect_state to check
 		///		when the connections is actually established.
-		//
-		NET_Error OpenBindAndConnect(const IP_netAddr& my_IP, const uint16_t my_Port, const IP_netAddr& dest_IP, const uint16_t dest_Port, const bool p_blocking = true);
+		NET_Error open_bind_connect(const IP_netAddr& my_IP, const uint16_t my_Port, const IP_netAddr& dest_IP, const uint16_t dest_Port, const bool p_blocking = true);
 
-		///	\brief Gets the address information of the interface. Usefull if \ref Bind is used without specifying the address.
+		///	\brief Gets the address information of the interface. Usefull if \ref bind is used without specifying the address.
 		///	\param[in] p_IP - receives the IP address
 		///	\param[in] p_Port - receives the port number
 		///	\return \ref core::NET_Error
-		//
-		NET_Error GetAddress	(IP_netAddr& p_IP, uint16_t& p_Port);
+		NET_Error get_address(IP_netAddr& p_IP, uint16_t& p_Port);
 
 		///	\brief Gets the peer's address information.
 		///	\param[in] p_IP - receives the IP address
 		///	\param[in] p_Port - receives the port number
 		///	\return \ref core::NET_Error
-		//
-		NET_Error GetPeerAdrress(IP_netAddr& p_IP, uint16_t& p_Port);
+		NET_Error get_peer_address(IP_netAddr& p_IP, uint16_t& p_Port);
 
 		///	\brief Retrieves the Internet Protocol version currently used on this socket.
 		///	\return \ref IPv
 		///
 		///	\remarks System should not mix IPv4 and IPv6 protocols
-		//
 		IPv IPversion() const;
 
 		///	\brief Swaps this socket with another
-		//
 		void swap(NetTCP_C& p_other);
 	};
 
@@ -1592,14 +1444,12 @@ namespace core_p
 	///
 	///	\return true if the subsystem was initialized successfully, false on error. On linux always returns true.
 	/// \sa Net_End
-	//
-	bool Net_Init	();
+	bool Net_Init();
 
 	///	\brief Releases the network subsystem on windows. On linux it has no effect.
 	///		see https://docs.microsoft.com/en-us/windows/desktop/api/winsock/nf-winsock-wsacleanup
 	/// \sa Net_Init
-	//
-	void Net_End	();
+	void Net_End();
 #else
 
 	///	\brief Initializes the network subsystem for windows. On linux this has no effect.
@@ -1607,13 +1457,11 @@ namespace core_p
 	///
 	///	\return true if the subsystem was initialized successfully, false on error. On linux always returns true.
 	/// \sa Net_End
-	//
 	inline constexpr bool Net_Init() { return true; }
 
 	///	\brief Releases the network subsystem on windows. On linux it has no effect.
 	///		see https://docs.microsoft.com/en-us/windows/desktop/api/winsock/nf-winsock-wsacleanup
 	/// \sa Net_Init
-	//
 	inline constexpr void Net_End	() {}
 #endif
 
@@ -1626,7 +1474,7 @@ namespace core_p
 	inline IPv4_netAddr::IPv4_netAddr(const IPv4_netAddr& p_other)	: ui32Type(p_other.ui32Type) { }
 
 
-	inline void IPv4_netAddr::setAny() { ui32Type = 0; }
+	inline void IPv4_netAddr::set_any() { ui32Type = 0; }
 	inline void IPv4_netAddr::swap(IPv4_netAddr& p_other) { std::swap(ui32Type, p_other.ui32Type); }
 	inline bool IPv4_netAddr::is_null() const {return ui32Type == 0;}
 

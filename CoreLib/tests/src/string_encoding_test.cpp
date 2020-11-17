@@ -31,7 +31,7 @@
 
 #include <gtest/gtest.h>
 
-#include <CoreLib/string/core_string_format.hpp>
+#include <CoreLib/string/core_string_encoding.hpp>
 
 namespace text_formating
 {

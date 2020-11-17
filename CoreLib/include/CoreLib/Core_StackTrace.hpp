@@ -42,13 +42,11 @@ namespace core
 ///	\param[in] p_file - Where to output the file
 ///	\return 0 on success, other for otherwise.
 ///	\note Windows only
-//
 uint8_t generate_minidump(const std::filesystem::path& p_file);
 #else
 ///	\brief Generates a core dump that can be used for debugging. Requires core dumps to be configured correctly on the OS side.
 ///	\return 0 if triggered (no guarantee of success), other for otherwise.
 ///	\note Linux only
-//
 uint8_t generate_coredump();
 #endif
 
@@ -61,13 +59,10 @@ uint8_t generate_coredump();
 ///
 ///	\return true if stack trace was registered successfully
 ///
-///	\bug
-///		invalid arguments passed to C runtime function are known to not be captured by this
-//
-bool registerCrashTrace(const std::filesystem::path& p_output_file);
+///	\bug invalid arguments passed to C runtime function are known to not be captured by this
+bool register_crash_trace(const std::filesystem::path& p_output_file);
 
 ///	\brief Pairs module name and base address
-//
 struct ModuleAddr
 {
 	uintptr_t	m_addr;	//!< Base address of the loaded module
@@ -79,7 +74,6 @@ struct ModuleAddr
 ///	\warning Function names may not necessarily be correct. \n
 ///		Name is determined based on last know name prior to current address, which is not necessarily be the same function the address belongs to.
 ///		use .map files to confirm names.
-//
 struct StackInfo
 {
 	uintptr_t		m_addr;	//!< Address in the call stack
@@ -87,8 +81,7 @@ struct StackInfo
 };
 
 
-///	\brief Adds information about the base of the corresponding module to \ref Core_StackInfo
-//
+///	\brief Adds information about the base of the corresponding module to \ref StackInfo
 struct StackBaseInfo: public StackInfo
 {
 	uintptr_t m_modBase;	//!< Module base address
@@ -98,7 +91,6 @@ struct StackBaseInfo: public StackInfo
 ///	\warning Function names may not necessarily be correct. \n
 ///		Name is determined based on last know name prior to current address, which is not necessarily the same function as the one the address belongs to.
 ///		Use .map files to confirm names.
-//
 struct StackTrace_FullInfo
 {
 	std::list<ModuleAddr>		m_modules;	//!< Loaded modules
@@ -106,45 +98,40 @@ struct StackTrace_FullInfo
 };
 
 ///	\brief Used to list all loaded modules and full stack
-///	\param[out] p_list - list to be filled with \ref Core_ModuleAddr data
+///	\param[out] p_list - list to be filled with \ref ModuleAddr data
 ///	\return 0 on success, other if otherwise
 ///	\warning Function names may not necessarily be correct. \n
 ///		Name is determined based on last know name prior to current address, which is not necessarily the same function as the one the address belongs to.
 ///		Use .map files to confirm names.
-//
 uint8_t list_modules(std::list<ModuleAddr>& p_list);
 
 ///	\brief Generates stack trace with full module context
-///	\param[out] p_trace - \ref Core_StackTrace_FullInfo to be filled
+///	\param[out] p_trace - \ref StackTrace_FullInfo to be filled
 ///	\return 0 on success, other if otherwise
 ///	\warning Function names may not necessarily be correct. \n
 ///		Name is determined based on last know name prior to current address, which is not necessarily the same function as the one the address belongs to.
 ///		Use .map files to confirm names.
-//
 uint8_t stack_trace(StackTrace_FullInfo& p_trace);
 
 ///	\brief Generates stack trace with module base addresses for entries in the stack
-///	\param[out] p_trace - list to be filed with \ref Core_StackBaseInfo data
+///	\param[out] p_trace - list to be filed with \ref StackBaseInfo data
 ///	\return 0 on success, other if otherwise
 ///	\warning Function names may not necessarily be correct. \n
 ///		Name is determined based on last know name prior to current address, which is not necessarily the same function as the one the address belongs to.
 ///		Use .map files to confirm names.
-//
 uint8_t stack_trace(std::list<StackBaseInfo>& p_trace);
 
 ///	\brief Generates stack trace with only function names and addresses
-///	\param[out] p_trace - list to be filled with \ref Core_StackInfo data
+///	\param[out] p_trace - list to be filled with \ref StackInfo data
 ///	\return 0 on success, other if otherwise
 ///	\warning Function names may not necessarily be correct. \n
 ///		Name is determined based on last know name prior to current address, which is not necessarily the same function as the one the address belongs to.
 ///		Use .map files to confirm names.
-//
 uint8_t stack_trace(std::list<StackInfo>& p_trace);
 
 ///	\brief Generates stack trace with only addresses
 ///	\param[out] p_trace - list of addresses to be filled
 ///	\return 0 on success, other if otherwise
-//
 uint8_t stack_trace(std::list<uintptr_t>& p_trace);
 
 } //namespace core

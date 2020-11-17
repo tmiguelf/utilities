@@ -1476,7 +1476,7 @@ namespace core
 	}
 
 
-	static inline uintptr_t Core_ToStringIPv4(std::span<const uint8_t, 4> p_raw, std::span<char8_t, 15> p_output)
+	static inline uintptr_t to_string_IPv4(std::span<const uint8_t, 4> p_raw, std::span<char8_t, 15> p_output)
 	{
 		char8_t* pivot = p_output.data();
 		pivot += core::to_chars(p_raw[0], std::span<char8_t, 3>{pivot, 3});
@@ -1493,7 +1493,7 @@ namespace core
 		return static_cast<uintptr_t>(pivot - p_output.data());
 	}
 
-	static inline uintptr_t Core_ToStringIPv6(std::span<const uint16_t, 8> p_raw, std::span<char8_t, 39> p_output)
+	static inline uintptr_t to_string_IPv6(std::span<const uint16_t, 8> p_raw, std::span<char8_t, 39> p_output)
 	{
 		uint8_t cEliad = 0, posEliad = 0;	// initialized because otherwise generates warning 4701
 		uint8_t sizeEliad, cSize;
@@ -1617,12 +1617,12 @@ namespace core_p
 		}
 	}
 
-	bool Net_Socket::isOpen() const
+	bool Net_Socket::is_open() const
 	{
 		return m_sock != INVALID_SOCKET;
 	}
 
-	NET_Error Net_Socket::CloseSocket()
+	NET_Error Net_Socket::close()
 	{
 		if(m_sock != INVALID_SOCKET)
 		{
@@ -1639,7 +1639,7 @@ namespace core_p
 		return NET_Error::NoErr;
 	}
 
-	NET_Error Net_Socket::Poll(const uint64_t p_microseconds)
+	NET_Error Net_Socket::poll(const uint64_t p_microseconds)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_Poll(m_sock, p_microseconds);
@@ -1651,19 +1651,19 @@ namespace core_p
 		return Core_Shutdown(m_sock, p_direction);
 	}
 
-	NET_Error Net_Socket::SetBlocking(const bool p_blocking)
+	NET_Error Net_Socket::set_blocking(const bool p_blocking)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_setSockBlocking(m_sock, p_blocking);
 	}
 
-	NET_Error Net_Socket::SetReuseAddress(const bool p_reuse)
+	NET_Error Net_Socket::set_reuse_address(const bool p_reuse)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_setReuseAddress(m_sock, p_reuse);
 	}
 
-	NET_Error Net_Socket::SetLinger(const bool p_linger, const uint16_t p_timeout)
+	NET_Error Net_Socket::set_linger(const bool p_linger, const uint16_t p_timeout)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_setSockLinger(m_sock, p_linger, p_timeout);
@@ -1672,19 +1672,19 @@ namespace core_p
 
 	//========= ======== ======== NetUDP_p ========= ======== ========
 
-	NET_Error NetUDP_p::SetBroadcasting(const bool p_broadcast)
+	NET_Error NetUDP_p::set_broadcasting(const bool p_broadcast)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_setBrodCasting(m_sock, p_broadcast);
 	}
 
-	NET_Error NetUDP_p::Receive(void* p_data, uintptr_t& p_size)
+	NET_Error NetUDP_p::receive(void* p_data, uintptr_t& p_size)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_ReceiveFrom(m_sock, p_data, p_size);
 	}
 
-	NET_Error NetUDP_p::PeekSize(uintptr_t& p_size)
+	NET_Error NetUDP_p::peek_size(uintptr_t& p_size)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_PeekSize(m_sock, p_size);
@@ -1693,11 +1693,11 @@ namespace core_p
 
 	//========= ======== ======== NetTCP_S_p ========= ======== ========
 
-	NET_Error NetTCP_S_p::Listen(const int p_max_connections)
+	NET_Error NetTCP_S_p::listen(const int p_max_connections)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 
-		if(listen(m_sock, p_max_connections))
+		if(::listen(m_sock, p_max_connections))
 		{
 			return NET_Error::Sock_Listen;
 		}
@@ -1707,39 +1707,39 @@ namespace core_p
 
 	//========= ======== ======== NetTCP_C_p ========= ======== ========
 
-	NET_Error NetTCP_C_p::NonBlock_Connect_state()
+	NET_Error NetTCP_C_p::nonblock_connect_state()
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_TCP_NonBlock_Connect_state(m_sock);
 	}
 
-	NET_Error NetTCP_C_p::Send_context(const void* p_buffer, const uintptr_t p_size, uintptr_t& p_context)
+	NET_Error NetTCP_C_p::send_context(const void* p_buffer, const uintptr_t p_size, uintptr_t& p_context)
 	{
 		return Core_Send_context(m_sock, p_buffer, p_size, p_context);
 	}
 
-	NET_Error NetTCP_C_p::Send_size(const void* p_buffer, const uintptr_t p_size, uintptr_t& p_sent)
+	NET_Error NetTCP_C_p::send_size(const void* p_buffer, const uintptr_t p_size, uintptr_t& p_sent)
 	{
 		return Core_Send_size(m_sock, p_buffer, p_size, p_sent);
 	}
 
-	NET_Error NetTCP_C_p::Receive_context(void* p_buffer, const uintptr_t p_size, uintptr_t& p_context)
+	NET_Error NetTCP_C_p::receive_context(void* p_buffer, const uintptr_t p_size, uintptr_t& p_context)
 	{
 		return Core_Receive_context(m_sock, p_buffer, p_size, p_context);
 	}
 
-	NET_Error NetTCP_C_p::Receive_size(void* p_buffer, const uintptr_t p_size, uintptr_t& p_received)
+	NET_Error NetTCP_C_p::receive_size(void* p_buffer, const uintptr_t p_size, uintptr_t& p_received)
 	{
 		return Core_Receive_size(m_sock, p_buffer, p_size, p_received);
 	}
 
-	NET_Error NetTCP_C_p::SetNagle(const bool p_useNagle)
+	NET_Error NetTCP_C_p::set_nagle(const bool p_useNagle)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_setNagle(m_sock, p_useNagle);
 	}
 
-	NET_Error NetTCP_C_p::SetKeepAlive(const bool p_keepAlive, const uint32_t p_probePeriod, const uint32_t p_maxProbes)
+	NET_Error NetTCP_C_p::set_keep_alive(const bool p_keepAlive, const uint32_t p_probePeriod, const uint32_t p_maxProbes)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_SetKeepAlive(m_sock, p_keepAlive, p_probePeriod, p_maxProbes);
@@ -1759,19 +1759,19 @@ namespace core_p
 		std::swap(m_sock, p_other.m_sock);
 	}
 
-	NET_Error NetUDP_V4::OpenSocket(const bool p_blocking)
+	NET_Error NetUDP_V4::open(const bool p_blocking)
 	{
 		if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
 		return Core_CreateUDPSocketIPv4(m_sock, p_blocking);
 	}
 
-	NET_Error NetUDP_V4::Bind(const IPv4_netAddr& p_IP, const uint16_t p_Port)
+	NET_Error NetUDP_V4::bind(const IPv4_netAddr& p_IP, const uint16_t p_Port)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_BindIPv4(m_sock, p_IP.ui32Type, p_Port);
 	}
 
-	NET_Error NetUDP_V4::OpenAndBind(const IPv4_netAddr& p_IP, const uint16_t p_Port, const bool p_blocking)
+	NET_Error NetUDP_V4::open_bind(const IPv4_netAddr& p_IP, const uint16_t p_Port, const bool p_blocking)
 	{
 		if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
 		NET_Error ret;
@@ -1791,37 +1791,37 @@ namespace core_p
 		return NET_Error::NoErr;
 	}
 
-	NET_Error NetUDP_V4::JoinMulticastGroup(const IPv4_netAddr& p_group, const uint32_t p_interface)
+	NET_Error NetUDP_V4::join_multicast_group(const IPv4_netAddr& p_group, const uint32_t p_interface)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_JoinMulticastGroupIPv4(m_sock, p_group.ui32Type, p_interface);
 	}
 
-	NET_Error NetUDP_V4::LeaveMulticastGroup(const IPv4_netAddr& p_group, const uint32_t p_interface)
+	NET_Error NetUDP_V4::leave_multicast_group(const IPv4_netAddr& p_group, const uint32_t p_interface)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_LeaveMulticastGroupIPv4(m_sock, p_group.ui32Type, p_interface);
 	}
 
-	NET_Error NetUDP_V4::GetAddress(IPv4_netAddr& p_IP, uint16_t& p_Port)
+	NET_Error NetUDP_V4::get_address(IPv4_netAddr& p_IP, uint16_t& p_Port)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_GetAddressIPv4(m_sock, p_IP.ui32Type, p_Port);
 	}
 
-	NET_Error NetUDP_V4::Send(const void* p_data, const uintptr_t p_size, const IPv4_netAddr& p_IP, const uint16_t p_Port, const uint8_t p_repeat)
+	NET_Error NetUDP_V4::send(const void* p_data, const uintptr_t p_size, const IPv4_netAddr& p_IP, const uint16_t p_Port, const uint8_t p_repeat)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_SendToIPv4(m_sock, p_data, p_size, p_IP.ui32Type, p_Port, p_repeat);
 	}
 
-	NET_Error NetUDP_V4::Receive(void* p_data, uintptr_t& p_size, IPv4_netAddr& p_other_IP, uint16_t& p_other_port)
+	NET_Error NetUDP_V4::receive(void* p_data, uintptr_t& p_size, IPv4_netAddr& p_other_IP, uint16_t& p_other_port)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_ReceiveFromIPv4(m_sock, p_data, p_size, p_other_IP.ui32Type, p_other_port);
 	}
 
-	NET_Error NetUDP_V4::PeekSize(uintptr_t& p_size, IPv4_netAddr& p_other_IP, uint16_t& p_other_port)
+	NET_Error NetUDP_V4::peek_size(uintptr_t& p_size, IPv4_netAddr& p_other_IP, uint16_t& p_other_port)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_PeekSizeIPv4(m_sock, p_size, p_other_IP.ui32Type, p_other_port);
@@ -1847,18 +1847,18 @@ namespace core_p
 		std::swap(m_sock, p_other.m_sock);
 	}
 
-	NET_Error NetUDP_V6::OpenSocket(const bool p_blocking)
+	NET_Error NetUDP_V6::open(const bool p_blocking)
 	{
 		if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
 		return Core_CreateUDPSocketIPv6(m_sock, p_blocking);
 	}
 
-	NET_Error NetUDP_V6::Bind(const IPv6_netAddr& p_IP, const uint16_t p_Port)
+	NET_Error NetUDP_V6::bind(const IPv6_netAddr& p_IP, const uint16_t p_Port)
 	{
 		return Core_BindIPv6(m_sock, p_IP.byteField, p_Port);
 	}
 
-	NET_Error NetUDP_V6::OpenAndBind(const IPv6_netAddr& p_IP, const uint16_t p_Port, bool p_blocking)
+	NET_Error NetUDP_V6::open_bind(const IPv6_netAddr& p_IP, const uint16_t p_Port, bool p_blocking)
 	{
 		if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
 
@@ -1879,37 +1879,37 @@ namespace core_p
 		return NET_Error::NoErr;
 	}
 
-	NET_Error NetUDP_V6::JoinMulticastGroup(const IPv6_netAddr& p_group, const uint32_t p_interface)
+	NET_Error NetUDP_V6::join_multicast_group(const IPv6_netAddr& p_group, const uint32_t p_interface)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_JoinMulticastGroupIPv6(m_sock, p_group.byteField, p_interface);
 	}
 
-	NET_Error NetUDP_V6::LeaveMulticastGroup(const IPv6_netAddr& p_group, const uint32_t p_interface)
+	NET_Error NetUDP_V6::leave_multicast_group(const IPv6_netAddr& p_group, const uint32_t p_interface)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_LeaveMulticastGroupIPv6(m_sock, p_group.byteField, p_interface);
 	}
 
-	NET_Error NetUDP_V6::GetAddress(IPv6_netAddr& p_IP, uint16_t& p_Port)
+	NET_Error NetUDP_V6::get_address(IPv6_netAddr& p_IP, uint16_t& p_Port)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_GetAddressIPv6(m_sock, p_IP.byteField, p_Port);
 	}
 
-	NET_Error NetUDP_V6::Send(const void* p_data, const uintptr_t p_size, const IPv6_netAddr& p_IP, const uint16_t p_Port, const uint8_t p_repeat)
+	NET_Error NetUDP_V6::send(const void* p_data, const uintptr_t p_size, const IPv6_netAddr& p_IP, const uint16_t p_Port, const uint8_t p_repeat)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_SendToIPv6(m_sock, p_data, p_size, p_IP.byteField, p_Port, p_repeat);
 	}
 
-	NET_Error NetUDP_V6::Receive(void* p_data, uintptr_t& p_size, IPv6_netAddr& p_other_IP, uint16_t& p_other_port)
+	NET_Error NetUDP_V6::receive(void* p_data, uintptr_t& p_size, IPv6_netAddr& p_other_IP, uint16_t& p_other_port)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_ReceiveFromIPv6(m_sock, p_data, p_size, p_other_IP.byteField, p_other_port);
 	}
 
-	NET_Error NetUDP_V6::PeekSize(uintptr_t& p_size, IPv6_netAddr& p_other_IP, uint16_t& p_other_port)
+	NET_Error NetUDP_V6::peek_size(uintptr_t& p_size, IPv6_netAddr& p_other_IP, uint16_t& p_other_port)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_PeekSizeIPv6(m_sock, p_size, p_other_IP.byteField, p_other_port);
@@ -1938,19 +1938,19 @@ namespace core_p
 		std::swap(m_sock, p_other.m_sock);
 	}
 
-	NET_Error NetTCP_S_V4::OpenSocket(const bool p_blocking)
+	NET_Error NetTCP_S_V4::open(const bool p_blocking)
 	{
 		if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
 		return Core_CreateTCPSocketIPv4(m_sock, p_blocking);
 	}
 
-	NET_Error NetTCP_S_V4::Bind(const IPv4_netAddr& p_IP, const uint16_t p_Port)
+	NET_Error NetTCP_S_V4::bind(const IPv4_netAddr& p_IP, const uint16_t p_Port)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_BindIPv4(m_sock, p_IP.ui32Type, p_Port);
 	}
 
-	NET_Error NetTCP_S_V4::OpenAndBind(const IPv4_netAddr& p_IP, const uint16_t p_Port, bool p_blocking)
+	NET_Error NetTCP_S_V4::open_bind(const IPv4_netAddr& p_IP, const uint16_t p_Port, bool p_blocking)
 	{
 		if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
 
@@ -1970,7 +1970,7 @@ namespace core_p
 		return NET_Error::NoErr;
 	}
 
-	NET_Error NetTCP_S_V4::OpenBindAndListen(const IPv4_netAddr& p_IP, const uint16_t p_Port, const int p_max_connections, const bool p_blocking)
+	NET_Error NetTCP_S_V4::open_bind_listen(const IPv4_netAddr& p_IP, const uint16_t p_Port, const int p_max_connections, const bool p_blocking)
 	{
 		if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
 
@@ -1988,7 +1988,7 @@ namespace core_p
 		}
 
 		//listen
-		if(listen(m_sock, p_max_connections))
+		if(::listen(m_sock, p_max_connections))
 		{
 			Core_CloseSock(m_sock);
 			m_sock = INVALID_SOCKET;
@@ -1997,19 +1997,19 @@ namespace core_p
 		return NET_Error::NoErr;
 	}
 
-	NET_Error NetTCP_S_V4::Accept(NetTCP_C_V4& p_Client, bool p_blocking)
+	NET_Error NetTCP_S_V4::accept(NetTCP_C_V4& p_Client, bool p_blocking)
 	{
 		if(m_sock == INVALID_SOCKET)	return NET_Error::Invalid_Socket;
-		if(p_Client.isOpen())			return NET_Error::Already_Used;
+		if(p_Client.is_open())			return NET_Error::Already_Used;
 
 		sockaddr_in addr_info4;
 		return Core_AcceptIPv4(m_sock, p_Client.m_sock, p_blocking, addr_info4);
 	}
 
-	NET_Error NetTCP_S_V4::Accept(NetTCP_C_V4& p_Client, IPv4_netAddr& p_other_IP, uint16_t& p_other_port, const bool p_blocking)
+	NET_Error NetTCP_S_V4::accept(NetTCP_C_V4& p_Client, IPv4_netAddr& p_other_IP, uint16_t& p_other_port, const bool p_blocking)
 	{
 		if(m_sock == INVALID_SOCKET)	return NET_Error::Invalid_Socket;
-		if(p_Client.isOpen())			return NET_Error::Already_Used;
+		if(p_Client.is_open())			return NET_Error::Already_Used;
 
 		sockaddr_in addr_info4;
 
@@ -2025,7 +2025,7 @@ namespace core_p
 		return NET_Error::NoErr;
 	}
 
-	NET_Error NetTCP_S_V4::GetAddress(IPv4_netAddr& p_IP, uint16_t& p_Port)
+	NET_Error NetTCP_S_V4::get_address(IPv4_netAddr& p_IP, uint16_t& p_Port)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_GetAddressIPv4(m_sock, p_IP.ui32Type, p_Port);
@@ -2039,19 +2039,19 @@ namespace core_p
 		std::swap(m_sock, p_other.m_sock);
 	}
 
-	NET_Error NetTCP_S_V6::OpenSocket(const bool p_blocking)
+	NET_Error NetTCP_S_V6::open(const bool p_blocking)
 	{
 		if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
 		return Core_CreateTCPSocketIPv6(m_sock, p_blocking);
 	}
 
-	NET_Error NetTCP_S_V6::Bind(const IPv6_netAddr& p_IP, const uint16_t p_Port)
+	NET_Error NetTCP_S_V6::bind(const IPv6_netAddr& p_IP, const uint16_t p_Port)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_BindIPv6(m_sock, p_IP.byteField, p_Port);
 	}
 
-	NET_Error NetTCP_S_V6::OpenAndBind(const IPv6_netAddr& p_IP, const uint16_t p_Port, const bool p_blocking)
+	NET_Error NetTCP_S_V6::open_bind(const IPv6_netAddr& p_IP, const uint16_t p_Port, const bool p_blocking)
 	{
 		if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
 
@@ -2071,7 +2071,7 @@ namespace core_p
 		return NET_Error::NoErr;
 	}
 
-	NET_Error NetTCP_S_V6::OpenBindAndListen(const IPv6_netAddr& p_IP, const uint16_t p_Port, const int p_max_connections, const bool p_blocking)
+	NET_Error NetTCP_S_V6::open_bind_listen(const IPv6_netAddr& p_IP, const uint16_t p_Port, const int p_max_connections, const bool p_blocking)
 	{
 		if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
 
@@ -2089,7 +2089,7 @@ namespace core_p
 		}
 
 		//listen
-		if(listen(m_sock, p_max_connections))
+		if(::listen(m_sock, p_max_connections))
 		{
 			Core_CloseSock(m_sock);
 			m_sock = INVALID_SOCKET;
@@ -2098,19 +2098,19 @@ namespace core_p
 		return NET_Error::NoErr;
 	}
 
-	NET_Error NetTCP_S_V6::Accept(NetTCP_C_V6& p_Client, const bool p_blocking)
+	NET_Error NetTCP_S_V6::accept(NetTCP_C_V6& p_Client, const bool p_blocking)
 	{
 		if(m_sock == INVALID_SOCKET)	return NET_Error::Invalid_Socket;
-		if(p_Client.isOpen())			return NET_Error::Already_Used;
+		if(p_Client.is_open())			return NET_Error::Already_Used;
 
 		sockaddr_in6 addr_info6;
 		return Core_AcceptIPv6(m_sock, p_Client.m_sock, p_blocking, addr_info6);
 	}
 
-	NET_Error NetTCP_S_V6::Accept(NetTCP_C_V6& p_Client, IPv6_netAddr& p_other_IP, uint16_t& p_other_port, const bool p_blocking)
+	NET_Error NetTCP_S_V6::accept(NetTCP_C_V6& p_Client, IPv6_netAddr& p_other_IP, uint16_t& p_other_port, const bool p_blocking)
 	{
 		if(m_sock == INVALID_SOCKET)	return NET_Error::Invalid_Socket;
-		if(p_Client.isOpen())			return NET_Error::Already_Used;
+		if(p_Client.is_open())			return NET_Error::Already_Used;
 
 		sockaddr_in6	addr_info6;
 
@@ -2126,7 +2126,7 @@ namespace core_p
 		return NET_Error::NoErr;
 	}
 
-	NET_Error NetTCP_S_V6::GetAddress(IPv6_netAddr& p_IP, uint16_t& p_Port)
+	NET_Error NetTCP_S_V6::get_address(IPv6_netAddr& p_IP, uint16_t& p_Port)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_GetAddressIPv6(m_sock, p_IP.byteField, p_Port);
@@ -2145,26 +2145,26 @@ namespace core_p
 		std::swap(m_sock, p_other.m_sock);
 	}
 
-	NET_Error NetTCP_C_V4::OpenSocket(const bool p_blocking)
+	NET_Error NetTCP_C_V4::open(const bool p_blocking)
 	{
 		if(m_sock != INVALID_SOCKET)	return NET_Error::Invalid_Socket;
 		return Core_CreateTCPSocketIPv4(m_sock, p_blocking);
 	}
 
-	NET_Error NetTCP_C_V4::Bind(const IPv4_netAddr& my_IP, const uint16_t my_Port)
+	NET_Error NetTCP_C_V4::bind(const IPv4_netAddr& my_IP, const uint16_t my_Port)
 	{
 		if(m_sock == INVALID_SOCKET)	return NET_Error::Invalid_Socket;
 		return Core_BindIPv4(m_sock, my_IP.ui32Type, my_Port);
 	}
 
-	NET_Error NetTCP_C_V4::Connect(const IPv4_netAddr& dest_IP, const uint16_t dest_Port)
+	NET_Error NetTCP_C_V4::connect(const IPv4_netAddr& dest_IP, const uint16_t dest_Port)
 	{
 		if(m_sock == INVALID_SOCKET)	return NET_Error::Invalid_Socket;
 		if(dest_IP.ui32Type == 0)		return NET_Error::Invalid_IP;
 		return Core_ConnectIPv4(m_sock, dest_IP.ui32Type, dest_Port);
 	}
 
-	NET_Error NetTCP_C_V4::OpenAndBind(const IPv4_netAddr& my_IP, const uint16_t my_Port, const bool p_blocking)
+	NET_Error NetTCP_C_V4::open_bind(const IPv4_netAddr& my_IP, const uint16_t my_Port, const bool p_blocking)
 	{
 		if(m_sock != INVALID_SOCKET)	return NET_Error::Already_Used;
 
@@ -2183,7 +2183,7 @@ namespace core_p
 		return NET_Error::NoErr;
 	}
 
-	NET_Error NetTCP_C_V4::OpenBindAndConnect(const IPv4_netAddr& my_IP, const uint16_t my_Port, const IPv4_netAddr& dest_IP, const uint16_t dest_Port, const bool p_blocking)
+	NET_Error NetTCP_C_V4::open_bind_connect(const IPv4_netAddr& my_IP, const uint16_t my_Port, const IPv4_netAddr& dest_IP, const uint16_t dest_Port, const bool p_blocking)
 	{
 		if(m_sock != INVALID_SOCKET)	return NET_Error::Already_Used;
 		if(dest_IP.ui32Type == 0)		return NET_Error::Invalid_IP;
@@ -2212,13 +2212,13 @@ namespace core_p
 		return err;
 	}
 
-	NET_Error NetTCP_C_V4::GetAddress(IPv4_netAddr& p_IP, uint16_t& p_Port)
+	NET_Error NetTCP_C_V4::get_address(IPv4_netAddr& p_IP, uint16_t& p_Port)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_GetAddressIPv4(m_sock, p_IP.ui32Type, p_Port);
 	}
 
-	NET_Error NetTCP_C_V4::GetPeerAddress(IPv4_netAddr& p_IP, uint16_t& p_Port)
+	NET_Error NetTCP_C_V4::get_peer_address(IPv4_netAddr& p_IP, uint16_t& p_Port)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_GetPeerAddressIPv4(m_sock, p_IP.ui32Type, p_Port);
@@ -2232,19 +2232,19 @@ namespace core_p
 		std::swap(m_sock, p_other.m_sock);
 	}
 
-	NET_Error NetTCP_C_V6::OpenSocket(const bool p_blocking)
+	NET_Error NetTCP_C_V6::open(const bool p_blocking)
 	{
 		if(m_sock != INVALID_SOCKET)	return NET_Error::Invalid_Socket;
 		return Core_CreateTCPSocketIPv6(m_sock, p_blocking);
 	}
 
-	NET_Error NetTCP_C_V6::Bind(const IPv6_netAddr& my_IP, const uint16_t my_Port)
+	NET_Error NetTCP_C_V6::bind(const IPv6_netAddr& my_IP, const uint16_t my_Port)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_BindIPv6(m_sock, my_IP.byteField, my_Port);
 	}
 
-	NET_Error NetTCP_C_V6::Connect(const IPv6_netAddr& dest_IP, const uint16_t dest_Port)
+	NET_Error NetTCP_C_V6::connect(const IPv6_netAddr& dest_IP, const uint16_t dest_Port)
 	{
 		if(m_sock == INVALID_SOCKET)	return NET_Error::Invalid_Socket;
 		if(dest_IP.ui64Type[0] == 0 && dest_IP.ui64Type[1] == 0) return NET_Error::Invalid_IP;
@@ -2252,7 +2252,7 @@ namespace core_p
 		return Core_ConnectIPv6(m_sock, std::span<const uint8_t, 16>{dest_IP.byteField, 16}, dest_Port);
 	}
 
-	NET_Error NetTCP_C_V6::OpenAndBind(const IPv6_netAddr& my_IP, const uint16_t my_Port, const bool p_blocking)
+	NET_Error NetTCP_C_V6::open_bind(const IPv6_netAddr& my_IP, const uint16_t my_Port, const bool p_blocking)
 	{
 		if(m_sock != INVALID_SOCKET)	return NET_Error::Already_Used;
 
@@ -2272,7 +2272,7 @@ namespace core_p
 		return NET_Error::NoErr;
 	}
 
-	NET_Error NetTCP_C_V6::OpenBindAndConnect(const IPv6_netAddr& my_IP, const uint16_t my_Port, const IPv6_netAddr& dest_IP, const uint16_t dest_Port, const bool p_blocking)
+	NET_Error NetTCP_C_V6::open_bind_connect(const IPv6_netAddr& my_IP, const uint16_t my_Port, const IPv6_netAddr& dest_IP, const uint16_t dest_Port, const bool p_blocking)
 	{
 		if(m_sock != INVALID_SOCKET)	return NET_Error::Already_Used;
 		if(dest_IP.ui64Type[0] == 0 && dest_IP.ui64Type[1] == 0) return NET_Error::Invalid_IP;
@@ -2301,13 +2301,13 @@ namespace core_p
 		return err;
 	}
 
-	NET_Error NetTCP_C_V6::GetAddress(IPv6_netAddr& p_IP, uint16_t& p_Port)
+	NET_Error NetTCP_C_V6::get_address(IPv6_netAddr& p_IP, uint16_t& p_Port)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_GetAddressIPv6(m_sock, p_IP.byteField, p_Port);
 	}
 
-	NET_Error NetTCP_C_V6::GetPeerAddress(IPv6_netAddr& p_IP, uint16_t& p_Port)
+	NET_Error NetTCP_C_V6::get_peer_address(IPv6_netAddr& p_IP, uint16_t& p_Port)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 
@@ -2335,15 +2335,15 @@ namespace core_p
 		std::swap(m_IpV,	p_other.m_IpV);
 	}
 
-	NET_Error NetUDP::CloseSocket()
+	NET_Error NetUDP::close()
 	{
-		NET_Error ret = NetUDP_p::CloseSocket();
+		NET_Error ret = NetUDP_p::close();
 		if(ret != NET_Error::NoErr) return ret;
 		m_IpV = IPv::None;
 		return NET_Error::NoErr;
 	}
 
-	NET_Error NetUDP::OpenSocket(const IPv p_ipV, const bool p_blocking)
+	NET_Error NetUDP::open(const IPv p_ipV, const bool p_blocking)
 	{
 		if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
 
@@ -2365,7 +2365,7 @@ namespace core_p
 		return NET_Error::Invalid_Option;
 	}
 
-	NET_Error NetUDP::Bind(const IP_netAddr& p_IP, const uint16_t p_Port)
+	NET_Error NetUDP::bind(const IP_netAddr& p_IP, const uint16_t p_Port)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		const IPv ver = p_IP.version();
@@ -2382,7 +2382,7 @@ namespace core_p
 
 	}
 
-	NET_Error NetUDP::OpenAndBind(const IP_netAddr& p_IP, const uint16_t p_Port, const bool p_blocking)
+	NET_Error NetUDP::open_bind(const IP_netAddr& p_IP, const uint16_t p_Port, const bool p_blocking)
 	{
 		if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
 		const IPv ver = p_IP.version();
@@ -2423,7 +2423,7 @@ namespace core_p
 		return NET_Error::Invalid_IP;
 	}
 
-	NET_Error NetUDP::JoinMulticastGroup(const IP_netAddr& p_group, const uint32_t p_interface)
+	NET_Error NetUDP::join_multicast_group(const IP_netAddr& p_group, const uint32_t p_interface)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		const IPv ver	= p_group		.version();
@@ -2439,7 +2439,7 @@ namespace core_p
 		return Core_JoinMulticastGroupIPv6(m_sock, p_group.v6.byteField, p_interface);
 	}
 
-	NET_Error NetUDP::LeaveMulticastGroup(const IP_netAddr& p_group, const uint32_t p_interface)
+	NET_Error NetUDP::leave_multicast_group(const IP_netAddr& p_group, const uint32_t p_interface)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		const IPv ver	= p_group		.version();
@@ -2455,7 +2455,7 @@ namespace core_p
 		return Core_LeaveMulticastGroupIPv6(m_sock, p_group.v6.byteField, p_interface);
 	}
 
-	NET_Error NetUDP::GetAddress(IP_netAddr& p_IP, uint16_t& p_Port)
+	NET_Error NetUDP::get_address(IP_netAddr& p_IP, uint16_t& p_Port)
 	{
 		if(m_IpV == IPv::IPv_4)
 		{
@@ -2473,7 +2473,7 @@ namespace core_p
 		return NET_Error::NoErr;
 	}
 
-	NET_Error NetUDP::Send(const void* p_data, const uintptr_t p_size, const IP_netAddr& p_IP, const uint16_t p_Port, const uint8_t p_repeat)
+	NET_Error NetUDP::send(const void* p_data, const uintptr_t p_size, const IP_netAddr& p_IP, const uint16_t p_Port, const uint8_t p_repeat)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		const IPv ver = p_IP.version();
@@ -2488,7 +2488,7 @@ namespace core_p
 		return Core_SendToIPv6(m_sock, p_data, p_size, p_IP.v6.byteField, p_Port, p_repeat);
 	}
 
-	NET_Error NetUDP::Receive(void* p_data, uintptr_t& p_size, IP_netAddr& p_other_IP, uint16_t& p_other_port)
+	NET_Error NetUDP::receive(void* p_data, uintptr_t& p_size, IP_netAddr& p_other_IP, uint16_t& p_other_port)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 
@@ -2503,7 +2503,7 @@ namespace core_p
 		return Core_ReceiveFromIPv6(m_sock, p_data, p_size, p_other_IP.v6.byteField, p_other_port);
 	}
 
-	NET_Error NetUDP::PeekSize(uintptr_t& p_size, IP_netAddr& p_other_IP, uint16_t& p_other_port)
+	NET_Error NetUDP::peek_size(uintptr_t& p_size, IP_netAddr& p_other_IP, uint16_t& p_other_port)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 
@@ -2561,15 +2561,15 @@ namespace core_p
 		std::swap(m_IpV,	p_other.m_IpV);
 	}
 
-	NET_Error NetTCP_S::CloseSocket()
+	NET_Error NetTCP_S::close()
 	{
-		NET_Error ret = NetTCP_S_p::CloseSocket();
+		NET_Error ret = NetTCP_S_p::close();
 		if(ret != NET_Error::NoErr) return ret;
 		m_IpV = IPv::None;
 		return NET_Error::NoErr;
 	}
 
-	NET_Error NetTCP_S::OpenSocket(const IPv p_ipV, const bool p_blocking)
+	NET_Error NetTCP_S::open(const IPv p_ipV, const bool p_blocking)
 	{
 		if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
 
@@ -2591,7 +2591,7 @@ namespace core_p
 		return NET_Error::Invalid_Option;
 	}
 
-	NET_Error NetTCP_S::Bind(const IP_netAddr& p_IP, const uint16_t p_Port)
+	NET_Error NetTCP_S::bind(const IP_netAddr& p_IP, const uint16_t p_Port)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		const IPv ver = p_IP.version();
@@ -2607,7 +2607,7 @@ namespace core_p
 		return Core_BindIPv6(m_sock, p_IP.v6.byteField, p_Port);
 	}
 
-	NET_Error NetTCP_S::OpenAndBind(const IP_netAddr& p_IP, const uint16_t p_Port, const bool p_blocking)
+	NET_Error NetTCP_S::open_bind(const IP_netAddr& p_IP, const uint16_t p_Port, const bool p_blocking)
 	{
 		if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
 		const IPv ver = p_IP.version();
@@ -2652,7 +2652,7 @@ namespace core_p
 		return NET_Error::Invalid_IP;
 	}
 
-	NET_Error NetTCP_S::OpenBindAndListen(const IP_netAddr& p_IP, const uint16_t p_Port, const int p_max_connections, const bool p_blocking)
+	NET_Error NetTCP_S::open_bind_listen(const IP_netAddr& p_IP, const uint16_t p_Port, const int p_max_connections, const bool p_blocking)
 	{
 		if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
 		const IPv ver = p_IP.version();
@@ -2673,7 +2673,7 @@ namespace core_p
 			}
 
 			//listen
-			if(listen(m_sock, p_max_connections))
+			if(::listen(m_sock, p_max_connections))
 			{
 				Core_CloseSock(m_sock);
 				m_sock = INVALID_SOCKET;
@@ -2698,7 +2698,7 @@ namespace core_p
 			}
 
 			//listen
-			if(listen(m_sock, p_max_connections))
+			if(::listen(m_sock, p_max_connections))
 			{
 				Core_CloseSock(m_sock);
 				m_sock = INVALID_SOCKET;
@@ -2712,10 +2712,10 @@ namespace core_p
 		return NET_Error::Invalid_IP;
 	}
 
-	NET_Error NetTCP_S::Accept(NetTCP_C& p_Client, const bool p_blocking)
+	NET_Error NetTCP_S::accept(NetTCP_C& p_Client, const bool p_blocking)
 	{
 		if(m_sock == INVALID_SOCKET)	return NET_Error::Invalid_Socket;
-		if(p_Client.isOpen())			return NET_Error::Already_Used;
+		if(p_Client.is_open())			return NET_Error::Already_Used;
 
 		if(m_IpV == IPv::IPv_4)
 		{
@@ -2742,10 +2742,10 @@ namespace core_p
 		return NET_Error::NoErr;
 	}
 
-	NET_Error NetTCP_S::Accept(NetTCP_C& p_Client, IP_netAddr& p_other_IP, uint16_t& p_other_port, const bool p_blocking)
+	NET_Error NetTCP_S::accept(NetTCP_C& p_Client, IP_netAddr& p_other_IP, uint16_t& p_other_port, const bool p_blocking)
 	{
 		if(m_sock == INVALID_SOCKET)	return NET_Error::Invalid_Socket;
-		if(p_Client.isOpen())			return NET_Error::Already_Used;
+		if(p_Client.is_open())			return NET_Error::Already_Used;
 
 		if(m_IpV == IPv::IPv_4)
 		{
@@ -2780,7 +2780,7 @@ namespace core_p
 		return NET_Error::NoErr;
 	}
 
-	NET_Error NetTCP_S::GetAddress(IP_netAddr& p_IP, uint16_t& p_Port)
+	NET_Error NetTCP_S::get_address(IP_netAddr& p_IP, uint16_t& p_Port)
 	{
 		if(m_IpV == IPv::IPv_4)
 		{
@@ -2814,16 +2814,16 @@ namespace core_p
 		std::swap(m_IpV,	p_other.m_IpV);
 	}
 
-	NET_Error NetTCP_C::CloseSocket()
+	NET_Error NetTCP_C::close()
 	{
-		NET_Error ret = NetTCP_C_p::CloseSocket();
+		NET_Error ret = NetTCP_C_p::close();
 		if(ret != NET_Error::NoErr) return ret;
 		m_IpV = IPv::None;
 		return NET_Error::NoErr;
 	}
 
 
-	NET_Error NetTCP_C::OpenSocket(const IPv p_ipV, const bool p_blocking)
+	NET_Error NetTCP_C::open(const IPv p_ipV, const bool p_blocking)
 	{
 		if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
 
@@ -2845,7 +2845,7 @@ namespace core_p
 		return NET_Error::Invalid_Option;
 	}
 
-	NET_Error NetTCP_C::Bind(const IP_netAddr& my_IP, const uint16_t my_Port)
+	NET_Error NetTCP_C::bind(const IP_netAddr& my_IP, const uint16_t my_Port)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		
@@ -2861,7 +2861,7 @@ namespace core_p
 		return Core_BindIPv6(m_sock, my_IP.v6.byteField, my_Port);
 	}
 
-	NET_Error NetTCP_C::Connect(const IP_netAddr& dest_IP, const uint16_t dest_Port)
+	NET_Error NetTCP_C::connect(const IP_netAddr& dest_IP, const uint16_t dest_Port)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		
@@ -2879,7 +2879,7 @@ namespace core_p
 		return Core_ConnectIPv6(m_sock, dest_IP.v6.byteField, dest_Port);
 	}
 
-	NET_Error NetTCP_C::OpenAndBind(const IP_netAddr& my_IP, const uint16_t my_Port, const bool p_blocking)
+	NET_Error NetTCP_C::open_bind(const IP_netAddr& my_IP, const uint16_t my_Port, const bool p_blocking)
 	{
 		if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
 		const IPv ver	= my_IP		.version();
@@ -2924,7 +2924,7 @@ namespace core_p
 		return NET_Error::Invalid_IP;
 	}
 
-	NET_Error NetTCP_C::OpenBindAndConnect(const IP_netAddr& my_IP, const uint16_t my_Port, const IP_netAddr& dest_IP, const uint16_t dest_Port, const bool p_blocking)
+	NET_Error NetTCP_C::open_bind_connect(const IP_netAddr& my_IP, const uint16_t my_Port, const IP_netAddr& dest_IP, const uint16_t dest_Port, const bool p_blocking)
 	{
 		if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
 		const IPv ver	= my_IP		.version();
@@ -2990,7 +2990,7 @@ namespace core_p
 		return NET_Error::Invalid_IP;
 	}
 
-	NET_Error NetTCP_C::GetAddress(IP_netAddr& p_IP, uint16_t& p_Port)
+	NET_Error NetTCP_C::get_address(IP_netAddr& p_IP, uint16_t& p_Port)
 	{
 		if(m_IpV == IPv::IPv_4)
 		{
@@ -3008,7 +3008,7 @@ namespace core_p
 		return NET_Error::NoErr;
 	}
 
-	NET_Error NetTCP_C::GetPeerAdrress(IP_netAddr& p_IP, uint16_t& p_Port)
+	NET_Error NetTCP_C::get_peer_address(IP_netAddr& p_IP, uint16_t& p_Port)
 	{
 		if(m_IpV == IPv::IPv_4)
 		{
@@ -3034,22 +3034,22 @@ namespace core_p
 
 	IPv4_netAddr::IPv4_netAddr(std::u8string_view p_address)
 	{
-		if(!fromString(p_address)) ui32Type = 0;
+		if(!from_string(p_address)) ui32Type = 0;
 	}
 
-	bool IPv4_netAddr::fromString(std::u8string_view p_address)
+	bool IPv4_netAddr::from_string(std::u8string_view p_address)
 	{
 		return Core_fromStringIPv4(p_address, byteField);
 	}
 
-	uintptr_t IPv4_netAddr::toString(std::span<char8_t, 15> p_output) const
+	uintptr_t IPv4_netAddr::to_string(std::span<char8_t, 15> p_output) const
 	{
-		return Core_ToStringIPv4(byteField, p_output);
+		return to_string_IPv4(byteField, p_output);
 	}
-	std::u8string IPv4_netAddr::toString() const
+	std::u8string IPv4_netAddr::to_string() const
 	{
 		std::array<char8_t, 15> buff;
-		return {buff.data(), toString(buff)};
+		return {buff.data(), to_string(buff)};
 	}
 
 	//========= ======== ======== IPv6_netAddr ========= ======== ========
@@ -3073,30 +3073,30 @@ namespace core_p
 
 	IPv6_netAddr::IPv6_netAddr(std::u8string_view p_address)
 	{
-		if(!fromString(p_address))
+		if(!from_string(p_address))
 		{
 			ui64Type[0] = 0;
 			ui64Type[1] = 0;
 		}
 	}
 
-	bool IPv6_netAddr::fromString(std::u8string_view p_address)
+	bool IPv6_netAddr::from_string(std::u8string_view p_address)
 	{
 		return Core_fromStringIPv6(p_address, wordField);
 	}
 
-	uintptr_t IPv6_netAddr::toString(std::span<char8_t, 39> p_output) const
+	uintptr_t IPv6_netAddr::to_string(std::span<char8_t, 39> p_output) const
 	{
-		return Core_ToStringIPv6(wordField, p_output);
+		return to_string_IPv6(wordField, p_output);
 	}
 
-	std::u8string IPv6_netAddr::toString() const
+	std::u8string IPv6_netAddr::to_string() const
 	{
 		std::array<char8_t, 39> buff;
-		return {buff.data(), toString(buff)};
+		return {buff.data(), to_string(buff)};
 	}
 
-	void IPv6_netAddr::setAny()
+	void IPv6_netAddr::set_any()
 	{
 		ui64Type[0]	= 0;
 		ui64Type[1]	= 0;
@@ -3230,10 +3230,10 @@ namespace core_p
 
 	IP_netAddr::IP_netAddr(std::u8string_view p_address)
 	{
-		fromString(p_address);
+		from_string(p_address);
 	}
 
-	bool IP_netAddr::fromStringV4(std::u8string_view p_address)
+	bool IP_netAddr::from_string_v4(std::u8string_view p_address)
 	{
 		m_ipv = IPv::None;
 		if(Core_fromStringIPv4(p_address, v4.byteField))
@@ -3245,7 +3245,7 @@ namespace core_p
 		return false;
 	}
 
-	bool IP_netAddr::fromStringV6(std::u8string_view p_address)
+	bool IP_netAddr::from_string_v6(std::u8string_view p_address)
 	{
 		m_ipv = IPv::None;
 		if(Core_fromStringIPv6(p_address, v6.wordField))
@@ -3257,45 +3257,45 @@ namespace core_p
 		return false;
 	}
 
-	bool IP_netAddr::fromString(std::u8string_view p_address)
+	bool IP_netAddr::from_string(std::u8string_view p_address)
 	{
-		if(fromStringV4(p_address)) return true;
-		return fromStringV6(p_address);
+		if(from_string_v4(p_address)) return true;
+		return from_string_v6(p_address);
 	}
 
-	uintptr_t IP_netAddr::toString(std::span<char8_t, 39> p_output) const
+	uintptr_t IP_netAddr::to_string(std::span<char8_t, 39> p_output) const
 	{
 		if(m_ipv == IPv::IPv_4)
 		{
-			return Core_ToStringIPv4(v4.byteField, p_output.subspan<0, 15>());
+			return to_string_IPv4(v4.byteField, p_output.subspan<0, 15>());
 		}
 		else if(m_ipv == IPv::IPv_6)
 		{
-			return Core_ToStringIPv6(v6.wordField, p_output);
+			return to_string_IPv6(v6.wordField, p_output);
 		}
 		return 0;
 	}
 
-	std::u8string IP_netAddr::toString() const
+	std::u8string IP_netAddr::to_string() const
 	{
 		std::array<char8_t, 39> buff;
-		return {buff.data(), toString(buff)};
+		return {buff.data(), to_string(buff)};
 	}
 
-	void IP_netAddr::setAny_V4()
+	void IP_netAddr::set_any_v4()
 	{
 		m_ipv		= IPv::IPv_4;
 		v4.ui32Type	= 0;
 	}
 
-	void IP_netAddr::setAny_V6()
+	void IP_netAddr::set_any_v6()
 	{
 		m_ipv			= IPv::IPv_6;
 		v6.ui64Type[0]	= 0;
 		v6.ui64Type[1]	= 0;
 	}
 
-	void IP_netAddr::setLoopBack_V4()
+	void IP_netAddr::set_loopback_v4()
 	{
 		m_ipv			= IPv::IPv_4;
 		v4.ui32Type		= 0;
@@ -3303,7 +3303,7 @@ namespace core_p
 		v4.byteField[3]	= 1;
 	}
 
-	void IP_netAddr::setLoopBack_V6()
+	void IP_netAddr::set_loopback_v6()
 	{
 		m_ipv				= IPv::IPv_6;
 		v6.ui64Type[0]		= 0;

@@ -32,7 +32,7 @@
 
 #pragma once
 
-#include "string/core_string_format.hpp"
+#include "string/core_string_encoding.hpp"
 #include "string/core_string_numeric.hpp"
 #include "string/core_string_misc.hpp"
 #include "string/core_string_streamers.hpp"

@@ -51,7 +51,7 @@ namespace core_p
 		if(p_str.size() == 0) return false;
 		for(T tchar : p_str)
 		{
-			if(!isDigit(tchar)) return false;
+			if(!is_digit(tchar)) return false;
 		}
 		return true;
 	}
@@ -84,7 +84,7 @@ namespace core_p
 		if(p_str.size() == 0) return false;
 		for(T tchar : p_str)
 		{
-			if(!isXDigit(tchar)) return false;
+			if(!is_xdigit(tchar)) return false;
 		}
 		return true;
 	}
@@ -107,7 +107,7 @@ namespace core_p
 		bool has_number = false;
 
 		if		(*pivot == '.')		point_once = true;
-		else if	(isDigit(*pivot))	has_number = true;
+		else if	(is_digit(*pivot))	has_number = true;
 		else if	(!(*pivot == '-') && !(*pivot == '+')) return false;
 
 		const T* end = pivot + size;
@@ -171,7 +171,7 @@ namespace core_p
 
 		for(char_T tchar : p_str)
 		{
-			if(!isDigit(tchar))
+			if(!is_digit(tchar))
 			{
 				return std::errc::invalid_argument;
 			}
@@ -216,7 +216,7 @@ namespace core_p
 
 			do
 			{
-				if(!isDigit(*pivot))
+				if(!is_digit(*pivot))
 				{
 					return std::errc::invalid_argument;
 				}
@@ -246,7 +246,7 @@ namespace core_p
 
 			do
 			{
-				if(!isDigit(*pivot))
+				if(!is_digit(*pivot))
 				{
 					return std::errc::invalid_argument;
 				}
@@ -292,7 +292,7 @@ namespace core_p
 			}
 
 			t_val = *pivot;
-			if(isDigit(t_val))
+			if(is_digit(t_val))
 			{
 				t_val -= '0';
 			}

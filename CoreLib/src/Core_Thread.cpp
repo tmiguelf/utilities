@@ -87,12 +87,12 @@ static DWORD WINAPI launch_thread(void* p_param)
 
 
 
-uint32_t currentThreadId ()
+uint32_t current_thread_id ()
 {
 	return GetCurrentThreadId();
 }
 
-void thread_YieldSelf()
+void thread_yield()
 {
 	SwitchToThread();
 }
@@ -112,7 +112,7 @@ Thread::~Thread()
 	}
 }
 
-Thread::Error Thread::createThread(void (*p_function)(void *), void* p_param)
+Thread::Error Thread::create(void (*p_function)(void *), void* p_param)
 {
 	if(m_handle) return Error::AlreadyInUse;
 
@@ -160,7 +160,7 @@ void Thread::detach()
 	}
 }
 
-Thread::Error Thread::setAffinitymask(uint64_t p_affinity)
+Thread::Error Thread::set_affinity_mask(uint64_t p_affinity)
 {
 	DWORD_PTR t_affinity;
 #ifndef _WIN64
@@ -215,7 +215,7 @@ Thread::~Thread()
 	if(m_hasThread) pthread_detach(m_handle);
 }
 
-Thread::Error Thread::createThread(void (*p_function)(void *), void* p_param)
+Thread::Error Thread::create(void (*p_function)(void *), void* p_param)
 {
 	if(m_hasThread) return Error::AlreadyInUse;
 
@@ -287,7 +287,7 @@ void Thread::detach()
 	}
 }
 
-Thread::Error Thread::setAffinitymask(uint64_t p_affinity)
+Thread::Error Thread::set_affinity_mask(uint64_t p_affinity)
 {
 	if(m_hasThread)
 	{
