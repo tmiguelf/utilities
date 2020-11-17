@@ -137,12 +137,12 @@ public:
 
 ///\brief Current time-stamp, 1ns resolution, granularity depends on system
 ///	\warning	Value may overflow before reaching uint64_t limit.
-[[nodiscard]] uint64_t clockStamp();
+[[nodiscard]] uint64_t clock_stamp();
 
 /// \brief	gets the current local date and time based on internal clock
-[[nodiscard]] DateTime dateTimeLocal();
+[[nodiscard]] DateTime date_time_local();
 
 /// \brief	gets the current UTC date and time based on internal clock
-[[nodiscard]] DateTime dateTimeUTC();
+[[nodiscard]] DateTime date_time_UTC();
 
 } //namespace core

@@ -372,7 +372,7 @@ namespace
 		if(!g_straceOpt.m_output_file.empty())
 		{
 			std::ofstream o_file;				// file to be output
-			DateTime t_time = dateTimeLocal();	//current date
+			DateTime t_time = date_time_local();	//current date
 
 			{
 				std::filesystem::path o_fileName = g_straceOpt.m_output_file;
@@ -550,7 +550,7 @@ namespace
 	}
 } //namesapce
 
-bool registerCrashTrace(const std::filesystem::path& p_output_file)
+bool register_crash_trace(const std::filesystem::path& p_output_file)
 {
 
 	if(p_output_file.is_absolute())
@@ -679,11 +679,11 @@ uint8_t stack_trace(std::list<uintptr_t>& p_trace)
 	return 2;
 }
 
-uint8_t Core_GenerateMiniDump(const std::string& p_file)
+uint8_t generate_minidump(const std::filesystem::path& p_file)
 {
 	HANDLE	t_proc	= GetCurrentProcess		();
 	DWORD	t_pId	= GetCurrentProcessId	();
-	HANDLE	t_file	= CreateFileA(p_file.c_str(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr,
+	HANDLE	t_file	= CreateFileW(p_file.c_str(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr,
 						 CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 
 	if(t_file == INVALID_HANDLE_VALUE) return 1;
@@ -873,7 +873,7 @@ namespace
 			if(!g_straceOpt.m_output_file.empty())
 			{
 				std::ofstream	o_file;						// file to be output
-				DateTime		t_time = dateTimeLocal();	//current date
+				DateTime		t_time = date_time_local();	//current date
 
 				{
 					std::filesystem::path o_fileName = g_straceOpt.m_output_file;
@@ -1068,7 +1068,7 @@ namespace
 	}
 } //namespace
 
-bool registerCrashTrace(const std::filesystem::path& p_output_file)
+bool register_crash_trace(const std::filesystem::path& p_output_file)
 {
 	if(p_output_file.is_absolute())
 	{

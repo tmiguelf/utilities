@@ -134,7 +134,7 @@ public:
 	///			When a thread is successfully created, the thread objects goes into an "occupied" state.
 	///			The user he user must either use \ref join or \ref detach
 	///			the thread in order to avoid resource leaks and return this object to a "reusable" state.
-	Error createThread(void (*p_function)(void *), void* p_param);
+	Error create(void (*p_function)(void *), void* p_param);
 
 	///	\brief Tries to join a thread
 	///
@@ -166,7 +166,7 @@ public:
 	///
 	///	\warning
 	///		This system is not NUMA aware
-	Error setAffinitymask(uint64_t p_affinity);
+	Error set_affinity_mask(uint64_t p_affinity);
 
 #ifdef _WIN32
 	///	\return Operating system given number for this thread
@@ -192,7 +192,7 @@ public:
 	///			The user he user must either use \ref join or \ref detach
 	///			the thread in order to avoid resource leaks and return this object to a "reusable" state.
 	template <class T>
-	Error createThread(T* p_object, void (T::*p_method)(void *), void* p_param)
+	Error create(T* p_object, void (T::*p_method)(void *), void* p_param)
 	{
 		if(m_handle) return Error::AlreadyInUse;
 
@@ -212,10 +212,10 @@ inline uint32_t	Thread::id			() const { return m_id;					}
 inline bool		Thread::joinable	() const { return m_handle != nullptr;	}
 
 ///	\brief Gets the current thread ID as seen by the OS
-[[nodiscard]] uint32_t currentThreadId();
+[[nodiscard]] uint32_t current_thread_id();
 
 ///	\brief Yields the currently alloted time slot for the current thread
-void thread_YieldSelf();
+void thread_yield();
 
 ///	\brief Suspends the thread execution by a number of milliseconds
 ///
@@ -225,7 +225,7 @@ void thread_YieldSelf();
 ///			The time the thread actually sleeps for is not accurate.
 ///			The thread may wake up later than the requested time depending on the operating system scheduling
 ///			The thread may wake up earlier in case an alertable interrupt occurs
-void milliSleep(uint16_t p_time);
+void milli_sleep(uint16_t p_time);
 
 #else
 
@@ -235,10 +235,10 @@ inline bool			Thread::joinable	() const { return m_hasThread;	}
 
 ///	\brief Gets the current thread ID as seen by the OS
 //
-[[nodiscard]] inline pthread_t currentThreadId() { return syscall(SYS_gettid); }
+[[nodiscard]] inline pthread_t current_thread_id() { return syscall(SYS_gettid); }
 
 ///	\brief Yields the currently alloted time slot for the current thread
-inline void thread_YieldSelf() { pthread_yield(); }
+inline void thread_yield() { pthread_yield(); }
 
 
 ///	\brief Suspends the thread execution by a number of milliseconds
@@ -249,7 +249,7 @@ inline void thread_YieldSelf() { pthread_yield(); }
 ///			The time the thread actually sleeps for is not accurate.
 ///			The thread may wake up later than the requested time depending on the operating system scheduling
 ///			The thread may wake up earlier in case an alertable interrupt occurs
-inline void milliSleep(uint16_t p_time) { usleep(p_time * 1000); }
+inline void milli_sleep(uint16_t p_time) { usleep(p_time * 1000); }
 
 #endif
 

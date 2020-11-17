@@ -200,7 +200,7 @@ void TrackChrono::set(uint64_t p_value)
 }
 
 
-uint64_t clockStamp() //1 nanosecond resolution
+uint64_t clock_stamp() //1 nanosecond resolution
 {
 #ifdef _WIN32
 	LARGE_INTEGER Time;
@@ -215,7 +215,7 @@ uint64_t clockStamp() //1 nanosecond resolution
 #endif
 }
 
-DateTime dateTimeLocal()
+DateTime date_time_local()
 {
 	DateTime output;
 	struct tm timeinfo;
@@ -248,7 +248,7 @@ DateTime dateTimeLocal()
 
 /// \todo Accuracy has not been extensively tested
 //
-DateTime dateTimeUTC()
+DateTime date_time_UTC()
 {
 	DateTime output;
 #ifdef _WIN32

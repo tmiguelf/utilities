@@ -504,13 +504,12 @@ bool UTF8_valid(std::u8string_view p_input)
 			if(end - pos < index) return false;
 			switch(index)
 			{
-				case 7:
-					if((*(++pos) & 0xC0) != 0x80 || ((*pos & 0x3F)  > 0x03)) return false;
-				case 6:	if((*(++pos) & 0xC0) != 0x80) return false;
-				case 5:	if((*(++pos) & 0xC0) != 0x80) return false;
-				case 4:	if((*(++pos) & 0xC0) != 0x80) return false;
-				case 3:	if((*(++pos) & 0xC0) != 0x80) return false;
-				case 2:	if((*(++pos) & 0xC0) != 0x80) return false;
+				case 7: if((*(++pos) & 0xC0) != 0x80 || ((*pos & 0x3F)  > 0x03)) return false;
+				case 6: if((*(++pos) & 0xC0) != 0x80) return false;
+				case 5: if((*(++pos) & 0xC0) != 0x80) return false;
+				case 4: if((*(++pos) & 0xC0) != 0x80) return false;
+				case 3: if((*(++pos) & 0xC0) != 0x80) return false;
+				case 2: if((*(++pos) & 0xC0) != 0x80) return false;
 					break;
 				default:
 					return false;
