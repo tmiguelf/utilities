@@ -64,9 +64,9 @@ namespace literals
 	constexpr double	operator "" _fp64	(long double p_var)				{ return static_cast<double>	(p_var); }
 	constexpr uintptr_t	operator "" _uip	(unsigned long long int p_var)	{ return static_cast<uintptr_t>	(p_var); }
 	constexpr intptr_t	operator "" _ip		(unsigned long long int p_var)	{ return static_cast<intptr_t>	(p_var); }
-}
+} //namespace literals
 
-}
+} //namespace core
 
 #define CORE_MAKE_ENUM_FLAG(TYPE) \
 inline TYPE		operator |	(TYPE p_1, TYPE p_2){ return static_cast<TYPE>(static_cast<std::underlying_type_t<TYPE>>(p_1) | static_cast<std::underlying_type_t<TYPE>>(p_2)); } \
