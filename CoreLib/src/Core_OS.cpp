@@ -30,6 +30,7 @@
 #	include <windows.h>
 #else
 #	include <unistd.h>
+#	include <climits>
 #	include <sys/stat.h>
 #endif
 
@@ -153,20 +154,14 @@ env_result machine_name()
 
 std::filesystem::path applicationPath()
 {
-	struct stat stats;
-	if(lstat("/proc/self/exe", &stats) == 0)
+	std::array<char, PATH_MAX> buff;
+	ssize_t ret_size = readlink("/proc/self/exe", buff.data(), buff.size());
+
+	if(ret_size > 0)
 	{
-		ssize_t size = stats.st_size;
-		std::string buff;
-		buff.resize(size);
-
-		ssize_t ret_size = readlink("/proc/self/exe", buff.data(), size);
-
-		if(ret_size == size)
-		{
-			return buff;
-		}
+		return std::string{buff.data(), static_cast<size_t>(ret_size)};
 	}
+
 	return {};
 }
 #endif
