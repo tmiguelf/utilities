@@ -34,6 +34,8 @@
 #	include <windows.h>
 #else
 #	include <signal.h>
+#	include <unistd.h>
+#	include <sys/syscall.h>
 #	include <sys/types.h>
 #	include <time.h>
 #	include <errno.h>
@@ -315,6 +317,11 @@ Thread::Error Thread::set_affinity_mask(uint64_t p_affinity)
 	}
 	return Error::Unavailable;
 }
+
+
+[[nodiscard]] thread_id_t current_thread_id() { return static_cast<thread_id_t>(syscall(SYS_gettid)); }
+
+void milli_sleep(uint16_t p_time) { usleep(p_time * 1000); }
 
 #endif
 
