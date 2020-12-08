@@ -66,7 +66,7 @@ private:
 } //namespace core
 
 template<typename T1, typename T2>
-static std::ostream& operator << (std::ostream& p_stream, const core::toStream<T1, T2>& p_data)
+inline std::ostream& operator << (std::ostream& p_stream, const core::toStream<T1, T2>& p_data)
 {
 	p_data.stream(p_stream);
 	return p_stream;

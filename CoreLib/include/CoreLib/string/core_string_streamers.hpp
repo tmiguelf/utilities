@@ -146,5 +146,22 @@ private:
 };
 #endif
 
+template<>
+class toStream<void*>
+{
+public:
+	toStream(const void* p_data): m_data{p_data}{}
+	inline void stream(std::ostream& p_stream) const
+	{
+		constexpr std::u8string_view prefix = u8"0x";
+		p_stream << toStream<std::u8string_view>{prefix} << toStream<uintptr_t, toStreamForwardMethod>{reinterpret_cast<uintptr_t>(m_data), num2stream_hex_fix<uintptr_t>};
+	}
+
+private:
+	const void* m_data;
+};
+
+
+
 } //namespace core
 

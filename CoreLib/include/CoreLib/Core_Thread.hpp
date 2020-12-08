@@ -34,14 +34,20 @@
 //---- Default Libraries ----
 #ifndef _WIN32
 #	include <pthread.h>
-#	include <unistd.h>
-#	include <sys/syscall.h>
 #endif
 //======== ======== ======== Include END ======== ======== ========
 
 /// \n
 namespace core
 {
+
+#ifdef _WIN32
+using thread_id_t = uint32_t;
+#else
+using thread_id_t = pthread_t;
+#endif // 
+
+
 
 /// \internal \n
 namespace _p
@@ -109,9 +115,9 @@ private:
 
 #ifdef _WIN32
 	void*		m_handle = nullptr;
-	uint32_t	m_id = 0;
+	thread_id_t	m_id = 0;
 #else
-	pthread_t	m_handle;
+	thread_id_t	m_handle;
 	bool		m_hasThread = false;
 #endif
 
@@ -168,15 +174,12 @@ public:
 	///		This system is not NUMA aware
 	Error set_affinity_mask(uint64_t p_affinity);
 
-#ifdef _WIN32
 	///	\return Operating system given number for this thread
-	[[nodiscard]] inline uint32_t id() const;
+	[[nodiscard]] inline thread_id_t id() const;
 
+#ifdef _WIN32
 	//this method is mostly sugestive, it is not enforceable
 	Error _setPreferedProcessor(uint8_t p_num);
-#else
-	///	\return Operating system given number for this thread
-	[[nodiscard]] pthread_t id() const;
 #endif
 
 	///	\brief Spawns a thread and gives it to user control via an object method
@@ -208,11 +211,11 @@ public:
 };
 
 #ifdef _WIN32
-inline uint32_t	Thread::id			() const { return m_id;					}
-inline bool		Thread::joinable	() const { return m_handle != nullptr;	}
+inline thread_id_t	Thread::id			() const { return m_id;					}
+inline bool			Thread::joinable	() const { return m_handle != nullptr;	}
 
 ///	\brief Gets the current thread ID as seen by the OS
-[[nodiscard]] uint32_t current_thread_id();
+[[nodiscard]] thread_id_t current_thread_id();
 
 ///	\brief Yields the currently alloted time slot for the current thread
 void thread_yield();
@@ -229,17 +232,15 @@ void milli_sleep(uint16_t p_time);
 
 #else
 
-inline pthread_t	Thread::id			() const { return m_handle;		}
+inline thread_id_t	Thread::id			() const { return m_handle;		}
 inline bool			Thread::joinable	() const { return m_hasThread;	}
 
 
 ///	\brief Gets the current thread ID as seen by the OS
-//
-[[nodiscard]] inline pthread_t current_thread_id() { return syscall(SYS_gettid); }
+[[nodiscard]] thread_id_t current_thread_id();
 
 ///	\brief Yields the currently alloted time slot for the current thread
 inline void thread_yield() { pthread_yield(); }
-
 
 ///	\brief Suspends the thread execution by a number of milliseconds
 ///
@@ -249,7 +250,7 @@ inline void thread_yield() { pthread_yield(); }
 ///			The time the thread actually sleeps for is not accurate.
 ///			The thread may wake up later than the requested time depending on the operating system scheduling
 ///			The thread may wake up earlier in case an alertable interrupt occurs
-inline void milli_sleep(uint16_t p_time) { usleep(p_time * 1000); }
+void milli_sleep(uint16_t p_time);
 
 #endif
 
