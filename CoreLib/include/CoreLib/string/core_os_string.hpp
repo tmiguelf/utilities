@@ -198,4 +198,5 @@ using os_string	= os_string_unix;
 using char_os	= char_unix;
 #endif
 
+using os_string_view = std::basic_string_view<char_os>;
 }
