@@ -118,6 +118,14 @@ private:
 	using this_string_view_t = std::basic_string_view<os_char>;
 public:
 	using std::basic_string_view<os_char>::basic_string_view;
+	using std::basic_string_view<os_char>::operator =;
+
+	os_string_view(os_string_view&&) = default;
+	os_string_view(const os_string_view&) = default;
+	os_string_view(const os_string& p_other): std::basic_string_view<os_char>(p_other){}
+
+	os_string_view& operator = (const os_string_view&) = default;
+	os_string_view& operator = (os_string_view&&) = default;
 
 #ifdef _WIN32
 	[[nodiscard]] inline std::u8string  toUTF8 (char32_t p_placeholder) const { return UTF16_to_UTF8_faulty(reinterpret_cast<const std::u16string&>(*this), p_placeholder); }
