@@ -26,6 +26,8 @@
 //======== ======== ======== ======== ======== ======== ======== ========
 
 #include "CoreLib/Core_OS.hpp"
+#include <array>
+
 #if	defined(_WIN32) //OS
 #	include <windows.h>
 #else
@@ -40,25 +42,25 @@ namespace core
 #ifdef _WIN32
 bool env_exists(const core::os_string& p_key)
 {
-	return GetEnvironmentVariableW(reinterpret_cast<const wchar_t*>(p_key.c_str()), nullptr, 0) != 0;
+	return GetEnvironmentVariableW(p_key.c_str(), nullptr, 0) != 0;
 }
 
 bool set_env(const core::os_string& p_key, const core::os_string& p_value)
 {
-	return (SetEnvironmentVariableW(reinterpret_cast<const wchar_t*>(p_key.c_str()), reinterpret_cast<const wchar_t*>(p_value.c_str())) != FALSE);
+	return (SetEnvironmentVariableW(p_key.c_str(), p_value.c_str()) != FALSE);
 }
 
 env_result get_env(const core::os_string& p_key)
 {
 	DWORD size;
-	size = GetEnvironmentVariableW(reinterpret_cast<const wchar_t*>(p_key.c_str()), nullptr, 0);
+	size = GetEnvironmentVariableW(p_key.c_str(), nullptr, 0);
 	if(size == 0)
 	{
 		return false;
 	}
-	std::u16string outp;
+	os_string outp;
 	outp.resize(size - 1);
-	if(GetEnvironmentVariableW(reinterpret_cast<const wchar_t*>(p_key.c_str()), reinterpret_cast<wchar_t*>(outp.data()), size) == (size - 1))
+	if(GetEnvironmentVariableW(p_key.c_str(), outp.data(), size) == (size - 1))
 	{
 		return core::os_string{std::move(outp)};
 	}
@@ -72,11 +74,12 @@ bool delete_env(const core::os_string& p_key)
 
 env_result machine_name()
 {
-	char16_t buff[MAX_COMPUTERNAME_LENGTH + 1];
-	DWORD size = MAX_COMPUTERNAME_LENGTH + 1;
-	if(GetComputerNameW(reinterpret_cast<wchar_t*>(buff), &size))
+	constexpr uintptr_t maxSize = MAX_COMPUTERNAME_LENGTH + 1;
+	std::array<os_char, maxSize> buff;
+	DWORD size = maxSize;
+	if(GetComputerNameW(buff.data(), &size))
 	{
-		return core::os_string{buff, static_cast<uintptr_t>(size)};
+		return core::os_string{buff.data(), static_cast<uintptr_t>(size)};
 	}
 
 	return false;
@@ -108,7 +111,7 @@ std::filesystem::path applicationPath()
 	if(res < max_pathSize)
 	{
 		buff.resize(res);
-		return {buff};
+		return buff;
 	}
 	return {};
 }
@@ -116,37 +119,37 @@ std::filesystem::path applicationPath()
 #else
 bool env_exists(const core::os_string& p_key)
 {
-	return getenv(reinterpret_cast<const char*>(p_key.c_str())) != nullptr;
+	return getenv(p_key.c_str()) != nullptr;
 }
 
 bool set_env(const core::os_string& p_key, const core::os_string& p_value)
 {
-	return setenv(reinterpret_cast<const char*>(p_key.c_str()), reinterpret_cast<const char*>(p_value.c_str()), 1) == 0;
+	return setenv(p_key.c_str(), p_value.c_str(), 1) == 0;
 }
 
 env_result get_env(const core::os_string& p_key)
 {
-	const char8_t* const retvar = reinterpret_cast<const char8_t*>(getenv(reinterpret_cast<const char*>(p_key.c_str())));
+	const char* const retvar = getenv(p_key.c_str());
 	if(retvar == nullptr)
 	{
 		return false;
 	}
-	return core::os_string{std::u8string{retvar}};
+	return core::os_string{retvar};
 }
 
 bool delete_env(const core::os_string& p_key)
 {
-	return unsetenv(reinterpret_cast<const char*>(p_key.c_str())) == 0;
+	return unsetenv(p_key.c_str()) == 0;
 }
 
 env_result machine_name()
 {
 	constexpr uintptr_t host_name_max = 64; //https://man7.org/linux/man-pages/man2/gethostname.2.html
-	char8_t buff[host_name_max + 1];
+	std::array<os_char, host_name_max + 1> buff;
 
-	if(gethostname(reinterpret_cast<char*>(buff), host_name_max + 1) == 0)
+	if(gethostname(buff.data(), buff.size()) == 0)
 	{
-		return core::os_string{std::u8string{buff}};
+		return core::os_string{buff.data()};
 	}
 
 	return false;
