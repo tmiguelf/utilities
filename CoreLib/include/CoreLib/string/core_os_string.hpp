@@ -41,162 +41,132 @@
 namespace core
 {
 
-using char_win = char16_t;
-using char_unix = char8_t;
+#ifdef _WIN32
+using os_char = wchar_t;
+#else
+using os_char = char;
+#endif // _WIN32
 
-class os_string_win
+/*namespace _p
 {
-public:
-	os_string_win() = default;
-	os_string_win(const os_string_win&) = default;
-	os_string_win(os_string_win&&) = default;
+#ifdef _WIN32
+using os_fix_char_r = char16_t;
+#else
+using os_fix_char_r = char8_t;
+#endif // _WIN32
 
-	inline os_string_win(std::u16string&& p_string): m_string{std::move(p_string)} {}
-	inline os_string_win(const std::u16string&& p_string): m_string{p_string} {}
-	inline os_string_win(const char16_t* p_data, uintptr_t p_size): m_string{p_data, p_size} {}
-	inline os_string_win(std::initializer_list<char16_t> p_list): m_string{p_list} {}
+}
+*/
 
-	inline os_string_win(const std::u8string& p_string): m_string{ANSI_to_UCS2(p_string)} {}
-	inline os_string_win(const std::u32string& p_string): m_string{std::move(UCS4_to_UCS2(p_string).value())} {}
+//using os_string = std::basic_string<os_char>;
 
-	inline void from_native(const std::u16string& p_string)	{ m_string = p_string; }
-	inline void from_native(std::u16string&& p_string)		{ m_string = std::move(p_string); }
-
-	inline void from_UTF(const std::u8string& p_string) { m_string = std::move(UTF8_to_UTF16(p_string).value()); }
-	inline void from_UTF(const std::u32string& p_string) { m_string = std::move(UCS4_to_UTF16(p_string).value()); }
-
-	inline void from_codePoints(const std::u8string& p_string) { m_string = ANSI_to_UCS2(p_string); }
-	inline void from_codePoints(const std::u32string& p_string) { m_string = std::move(UCS4_to_UCS2(p_string).value()); }
-
-	[[nodiscard]] inline std::u8string toUTF8 (char32_t p_placeholder) const { return UTF16_to_UTF8_faulty(m_string, p_placeholder); }
-	[[nodiscard]] inline std::u32string toUTF32(char32_t p_placeholder) const { return UTF16_to_UCS4_faulty(m_string, p_placeholder); }
-
-	[[nodiscard]] bool operator == (const os_string_win& p_other) { return m_string == p_other.m_string; }
-	[[nodiscard]] bool operator != (const os_string_win& p_other) { return m_string != p_other.m_string; }
-
-	os_string_win& operator = (const os_string_win&) = default;
-	os_string_win& operator = (os_string_win&&) = default;
-
-	inline os_string_win& operator += (const os_string_win& p_other) { m_string += p_other.m_string; return *this; }
-	[[nodiscard]] inline os_string_win operator + (const os_string_win& p_other) { return {m_string + p_other.m_string}; }
-
-	inline void swap(os_string_win& p_other) { m_string.swap(p_other.m_string); }
-	inline void clear() { m_string.clear(); }
-
-	[[nodiscard]] bool empty() const { return m_string.empty(); }
-
-	[[nodiscard]] inline char16_t*			data() { return m_string.data(); }
-	[[nodiscard]] inline const char16_t*	data() const { return m_string.data(); }
-	[[nodiscard]] inline uintptr_t			size() const { return m_string.size(); }
-
-	[[nodiscard]] inline			std::u16string&		native	() { return m_string; }
-	[[nodiscard]] inline constexpr	const std::u16string& native	() const { return m_string; }
-	[[nodiscard]] inline			const char16_t*		c_str	() const { return m_string.c_str(); }
-
-	[[nodiscard]] static inline os_string_win make_from_UTF			(const std::u8string& p_string)  { return std::move(UTF8_to_UTF16(p_string).value()); }
-	[[nodiscard]] static inline os_string_win make_from_UTF			(const std::u32string& p_string) { return std::move(UCS4_to_UTF16(p_string).value()); }
-	[[nodiscard]] static inline os_string_win make_from_codePoints	(const std::u8string& p_string)  { return ANSI_to_UCS2(p_string); }
-	[[nodiscard]] static inline os_string_win make_from_codePoints	(const std::u32string& p_string) { return std::move(UCS4_to_UCS2(p_string).value()); }
-private:
-	std::u16string m_string;
-};
-
-class os_string_unix
+class os_string: public std::basic_string<os_char>
 {
-public:
-	os_string_unix() = default;
-	os_string_unix(const os_string_unix&) = default;
-	os_string_unix(os_string_unix&&) = default;
-
-	inline os_string_unix(std::u8string&& p_string): m_string{std::move(p_string)} {}
-	inline os_string_unix(const std::u8string&& p_string): m_string{p_string} {}
-	inline os_string_unix(const char8_t* p_data, uintptr_t p_size): m_string{p_data, p_size} {}
-	inline os_string_unix(std::initializer_list<char8_t> p_list): m_string{p_list} {}
-
-	inline os_string_unix(const std::u32string& p_string) : m_string{std::move(UCS4_to_ANSI(p_string).value())} {}
-
-	inline void from_native(const std::u8string& p_string)	{ m_string = p_string; }
-	inline void from_native(std::u8string&& p_string)		{ m_string = std::move(p_string); }
-
-	inline void from_UTF(const std::u8string& p_string) { m_string = std::move(UTF8_to_ANSI(p_string).value()); }
-	inline void from_UTF(const std::u32string& p_string) { m_string = std::move(UCS4_to_ANSI(p_string).value()); }
-
-	inline void from_codePoints(const std::u8string& p_string) { m_string = p_string; }
-	inline void from_codePoints(std::u8string&& p_string) { m_string = std::move(p_string); }
-
-	inline void from_codePoints(const std::u32string& p_string) { m_string = std::move(UCS4_to_ANSI(p_string).value()); }
-
-	[[nodiscard]] std::u8string toUTF8 (char32_t) const { return ANSI_to_UTF8(m_string); }
-	[[nodiscard]] std::u32string toUTF32(char32_t) const { return ANSI_to_UCS4(m_string); }
-
-	[[nodiscard]] bool operator == (const os_string_unix& p_other) { return m_string == p_other.m_string; }
-	[[nodiscard]] bool operator != (const os_string_unix& p_other) { return m_string != p_other.m_string; }
-
-	os_string_unix& operator = (const os_string_unix&) = default;
-	os_string_unix& operator = (os_string_unix&&) = default;
-
-	inline os_string_unix& operator += (const os_string_unix& p_other) { m_string += p_other.m_string; return *this; }
-	[[nodiscard]] inline os_string_unix operator + (const os_string_unix& p_other) { return {m_string + p_other.m_string}; }
-
-	inline void swap(os_string_unix& p_other) { m_string.swap(p_other.m_string); }
-	inline void clear() { m_string.clear(); }
-
-	[[nodiscard]] bool empty() const { return m_string.empty(); }
-
-	[[nodiscard]] inline char8_t*		data() { return m_string.data(); }
-	[[nodiscard]] inline const char8_t*	data() const { return m_string.data(); }
-	[[nodiscard]] inline uintptr_t		size() const { return m_string.size(); }
-
-	[[nodiscard]] inline			std::u8string&		native	() { return m_string; }
-	[[nodiscard]] inline constexpr	const std::u8string& native	() const { return m_string; }
-	[[nodiscard]] inline			const char8_t*		c_str	() const { return m_string.c_str(); }
-
-	[[nodiscard]] static inline os_string_win make_from_UTF			(const std::u8string& p_string)  { return std::move(UTF8_to_ANSI(p_string).value()); }
-	[[nodiscard]] static inline os_string_win make_from_UTF			(const std::u32string& p_string) { return std::move(UCS4_to_ANSI(p_string).value()); }
-	[[nodiscard]] static inline os_string_win make_from_codePoints	(const std::u8string& p_string)  { return p_string; }
-	[[nodiscard]] static inline os_string_win make_from_codePoints	(std::u8string&& p_string)       { return p_string; }
-	[[nodiscard]] static inline os_string_win make_from_codePoints	(const std::u32string& p_string) { return std::move(UCS4_to_ANSI(p_string).value()); }
-
 private:
-	std::u8string m_string;
-};
+	using this_string_t = std::basic_string<os_char>;
 
-template<>
-class toStream<os_string_win>
-{
+
 public:
-	toStream(const os_string_win& p_data): m_data{p_data}{}
-	inline void stream(std::ostream& p_stream) const
-	{
-		const std::u8string& res =  core::UTF16_to_UTF8_faulty(m_data.native(), '?');
-		p_stream.write(reinterpret_cast<const char*>(res.data()), res.size());
-	}
+	using std::basic_string<os_char>::basic_string;
+	using std::basic_string<os_char>::operator =;
 
-private:
-	const os_string_win& m_data;
-};
+	os_string(std::basic_string<os_char>&& p_other): basic_string<os_char>(p_other) {}
+	os_string(const std::basic_string<os_char>& p_other): basic_string<os_char>(p_other) {}
 
-template<>
-class toStream<os_string_unix>
-{
-public:
-	toStream(const os_string_unix& p_data): m_data{p_data}{}
-	inline void stream(std::ostream& p_stream) const
-	{
-		p_stream.write(reinterpret_cast<const char*>(m_data.data()), m_data.size());
-	}
+	os_string(const os_string&) = default;
+	os_string(os_string&&) = default;
 
-private:
-	const os_string_unix& m_data;
-};
+	os_string(std::u32string_view p_string)
+		:
+#ifdef _WIN32
+		basic_string(std::move(reinterpret_cast<this_string_t&>(UCS4_to_UCS2(p_string).value())))
+#else
+		basic_string(std::move(reinterpret_cast<this_string_t&>(UCS4_to_ANSI(p_string).value())))
+#endif
+	{}
+
+	os_string& operator = (const os_string&) = default;
+	os_string& operator = (os_string&&) = default;
+
+
 
 #ifdef _WIN32
-using os_string	= os_string_win;
-using char_os	= char_win;
+	inline void from_UTF		(std::u32string_view p_string) { this_string_t::operator = (std::move(reinterpret_cast<this_string_t&>(UCS4_to_UTF16(p_string).value()))); }
+	inline void from_codePoints	(std::u32string_view p_string) { this_string_t::operator = (std::move(reinterpret_cast<this_string_t&>(UCS4_to_UCS2 (p_string).value()))); }
+
+	[[nodiscard]] inline std::u8string  toUTF8 (char32_t p_placeholder) const { return UTF16_to_UTF8_faulty(reinterpret_cast<const std::u16string&>(*this), p_placeholder); }
+	[[nodiscard]] inline std::u32string toUTF32(char32_t p_placeholder) const { return UTF16_to_UCS4_faulty(reinterpret_cast<const std::u16string&>(*this), p_placeholder); }
+	[[nodiscard]] inline std::u32string toCodePoints() const { return UCS2_to_UCS4(reinterpret_cast<const std::u16string&>(*this)); }
+
+	[[nodiscard]] static inline os_string make_from_UTF			(const std::u32string& p_string) { return std::move(reinterpret_cast<this_string_t&>(UCS4_to_UTF16(p_string).value())); }
+	[[nodiscard]] static inline os_string make_from_codePoints	(const std::u32string& p_string) { return std::move(reinterpret_cast<this_string_t&>(UCS4_to_UCS2(p_string).value())); }
 #else
-using os_string	= os_string_unix;
-using char_os	= char_unix;
+	inline void from_UTF		(std::u32string_view p_string) { from_codePoints(p_string); }
+	inline void from_codePoints	(std::u32string_view p_string) { this_string_t::operator = (std::move(reinterpret_cast<this_string_t&>(UCS4_to_ANSI(p_string).value()))); }
+	[[nodiscard]] inline std::u8string  toUTF8 (char32_t) const { return ANSI_to_UTF8(reinterpret_cast<const std::u8string&>(*this)); }
+	[[nodiscard]] inline std::u32string toUTF32(char32_t) const { return toCodePoints(); }
+	[[nodiscard]] inline std::u32string toCodePoints() const { return ANSI_to_UCS4(reinterpret_cast<const std::u8string&>(*this)); }
+
+	[[nodiscard]] static inline os_string make_from_UTF			(const std::u32string& p_string) { return make_from_codePoints(p_string); }
+	[[nodiscard]] static inline os_string make_from_codePoints	(const std::u32string& p_string) { return std::move(reinterpret_cast<this_string_t&>(UCS4_to_ANSI(p_string).value())); }
+#endif
+};
+
+class os_string_view: public std::basic_string_view<os_char>
+{
+private:
+	using this_string_view_t = std::basic_string_view<os_char>;
+public:
+	using std::basic_string_view<os_char>::basic_string_view;
+
+#ifdef _WIN32
+	[[nodiscard]] inline std::u8string  toUTF8 (char32_t p_placeholder) const { return UTF16_to_UTF8_faulty(reinterpret_cast<const std::u16string&>(*this), p_placeholder); }
+	[[nodiscard]] inline std::u32string toUTF32(char32_t p_placeholder) const { return UTF16_to_UCS4_faulty(reinterpret_cast<const std::u16string&>(*this), p_placeholder); }
+	[[nodiscard]] inline std::u32string toCodePoints() const { return UCS2_to_UCS4(reinterpret_cast<const std::u16string&>(*this)); }
+#else
+	[[nodiscard]] inline std::u8string  toUTF8 (char32_t) const { return ANSI_to_UTF8(reinterpret_cast<const std::u8string&>(*this)); }
+	[[nodiscard]] inline std::u32string toUTF32(char32_t) const { return toCodePoints(); }
+	[[nodiscard]] inline std::u32string toCodePoints() const { return ANSI_to_UCS4(reinterpret_cast<const std::u8string&>(*this)); }
 #endif
 
-using os_string_view = std::basic_string_view<char_os>;
+};
+
+template<>
+class toStream<os_string>
+{
+public:
+	toStream(const os_string& p_data): m_data{p_data}{}
+	inline void stream(std::ostream& p_stream) const
+	{
+#ifdef _WIN32
+		const std::u8string& res =  core::UTF16_to_UTF8_faulty(reinterpret_cast<const std::u16string&>(m_data), '?');
+		p_stream.write(reinterpret_cast<const char*>(res.data()), res.size());
+#else
+		p_stream.write(reinterpret_cast<const char*>(m_data.data()), m_data.size());
+#endif
+	}
+
+private:
+	const os_string& m_data;
+};
+
+template<>
+class toStream<os_string_view>
+{
+public:
+	toStream(os_string_view p_data): m_data{p_data}{}
+	inline void stream(std::ostream& p_stream) const
+	{
+#ifdef _WIN32
+		const std::u8string& res =  core::UTF16_to_UTF8_faulty(reinterpret_cast<const std::u16string_view&>(m_data), '?');
+		p_stream.write(reinterpret_cast<const char*>(res.data()), res.size());
+#else
+		p_stream.write(reinterpret_cast<const char*>(m_data.data()), m_data.size());
+#endif
+	}
+
+private:
+	const os_string_view m_data;
+};
+
 }

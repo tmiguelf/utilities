@@ -214,7 +214,7 @@ namespace
 
 		*(t_context->m_file)
 			<< core::toStream{BaseOfDll, num2stream_hex_fix} << ' ' << core::toStream{BaseOfDll + ModuleSize, num2stream_hex_fix}
-			<< " \"" << toStream{std::u16string_view{reinterpret_cast<const char16_t*>(ModuleName)}} << "\"\n";
+			<< " \"" << toStream{os_string_view{ModuleName}} << "\"\n";
 		return TRUE;
 	}
 
@@ -227,7 +227,7 @@ namespace
 		
 		t_entry.m_addr = static_cast<uintptr_t>(BaseOfDll);
 		//t_entry.m_size = ModuleSize;
-		t_entry.m_name.from_native(reinterpret_cast<const char16_t*>(ModuleName));
+		t_entry.m_name = ModuleName;
 
 		t_context->m_list->push_back(std::move(t_entry)); //why the hell the standard didn't have in place construction from the start??
 		return TRUE;
@@ -430,8 +430,8 @@ namespace
 
 				//---- The reason of the crash see: https://msdn.microsoft.com/en-us/library/cc704588.aspx
 				o_file
-					<< "Exception:\t" << toStream{static_cast<uint32_t>(ExceptionInfo->ExceptionRecord->ExceptionCode), num2stream_hex_fix}
-					<< "\nAddress:\t" << toStream{reinterpret_cast<uint64_t>(ExceptionInfo->ExceptionRecord->ExceptionAddress), num2stream_hex_fix} << '\n';
+					<< "Exception:\t0x" << toStream{static_cast<uint32_t>(ExceptionInfo->ExceptionRecord->ExceptionCode), num2stream_hex_fix}
+					<< "\nAddress:\t0x" << toStream{reinterpret_cast<uint64_t>(ExceptionInfo->ExceptionRecord->ExceptionAddress), num2stream_hex_fix} << '\n';
 
 
 				//---- Moduie list
@@ -521,7 +521,7 @@ namespace
 					LPWSTR temp_str = GetCommandLineW(); // general purpose temporary string "Windows" version
 					if(temp_str)
 					{
-						o_file << "CommandLine: " << toStream{std::u16string_view{reinterpret_cast<const char16_t*>(temp_str)}} << '\n';				//The name of this machine
+						o_file << "CommandLine: " << toStream{os_string_view{temp_str}} << '\n';				//The name of this machine
 					}
 				}
 
@@ -787,7 +787,7 @@ namespace
 
 		t_entry.m_addr = p_info->dlpi_addr;
 		//t_entry.m_size = ???;
-		t_entry.m_name.from_native(reinterpret_cast<const char8_t*>(p_info->dlpi_name));
+		t_entry.m_name = p_info->dlpi_name;
 
 		t_list->push_back(std::move(t_entry)); //why the hell the standard didn't have in place construction from the start??
 		return 0;
