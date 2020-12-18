@@ -114,5 +114,8 @@
     <ClCompile Include="src\string\core_string_encoding.cpp">
       <Filter>Source Files\string</Filter>
     </ClCompile>
+    <ClCompile Include="src\string\core_os_string.cpp">
+      <Filter>Source Files\string</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

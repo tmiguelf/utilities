@@ -246,14 +246,12 @@ namespace core
 	///	\param[out]	p_output - Resulting UTF8 encoding. Not Null terminated
 	///	\return		The number of bytes (char8_t blocks) used, in the output encoding.
 	///	\warning	Input/Output does not require to encode a valid Unicode code point. Never fails.
-	//
 	uint8_t encode_UTF8(char32_t p_char, std::span<char8_t, 7> p_output);
 
 	///	\brief	Converts a code point to UTF16
 	///	\param[in]	p_char - Code point to convert
 	///	\param[out]	p_output - Resulting UTF16 encoding. Not Null terminated
 	///	\return		The number of char16_t blocks used, in the output encoding. Or 0 on failure.
-	//
 	uint8_t encode_UTF16(char32_t p_char, std::span<char16_t, 2> p_output);
 
 	//======== ======== Compliance
@@ -261,17 +259,14 @@ namespace core
 	///	\brief	Checks if character can be encoded as a valid Unicode code point.
 	///	\param[in]	p_char - Character to check
 	///	\return true if input is a valid Unicode code point, false if otherwise.
-	//
 	[[nodiscard]] inline constexpr bool UNICODE_Compliant(char32_t p_char) { return !((p_char > 0xD7FF && p_char < 0xE000) || p_char > 0x10FFFF); }
 
 	///	\brief	Checks if a given character is a valid ASCII character (i.e. Only first 7bits are used).
 	///	\param[in] p_char - Character to check
 	///	\return true if character is ASCII compliant, false if otherwise.
-	//
 	[[nodiscard]] inline constexpr bool ASCII_Compliant(char32_t p_char) { return p_char < 0x80; }
 
 	///	\brief	Same as \ref core::ASCII_Compliant(char32_t).
-	//
 	[[nodiscard]] inline constexpr bool ASCII_Compliant(char8_t p_char) { return p_char < 0x80; }
 
 	///	\brief	Checks if string has a valid UTF8 and Unicode encoding.
@@ -279,7 +274,6 @@ namespace core
 	///	\param[in]	p_size - Size of string to check
 	///	\return true if input has a valid encoding, false if otherwise.
 	///	\note		Agnostic to null termination.
-	//
 	[[nodiscard]] bool UTF8_UNICODE_Compliant(std::u8string_view p_str);
 
 	///	\brief	Checks if string has a valid UTF16 encoding.
@@ -287,7 +281,6 @@ namespace core
 	///	\param[in]	p_size - Size of string to check
 	///	\return true if input has a valid encoding, false if otherwise.
 	///	\note		Agnostic to null termination.
-	//
 	[[nodiscard]] bool UTF16_UNICODE_Compliant(std::u16string_view p_str);
 
 	///	\brief	Checks if string has a valid UCS2 and Unicode encoding.
@@ -295,7 +288,6 @@ namespace core
 	///	\param[in]	p_size - Size of string to check
 	///	\return true if input has a valid encoding, false if otherwise.
 	///	\note		Agnostic to null termination.
-	//
 	[[nodiscard]] bool UCS2_UNICODE_Compliant(std::u16string_view p_str);
 
 	///	\brief	Checks if string has a valid UCS4 (or UTF32) and Unicode encoding.
@@ -303,7 +295,6 @@ namespace core
 	///	\param[in]	p_size - Size of string to check
 	///	\return true if input has a valid encoding, false if otherwise.
 	///	\note		Agnostic to null termination.
-	//
 	[[nodiscard]] bool UCS4_UNICODE_Compliant(std::u32string_view p_str);
 
 	///	\brief	Checks if a given string encodes a valid ASCII sequence.
@@ -311,11 +302,9 @@ namespace core
 	///	\param[in]	p_size - Size of string to check
 	///	\return		true if string is ASCII compliant. false if otherwise.
 	///	\note		Agnostic to null termination.
-	//
 	[[nodiscard]] bool ASCII_Compliant(std::u8string_view p_str);
 
 	///	\brief	Same as \ref core::ASCII_Compliant(const char8_t*, size_t), but for char32_t.
-	//
 	[[nodiscard]] bool ASCII_Compliant(std::u32string_view p_str);
 
 	///	\brief	Checks if string has a valid UTF8 encoding without it necessarily encoding a valid Unicode code point.
@@ -323,10 +312,8 @@ namespace core
 	///	\param[in]	p_size - Size of string to check
 	///	\return true if input has a valid encoding, false if otherwise.
 	///	\note		Agnostic to null termination.
-	//
 	[[nodiscard]] bool UTF8_valid(std::u8string_view p_str);
 
 	///	\brief	Same as \ref UTF16_UNICODE_Compliant. UTF16 can only encode valid Unicode code points.
-	//
 	[[nodiscard]] inline bool UTF16_valid(std::u16string_view p_str) { return UTF16_UNICODE_Compliant(p_str); }
 }	//namespace core

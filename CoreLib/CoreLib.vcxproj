@@ -58,6 +58,7 @@
     <ClCompile Include="src\Core_Sync.cpp" />
     <ClCompile Include="src\Core_Thread.cpp" />
     <ClCompile Include="src\Core_Time.cpp" />
+    <ClCompile Include="src\string\core_os_string.cpp" />
     <ClCompile Include="src\string\core_string_encoding.cpp" />
     <ClCompile Include="src\string\core_string_misc.cpp" />
     <ClCompile Include="src\string\core_string_numeric.cpp" />
