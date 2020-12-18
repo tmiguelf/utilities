@@ -113,6 +113,7 @@ os_string::os_string(std::u32string_view p_string): basic_string<os_char>(to_os_
 os_string& os_string::operator = (std::u32string_view p_string)
 {
 	this_string_t::operator= (to_os_natural_convert(p_string));
+	return *this;
 }
 
 std::u32string os_string::to_convertible() const
@@ -125,14 +126,6 @@ std::u32string os_string_view::to_convertible() const
 	return from_os_natural_convert(*this);
 }
 
-
-
-
-
-
-
-
 #endif
-
 
 } //namespace core
