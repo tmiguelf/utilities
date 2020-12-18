@@ -375,11 +375,10 @@ namespace
 			DateTime t_time = date_time_local();	//current date
 
 			{
-				std::filesystem::path o_fileName = g_straceOpt.m_output_file;
 				std::error_code ec;
-				if(create_directories(o_fileName.parent_path(), ec))
+				if(create_directories(g_straceOpt.m_output_file.parent_path(), ec))
 				{
-					o_file.open(o_fileName);
+					o_file.open(g_straceOpt.m_output_file);
 				}
 			}
 			if(o_file.is_open())
@@ -876,11 +875,10 @@ namespace
 				DateTime		t_time = date_time_local();	//current date
 
 				{
-					std::filesystem::path o_fileName = g_straceOpt.m_output_file;
 					std::error_code ec;
-					if(create_directories(o_fileName.parent_path(), ec))
+					if(create_directories(g_straceOpt.m_output_file.parent_path(), ec))
 					{
-						o_file.open(o_fileName);
+						o_file.open(g_straceOpt.m_output_file);
 					}
 				}
 
