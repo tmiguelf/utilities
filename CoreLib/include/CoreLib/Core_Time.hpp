@@ -83,7 +83,7 @@ public:
 	void		set();
 
 	/// \brief gets currently elapsed time, 1ns resolution, granularity depends on system
-	[[nodiscard]] uint64_t elapsed();
+	[[nodiscard]] uint64_t elapsed() const;
 };
 
 /// \brief	The Core_TrackChrono is an high precision real time chronometer.

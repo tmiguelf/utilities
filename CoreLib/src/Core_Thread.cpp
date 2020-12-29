@@ -29,6 +29,8 @@
 //======== ======== ======== Include ======== ======== ========
 //---- User Libraries ----
 #include "CoreLib/Core_Thread.hpp"
+#include <algorithm>
+
 
 #ifdef _WIN32
 #	include <windows.h>
@@ -48,6 +50,8 @@ namespace core
 
 namespace _p
 {
+
+_thread_obj_redir::~_thread_obj_redir() = default;
 
 ///	\internal
 ///	\brief Helper struct to pass information about which function to call and its parameter.
@@ -106,12 +110,23 @@ void milliSleep(uint16_t p_time)
 
 Thread::Thread() = default;
 
+Thread::Thread(Thread&& p_other)
+{
+	swap(p_other);
+}
+
 Thread::~Thread()
 {
 	if(m_handle)
 	{
 		CloseHandle(m_handle);
 	}
+}
+
+void Thread::swap(Thread& p_other)
+{
+	std::swap(m_handle, p_other.m_handle);
+	std::swap(m_id, p_other.m_id);
 }
 
 Thread::Error Thread::create(void (*p_function)(void *), void* p_param)
@@ -212,9 +227,20 @@ namespace _p
 
 Thread::Thread() = default;
 
+Thread::Thread(Thread&& p_other)
+{
+	swap(p_other);
+}
+
 Thread::~Thread()
 {
 	if(m_hasThread) pthread_detach(m_handle);
+}
+
+void Thread::swap(Thread& p_other)
+{
+	std::swap(m_handle, p_other.m_handle);
+	std::swap(m_hasThread, p_other.m_hasThread);
 }
 
 Thread::Error Thread::create(void (*p_function)(void *), void* p_param)

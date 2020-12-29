@@ -56,7 +56,7 @@ namespace _p
 class _thread_obj_redir
 {
 public:
-	virtual ~_thread_obj_redir() = default;
+	virtual ~_thread_obj_redir();
 	virtual void call() = 0;
 };
 
@@ -111,6 +111,7 @@ public:
 	static const uint32_t Infinite = 0xFFFFFFFF;
 private:
 	Thread& operator = (const Thread&)	= delete;
+	Thread& operator = (Thread&&)		= delete;
 	Thread(const Thread&)				= delete;
 
 #ifdef _WIN32
@@ -124,10 +125,14 @@ private:
 public:
 	Thread();
 
+	Thread(Thread&& p_other);
+
 	///	\note
 	///		If a thread has been launched, but it has neither been \ref join or \ref detach
 	///		the destructor will detach the thread.
 	~Thread();
+
+	void swap(Thread& p_other);
 
 	///	\brief Spawns a thread and gives it to user control via a function pointer
 	///
@@ -201,8 +206,8 @@ public:
 
 		_p::thread_obj_redir<T>* t_obj = new _p::thread_obj_redir<T>(p_object, p_method, p_param);
 
-		Error ret = createThread(_p::_thread_call_object_assist, t_obj);
-		if(ret == Error::None)
+		Error ret = create(_p::_thread_call_object_assist, static_cast<_p::_thread_obj_redir*>(t_obj));
+		if(ret != Error::None)
 		{
 			delete t_obj;
 		}

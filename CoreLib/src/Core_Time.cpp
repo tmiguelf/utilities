@@ -83,7 +83,7 @@ void Chrono::set()
 #endif
 }
 
-uint64_t Chrono::elapsed() //nanosecond resolution
+uint64_t Chrono::elapsed() const //nanosecond resolution
 {
 #ifdef _WIN32
 	const uint64_t freq = core_p::g_WinFreq.frequency();
