@@ -31,14 +31,14 @@
 #include <array>
 #include <utility>
 
-#include "MathLib/LinearAlgebra/Vector.hpp"
-
+#include "Vector.hpp"
+#include "MathLib/_p/mathlib_type_help.hpp"
 
 namespace mathlib
 {
 	/// \brief Matrix with a 2D storage space
 	//
-	template <typename T, size_t T_size1, size_t T_size2, typename = std::enable_if_t<std::is_arithmetic_v<T>>>
+	template <_p::is_non_const_arithmetic T, size_t T_size1, size_t T_size2>
 	class Matrix
 	{
 	public:
@@ -143,7 +143,7 @@ namespace mathlib
 			return *this;
 		}
 
-		template <typename O_T, std::enable_if_t<std::is_arithmetic_v<O_T>, int> = 0>
+		template <_p::is_arithmetic O_T>
 		constexpr this_t& operator *= (O_T p_scalar)
 		{
 			for(size_t i = 0; i < T_size1; ++i)
@@ -156,7 +156,7 @@ namespace mathlib
 			return *this;
 		}
 
-		template <typename O_T, std::enable_if_t<std::is_arithmetic_v<O_T>, int> = 0>
+		template <_p::is_arithmetic O_T>
 		constexpr this_t& operator /= (O_T p_scalar)
 		{
 			for(size_t i = 0; i < T_size1; ++i)
@@ -179,13 +179,13 @@ namespace mathlib
 			return this_t{*this} -= p_other;
 		}
 
-		template <typename O_T, std::enable_if_t<std::is_arithmetic_v<O_T>, int> = 0>
+		template <_p::is_arithmetic O_T>
 		[[nodiscard]] inline constexpr this_t operator * (O_T p_scalar) const
 		{
 			return this_t{*this} *= p_scalar;
 		}
 
-		template <typename O_T, std::enable_if_t<std::is_arithmetic_v<O_T>, int> = 0>
+		template <_p::is_arithmetic O_T>
 		[[nodiscard]] inline constexpr this_t operator / (O_T p_scalar) const
 		{
 			return this_t{*this} /= p_scalar;
@@ -264,7 +264,6 @@ namespace mathlib
 	///	\brief calculates the trace of the matrix
 	///	\note
 	///		Trace is only defined for a square matrix
-	//
 	template <typename T, size_t T_size>
 	[[nodiscard]] constexpr T trace(const Matrix<T, T_size, T_size>& p_mat)
 	{
@@ -275,6 +274,13 @@ namespace mathlib
 		}
 		return res;
 	}
+
+	template <_p::is_arithmetic T1, _p::is_non_const_arithmetic T2, size_t T_size1, size_t T_size2>
+	Matrix<T2, T_size1, T_size2> operator * (T1 p_1, const Matrix<T2, T_size1, T_size2>& p_2)
+	{
+		return p_2 * p_1;
+	}
+
 }
 
 

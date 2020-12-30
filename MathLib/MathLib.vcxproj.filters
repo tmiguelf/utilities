@@ -22,11 +22,11 @@
     <Filter Include="Header Files\HyperComplex">
       <UniqueIdentifier>{5a0da344-a651-4cd3-9fcb-42f140b81aa7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="private">
+      <UniqueIdentifier>{7f540944-ef4e-4326-b25f-04200e01c417}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\MathLib\LinearAlgebra\Vector.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\MathLib\LinearAlgebra\Vector.h">
       <Filter>Header Files\LinearAlgebra</Filter>
     </ClInclude>
@@ -44,6 +44,9 @@
     </ClInclude>
     <ClInclude Include="include\MathLib\constants.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MathLib\_p\mathlib_type_help.hpp">
+      <Filter>private</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
