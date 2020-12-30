@@ -41,10 +41,12 @@
 #include <cmath>
 #include <optional>
 
+#include <MathLib/_p/mathlib_type_help.hpp>
+
 namespace mathlib
 {
 
-template <typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+template <_p::is_non_const_floating_point T>
 class Quaternion
 {
 public:

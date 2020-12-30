@@ -29,13 +29,18 @@
 
 #include <type_traits>
 #include <array>
+#include <cmath>
+#include <optional>
+
+
+#include "MathLib/_p/mathlib_type_help.hpp"
 
 namespace mathlib
 {
 
 	/// \brief Algebraic vector
 	//
-	template <typename T, size_t T_size, typename = std::enable_if_t<std::is_arithmetic_v<T>>>
+	template <_p::is_non_const_arithmetic T, size_t T_size> requires (T_size > 0)
 	class Vector: public std::array<T, T_size>
 	{
 	public:
@@ -78,7 +83,7 @@ namespace mathlib
 			return *this;
 		}
 
-		template <typename O_T, std::enable_if_t<std::is_arithmetic_v<O_T>, int> = 0>
+		template <_p::is_arithmetic O_T>
 		inline this_t& operator *= (O_T p_scalar)
 		{
 			for(T& obj: *this)
@@ -88,7 +93,7 @@ namespace mathlib
 			return *this;
 		}
 
-		template <typename O_T, std::enable_if_t<std::is_arithmetic_v<O_T>, int> = 0>
+		template <_p::is_arithmetic O_T>
 		inline this_t& operator /= (O_T p_scalar)
 		{
 			for(T& obj: *this)
@@ -118,13 +123,13 @@ namespace mathlib
 			return temp;
 		}
 
-		template <typename O_T, std::enable_if_t<std::is_arithmetic_v<O_T>, int> = 0>
+		template <_p::is_arithmetic O_T>
 		[[nodiscard]] inline constexpr this_t operator * (O_T p_scalar) const
 		{
 			return this_t{*this} *= p_scalar;
 		}
 
-		template <typename O_T, std::enable_if_t<std::is_arithmetic_v<O_T>, int> = 0>
+		template <_p::is_arithmetic O_T>
 		[[nodiscard]] inline constexpr this_t operator / (O_T p_scalar) const
 		{
 			return this_t{*this} /= p_scalar;
@@ -156,13 +161,68 @@ namespace mathlib
 			container_t::operator = (p_other);
 			return *this;
 		}
+
+		inline std::optional<Vector> normal()
+		{
+			if constexpr (T_size == 1)
+			{
+				if(operator [](0) > 0)
+				{
+					return Vector{static_cast<T>(1)};
+				}
+				else if constexpr(std::is_signed_v<T>)
+				{
+					if(operator [](0) < 0)
+					{
+						return Vector{static_cast<T>(-1)};
+					}
+				}
+			}
+			else if constexpr (T_size < 4)
+			{
+				auto res = hypot(*this);
+				if(res > 0)
+				{
+					return *this / res;
+				}
+			}
+			else
+			{
+				auto res = std::sqrt(*this * *this);
+				if(res > 0)
+				{
+					return *this / res;
+				}
+			}
+			return {};
+		}
 	};
+
+
+	template <_p::is_arithmetic T1, _p::is_non_const_arithmetic T2, size_t T_size>
+	Vector<T2, T_size> operator * (T1 p_1, const Vector<T2, T_size>& p_2)
+	{
+		return p_2 * p_1;
+	}
+
+
+	template<typename T, size_t T_size> requires (T_size > 1 && T_size < 4)
+	inline auto hypot(const Vector<T, T_size>& p_vect)
+	{
+		if constexpr(T_size == 2)
+		{
+			return std::hypot(p_vect[0], p_vect[1]);
+		}
+		else
+		{
+			return std::hypot(p_vect[0], p_vect[1], p_vect[2]);
+		}
+	}
 
 	///	\brief Calculates the cross product between 2 vectors
 	///	\note
 	///		Cross product is Only defined for R3
-	//
-	template <typename T>
+	template <_p::is_non_const_arithmetic T>
 	[[nodiscard]] constexpr Vector<T, 3> crossProduct(const Vector<T, 3>& p_1, const Vector<T, 3>& p_2)
 	{
 		//Sarrus's rule
