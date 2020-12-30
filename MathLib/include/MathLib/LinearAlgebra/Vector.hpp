@@ -162,7 +162,7 @@ namespace mathlib
 			return *this;
 		}
 
-		inline std::optional<Vector> normal()
+		[[nodiscard]] inline std::optional<Vector> normal() const
 		{
 			if constexpr (T_size == 1)
 			{
@@ -200,14 +200,14 @@ namespace mathlib
 
 
 	template <_p::is_arithmetic T1, _p::is_non_const_arithmetic T2, size_t T_size>
-	Vector<T2, T_size> operator * (T1 p_1, const Vector<T2, T_size>& p_2)
+	[[nodiscard]] Vector<T2, T_size> operator * (T1 p_1, const Vector<T2, T_size>& p_2)
 	{
 		return p_2 * p_1;
 	}
 
 
 	template<typename T, size_t T_size> requires (T_size > 1 && T_size < 4)
-	inline auto hypot(const Vector<T, T_size>& p_vect)
+	[[nodiscard]] inline auto hypot(const Vector<T, T_size>& p_vect)
 	{
 		if constexpr(T_size == 2)
 		{

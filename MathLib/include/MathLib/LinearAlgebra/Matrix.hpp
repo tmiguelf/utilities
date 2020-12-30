@@ -261,6 +261,13 @@ namespace mathlib
 		//	Determinant - requires a conditional enable, the ability to create a sub matrix and recursion, but we don't need it for now
 	};
 
+
+	template <_p::is_arithmetic T1, _p::is_non_const_arithmetic T2, size_t T_size1, size_t T_size2>
+	[[nodiscard]]  Matrix<T2, T_size1, T_size2> operator * (T1 p_1, const Matrix<T2, T_size1, T_size2>& p_2)
+	{
+		return p_2 * p_1;
+	}
+
 	///	\brief calculates the trace of the matrix
 	///	\note
 	///		Trace is only defined for a square matrix
@@ -274,13 +281,6 @@ namespace mathlib
 		}
 		return res;
 	}
-
-	template <_p::is_arithmetic T1, _p::is_non_const_arithmetic T2, size_t T_size1, size_t T_size2>
-	Matrix<T2, T_size1, T_size2> operator * (T1 p_1, const Matrix<T2, T_size1, T_size2>& p_2)
-	{
-		return p_2 * p_1;
-	}
-
 }
 
 
