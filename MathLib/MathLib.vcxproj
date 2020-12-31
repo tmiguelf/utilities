@@ -53,6 +53,7 @@
     <ClInclude Include="include\MathLib\constants.hpp" />
     <ClInclude Include="include\MathLib\HyperComplex\quaternionRotator.hpp" />
     <ClInclude Include="include\MathLib\HyperComplex\quaternions.hpp" />
+    <ClInclude Include="include\MathLib\LinearAlgebra\3D.hpp" />
     <ClInclude Include="include\MathLib\LinearAlgebra\Matrix.hpp" />
     <ClInclude Include="include\MathLib\LinearAlgebra\Vector.hpp" />
     <ClInclude Include="include\MathLib\_p\mathlib_type_help.hpp" />

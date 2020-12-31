@@ -44,7 +44,7 @@
 using core::toStream;
 
 template<typename T>
-static std::ostream& operator << (std::ostream& p_stream, const mathlib::Vector<T, 3>& p_data)
+static std::ostream& operator << (std::ostream& p_stream, const mathlib::Vector3<T>& p_data)
 {
 	p_stream
 		<< "["
@@ -75,7 +75,7 @@ TYPED_TEST_SUITE(QuaternionRotator_T, TestTypes);
 
 
 template<typename real_t>
-void vect_permutate(Vector<real_t, 3>& p_vect)
+void vect_permutate(Vector3<real_t>& p_vect)
 {
 	real_t aux = p_vect[0];
 	p_vect[0] = p_vect[1];
@@ -93,8 +93,8 @@ TYPED_TEST(QuaternionRotator_T, Rotator)
 
 	struct testVect
 	{
-		Vector<real_t, 3> vect;
-		Vector<real_t, 3> result;
+		Vector3<real_t> vect;
+		Vector3<real_t> result;
 
 		void permutate()
 		{
@@ -105,7 +105,7 @@ TYPED_TEST(QuaternionRotator_T, Rotator)
 
 	struct TestCase
 	{
-		Vector<real_t, 3>	rotationAxis;
+		Vector3<real_t>	rotationAxis;
 		real_t				rotationValue;
 		std::vector<testVect> tests;
 
@@ -131,7 +131,7 @@ TYPED_TEST(QuaternionRotator_T, Rotator)
 	};
 
 
-#define VECT(X,Y,Z) Vector<real_t, 3>{real_t{X}, real_t{Y}, real_t{Z}}
+#define VECT(X,Y,Z) Vector3<real_t>{real_t{X}, real_t{Y}, real_t{Z}}
 	std::vector<TestCase> testData =
 	{
 		{VECT(3.0, 4.0, 5.0), real_t{0.0}, std::vector<testVect>{
@@ -189,7 +189,7 @@ TYPED_TEST(QuaternionRotator_T, Rotator)
 				QuaternionRotator<real_t> rotator{tcase.rotationAxis, tcase.rotationValue};
 				for(const testVect& vect : tcase.tests)
 				{
-					Vector<real_t, 3> res = rotator.rotate(vect.vect);
+					Vector3<real_t> res = rotator.rotate(vect.vect);
 
 					HELP_NEAR(res[0], vect.result[0], epsilon * 10) << toStream{tcase, TestCase::stream} << " & " << vect.vect;
 					HELP_NEAR(res[1], vect.result[1], epsilon * 10) << toStream{tcase, TestCase::stream} << " & " << vect.vect;
@@ -213,7 +213,7 @@ TYPED_TEST(QuaternionRotator_T, fromVector)
 
 	struct TestCase
 	{
-		Vector<real_t, 3>	vect;
+		Vector3<real_t>	vect;
 		Quaternion<real_t>	result;
 	};
 
@@ -225,7 +225,7 @@ TYPED_TEST(QuaternionRotator_T, fromVector)
 	const real_t sin_s14_2	= std::sin(sqrt_14 / real_t{2.0});
 	const real_t div_1_s14	= real_t{1.0} / sqrt_14;
 
-#define VECT(X,Y,Z) Vector<real_t, 3>{real_t{X}, real_t{Y}, real_t{Z}}
+#define VECT(X,Y,Z) Vector3<real_t>{real_t{X}, real_t{Y}, real_t{Z}}
 #define QUAT(R, I, J, K) Quaternion<real_t>{real_t{R}, real_t{I}, real_t{J}, real_t{K}}
 	std::vector<TestCase> testData =
 	{
@@ -269,11 +269,11 @@ TYPED_TEST(QuaternionRotator_T, toVector)
 
 	struct TestCase
 	{
-		Vector<real_t, 3> vect;
-		Vector<real_t, 3> result;
+		Vector3<real_t> vect;
+		Vector3<real_t> result;
 	};
 
-#define VECT(X,Y,Z) Vector<real_t, 3>{real_t{X}, real_t{Y}, real_t{Z}}
+#define VECT(X,Y,Z) Vector3<real_t>{real_t{X}, real_t{Y}, real_t{Z}}
 #define MIRROR(X,Y,Z) {VECT(X,Y,Z), VECT(X,Y,Z)}
 	std::vector<TestCase> testData =
 	{
@@ -297,7 +297,7 @@ TYPED_TEST(QuaternionRotator_T, toVector)
 	for(const TestCase& tcase: testData)
 	{
 		QuaternionRotator<real_t> quat{tcase.vect};
-		Vector<real_t, 3> res = quat.vector();
+		Vector3<real_t> res = quat.vector();
 		HELP_NEAR(res[0], tcase.result[0], epsilon) << tcase.vect;
 		HELP_NEAR(res[1], tcase.result[1], epsilon) << tcase.vect;
 		HELP_NEAR(res[2], tcase.result[2], epsilon) << tcase.vect;
@@ -313,8 +313,8 @@ TYPED_TEST(QuaternionRotator_T, toMatrix)
 	constexpr real_t epsilon = std::numeric_limits<real_t>::epsilon() * real_t{10.0};
 
 
-#define VECT(X,Y,Z) Vector<real_t, 3>{real_t{X}, real_t{Y}, real_t{Z}}
-	std::vector<Vector<real_t, 3>> testCases =
+#define VECT(X,Y,Z) Vector3<real_t>{real_t{X}, real_t{Y}, real_t{Z}}
+	std::vector<Vector3<real_t>> testCases =
 	{
 		VECT(0.0, 0.0, 0.0),
 		VECT(1.0, 0.0, 0.0),
@@ -324,19 +324,19 @@ TYPED_TEST(QuaternionRotator_T, toMatrix)
 		VECT(-2.0, 3.0, -1.0),
 	};
 
-	std::vector<Vector<real_t, 3>> testData = testCases;
+	std::vector<Vector3<real_t>> testData = testCases;
 #undef VECT
 
 #define HELP_NEAR(A, B, C) ASSERT_NEAR(static_cast<double>(A), static_cast<double>(B), static_cast<double>(C))
-	for(const Vector<real_t, 3>& tcase: testCases)
+	for(const Vector3<real_t>& tcase: testCases)
 	{
 		QuaternionRotator<real_t> quat{tcase};
-		Matrix<real_t, 3, 3> res = quat.matrix();
+		Matrix3<real_t> res = quat.matrix();
 		
-		for(const Vector<real_t, 3>& tdata: testData)
+		for(const Vector3<real_t>& tdata: testData)
 		{
-			Vector<real_t, 3> mode1 = quat.rotate(tdata);
-			Vector<real_t, 3> mode2 = res * tdata;
+			Vector3<real_t> mode1 = quat.rotate(tdata);
+			Vector3<real_t> mode2 = res * tdata;
 
 			HELP_NEAR(mode1[0], mode2[0], epsilon) << tcase << ":" << tdata;
 			HELP_NEAR(mode1[1], mode2[1], epsilon) << tcase << ":" << tdata;

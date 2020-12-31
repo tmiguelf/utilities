@@ -209,7 +209,7 @@ namespace mathlib
 			return p_res;
 		}
 
-		template <size_t OT_size1, size_t OT_size2, std::enable_if_t<OT_size1 == T_size2, int> = 0>
+		template <size_t OT_size1, size_t OT_size2> requires (OT_size1 == T_size2)
 		[[nodiscard]] constexpr Matrix<T, T_size1, OT_size2> operator * (const Matrix<T, OT_size1, OT_size2>& p_mat) const
 		{
 			static_assert(OT_size1 == T_size2, "Matrix must have compatible dimmensions");
