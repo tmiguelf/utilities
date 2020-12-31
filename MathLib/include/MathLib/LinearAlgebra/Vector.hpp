@@ -196,6 +196,35 @@ namespace mathlib
 			}
 			return {};
 		}
+
+		[[nodiscard]] inline Vector fast_normal() const
+		{
+			if constexpr (T_size == 1)
+			{
+				if(operator [](0) > 0)
+				{
+					return Vector{static_cast<T>(1)};
+				}
+				else if constexpr(std::is_signed_v<T>)
+				{
+					if(operator [](0) < 0)
+					{
+						return Vector{static_cast<T>(-1)};
+					}
+				}
+			}
+			else
+			{
+				auto res = std::sqrt(*this * *this);
+				if(res > T{0})
+				{
+					return *this / res;
+				}
+			}
+			Vector temp{};
+			temp[0] = T{1};
+			return temp;
+		}
 	};
 
 
