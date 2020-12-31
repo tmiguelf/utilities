@@ -275,4 +275,13 @@ private:
 	std::array<T, 4> m_data {0, 0, 0, 0};
 };
 
+
+template <_p::is_arithmetic T1, _p::is_non_const_arithmetic T2>
+[[nodiscard]] Quaternion<T2> operator * (T1 p_1, const Quaternion<T2>& p_2)
+{
+	return p_2 * p_1;
+}
+
+
+
 } //namespace mathlib

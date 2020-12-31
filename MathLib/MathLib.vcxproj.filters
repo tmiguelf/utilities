@@ -27,9 +27,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\MathLib\LinearAlgebra\Vector.h">
-      <Filter>Header Files\LinearAlgebra</Filter>
-    </ClInclude>
     <ClInclude Include="include\MathLib\HyperComplex\quaternions.hpp">
       <Filter>Header Files\HyperComplex</Filter>
     </ClInclude>
@@ -47,6 +44,9 @@
     </ClInclude>
     <ClInclude Include="include\MathLib\_p\mathlib_type_help.hpp">
       <Filter>private</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MathLib\LinearAlgebra\3D.hpp">
+      <Filter>Header Files\LinearAlgebra</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

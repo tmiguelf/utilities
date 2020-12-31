@@ -31,8 +31,7 @@
 #include <cmath>
 
 #include "quaternions.hpp"
-#include "MathLib/LinearAlgebra/Vector.hpp"
-#include "MathLib/LinearAlgebra/Matrix.hpp"
+#include "MathLib/LinearAlgebra/3D.hpp"
 #include <MathLib/_p/mathlib_type_help.hpp>
 
 namespace mathlib
@@ -54,7 +53,7 @@ public:
 	{
 	}
 
-	QuaternionRotator(const Vector<T, 3> p_vector)
+	QuaternionRotator(const Vector3<T> p_vector)
 	{
 		T vx = p_vector[0];
 		T vy = p_vector[1];
@@ -74,7 +73,7 @@ public:
 		}
 	}
 
-	QuaternionRotator(const Vector<T, 3> p_vector, T p_rotation)
+	QuaternionRotator(const Vector3<T> p_vector, T p_rotation)
 	{
 		T vx = p_vector[0];
 		T vy = p_vector[1];
@@ -100,7 +99,7 @@ public:
 	}
 
 	QuaternionRotator& operator = (const QuaternionRotator&) = default;
-	
+
 	inline QuaternionRotator& operator *= (const QuaternionRotator& p_other)
 	{
 		return operator = (operator * (p_other));
@@ -111,19 +110,19 @@ public:
 		return {m_identity * p_other.m_identity};
 	}
 
-	constexpr Vector<T, 3> rotate(const Vector<T, 3> p_vector) const
+	constexpr Vector3<T> rotate(const Vector3<T> p_vector) const
 	{
 		//technically the last multiplication should be the inverse of the rotation identity
 		//but because the identity quaternion is unitary, the inverse and the conjugate are the same
 		//conjugate is much easier to compute
 		Quaternion<T> res = m_identity * Quaternion<T>{0.0, p_vector[0], p_vector[1], p_vector[2]} * m_identity.conjugate();
-		return Vector<T, 3>{res.i(), res.j(), res.k()};
+		return Vector3<T>{res.i(), res.j(), res.k()};
 	}
 
 	Quaternion<T> identity() const { return m_identity; }
 	Quaternion<T> inverse () const { return m_identity.conjugate(); }
 
-	Vector<T, 3> vector() const
+	Vector3<T> vector() const
 	{
 		T r = m_identity.r();
 		T i = m_identity.i();
@@ -138,10 +137,10 @@ public:
 			return {T{0.0}, T{0.0}, T{0.0}};
 		}
 
-		return Vector<T, 3>{i / norm, j / norm, k / norm} * angle;
+		return Vector3<T>{i / norm, j / norm, k / norm} * angle;
 	}
 
-	Matrix<T, 3, 3> matrix() const
+	Matrix3<T> matrix() const
 	{
 		const T r = m_identity.r();
 		const T i = m_identity.i();
@@ -160,15 +159,15 @@ public:
 		const T pik = i * k;
 		const T pjk = j * k;
 
-		using line_t = typename Matrix<T, 3, 3>::line_t;
-		using init_t = typename Matrix<T, 3, 3>::init_t;
+		using line_t = typename Matrix3<T>::line_t;
+		using init_t = typename Matrix3<T>::init_t;
 
 		return init_t
-			{
-				line_t{(pr2 + pi2) - (pj2 + pk2), T{2.0} * (pij - prk)		, T{2.0} * (pik + prj)		},
-				line_t{T{2.0} * (pij + prk)		, (pr2 + pj2) - (pi2 + pk2)	, T{2.0} * (pjk - pri)		},
-				line_t{T{2.0} * (pik - prj)		, T{2.0} * (pjk + pri)		, (pr2 + pk2) - (pi2 + pj2)	}
-			};
+		{
+			line_t{(pr2 + pi2) - (pj2 + pk2), T{2.0} * (pij - prk)		, T{2.0} * (pik + prj)		},
+			line_t{T{2.0} * (pij + prk)		, (pr2 + pj2) - (pi2 + pk2)	, T{2.0} * (pjk - pri)		},
+			line_t{T{2.0} * (pik - prj)		, T{2.0} * (pjk + pri)		, (pr2 + pk2) - (pi2 + pj2)	}
+		};
 	}
 
 private:
