@@ -106,7 +106,7 @@ public:
 
 
 //======== inline optimization ========
-inline os_string::os_string(const os_string_view& p_other): basic_string<os_char>(p_other) {}
+inline os_string::os_string(const os_string_view& p_other): std::basic_string<os_char>(p_other) {}
 inline os_string& os_string::operator = (const os_string_view& p_other) { this_string_t::operator = (p_other); return *this;}
 
 #ifdef _WIN32
@@ -124,22 +124,22 @@ inline bool os_string::is_convertible(std::u32string_view p_string)
 
 inline std::u8string os_string::to_print_UTF8(char32_t p_placeholder) const
 {
-	return UTF16_to_UTF8_faulty(reinterpret_cast<const std::u16string&>(*this), p_placeholder);
+	return UTF16_to_UTF8_faulty({reinterpret_cast<const char16_t*>(data()), size()}, p_placeholder);
 }
 
 inline std::u32string os_string::to_print_UTF32(char32_t p_placeholder) const
 {
-	return UTF16_to_UCS4_faulty(reinterpret_cast<const std::u16string&>(*this), p_placeholder);
+	return UTF16_to_UCS4_faulty({reinterpret_cast<const char16_t*>(data()), size()}, p_placeholder);
 }
 
 inline std::u8string os_string_view::to_print_UTF8(char32_t p_placeholder) const
 {
-	return UTF16_to_UTF8_faulty(reinterpret_cast<const std::u16string&>(*this), p_placeholder);
+	return UTF16_to_UTF8_faulty({reinterpret_cast<const char16_t*>(data()), size()}, p_placeholder);
 }
 
 inline std::u32string os_string_view::to_print_UTF32(char32_t p_placeholder) const
 {
-	return UTF16_to_UCS4_faulty(reinterpret_cast<const std::u16string&>(*this), p_placeholder);
+	return UTF16_to_UCS4_faulty({reinterpret_cast<const char16_t*>(data()), size()}, p_placeholder);
 }
 
 #else
@@ -168,32 +168,32 @@ inline os_string& os_string::operator = (std::u32string_view p_string)
 
 inline std::u8string os_string::to_print_UTF8(char32_t) const
 {
-	return ANSI_to_UTF8(reinterpret_cast<const std::u8string&>(*this));
+	return ANSI_to_UTF8({reinterpret_cast<const char*>(data()), size()});
 }
 
 inline std::u32string os_string::to_print_UTF32(char32_t) const
 {
-	return ANSI_to_UCS4(reinterpret_cast<const std::u8string&>(*this));
+	return ANSI_to_UCS4({reinterpret_cast<const char*>(data()), size()});
 }
 
 inline std::u32string os_string::to_convertible() const
 {
-	return ANSI_to_UCS4(reinterpret_cast<const std::u8string&>(*this));
+	return ANSI_to_UCS4({reinterpret_cast<const char*>(data()), size()});
 }
 
 inline std::u8string os_string_view::to_print_UTF8(char32_t) const
 {
-	return ANSI_to_UTF8(reinterpret_cast<const std::u8string&>(*this));
+	return ANSI_to_UTF8({reinterpret_cast<const char*>(data()), size()});
 }
 
 inline std::u32string os_string_view::to_print_UTF32(char32_t) const
 {
-	return ANSI_to_UCS4(reinterpret_cast<const std::u8string&>(*this));
+	return ANSI_to_UCS4({reinterpret_cast<const char*>(data()), size()});
 }
 
 inline std::u32string os_string_view::to_convertible() const
 {
-	return ANSI_to_UCS4(reinterpret_cast<const std::u8string&>(*this));
+	return ANSI_to_UCS4({reinterpret_cast<const char*>(data()), size()});
 }
 
 #endif // _WIN32
