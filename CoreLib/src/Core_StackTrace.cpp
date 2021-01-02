@@ -300,13 +300,13 @@ namespace
 		t_symb.MaxNameLength	= 254;
 		t_symb.Name[0]			= '\0';
 		
-		t_info.m_addr		= static_cast<uintptr_t>(p_addr);
+		t_info.m_addr			= static_cast<uintptr_t>(p_addr);
 		
 		//This gets the base address of the module that the input address belongs too
 		//fortunately we had the good sense to also print the addresses of the modules and their names
 		//which makes it easier to make sense of this data
 		//see SymGetModuleBase64 on msdn: https://msdn.microsoft.com/en-us/library/windows/desktop/ms681335(v=vs.85).aspx
-		t_info.m_modBase		= SymGetModuleBase64(p_proc, p_addr);
+		t_info.m_modBase		= static_cast<uintptr_t>(SymGetModuleBase64(p_proc, p_addr));
 
 		//======== IMPORTANT ======== 
 		//this gets the name of the symbol (function name) the input address belongs too

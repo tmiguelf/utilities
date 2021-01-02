@@ -501,7 +501,7 @@ bool UTF8_valid(std::u8string_view p_input)
 		{
 			uint32_t index = static_cast<uint32_t>(std::countl_one<uint8_t>(*pos));
 
-			if(end - pos < index) return false;
+			if(static_cast<uintptr_t>(end - pos) < index) return false;
 			switch(index)
 			{
 				case 7: if((*(++pos) & 0xC0) != 0x80 || ((*pos & 0x3F)  > 0x03)) return false;

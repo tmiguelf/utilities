@@ -933,7 +933,7 @@ namespace core
 	static inline NET_Error Core_Send_size(const SocketHandle_t p_sock, const void* p_buffer, uintptr_t p_size, uintptr_t& p_sent)
 	{
 #ifdef _WIN32
-		if(p_size > std::numeric_limits<int>::max()) p_size = std::numeric_limits<int>::max();
+		if(p_size > static_cast<uintptr_t>(std::numeric_limits<int>::max())) p_size = static_cast<uintptr_t>(std::numeric_limits<int>::max());
 		int ret = send(p_sock, reinterpret_cast<const char*>(p_buffer), static_cast<int>(p_size), 0);
 #else
 		intptr_t ret = send(p_sock, reinterpret_cast<const char*>(p_buffer), p_size, 0);
@@ -957,7 +957,7 @@ namespace core
 		uintptr_t currentSize = p_size - p_context;
 
 #ifdef _WIN32
-		if(currentSize > std::numeric_limits<int>::max()) currentSize = std::numeric_limits<int>::max();
+		if(currentSize > static_cast<uintptr_t>(std::numeric_limits<int>::max())) currentSize = static_cast<uintptr_t>(std::numeric_limits<int>::max());
 		int ret = send(p_sock, reinterpret_cast<const char*>(p_buffer) + p_context, static_cast<int>(currentSize), 0);
 #else
 		intptr_t ret = send(p_sock, reinterpret_cast<const char*>(p_buffer) + p_context, currentSize, 0);
@@ -984,7 +984,7 @@ namespace core
 	static inline NET_Error Core_Receive_size(const SocketHandle_t p_sock, void* p_buffer, uintptr_t p_size, uintptr_t& p_received)
 	{
 #ifdef _WIN32
-		if(p_size > std::numeric_limits<int>::max()) p_size = std::numeric_limits<int>::max();
+		if(p_size > static_cast<uintptr_t>(std::numeric_limits<int>::max())) p_size =static_cast<uintptr_t>( std::numeric_limits<int>::max());
 		int ret = recv(p_sock, reinterpret_cast<char*>(p_buffer), static_cast<int>(p_size), 0);
 #else
 		intptr_t ret = recv(p_sock, reinterpret_cast<char*>(p_buffer), p_size, 0);
@@ -1014,7 +1014,7 @@ namespace core
 
 		uintptr_t currentSize = p_size - p_context;
 #ifdef _WIN32
-		if(currentSize > std::numeric_limits<int>::max()) currentSize = std::numeric_limits<int>::max();
+		if(currentSize > static_cast<uintptr_t>(std::numeric_limits<int>::max())) currentSize = static_cast<uintptr_t>(std::numeric_limits<int>::max());
 		int ret = recv(p_sock, reinterpret_cast<char*>(p_buffer) + p_context, static_cast<int>(currentSize), 0);
 #else
 		intptr_t ret = recv(p_sock, reinterpret_cast<char*>(p_buffer) + p_context, currentSize, 0);
@@ -1053,7 +1053,7 @@ namespace core
 		bool		sentOnce = false;
 
 #ifdef _WIN32
-		if(p_size > std::numeric_limits<int>::max()) return NET_Error::Buffer_Full;
+		if(p_size > static_cast<uintptr_t>(std::numeric_limits<int>::max())) return NET_Error::Buffer_Full;
 #endif
 
 		addr_info4.sin_family		= AF_INET;
@@ -1088,7 +1088,7 @@ namespace core
 		bool			sentOnce = false;
 
 #ifdef _WIN32
-		if(p_size > std::numeric_limits<int>::max()) return NET_Error::Buffer_Full;
+		if(p_size > static_cast<uintptr_t>(std::numeric_limits<int>::max())) return NET_Error::Buffer_Full;
 #endif
 
 		memcpy(&addr_info6.sin6_addr, p_rawAddr.data(), 16);
@@ -1121,7 +1121,7 @@ namespace core
 	{
 #ifdef _WIN32
 		uintptr_t size = p_size;
-		if(size > std::numeric_limits<int>::max()) size = std::numeric_limits<int>::max();
+		if(size > static_cast<uintptr_t>(std::numeric_limits<int>::max())) size = static_cast<uintptr_t>(std::numeric_limits<int>::max());
 		int check = recvfrom(p_sock, reinterpret_cast<char*>(p_data), static_cast<int>(size), 0, nullptr, nullptr);
 #else
 		intptr_t check = recvfrom(p_sock, reinterpret_cast<char*>(p_data), p_size, 0, nullptr, nullptr);
@@ -1145,7 +1145,7 @@ namespace core
 
 #ifdef _WIN32
 		uintptr_t size = p_size;
-		if(size > std::numeric_limits<int32_t>::max()) size = std::numeric_limits<int32_t>::max();
+		if(size > static_cast<uintptr_t>(std::numeric_limits<int32_t>::max())) size = static_cast<uintptr_t>(std::numeric_limits<int32_t>::max());
 		int check = recvfrom(p_sock, reinterpret_cast<char*>(p_data), static_cast<int>(size), 0, reinterpret_cast<sockaddr*>(&addr_info4), &addr_size);
 #else
 		intptr_t check = recvfrom(p_sock, reinterpret_cast<char*>(p_data), p_size, 0, reinterpret_cast<sockaddr*>(&addr_info4), &addr_size);
@@ -1171,7 +1171,7 @@ namespace core
 
 #ifdef _WIN32
 		uintptr_t size = p_size;
-		if(size > std::numeric_limits<int>::max()) size = std::numeric_limits<int>::max();
+		if(size > static_cast<uintptr_t>(std::numeric_limits<int>::max())) size = static_cast<uintptr_t>(std::numeric_limits<int>::max());
 		int check = recvfrom(p_sock, reinterpret_cast<char*>(p_data), static_cast<int>(size), 0, reinterpret_cast<sockaddr*>(&addr_info6), &addr_size);
 #else
 		intptr_t check = recvfrom(p_sock, reinterpret_cast<char*>(p_data), p_size, 0, reinterpret_cast<sockaddr*>(&addr_info6), &addr_size);

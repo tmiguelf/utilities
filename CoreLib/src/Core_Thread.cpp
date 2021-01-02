@@ -181,7 +181,7 @@ Thread::Error Thread::set_affinity_mask(uint64_t p_affinity)
 {
 	DWORD_PTR t_affinity;
 #ifndef _WIN64
-	if(p_affinity > 0xFFFFFFFF) return Error_Fail;
+	if(p_affinity > 0xFFFFFFFF) return Error::Fail;
 #endif
 	t_affinity = (DWORD_PTR) p_affinity;
 
