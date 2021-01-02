@@ -376,10 +376,8 @@ namespace
 
 			{
 				std::error_code ec;
-				if(create_directories(g_straceOpt.m_output_file.parent_path(), ec))
-				{
-					o_file.open(g_straceOpt.m_output_file);
-				}
+				create_directories(g_straceOpt.m_output_file.parent_path(), ec);
+				o_file.open(g_straceOpt.m_output_file);
 			}
 			if(o_file.is_open())
 			{
@@ -558,14 +556,8 @@ bool register_crash_trace(const std::filesystem::path& p_output_file)
 	}
 	else
 	{
-		g_straceOpt.m_output_file = (core::applicationPath() / p_output_file).lexically_normal();
+		g_straceOpt.m_output_file = (core::applicationPath().parent_path() / p_output_file).lexically_normal();
 	}
-
-
-	/*if(!Core_GetWorkingDir(&(options->m_init_wd)))
-	{
-		options->m_init_wd.clear();
-	}*/
 
 	//======== IMPORTANT ========
 	//Sets the exception handler, i.e. when a problem that would crash the program occurs,
@@ -876,10 +868,8 @@ namespace
 
 				{
 					std::error_code ec;
-					if(create_directories(g_straceOpt.m_output_file.parent_path(), ec))
-					{
-						o_file.open(g_straceOpt.m_output_file);
-					}
+					create_directories(g_straceOpt.m_output_file.parent_path(), ec);
+					o_file.open(g_straceOpt.m_output_file);
 				}
 
 				if(o_file.is_open())
@@ -1032,12 +1022,22 @@ namespace
 					o_file
 						<< section_seperator
 						<< "Proc:\t\t"		<< toStream{proc_ID} << '\n'
-						<< "Thread:\t\t"	<< toStream{thread_ID}	<< '\n';
+						<< "Thread:\t\t"	<< toStream{thread_ID};
 
-					o_file << "\nProcDir:\t\"" << toStream{applicationPath()};
+
+					{
+						std::array<char, 1024> buff;
+						ssize_t ret_size = readlink("/proc/self/exe", buff.data(), buff.size());
+						if(ret_size > 0)
+						{
+							o_file << "\nProcDir:\t\"" << std::string_view{buff.data(), static_cast<size_t>(ret_size)} << '\"';
+						}
+						//else too large
+					}
+
 					{
 						std::error_code ec;
-						o_file << "\"\nWorkDir:\t\"" << toStream{std::filesystem::current_path(ec)} << "\"\n";
+						o_file << "\nWorkDir:\t\"" << toStream{std::filesystem::current_path(ec)} << "\"\n";
 					}
 
 					o_file	<< "Machine:\t\"" << toStream{machine_name().value()} << "\"\n";
@@ -1074,7 +1074,7 @@ bool register_crash_trace(const std::filesystem::path& p_output_file)
 	}
 	else
 	{
-		g_straceOpt.m_output_file = (core::applicationPath() / p_output_file).lexically_normal();
+		g_straceOpt.m_output_file = (core::applicationPath().parent_path() / p_output_file).lexically_normal();
 	}
 
 

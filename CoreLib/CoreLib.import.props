@@ -10,7 +10,7 @@
 	</ImportGroup>
 	<ItemDefinitionGroup>
 		<Link>
-			<LibraryDependencies Condition="'$(TargetOS)'=='Linux'">pthread;%(LibraryDependencies)</LibraryDependencies>
+			<LibraryDependencies Condition="'$(TargetOS)'=='Linux'">pthread;dl;%(LibraryDependencies)</LibraryDependencies>
 			<AdditionalDependencies Condition="'$(TargetOS)'=='Windows'">Ws2_32.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
 		</Link>
 	</ItemDefinitionGroup>
