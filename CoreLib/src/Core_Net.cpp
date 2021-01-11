@@ -1208,45 +1208,24 @@ namespace core
 		memcpy(payload + (6 * 9), pivot, 48);
 	}
 
-	static inline NET_Error Core_WakeOnLanIPv4(const SocketHandle_t p_sock, std::span<const uint8_t, 6> p_MacAddress, const uint32_t p_rawAddr, const uint16_t* p_port)
+	static inline NET_Error Core_WakeOnLanIPv4(const SocketHandle_t p_sock, std::span<const uint8_t, 6> p_MacAddress, const uint32_t p_rawAddr, const uint16_t p_port)
 	{
 		uint8_t				payload[102];
 		Core_PrepareWOLPacket(payload, p_MacAddress);
 
-		if(p_port)
-		{
-			return Core_SendToIPv4(p_sock, payload, 102, p_rawAddr, *p_port, 0);
-		}
-
-		NET_Error ret = Core_SendToIPv4(p_sock, payload, 102, p_rawAddr, 7, 0);
-		if(ret == NET_Error::NoErr)
-		{
-			return Core_SendToIPv4(p_sock, payload, 102, p_rawAddr, 9, 0);
-		}
-
-		return ret;
+		return Core_SendToIPv4(p_sock, payload, 102, p_rawAddr, p_port, 0);
 	}
 
-	static inline NET_Error Core_WakeOnLanIPv6(const SocketHandle_t p_sock, std::span<const uint8_t, 6> p_MacAddress, std::span<const uint8_t, 16> p_rawAddr, const uint16_t* p_port)
+	static inline NET_Error Core_WakeOnLanIPv6(const SocketHandle_t p_sock, std::span<const uint8_t, 6> p_MacAddress, std::span<const uint8_t, 16> p_rawAddr, const uint16_t p_port)
 	{
 		uint8_t				payload[102];
 		Core_PrepareWOLPacket(payload, p_MacAddress);
-
-		if(p_port)
-		{
-			return Core_SendToIPv6(p_sock, payload, 102, p_rawAddr, *p_port, 0);
-		}
-
-		NET_Error ret = Core_SendToIPv6(p_sock, payload, 102, p_rawAddr, 7, 0);
-		if(ret == NET_Error::NoErr)
-		{
-			return Core_SendToIPv6(p_sock, payload, 102, p_rawAddr, 9, 0);
-		}
-
-		return ret;
+		return Core_SendToIPv6(p_sock, payload, 102, p_rawAddr, p_port, 0);
 	}
 
-	static inline NET_Error Core_WakeOnLanIPv4(const SocketHandle_t p_sock, std::span<const uint8_t, 6> p_MacAddress, const uint32_t p_rawAddr, const uint16_t* p_port, const void* p_password, const uint16_t p_password_size)
+
+	//WOL typically port 7 or 9
+	static inline NET_Error Core_WakeOnLanIPv4(const SocketHandle_t p_sock, std::span<const uint8_t, 6> p_MacAddress, const uint32_t p_rawAddr, const uint16_t p_port, const void* p_password, const uint16_t p_password_size)
 	{
 		uint16_t	payload_size = 102;
 		uint8_t		payload[CORE_NET_MAX_DATA_LEN];
@@ -1260,8 +1239,6 @@ namespace core
 			payload_size += p_password_size;
 		}
 
-		NET_Error ret = NET_Error::NoErr;
-
 		Core_PrepareWOLPacket(std::span<uint8_t, 102>{payload, 102}, p_MacAddress);
 
 		if(p_password_size)
@@ -1269,23 +1246,10 @@ namespace core
 			memcpy(payload + 102, p_password, p_password_size);
 		}
 
-		if(p_port)
-		{
-			ret = Core_SendToIPv4(p_sock, payload, payload_size, p_rawAddr, *p_port, 0);
-		}
-		else
-		{
-			ret = Core_SendToIPv4(p_sock, payload, payload_size, p_rawAddr, 7, 0);
-			if(ret == NET_Error::NoErr)
-			{
-				ret = Core_SendToIPv4(p_sock, payload, payload_size, p_rawAddr, 9, 0);
-			}
-		}
-
-		return ret;
+		return Core_SendToIPv4(p_sock, payload, payload_size, p_rawAddr, p_port, 0);
 	}
 
-	static inline NET_Error Core_WakeOnLanIPv6(const SocketHandle_t p_sock, std::span<const uint8_t, 6> p_MacAddress, std::span<const uint8_t, 16> p_rawAddr, const uint16_t* p_port, const void* p_password, const uint16_t p_password_size)
+	static inline NET_Error Core_WakeOnLanIPv6(const SocketHandle_t p_sock, std::span<const uint8_t, 6> p_MacAddress, std::span<const uint8_t, 16> p_rawAddr, const uint16_t p_port, const void* p_password, const uint16_t p_password_size)
 	{
 		uint16_t	payload_size = 102;
 		uint8_t		payload[CORE_NET_MAX_DATA_LEN];
@@ -1299,8 +1263,6 @@ namespace core
 			payload_size += p_password_size;
 		}
 
-		NET_Error ret = NET_Error::NoErr;
-
 		Core_PrepareWOLPacket(std::span<uint8_t, 102>{payload, 102}, p_MacAddress);
 
 		if(p_password_size)
@@ -1308,20 +1270,7 @@ namespace core
 			memcpy(payload + 102, p_password, p_password_size);
 		}
 
-		if(p_port)
-		{
-			ret = Core_SendToIPv6(p_sock, payload, payload_size, p_rawAddr, *p_port, 0);
-		}
-		else
-		{
-			ret = Core_SendToIPv6(p_sock, payload, payload_size, p_rawAddr, 7, 0);
-			if(ret == NET_Error::NoErr)
-			{
-				ret = Core_SendToIPv6(p_sock, payload, payload_size, p_rawAddr, 9, 0);
-			}
-		}
-
-		return ret;
+		return Core_SendToIPv6(p_sock, payload, payload_size, p_rawAddr, p_port, 0);
 	}
 
 
@@ -1827,13 +1776,13 @@ namespace core_p
 		return Core_PeekSizeIPv4(m_sock, p_size, p_other_IP.ui32Type, p_other_port);
 	}
 
-	NET_Error NetUDP_V4::WakeOnLan(std::span<const uint8_t, 6> p_MacAddress, const IPv4_netAddr& p_subNet, const uint16_t* p_port)
+	NET_Error NetUDP_V4::WakeOnLan(std::span<const uint8_t, 6> p_MacAddress, const IPv4_netAddr& p_subNet, const uint16_t p_port)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_WakeOnLanIPv4(m_sock, p_MacAddress, p_subNet.ui32Type, p_port);
 	}
 
-	NET_Error NetUDP_V4::WakeOnLan_password(std::span<const uint8_t, 6> p_MacAddress, const IPv4_netAddr& p_subNet, const uint16_t* p_port, const void* p_password, const uint16_t p_password_size)
+	NET_Error NetUDP_V4::WakeOnLan_password(std::span<const uint8_t, 6> p_MacAddress, const IPv4_netAddr& p_subNet, const uint16_t p_port, const void* p_password, const uint16_t p_password_size)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_WakeOnLanIPv4(m_sock, p_MacAddress, p_subNet.ui32Type, p_port, p_password, p_password_size);
@@ -1915,13 +1864,13 @@ namespace core_p
 		return Core_PeekSizeIPv6(m_sock, p_size, p_other_IP.byteField, p_other_port);
 	}
 
-	NET_Error NetUDP_V6::WakeOnLan(std::span<const uint8_t, 6> p_MacAddress, const IPv6_netAddr& p_subNet, const uint16_t* p_port)
+	NET_Error NetUDP_V6::WakeOnLan(std::span<const uint8_t, 6> p_MacAddress, const IPv6_netAddr& p_subNet, const uint16_t p_port)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		return Core_WakeOnLanIPv6(m_sock, p_MacAddress, p_subNet.byteField, p_port);
 	}
 
-	NET_Error NetUDP_V6::WakeOnLan_password(std::span<const uint8_t, 6> p_MacAddress, const IPv6_netAddr& p_subNet, const uint16_t* p_port, const void* p_password, const uint16_t p_password_size)
+	NET_Error NetUDP_V6::WakeOnLan_password(std::span<const uint8_t, 6> p_MacAddress, const IPv6_netAddr& p_subNet, const uint16_t p_port, const void* p_password, const uint16_t p_password_size)
 	{
 		return Core_WakeOnLanIPv6(m_sock, p_MacAddress, p_subNet.byteField, p_port, p_password, p_password_size);
 	}
@@ -2518,7 +2467,7 @@ namespace core_p
 		return Core_PeekSizeIPv6(m_sock, p_size, p_other_IP.v6.byteField, p_other_port);
 	}
 
-	NET_Error NetUDP::WakeOnLan(std::span<const uint8_t, 6> p_MacAddress, const IP_netAddr& p_subNet, const uint16_t* p_port)
+	NET_Error NetUDP::WakeOnLan(std::span<const uint8_t, 6> p_MacAddress, const IP_netAddr& p_subNet, const uint16_t p_port)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		const IPv ver = p_subNet.version();
@@ -2532,7 +2481,7 @@ namespace core_p
 		return Core_WakeOnLanIPv6(m_sock, p_MacAddress, p_subNet.v6.byteField, p_port);
 	}
 
-	NET_Error NetUDP::WakeOnLan_password(std::span<const uint8_t, 6> p_MacAddress, const IP_netAddr& p_subNet, const uint16_t* p_port, const void* p_password, const uint16_t p_password_size)
+	NET_Error NetUDP::WakeOnLan_password(std::span<const uint8_t, 6> p_MacAddress, const IP_netAddr& p_subNet, const uint16_t p_port, const void* p_password, const uint16_t p_password_size)
 	{
 		if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 		const IPv ver = p_subNet.version();

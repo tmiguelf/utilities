@@ -685,26 +685,24 @@ namespace core_p
 		///	\brief Sends a magic packet commonly used for Wake On Lan
 		///	\param[in] p_MacAddress - The MAC address of the interface to wake up
 		///	\param[in] p_subNet - IP address of the subsystem responsibel for reaching the target device (typically a broadcast address is used)
-		///	\param[in] p_port - Pointer to a variable containing the target port number where WOL is configured.
-		///						Or nullptr to send the message to commonly used port numbers (i.e. send to both port 7 and port 9)
+		///	\param[in] p_port - Target port number where WOL is configured. (tipically port 7 or port 9)
 		///	\return \ref core::NET_Error
 		///
 		///	\remarks
 		///		Has the same properties as \ref send, except the data payload is managed internally by the method.
-		NET_Error WakeOnLan(std::span<const uint8_t, 6> p_MacAddress, const IPv4_netAddr& p_subNet, const uint16_t* p_port = nullptr);
+		NET_Error WakeOnLan(std::span<const uint8_t, 6> p_MacAddress, const IPv4_netAddr& p_subNet, const uint16_t p_port);
 
 		///	\brief Sends a magic packet commonly used for Wake On Lan on systems with password
 		///	\param[in] p_MacAddress - The MAC address of the interface to wake up
 		///	\param[in] p_subNet - IP address of the subsystem responsibel for reaching the target device (typically a broadcast address is used)
-		///	\param[in] p_port - Pointer to a variable containing the target port number where WOL is configured.
-		///						Or nullptr to send the message to commonly used port numbers (i.e. send to both port 7 and port 9)
+		///	\param[in] p_port - Target port number where WOL is configured. (tipically port 7 or port 9)
 		///	\param[in] p_password - Buffer containing the password message to be appended at the end of the magic packet.
 		///	\param[in] p_password_size - The size of the password buffer. If 0 the behaviour is identical to \ref WakeOnLan
 		///	\return \ref core::NET_Error
 		///
 		///	\remarks
 		///		Has the same properties as \ref send, except the data payload is managed internally by the method.
-		NET_Error WakeOnLan_password(std::span<const uint8_t, 6> p_MacAddress, const IPv4_netAddr& p_subNet, const uint16_t* p_port = nullptr, const void* p_password = nullptr, const uint16_t p_password_size = 0);
+		NET_Error WakeOnLan_password(std::span<const uint8_t, 6> p_MacAddress, const IPv4_netAddr& p_subNet, const uint16_t p_port, const void* p_password = nullptr, const uint16_t p_password_size = 0);
 
 		///	\brief Swaps this socket with another
 		void swap(NetUDP_V4& p_other);
@@ -804,13 +802,12 @@ namespace core_p
 		///	\brief Sends a magic packet commonly used for Wake On Lan
 		///	\param[in] p_MacAddress - The MAC address of the interface to wake up
 		///	\param[in] p_subNet - IP address of the subsystem responsibel for reaching the target device (typically a broadcast address is used)
-		///	\param[in] p_port - Pointer to a variable containing the target port number where WOL is configured.
-		///						Or nullptr to send the message to commonly used port numbers (i.e. send to both port 7 and port 9)
+		///	\param[in] p_port - Target port number where WOL is configured. (tipically port 7 or port 9)
 		///	\return \ref core::NET_Error
 		///
 		///	\remarks
 		///		Has the same properties as \ref send, except the data payload is managed internally by the method.
-		NET_Error WakeOnLan(std::span<const uint8_t, 6> p_MacAddress, const IPv6_netAddr& p_subNet, const uint16_t* p_port = nullptr);
+		NET_Error WakeOnLan(std::span<const uint8_t, 6> p_MacAddress, const IPv6_netAddr& p_subNet, const uint16_t p_port);
 		
 		///	\brief Sends a magic packet commonly used for Wake On Lan on systems with password
 		///	\param[in] p_MacAddress - The MAC address of the interface to wake up
@@ -823,7 +820,7 @@ namespace core_p
 		///
 		///	\remarks
 		///		Has the same properties as \ref send, except the data payload is managed internally by the method.
-		NET_Error WakeOnLan_password(std::span<const uint8_t, 6> p_MacAddress, const IPv6_netAddr& p_subNet, const uint16_t* p_port = nullptr, const void* p_password = nullptr, const uint16_t p_password_size = 0);
+		NET_Error WakeOnLan_password(std::span<const uint8_t, 6> p_MacAddress, const IPv6_netAddr& p_subNet, const uint16_t p_port, const void* p_password = nullptr, const uint16_t p_password_size = 0);
 
 		///	\brief Swaps this socket with another
 		void swap(NetUDP_V6& p_other);
@@ -1227,13 +1224,12 @@ namespace core_p
 		///	\brief Sends a magic packet commonly used for Wake On Lan
 		///	\param[in] p_MacAddress - The MAC address of the interface to wake up
 		///	\param[in] p_subNet - IP address of the subsystem responsibel for reaching the target device (typically a broadcast address is used)
-		///	\param[in] p_port - Pointer to a variable containing the target port number where WOL is configured.
-		///						Or nullptr to send the message to commonly used port numbers (i.e. send to both port 7 and port 9)
+		///	\param[in] p_port - Target port number where WOL is configured. (tipically port 7 or port 9)
 		///	\return \ref core::NET_Error
 		///
 		///	\remarks
 		///		Has the same properties as \ref send, except the data payload is managed internally by the method.
-		NET_Error WakeOnLan(std::span<const uint8_t, 6> p_MacAddress, const IP_netAddr& p_subNet, const uint16_t* p_port = nullptr);
+		NET_Error WakeOnLan(std::span<const uint8_t, 6> p_MacAddress, const IP_netAddr& p_subNet, const uint16_t p_port);
 
 		///	\brief Sends a magic packet commonly used for Wake On Lan on systems with password
 		///	\param[in] p_MacAddress - The MAC address of the interface to wake up
@@ -1246,7 +1242,7 @@ namespace core_p
 		///
 		///	\remarks
 		///		Has the same properties as \ref send, except the data payload is managed internally by the method.
-		NET_Error WakeOnLan_password(std::span<const uint8_t, 6> p_MacAddress, const IP_netAddr& p_subNet, const uint16_t* p_port = nullptr, const void* p_password = nullptr, const uint16_t p_password_size = 0);
+		NET_Error WakeOnLan_password(std::span<const uint8_t, 6> p_MacAddress, const IP_netAddr& p_subNet, const uint16_t p_port, const void* p_password = nullptr, const uint16_t p_password_size = 0);
 
 		///	\brief Retrieves the Internet Protocol version currently used on this socket.
 		///	\return \ref IPv
