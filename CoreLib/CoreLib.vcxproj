@@ -51,6 +51,7 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core_Console.cpp" />
     <ClCompile Include="src\Core_DLL.cpp" />
     <ClCompile Include="src\Core_Net.cpp" />
     <ClCompile Include="src\Core_OS.cpp" />
@@ -66,6 +67,7 @@
   <ItemGroup>
     <ClInclude Include="include\CoreLib\Core_Alloca.hpp" />
     <ClInclude Include="include\CoreLib\Core_Alternate.hpp" />
+    <ClInclude Include="include\CoreLib\Core_Console.hpp" />
     <ClInclude Include="include\CoreLib\Core_DLL.hpp" />
     <ClInclude Include="include\CoreLib\Core_Endian.hpp" />
     <ClInclude Include="include\CoreLib\Core_Net.hpp" />
