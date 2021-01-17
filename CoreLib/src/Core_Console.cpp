@@ -110,7 +110,7 @@ const console_out cerr{GetStdHandle(STD_ERROR_HANDLE )};
 
 void console_out::write(std::string_view p_out) const
 {
-	::write(m_handle, p_out.data(), p_out.size());
+	[[maybe_unused]] ssize_t ret = ::write(m_handle, p_out.data(), p_out.size());
 }
 
 void console_out::write(std::wstring_view p_out) const
@@ -129,7 +129,7 @@ void console_out::write(std::wstring_view p_out) const
 
 void console_out::write(std::u8string_view p_out) const
 {
-	::write(m_handle, p_out.data(), p_out.size());
+	[[maybe_unused]] ssize_t ret = ::write(m_handle, p_out.data(), p_out.size());
 }
 
 void console_out::write(std::u16string_view p_out) const
@@ -144,7 +144,7 @@ void console_out::write(std::u32string_view p_out) const
 
 void console_out::put(char p_out) const
 {
-	::write(m_handle, &p_out, 1);
+	[[maybe_unused]] ssize_t ret = ::write(m_handle, &p_out, 1);
 }
 
 void console_out::put(wchar_t p_out) const
@@ -163,7 +163,7 @@ void console_out::put(wchar_t p_out) const
 
 void console_out::put(char8_t p_out) const
 {
-	::write(m_handle, &p_out, 1);
+	[[maybe_unused]] ssize_t ret = ::write(m_handle, &p_out, 1);
 }
 
 void console_out::put(char16_t p_out) const
@@ -173,7 +173,7 @@ void console_out::put(char16_t p_out) const
 
 	if(size)
 	{
-		::write(m_handle, buff.data(), size);
+		write(std::u8string_view{buff.data(), size});
 	}
 	else
 	{
@@ -188,7 +188,7 @@ void console_out::put(char32_t p_out) const
 
 	if(size)
 	{
-		::write(m_handle, buff.data(), size);
+		write(std::u8string_view{buff.data(), size});
 	}
 	else
 	{
