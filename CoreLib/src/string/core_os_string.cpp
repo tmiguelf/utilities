@@ -31,11 +31,14 @@
 
 #include "CoreLib/string/core_os_string.hpp"
 
+#include <span>
+
+#include "CoreLib/string/core_string_encoding.hpp"
+
 namespace core
 {
 
 #ifdef _WIN32
-
 static uintptr_t requiredConversionSize(std::u32string_view p_string)
 {
 	uintptr_t count = 0;
@@ -58,7 +61,7 @@ static uintptr_t requiredConversionSize(std::u32string_view p_string)
 	return count;
 }
 
-static std::basic_string<os_char> to_os_natural_convert(std::u32string_view p_string)
+std::basic_string<os_char> to_os_natural_convert(std::u32string_view p_string)
 {
 	uintptr_t reqSize = requiredConversionSize(p_string);
 	if(reqSize == 0) return {};
@@ -94,7 +97,7 @@ static char32_t extract_code_point(const char16_t*& p_input, const char16_t* con
 	return *p_input;
 }
 
-static std::u32string from_os_natural_convert(std::basic_string_view<os_char> p_string)
+std::u32string from_os_natural_convert(std::basic_string_view<os_char> p_string)
 {
 	std::u32string buff;
 	buff.reserve(p_string.size());
@@ -107,25 +110,8 @@ static std::u32string from_os_natural_convert(std::basic_string_view<os_char> p_
 	}
 	return buff;
 }
-
-os_string::os_string(std::u32string_view p_string): basic_string<os_char>(to_os_natural_convert(p_string)) {}
-
-os_string& os_string::operator = (std::u32string_view p_string)
-{
-	this_string_t::operator= (to_os_natural_convert(p_string));
-	return *this;
-}
-
-std::u32string os_string::to_convertible() const
-{
-	return from_os_natural_convert(*this);
-}
-
-std::u32string os_string_view::to_convertible() const
-{
-	return from_os_natural_convert(*this);
-}
-
 #endif
+
+
 
 } //namespace core

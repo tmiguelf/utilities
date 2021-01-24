@@ -32,6 +32,8 @@
 
 #include "Core_Alternate.hpp"
 #include "string/core_os_string.hpp"
+#include "string/core_string_tostream.hpp"
+#include "string/core_string_encoding.hpp"
 
 
 namespace core
