@@ -41,6 +41,17 @@ namespace core
 {
 
 template<>
+class toStream<std::u8string_view>
+{
+public:
+	toStream(const std::u8string_view& p_data): m_data{p_data}{}
+	inline void stream(std::ostream& p_stream) const { p_stream.write(reinterpret_cast<const char*>(m_data.data()), m_data.size()); }
+
+private:
+	const std::u8string_view& m_data;
+};
+
+template<>
 class toStream<std::u8string>
 {
 public:
@@ -51,15 +62,42 @@ private:
 	const std::u8string& m_data;
 };
 
+
 template<>
-class toStream<std::u8string_view>
+class toStream<std::string_view>
 {
 public:
-	toStream(const std::u8string_view& p_data): m_data{p_data}{}
-	inline void stream(std::ostream& p_stream) const { p_stream.write(reinterpret_cast<const char*>(m_data.data()), m_data.size()); }
+	toStream(const std::string_view& p_data): m_data{p_data}{}
+	inline void stream(std::ostream& p_stream) const { p_stream.write(m_data.data(), m_data.size()); }
 
 private:
-	const std::u8string_view& m_data;
+	const std::string_view& m_data;
+};
+
+template<>
+class toStream<std::string>
+{
+public:
+	toStream(const std::string& p_data): m_data{p_data}{}
+	inline void stream(std::ostream& p_stream) const { p_stream.write(m_data.data(), m_data.size()); }
+
+private:
+	const std::string& m_data;
+};
+
+
+template<>
+class toStream<std::u16string_view>
+{
+public:
+	toStream(const std::u16string_view& p_data): m_data{p_data}{}
+	inline void stream(std::ostream& p_stream) const
+	{
+		p_stream << toStream<std::u8string>{core::UTF16_to_UTF8_faulty(m_data, '?')};
+	}
+
+private:
+	const std::u16string_view& m_data;
 };
 
 template<>
@@ -76,18 +114,78 @@ private:
 	const std::u16string& m_data;
 };
 
+
 template<>
-class toStream<std::u16string_view>
+class toStream<std::u32string_view>
 {
 public:
-	toStream(const std::u16string_view& p_data): m_data{p_data}{}
+	toStream(const std::u32string_view& p_data): m_data{p_data}{}
 	inline void stream(std::ostream& p_stream) const
 	{
-		p_stream << toStream<std::u8string>{core::UTF16_to_UTF8_faulty(m_data, '?')};
+		p_stream << toStream<std::u8string>{core::UCS4_to_UTF8(m_data)};
 	}
 
 private:
-	const std::u16string_view& m_data;
+	const std::u32string_view& m_data;
+};
+
+template<>
+class toStream<std::u32string>
+{
+public:
+	toStream(const std::u32string& p_data): m_data{p_data}{}
+	inline void stream(std::ostream& p_stream) const
+	{
+		p_stream << toStream<std::u8string>{core::UCS4_to_UTF8(m_data)};
+	}
+
+private:
+	const std::u32string& m_data;
+};
+
+
+template<>
+class toStream<std::wstring_view>
+{
+public:
+	toStream(const std::wstring_view& p_data): m_data{p_data}{}
+	inline void stream(std::ostream& p_stream) const
+	{
+		if constexpr(sizeof(wchar_t) == sizeof(char16_t))
+		{
+			p_stream << toStream<std::u16string_view>{std::u16string_view{reinterpret_cast<const char16_t*>(m_data.data()), m_data.size()}};
+		}
+		else if constexpr(sizeof(wchar_t) == sizeof(char32_t))
+		{
+			p_stream << toStream<std::u32string_view>{std::u32string_view{reinterpret_cast<const char32_t*>(m_data.data()), m_data.size()}};
+		}
+		static_assert(sizeof(wchar_t) == sizeof(char16_t) || sizeof(wchar_t) == sizeof(char32_t));
+	}
+
+private:
+	const std::wstring_view& m_data;
+};
+
+template<>
+class toStream<std::wstring>
+{
+public:
+	toStream(const std::wstring& p_data): m_data{p_data}{}
+	inline void stream(std::ostream& p_stream) const
+	{
+		if constexpr(sizeof(wchar_t) == sizeof(char16_t))
+		{
+			p_stream << toStream<std::u16string_view>{std::u16string_view{reinterpret_cast<const char16_t*>(m_data.data()), m_data.size()}};
+		}
+		else if constexpr(sizeof(wchar_t) == sizeof(char32_t))
+		{
+			p_stream << toStream<std::u32string_view>{std::u32string_view{reinterpret_cast<const char32_t*>(m_data.data()), m_data.size()}};
+		}
+		static_assert(sizeof(wchar_t) == sizeof(char16_t) || sizeof(wchar_t) == sizeof(char32_t));
+	}
+
+private:
+	const std::wstring& m_data;
 };
 
 
