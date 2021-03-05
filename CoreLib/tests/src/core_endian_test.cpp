@@ -32,50 +32,50 @@
 
 #include <gtest/gtest.h>
 
-template<typename T, std::enable_if_t<sizeof(T) == sizeof(uint8_t), int> = 0>
+template<typename T> requires (sizeof(T) == sizeof(uint8_t))
 consteval std::pair<T, T> getTestCase_const()
 {
 	return {static_cast<const T>(uint8_t{0x01}), static_cast<const T>(uint8_t{0x01})};
 }
 
-template<typename T, std::enable_if_t<sizeof(T) == sizeof(uint16_t), int> = 0>
+template<typename T> requires (sizeof(T) == sizeof(uint16_t))
 consteval std::pair<T, T> getTestCase_const()
 {
 	return {static_cast<const T>(uint16_t{0x0123}), static_cast<const T>(uint16_t{0x2301})};
 }
 
-template<typename T, std::enable_if_t<sizeof(T) == sizeof(uint32_t), int> = 0>
+template<typename T> requires (sizeof(T) == sizeof(uint32_t))
 consteval std::pair<T, T> getTestCase_const()
 {
 	return {static_cast<const T>(uint32_t{0x01234567}), static_cast<const T>(uint32_t{0x67452301})};
 }
 
-template<typename T, std::enable_if_t<sizeof(T) == sizeof(uint64_t), int> = 0>
+template<typename T> requires (sizeof(T) == sizeof(uint64_t))
 consteval std::pair<T, T> getTestCase_const()
 {
 	return {static_cast<const T>(uint64_t{0x01456789ABCDEF23}), static_cast<const T>(uint64_t{0x23EFCDAB89674501})};
 }
 
 
-template<typename T, std::enable_if_t<sizeof(T) == sizeof(uint8_t), int> = 0>
+template<typename T> requires (sizeof(T) == sizeof(uint8_t))
 std::pair<T, T> getTestCase()
 {
 	return {core::rvalue_reinterpret_cast<const T>(uint8_t{0x01}), core::rvalue_reinterpret_cast<const T>(uint8_t{0x01})};
 }
 
-template<typename T, std::enable_if_t<sizeof(T) == sizeof(uint16_t), int> = 0>
+template<typename T> requires (sizeof(T) == sizeof(uint16_t))
 std::pair<T, T> getTestCase()
 {
 	return {core::rvalue_reinterpret_cast<const T>(uint16_t{0x0123}), core::rvalue_reinterpret_cast<const T>(uint16_t{0x2301})};
 }
 
-template<typename T, std::enable_if_t<sizeof(T) == sizeof(uint32_t), int> = 0>
+template<typename T> requires (sizeof(T) == sizeof(uint32_t))
 std::pair<T, T> getTestCase()
 {
 	return {core::rvalue_reinterpret_cast<const T>(uint32_t{0x01234567}), core::rvalue_reinterpret_cast<const T>(uint32_t{0x67452301})};
 }
 
-template<typename T, std::enable_if_t<sizeof(T) == sizeof(uint64_t), int> = 0>
+template<typename T> requires (sizeof(T) == sizeof(uint64_t))
 std::pair<T, T> getTestCase()
 {
 	return {core::rvalue_reinterpret_cast<const T>(0x0123456789ABCDEF), core::rvalue_reinterpret_cast<const T>(0xEFCDAB8967452301)};

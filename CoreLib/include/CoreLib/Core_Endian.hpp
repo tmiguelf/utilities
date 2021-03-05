@@ -116,59 +116,67 @@ namespace _p
 			(sizeof(T) == sizeof(uint64_t) && alignof(T) == alignof(uint64_t))
 		);
 
-	template<typename T, typename = void>
+	template<typename T>
 	struct assist_underlying_type { using type = T; };
 
-	template<typename T> struct assist_underlying_type<T, std::enable_if_t<std::is_enum_v<T>, void>> { using type = std::underlying_type_t<T>; };
+	template<typename T> requires std::is_enum_v<T>
+	struct assist_underlying_type<T> { using type = std::underlying_type_t<T>; };
 
 	template<typename T>
 	constexpr bool endian_supported_type_v = endian_supported_base_type_v<typename assist_underlying_type<T>::type>;
 
+	template<typename T>
+	concept endian_supported_type_c = endian_supported_type_v<T>;
 
-template<uintptr_t, uintptr_t>
-struct suitable_uint
-{
-	static constexpr bool has_type = false;
-};
+	template<uintptr_t, uintptr_t>
+	struct suitable_uint
+	{
+		static constexpr bool has_type = false;
+	};
 
-template<> struct suitable_uint<sizeof(uint8_t ), alignof(uint8_t )> { using type = uint8_t;  static constexpr bool has_type = true; };
-template<> struct suitable_uint<sizeof(uint16_t), alignof(uint16_t)> { using type = uint16_t; static constexpr bool has_type = true; };
-template<> struct suitable_uint<sizeof(uint32_t), alignof(uint32_t)> { using type = uint32_t; static constexpr bool has_type = true; };
-template<> struct suitable_uint<sizeof(uint64_t), alignof(uint64_t)> { using type = uint64_t; static constexpr bool has_type = true; };
+	template<> struct suitable_uint<sizeof(uint8_t ), alignof(uint8_t )> { using type = uint8_t;  static constexpr bool has_type = true; };
+	template<> struct suitable_uint<sizeof(uint16_t), alignof(uint16_t)> { using type = uint16_t; static constexpr bool has_type = true; };
+	template<> struct suitable_uint<sizeof(uint32_t), alignof(uint32_t)> { using type = uint32_t; static constexpr bool has_type = true; };
+	template<> struct suitable_uint<sizeof(uint64_t), alignof(uint64_t)> { using type = uint64_t; static constexpr bool has_type = true; };
 
-template<typename T>
-constexpr bool is_endian_runtime_swap_suitable_v =
-	(
-		endian_supported_type_v<T> ||
-		std::is_trivially_constructible_v<T> &&
-		std::is_trivially_copy_constructible_v<T> &&
-		std::is_trivially_destructible_v<T>
-	) &&
-	suitable_uint<sizeof(T), alignof(T)>::has_type;
+	template<typename T>
+	constexpr bool is_endian_runtime_swap_suitable_v =
+		(
+			endian_supported_type_v<T> ||
+			std::is_trivially_constructible_v<T> &&
+			std::is_trivially_copy_constructible_v<T> &&
+			std::is_trivially_destructible_v<T>
+		) &&
+		suitable_uint<sizeof(T), alignof(T)>::has_type;
 
-template<typename T>
-constexpr bool is_endian_runtime_exclusive_v =
-	(
-		!endian_supported_type_v<T> &&
-		std::is_trivially_constructible_v<T> &&
-		std::is_trivially_copy_constructible_v<T> &&
-		std::is_trivially_destructible_v<T>
-	) &&
-	suitable_uint<sizeof(T), alignof(T)>::has_type;
+	template<typename T>
+	constexpr bool is_endian_runtime_exclusive_v =
+		(
+			!endian_supported_type_v<T> &&
+			std::is_trivially_constructible_v<T> &&
+			std::is_trivially_copy_constructible_v<T> &&
+			std::is_trivially_destructible_v<T>
+		) &&
+		suitable_uint<sizeof(T), alignof(T)>::has_type;
+
+	template<typename T>
+	concept is_endian_runtime_swap_suitable_c = is_endian_runtime_swap_suitable_v<T>;
+
+	template<typename T>
+	concept is_endian_runtime_exclusive_c = is_endian_runtime_exclusive_v<T>;
 
 
+	template<typename T> requires is_endian_runtime_swap_suitable_v<T>
+	struct endianess_uint_align
+	{
+		using type = typename suitable_uint<sizeof(T), alignof(T)>::type;
+	};
 
-template<typename T, typename = std::enable_if_t<is_endian_runtime_swap_suitable_v<T>, void>>
-struct endianess_uint_align
-{
-	using type = typename suitable_uint<sizeof(T), alignof(T)>::type;
-};
-
-template<typename T>
-using endianess_uint_align_t = typename endianess_uint_align<T>::type;
+	template<typename T>
+	using endianess_uint_align_t = typename endianess_uint_align<T>::type;
 } //namespace _p
 
-template<typename T, std::enable_if_t<_p::endian_supported_type_v<T>, int> = 0>
+template<_p::endian_supported_type_c T>
 [[nodiscard]] inline constexpr T byte_swap(const T& p_value)
 {
 	if constexpr(std::is_same_v<uint8_t, _p::endianess_uint_align_t<T>>)
@@ -195,13 +203,13 @@ template<typename T, std::enable_if_t<_p::endian_supported_type_v<T>, int> = 0>
 #endif
 }
 
-template<typename T, std::enable_if_t<_p::is_endian_runtime_exclusive_v<T>, int> = 0>
+template<_p::is_endian_runtime_exclusive_c T>
 [[nodiscard]] inline T byte_swap(const T& p_value)
 {
 	return rvalue_reinterpret_cast<const T>(byte_swap(reinterpret_cast<const _p::endianess_uint_align_t<T>&>(p_value)));
 }
 
-template <typename T, std::enable_if_t<_p::endian_supported_type_v<T>, int> = 0>
+template <_p::endian_supported_type_c T>
 [[nodiscard]] inline constexpr T endian_host2little(T p_in)
 {
 	if constexpr(std::endian::native == std::endian::little)
@@ -220,14 +228,14 @@ template <typename T, std::enable_if_t<_p::endian_supported_type_v<T>, int> = 0>
 #endif
 }
 
-template <typename T, std::enable_if_t<_p::endian_supported_type_v<T>, int> = 0>
+template <_p::endian_supported_type_c T>
 [[nodiscard]] inline constexpr T endian_little2host(T p_in)
 {
 	return endian_host2little(p_in);
 }
 
 
-template <typename T, std::enable_if_t<_p::endian_supported_type_v<T>, int> = 0>
+template <_p::endian_supported_type_c T>
 [[nodiscard]] inline constexpr T endian_host2big(T p_in)
 {
 	if constexpr(std::endian::native == std::endian::little)
@@ -246,13 +254,13 @@ template <typename T, std::enable_if_t<_p::endian_supported_type_v<T>, int> = 0>
 #endif
 }
 
-template <typename T, std::enable_if_t<_p::endian_supported_type_v<T>, int> = 0>
+template <_p::endian_supported_type_c T>
 [[nodiscard]] inline constexpr T endian_big2host(T p_in)
 {
 	return endian_host2big(p_in);
 }
 
-template <typename T, std::enable_if_t<_p::is_endian_runtime_exclusive_v<T>, int> = 0>
+template <_p::is_endian_runtime_exclusive_c T>
 [[nodiscard]] inline T endian_host2little(T p_in)
 {
 	if constexpr(std::endian::native == std::endian::little)
@@ -271,13 +279,13 @@ template <typename T, std::enable_if_t<_p::is_endian_runtime_exclusive_v<T>, int
 #endif
 }
 
-template <typename T, std::enable_if_t<_p::is_endian_runtime_exclusive_v<T>, int> = 0>
+template <_p::is_endian_runtime_exclusive_c T>
 [[nodiscard]] inline T endian_little2host(T p_in)
 {
 	return endian_host2little(p_in);
 }
 
-template <typename T, std::enable_if_t<_p::is_endian_runtime_exclusive_v<T>, int> = 0>
+template <_p::is_endian_runtime_exclusive_c T>
 [[nodiscard]] inline T endian_host2big(T p_in)
 {
 	if constexpr(std::endian::native == std::endian::little)
@@ -291,12 +299,14 @@ template <typename T, std::enable_if_t<_p::is_endian_runtime_exclusive_v<T>, int
 #if !defined(__GNUG__) // :(
 	else
 	{
-		static_assert(false, "Unsuported host endianess");
+		static_assert(
+			std::endian::native != std::endian::little &&
+			std::endian::native != std::endian::big, "Unsuported host endianess");
 	}
 #endif
 }
 
-template <typename T, std::enable_if_t<_p::is_endian_runtime_exclusive_v<T>, int> = 0>
+template <_p::is_endian_runtime_exclusive_c T>
 [[nodiscard]] inline T endian_big2host(T p_in)
 {
 	return endian_host2big(p_in);

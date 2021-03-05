@@ -367,11 +367,11 @@ namespace core_p
 
 	namespace
 	{
-		template<typename, typename = void>
+		template<typename num_T>
 		struct help_from_chars;
 
-		template<typename num_T>
-		struct help_from_chars<num_T, std::enable_if_t<std::is_floating_point_v<num_T>, void>>
+		template<std::floating_point num_T>
+		struct help_from_chars<num_T>
 		{
 			template<typename char_T>
 			static inline from_chars_result<num_T> from_chars(std::basic_string_view<char_T> p_str)
@@ -380,8 +380,8 @@ namespace core_p
 			}
 		};
 
-		template<typename num_T>
-		struct help_from_chars<num_T, std::enable_if_t<!std::is_floating_point_v<num_T> && std::is_signed_v<num_T>, void>>
+		template<std::signed_integral num_T>
+		struct help_from_chars<num_T>
 		{
 			template<typename char_T>
 			static inline from_chars_result<num_T> from_chars(std::basic_string_view<char_T> p_str)
@@ -390,8 +390,8 @@ namespace core_p
 			}
 		};
 
-		template<typename num_T>
-		struct help_from_chars<num_T, std::enable_if_t<!std::is_floating_point_v<num_T> && std::is_unsigned_v<num_T>, void>>
+		template<std::unsigned_integral num_T>
+		struct help_from_chars<num_T>
 		{
 			template<typename char_T>
 			static inline from_chars_result<num_T> from_chars(std::basic_string_view<char_T> p_str)
@@ -413,10 +413,10 @@ bool is_hex		(std::basic_string_view<char32_t>	p_str) { return core_p::is_hex		(
 //bool is_number	(std::basic_string_view<char32_t>	p_str) { return core_p::is_number	(p_str); }
 
 
-template<typename T, typename>
+template<from_chars_supported_c T>
 from_chars_result<T> from_chars(std::basic_string_view<char8_t> p_str) { return core_p::help_from_chars<T>::from_chars(p_str) ; }
 
-template<typename T, typename>
+template<from_chars_supported_c T>
 from_chars_result<T> from_chars(std::basic_string_view<char32_t> p_str) { return core_p::help_from_chars<T>::from_chars(p_str) ; }
 
 #if defined(_MSC_BUILD)
@@ -448,10 +448,10 @@ template from_chars_result<int16_t		> from_chars<int16_t	>(std::basic_string_vie
 template from_chars_result<int8_t		> from_chars<int8_t		>(std::basic_string_view<char32_t>);
 
 
-template<typename T, typename>
+template<from_hex_chars_supported_c T>
 from_chars_result<T> from_hex_chars(std::basic_string_view<char8_t> p_str) { return core_p::hex2uint<T>(p_str); }
 
-template<typename T, typename>
+template<from_hex_chars_supported_c T>
 from_chars_result<T> from_hex_chars(std::basic_string_view<char32_t> p_str) { return core_p::hex2uint<T>(p_str); }
 
 template from_chars_result<uint64_t		> from_hex_chars<uint64_t	>(std::basic_string_view<char8_t>);
@@ -643,11 +643,11 @@ namespace core_p
 
 	namespace
 	{
-		template<typename, typename = void>
+		template<typename>
 		struct help_to_chars;
 
-		template<typename num_T>
-		struct help_to_chars<num_T, std::enable_if_t<std::is_floating_point_v<num_T>, void>>
+		template<std::floating_point num_T>
+		struct help_to_chars<num_T>
 		{
 			template<typename char_T>
 			static inline uintptr_t to_chars(num_T p_val, std::span<char_T, to_chars_max_digits_v<num_T>> p_str)
@@ -656,8 +656,8 @@ namespace core_p
 			}
 		};
 
-		template<typename num_T>
-		struct help_to_chars<num_T, std::enable_if_t<!std::is_floating_point_v<num_T> && std::is_signed_v<num_T>, void>>
+		template<std::signed_integral num_T>
+		struct help_to_chars<num_T>
 		{
 			template<typename char_T>
 			static inline uintptr_t to_chars(num_T p_val, std::span<char_T, to_chars_max_digits_v<num_T>> p_str)
@@ -666,8 +666,8 @@ namespace core_p
 			}
 		};
 
-		template<typename num_T>
-		struct help_to_chars<num_T, std::enable_if_t<!std::is_floating_point_v<num_T> && std::is_unsigned_v<num_T>, void>>
+		template<std::unsigned_integral num_T>
+		struct help_to_chars<num_T>
 		{
 			template<typename char_T>
 			static inline uintptr_t to_chars(num_T p_val, std::span<char_T, to_chars_max_digits_v<num_T>> p_str)
@@ -680,13 +680,13 @@ namespace core_p
 } //namespace core_p
 
 
-template <typename char_T, typename num_T, typename>
+template <core_p::is_supported_char_c char_T, from_chars_supported_c num_T>
 uintptr_t to_chars(num_T p_val, std::span<char_T, to_chars_max_digits_v<num_T>> p_str)
 {
 	return core_p::help_to_chars<num_T>::to_chars(p_val, p_str);
 }
 
-template <typename char_T, typename num_T, typename>
+template <core_p::is_supported_char_c char_T, from_chars_supported_c num_T>
 std::basic_string<char_T> to_chars(num_T p_val)
 {
 	constexpr uintptr_t size = to_chars_max_digits_v<num_T>;
@@ -695,13 +695,13 @@ std::basic_string<char_T> to_chars(num_T p_val)
 }
 
 
-template <typename char_T, typename num_T, typename>
+template <core_p::is_supported_char_c char_T, from_hex_chars_supported_c num_T>
 uintptr_t to_hex_chars(num_T p_val, std::span<char_T, to_hex_chars_max_digits_v<num_T>> p_str)
 {
 	return core_p::uint2hex(p_val, p_str);
 }
 
-template <typename char_T, typename num_T, typename>
+template <core_p::is_supported_char_c char_T, from_hex_chars_supported_c num_T>
 std::basic_string<char_T> to_hex_chars(num_T p_val)
 {
 	constexpr uintptr_t size = to_hex_chars_max_digits_v<num_T>;
@@ -710,13 +710,13 @@ std::basic_string<char_T> to_hex_chars(num_T p_val)
 }
 
 
-template <typename char_T, typename num_T, typename>
+template <core_p::is_supported_char_c char_T, from_hex_chars_supported_c num_T>
 void to_hex_chars_fix(num_T p_val, std::span<char_T, to_hex_chars_max_digits_v<num_T>> p_str)
 {
 	core_p::uint2hex_fix(p_val, p_str);
 }
 
-template <typename char_T, typename num_T, typename>
+template <core_p::is_supported_char_c char_T, from_hex_chars_supported_c num_T>
 std::basic_string<char_T> to_hex_chars_fix(num_T p_val)
 {
 	constexpr uintptr_t size = to_hex_chars_max_digits_v<num_T>;

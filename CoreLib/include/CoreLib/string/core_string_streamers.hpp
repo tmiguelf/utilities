@@ -30,6 +30,7 @@
 
 #pragma once
 
+#include <concepts>
 #include <cstdint>
 #include <string>
 #include <string_view>
@@ -189,7 +190,7 @@ private:
 };
 
 
-template<typename num_T, std::enable_if_t<from_chars_supported_v<num_T>, int> = 0>
+template<from_chars_supported_c num_T>
 void num2stream(std::ostream& p_stream, const num_T& p_data)
 {
 	constexpr uintptr_t buffSize = to_chars_max_digits_v<num_T>;
@@ -197,7 +198,7 @@ void num2stream(std::ostream& p_stream, const num_T& p_data)
 	p_stream.write(reinterpret_cast<const char*>(buff), to_chars<char8_t>(p_data, buff));
 }
 
-template<typename num_T, std::enable_if_t<from_hex_chars_supported_v<num_T>, int> = 0>
+template<from_chars_supported_c num_T>
 void num2stream_hex(std::ostream& p_stream, const num_T& p_data)
 {
 	constexpr uintptr_t buffSize = to_hex_chars_max_digits_v<num_T>;
@@ -205,7 +206,7 @@ void num2stream_hex(std::ostream& p_stream, const num_T& p_data)
 	p_stream.write(reinterpret_cast<const char*>(buff), to_hex_chars<char8_t>(p_data, buff));
 }
 
-template<typename num_T, std::enable_if_t<from_hex_chars_supported_v<num_T>, int> = 0>
+template<from_chars_supported_c num_T>
 void num2stream_hex_fix(std::ostream& p_stream, const num_T& p_data)
 {
 	constexpr uintptr_t buffSize = to_hex_chars_max_digits_v<num_T>;
@@ -214,8 +215,8 @@ void num2stream_hex_fix(std::ostream& p_stream, const num_T& p_data)
 	p_stream.write(reinterpret_cast<const char*>(buff), buffSize);
 }
 
-template<typename num_T>
-class toStream<num_T, std::enable_if_t<from_chars_supported_v<num_T>, void>>
+template<from_chars_supported_c num_T>
+class toStream<num_T>
 {
 public:
 	constexpr toStream(num_T p_data): m_data{p_data}{}
@@ -229,8 +230,8 @@ private:
 };
 
 #if !defined(_MSC_BUILD)
-template<typename fp_T>
-class toStream<fp_T, std::enable_if_t<std::is_floating_point_v<fp_T>, void>>
+template<std::floating_point fp_T>
+class toStream<fp_T>
 {
 public:
 	toStream(fp_T p_data): m_data{p_data}{}
