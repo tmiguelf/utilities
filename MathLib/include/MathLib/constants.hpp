@@ -27,26 +27,14 @@
 
 #pragma once
 
-#include <type_traits>
+#include <concepts>
 
 namespace mathlib
 {
-	template<typename T>
-	constexpr std::enable_if_t<std::is_floating_point_v<T>, T> pi			= T{3.14159265358979323846l};
-
-	template<typename T>
-	constexpr std::enable_if_t<std::is_floating_point_v<T>, T> pi_2			= T{1.57079632679489661923l};
-
-	template<typename T>
-	constexpr std::enable_if_t<std::is_floating_point_v<T>, T> pi_4			= T{0.785398163397448309616l};
-
-	template<typename T>
-	constexpr std::enable_if_t<std::is_floating_point_v<T>, T> tau			= T{6.283185307179586476925l};
-
-	template<typename T>
-	constexpr std::enable_if_t<std::is_floating_point_v<T>, T> squareRoot_2	= T{1.41421356237309504880l};
-
-	template<typename T>
-	constexpr std::enable_if_t<std::is_floating_point_v<T>, T> e			= T{2.71828182845904523536l};
-
+	template<std::floating_point T> constexpr T pi				= T{3.14159265358979323846l};
+	template<std::floating_point T> constexpr T pi_2			= T{1.57079632679489661923l};
+	template<std::floating_point T> constexpr T pi_4			= T{0.785398163397448309616l};
+	template<std::floating_point T> constexpr T tau				= T{6.283185307179586476925l};
+	template<std::floating_point T> constexpr T squareRoot_2	= T{1.41421356237309504880l};
+	template<std::floating_point T> constexpr T e				= T{2.71828182845904523536l};
 }	//namespace mathLib

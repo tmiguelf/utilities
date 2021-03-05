@@ -33,16 +33,14 @@
 
 namespace core
 {
-template <typename T_out, typename T>
-[[nodiscard]] typename std::enable_if_t<
+template <typename T_out, typename T> requires
 	std::is_trivially_move_constructible_v<T_out> &&
 	std::is_trivially_destructible_v<T_out> &&
 	std::is_trivially_move_constructible_v<T> &&
 	std::is_trivially_destructible_v<T> &&
-	sizeof(T) == sizeof(T_out) &&
-	alignof(T) == alignof(T)
-	, T_out&&>
-	rvalue_reinterpret_cast(T&& p_in)
+	(sizeof(T) == sizeof(T_out)) &&
+	(alignof(T) == alignof(T))
+[[nodiscard]] T_out&& rvalue_reinterpret_cast(T&& p_in)
 {
 	return reinterpret_cast<T_out&&>(p_in);
 }

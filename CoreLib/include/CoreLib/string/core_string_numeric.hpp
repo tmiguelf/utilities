@@ -33,6 +33,7 @@
 #include <string_view>
 #include <system_error>
 #include <type_traits>
+#include <concepts>
 
 #include <CoreLib/Core_Alternate.hpp>
 
@@ -40,31 +41,31 @@
 namespace core
 {
 	template <typename>
-	struct from_chars_supported { static constexpr bool value = false; };
+	struct from_chars_supported: public std::false_type {};
 
-	template <> struct from_chars_supported<uint8_t>		{ static constexpr bool value = true; };
-	template <> struct from_chars_supported<int8_t>			{ static constexpr bool value = true; };
-	template <> struct from_chars_supported<uint16_t>		{ static constexpr bool value = true; };
-	template <> struct from_chars_supported<int16_t>		{ static constexpr bool value = true; };
-	template <> struct from_chars_supported<uint32_t>		{ static constexpr bool value = true; };
-	template <> struct from_chars_supported<int32_t>		{ static constexpr bool value = true; };
-	template <> struct from_chars_supported<uint64_t>		{ static constexpr bool value = true; };
-	template <> struct from_chars_supported<int64_t>		{ static constexpr bool value = true; };
+	template <> struct from_chars_supported<uint8_t>	: public std::true_type {};
+	template <> struct from_chars_supported<int8_t>		: public std::true_type {};
+	template <> struct from_chars_supported<uint16_t>	: public std::true_type {};
+	template <> struct from_chars_supported<int16_t>	: public std::true_type {};
+	template <> struct from_chars_supported<uint32_t>	: public std::true_type {};
+	template <> struct from_chars_supported<int32_t>	: public std::true_type {};
+	template <> struct from_chars_supported<uint64_t>	: public std::true_type {};
+	template <> struct from_chars_supported<int64_t>	: public std::true_type {};
 
 // :(
 // I need floating point charconv but only MSVC seems to support it
 #if defined(_MSC_BUILD)
-	template <> struct from_chars_supported<float>			{ static constexpr bool value = true; };
-	template <> struct from_chars_supported<double>			{ static constexpr bool value = true; };
-	template <> struct from_chars_supported<long double>	{ static constexpr bool value = true; };
+	template <> struct from_chars_supported<float>			: public std::true_type {};
+	template <> struct from_chars_supported<double>			: public std::true_type {};
+	template <> struct from_chars_supported<long double>	: public std::true_type {};
 #endif
 
 
 	template <typename T>
-	constexpr bool from_chars_supported_v = from_chars_supported<T>::value;
+	concept from_chars_supported_c = from_chars_supported<T>::value;
 
 	template <typename>
-	struct from_hex_chars_supported { static constexpr bool value = false; };
+	struct from_hex_chars_supported: public std::false_type {};
 
 	template <> struct from_hex_chars_supported<uint8_t>	{ static constexpr bool value = true; };
 	template <> struct from_hex_chars_supported<uint16_t>	{ static constexpr bool value = true; };
@@ -72,12 +73,12 @@ namespace core
 	template <> struct from_hex_chars_supported<uint64_t>	{ static constexpr bool value = true; };
 
 	template <typename T>
-	constexpr bool from_hex_chars_supported_v = from_hex_chars_supported<T>::value;
+	concept from_hex_chars_supported_c = from_hex_chars_supported<T>::value;
 
 	namespace core_p
 	{
 		template <typename T>
-		constexpr bool is_supported_char_v = std::is_same_v<T, char8_t> || std::is_same_v<T, char32_t>;
+		concept is_supported_char_c = std::is_same_v<T, char8_t> || std::is_same_v<T, char32_t>;
 	} //namespace core_p
 
 
@@ -89,13 +90,13 @@ namespace core
 	//
 	/// \brief 
 	///		Auxiliary structure to return an optional result from a potentially failing conversion function
-	template <typename T, typename = std::enable_if_t<from_chars_supported_v<T>, void>>
+	template <from_chars_supported_c T>
 	using from_chars_result = alternate<T, std::errc, std::errc{}, std::errc::invalid_argument>;
 
 	//======== ======== ======== From String ======== ======== ========
 
 	template <typename T = char32_t>
-	[[nodiscard]] inline bool is_digit		(T p_char) { return (p_char >= '0' && p_char <= '9'); }
+	[[nodiscard]] inline bool is_digit	(T p_char) { return (p_char >= '0' && p_char <= '9'); }
 
 	template <typename T = char32_t>
 	[[nodiscard]] inline bool is_xdigit	(T p_char) { return is_digit(p_char) || (p_char >= 'A' && p_char <= 'F') || (p_char >= 'a' && p_char <= 'f'); }
@@ -110,26 +111,25 @@ namespace core
 	//bool is_number	(std::basic_string_view<char8_t>	p_str);
 	//bool is_number	(std::basic_string_view<char32_t>	p_str);
 
-	template<typename T, typename = std::enable_if_t<from_chars_supported_v<T>, void>>
+	template<from_chars_supported_c T>
 	[[nodiscard]] from_chars_result<T> from_chars(std::basic_string_view<char8_t> p_str);
 
-	template<typename T, typename = std::enable_if_t<from_chars_supported_v<T>, void>>
+	template<from_chars_supported_c T>
 	[[nodiscard]] from_chars_result<T> from_chars(std::basic_string_view<char32_t> p_str);
 
-	template<typename T, typename = std::enable_if_t<from_hex_chars_supported_v<T>, void>>
+	template<from_hex_chars_supported_c T>
 	[[nodiscard]] from_chars_result<T> from_hex_chars(std::basic_string_view<char8_t> p_str);
 
-	template<typename T, typename = std::enable_if_t<from_hex_chars_supported_v<T>, void>>
+	template<from_hex_chars_supported_c T>
 	[[nodiscard]] from_chars_result<T> from_hex_chars(std::basic_string_view<char32_t> p_str);
 
 	//======== ======== ======== To String ======== ======== ========
 
-	template<typename, typename = void>
+	template<typename T>
 	struct to_chars_max_digits;
 
-
-	template<typename T>
-	struct to_chars_max_digits<T, std::enable_if_t<from_chars_supported_v<T> && std::is_floating_point_v<T>, void>>
+	template<typename T> requires from_chars_supported_c<T> && std::floating_point<T>
+	struct to_chars_max_digits<T>
 	{
 		static constexpr uintptr_t maxExpDigits()
 		{
@@ -140,8 +140,8 @@ namespace core
 		static constexpr uintptr_t value = std::numeric_limits<T>::max_digits10 + maxExpDigits() + 4; //4 extra -.E-
 	};
 	
-	template<typename T>
-	struct to_chars_max_digits<T, std::enable_if_t<from_chars_supported_v<T> && !std::is_floating_point_v<T> && std::is_signed_v<T>, void>>
+	template<typename T> requires from_chars_supported_c<T> && std::signed_integral<T>
+	struct to_chars_max_digits<T>
 	{
 		static constexpr uintptr_t maxDigits()
 		{
@@ -153,8 +153,8 @@ namespace core
 		static constexpr uintptr_t value = maxDigits() + 1;
 	};
 
-	template<typename T>
-	struct to_chars_max_digits<T, std::enable_if_t<from_chars_supported_v<T> && std::is_unsigned_v<T>, void>>
+	template<typename T> requires from_chars_supported_c<T> && std::unsigned_integral<T>
+	struct to_chars_max_digits<T>
 	{
 		static constexpr uintptr_t maxDigits()
 		{
@@ -171,7 +171,7 @@ namespace core
 	constexpr uintptr_t to_chars_max_digits_v = to_chars_max_digits<T>::value;
 
 
-	template<typename T, typename = std::enable_if_t<from_hex_chars_supported_v<T>, void>>
+	template<from_hex_chars_supported_c T>
 	struct to_hex_chars_max_digits
 	{
 		static constexpr uintptr_t value = sizeof(T) * 2;
@@ -181,29 +181,23 @@ namespace core
 	constexpr uintptr_t to_hex_chars_max_digits_v = to_hex_chars_max_digits<T>::value;
 
 
-	template <typename char_T, typename num_T,
-		typename = std::enable_if_t<core_p::is_supported_char_v<char_T> && from_chars_supported_v<num_T>, void>>
-	uintptr_t to_chars(num_T p_val, std::span<char_T, to_chars_max_digits_v<num_T>> p_str);
+	template <core_p::is_supported_char_c char_T, from_chars_supported_c num_T>
+	[[nodiscard]]  uintptr_t to_chars(num_T p_val, std::span<char_T, to_chars_max_digits_v<num_T>> p_str);
 
-	template <typename char_T, typename num_T,
-		typename = std::enable_if_t<core_p::is_supported_char_v<char_T> && from_chars_supported_v<num_T>, void>>
+	template <core_p::is_supported_char_c char_T, from_chars_supported_c num_T>
 	[[nodiscard]] std::basic_string<char_T> to_chars(num_T p_val);
 
-	template <typename char_T, typename num_T,
-		typename = std::enable_if_t<core_p::is_supported_char_v<char_T> && from_chars_supported_v<num_T>, void>>
-	uintptr_t to_hex_chars(num_T p_val, std::span<char_T, to_hex_chars_max_digits_v<num_T>> p_str);
+	template <core_p::is_supported_char_c  char_T, from_hex_chars_supported_c num_T>
+	[[nodiscard]] uintptr_t to_hex_chars(num_T p_val, std::span<char_T, to_hex_chars_max_digits_v<num_T>> p_str);
 
-	template <typename char_T, typename num_T,
-		typename = std::enable_if_t<core_p::is_supported_char_v<char_T> && from_hex_chars_supported_v<num_T>, void>>
+	template <core_p::is_supported_char_c  char_T, from_hex_chars_supported_c num_T>
 	[[nodiscard]] std::basic_string<char_T> to_hex_chars(num_T p_val);
 
 
-	template <typename char_T, typename num_T,
-		typename = std::enable_if_t<core_p::is_supported_char_v<char_T> && from_chars_supported_v<num_T>, void>>
+	template <core_p::is_supported_char_c  char_T, from_hex_chars_supported_c num_T>
 	void to_hex_chars_fix(num_T p_val, std::span<char_T, to_hex_chars_max_digits_v<num_T>> p_str);
 
-	template <typename char_T, typename num_T,
-		typename = std::enable_if_t<core_p::is_supported_char_v<char_T> && from_hex_chars_supported_v<num_T>, void>>
+	template <core_p::is_supported_char_c  char_T, from_hex_chars_supported_c num_T>
 	[[nodiscard]] std::basic_string<char_T> to_hex_chars_fix(num_T p_val);
 
 }	//namespace core

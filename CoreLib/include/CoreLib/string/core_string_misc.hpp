@@ -44,7 +44,6 @@ namespace core
 	///		- Agnostic to null termination.
 	///	\warning	ASCII support only
 	///	\sa \ref toLowerCaseX \ref toUpperCase
-	//
 	void toLowerCase(std::span<char8_t> p_str);
 	
 	///	\brief		Converts in-place, the input string to all upper case.
@@ -55,7 +54,6 @@ namespace core
 	///		- Agnostic to null termination.
 	///	\warning	ASCII support only
 	///	\sa \ref toUpperCaseX \ref toLowerCase
-	//
 	void toUpperCase(std::span<char8_t> p_str);
 	
 	///	\brief		Converts the input string to all lower case.
@@ -67,7 +65,6 @@ namespace core
 	///		- Agnostic to null termination.
 	///	\warning	ASCII support only
 	///	\sa \ref toLowerCase \ref toUpperCaseX
-	//
 	[[nodiscard]] std::u8string toLowerCaseX(std::u8string_view p_str);
 	
 	///	\brief		Converts the input string to all upper case.
@@ -79,7 +76,6 @@ namespace core
 	///		- Agnostic to null termination.
 	///	\warning	ASCII support only
 	///	\sa \ref toUpperCase \ref toLowerCaseX
-	//
 	[[nodiscard]] std::u8string toUpperCaseX(std::u8string_view p_str);
 	
 	///	\brief		Case insensitive comparison between 2 strings
@@ -90,11 +86,9 @@ namespace core
 	///	\return		true if strings are equal except for case.
 	///	\note		Agnostic to null termination.
 	///	\warning	ASCII support only
-	//
 	[[nodiscard]] bool compareNoCase(const char8_t* p_str1, const char8_t* p_str2, size_t p_size);
 	
 	///	\brief STL input version of \ref core::CompareNoCase, with additional size check.
-	//
 	[[nodiscard]] inline bool compareNoCase(std::u8string_view p_str1, std::u8string_view p_str2)
 	{
 		size_t size = p_str1.size();
@@ -118,6 +112,6 @@ namespace core
 	///
 	///	\return true if given string fits the pattern, false otherwise
 	///	\warning	ASCII support only
-	//
 	[[nodiscard]] bool string_star_match(std::u8string_view p_line, std::u8string_view p_star);
+
 }	//namespace core

@@ -46,7 +46,7 @@
 //
 //Note:
 //	For all practical applications UTF-32 == UCS4
-//
+
 /// \n
 namespace core
 {
@@ -316,4 +316,5 @@ namespace core
 
 	///	\brief	Same as \ref UTF16_UNICODE_Compliant. UTF16 can only encode valid Unicode code points.
 	[[nodiscard]] inline bool UTF16_valid(std::u16string_view p_str) { return UTF16_UNICODE_Compliant(p_str); }
+
 }	//namespace core
