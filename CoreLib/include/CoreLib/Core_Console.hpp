@@ -51,8 +51,8 @@ public:
 	void put(char8_t  p_out) const;
 	void put(char16_t p_out) const;
 	void put(char32_t p_out) const;
-public:
 
+private:
 #if defined(_WIN32)
 	void* const m_handle;
 #elif defined(__unix__)
