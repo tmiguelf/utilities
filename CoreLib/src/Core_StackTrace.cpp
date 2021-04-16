@@ -1072,7 +1072,7 @@ bool register_crash_trace(const std::filesystem::path& p_output_file)
 	}
 	else
 	{
-		g_straceOpt.m_output_file = (core::applicationPath().parent_path() / p_output_file).lexically_normal();
+		g_straceOpt.m_output_file = (core::application_path().parent_path() / p_output_file).lexically_normal();
 	}
 
 
