@@ -37,22 +37,6 @@
 namespace core
 {
 
-std::filesystem::path to_absolute(const std::filesystem::path& p_path, const std::filesystem::path& p_base)
-{
-	if(p_path.is_absolute())
-	{
-		return p_path.lexically_normal();
-	}
-	if(p_base.empty())
-	{
-		std::error_code ec;
-		return (std::filesystem::current_path(ec) / p_path).lexically_normal();
-	}
-	return (p_base / p_path).lexically_normal();
-}
-
-
-
 #ifdef _WIN32
 bool env_exists(const core::os_string& p_key)
 {
