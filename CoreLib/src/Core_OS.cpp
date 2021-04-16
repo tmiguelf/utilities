@@ -83,7 +83,7 @@ env_result machine_name()
 	return false;
 }
 
-std::filesystem::path applicationPath()
+std::filesystem::path application_path()
 {
 	// TODO: There's got to be a better algorithm to do this
 	constexpr DWORD max_pathSize = 32767 + 1; //https://docs.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation
@@ -153,7 +153,7 @@ env_result machine_name()
 	return false;
 }
 
-std::filesystem::path applicationPath()
+std::filesystem::path application_path()
 {
 	std::array<char, PATH_MAX> buff;
 	ssize_t ret_size = readlink("/proc/self/exe", buff.data(), buff.size());

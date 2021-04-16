@@ -46,8 +46,19 @@ bool		delete_env	(const core::os_string& p_key);
 
 env_result	machine_name();
 
-std::filesystem::path applicationPath();
+std::filesystem::path application_path();
 
+inline std::filesystem::path to_absolute_lexical(const std::filesystem::path& p_path, const std::filesystem::path& p_base)
+{
+	if(p_path.is_absolute())
+	{
+		return p_path.lexically_normal();
+	}
+	else
+	{
+		return (p_base / p_path).lexically_normal();
+	}
+}
 
 template<>
 class toStream<std::filesystem::path>
