@@ -46,8 +46,9 @@ bool		delete_env	(const core::os_string& p_key);
 
 env_result	machine_name();
 
-std::filesystem::path applicationPath();
+std::filesystem::path application_path();
 
+std::filesystem::path to_absolute(const std::filesystem::path& p_path, const std::filesystem::path& p_base = std::filesystem::path{});
 
 template<>
 class toStream<std::filesystem::path>

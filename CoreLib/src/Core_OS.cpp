@@ -37,6 +37,22 @@
 namespace core
 {
 
+std::filesystem::path to_absolute(const std::filesystem::path& p_path, const std::filesystem::path& p_base)
+{
+	if(p_path.is_absolute())
+	{
+		return p_path.lexically_normal();
+	}
+	if(p_base.empty())
+	{
+		std::error_code ec;
+		return (std::filesystem::current_path(ec) / p_path).lexically_normal();
+	}
+	return (p_base / p_path).lexically_normal();
+}
+
+
+
 #ifdef _WIN32
 bool env_exists(const core::os_string& p_key)
 {
@@ -83,7 +99,7 @@ env_result machine_name()
 	return false;
 }
 
-std::filesystem::path applicationPath()
+std::filesystem::path application_path()
 {
 	// TODO: There's got to be a better algorithm to do this
 	constexpr DWORD max_pathSize = 32767 + 1; //https://docs.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation
@@ -153,7 +169,7 @@ env_result machine_name()
 	return false;
 }
 
-std::filesystem::path applicationPath()
+std::filesystem::path application_path()
 {
 	std::array<char, PATH_MAX> buff;
 	ssize_t ret_size = readlink("/proc/self/exe", buff.data(), buff.size());

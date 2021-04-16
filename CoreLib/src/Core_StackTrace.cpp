@@ -506,7 +506,7 @@ namespace
 				o_file << section_seperator;
 				o_file << "Proc:\t\t" << toStream{static_cast<uint32_t>(proc_ID)};
 				o_file << "\nThread:\t\t" << toStream{static_cast<uint32_t>(thread_ID)};
-				o_file << "\nProcDir:\t\"" << toStream{applicationPath()};
+				o_file << "\nProcDir:\t\"" << toStream{application_path()};
 				{
 					std::error_code ec;
 					o_file << "\"\nWorkDir:\t\"" << toStream{std::filesystem::current_path(ec)} << "\"\n";
@@ -554,7 +554,7 @@ bool register_crash_trace(const std::filesystem::path& p_output_file)
 	}
 	else
 	{
-		g_straceOpt.m_output_file = (core::applicationPath().parent_path() / p_output_file).lexically_normal();
+		g_straceOpt.m_output_file = (core::application_path().parent_path() / p_output_file).lexically_normal();
 	}
 
 	//======== IMPORTANT ========
