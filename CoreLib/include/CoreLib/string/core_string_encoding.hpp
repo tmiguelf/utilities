@@ -32,6 +32,7 @@
 #include <string>
 #include <string_view>
 #include <span>
+#include <optional>
 
 #include <CoreLib/Core_Alternate.hpp>
 
@@ -44,6 +45,11 @@
 //
 //Note:
 //	For all practical applications UTF-32 == UCS4
+
+// Note: UTF8 rules
+//	* Unique representation - Enforced
+//	* Restricted encoding between 0 and 0x10FFFF - Not enforced
+//	* Excluded codepoints between 0xD800 and 0xDFFF - Not enforced
 
 /// \n
 namespace core
@@ -58,6 +64,120 @@ namespace core
 	template<typename T>
 	using encodeResult = alternate<std::basic_string<T>, bool, true, false>;
 
+	namespace _p
+	{
+		[[nodiscard]] std::optional<uintptr_t> UTF8_to_ANSI_estimate(std::u8string_view p_input);
+		void UTF8_to_ANSI_unsafe(std::u8string_view p_input, char8_t* p_output);
+
+		[[nodiscard]] std::optional<uintptr_t> UTF16_to_ANSI_estimate(std::u16string_view p_input);
+		void UTF16_to_ANSI_unsafe(std::u16string_view p_input, char8_t* p_output);
+
+		[[nodiscard]] std::optional<uintptr_t> UCS2_to_ANSI_estimate(std::u16string_view p_input);
+		void UCS2_to_ANSI_unsafe(std::u16string_view p_input, char8_t* p_output);
+
+		[[nodiscard]] std::optional<uintptr_t> UCS4_to_ANSI_estimate(std::u32string_view p_input);
+		void UCS4_to_ANSI_unsafe(std::u32string_view p_input, char8_t* p_output);
+
+
+		[[nodiscard]] uintptr_t ANSI_to_UTF8_estimate(std::u8string_view p_input);
+		void ANSI_to_UTF8_unsafe(std::u8string_view p_input, char8_t* p_output);
+
+		[[nodiscard]] std::optional<uintptr_t> UTF16_to_UTF8_estimate(std::u16string_view p_input);
+		void UTF16_to_UTF8_unsafe(std::u16string_view p_input, char8_t* p_output);
+
+		[[nodiscard]] uintptr_t UCS2_to_UTF8_estimate(std::u16string_view p_input);
+		void UCS2_to_UTF8_unsafe(std::u16string_view p_input, char8_t* p_output);
+
+		[[nodiscard]] uintptr_t UCS4_to_UTF8_estimate(std::u32string_view p_input);
+		void UCS4_to_UTF8_unsafe(std::u32string_view p_input, char8_t* p_output);
+
+
+		[[nodiscard]] inline uintptr_t ANSI_to_UTF16_estimate(std::u8string_view p_input);
+		void ANSI_to_UTF16_unsafe(std::u8string_view p_input, char16_t* p_output);
+
+		[[nodiscard]] std::optional<uintptr_t> UTF8_to_UTF16_estimate(std::u8string_view p_input);
+		void UTF8_to_UTF16_unsafe(std::u8string_view p_input, char16_t* p_output);
+
+		[[nodiscard]] std::optional<uintptr_t> UCS2_to_UTF16_estimate(std::u16string_view p_input);
+		void UCS2_to_UTF16_unsafe(std::u16string_view p_input, char16_t* p_output);
+
+		[[nodiscard]] std::optional<uintptr_t> UCS4_to_UTF16_estimate(std::u32string_view p_input);
+		void UCS4_to_UTF16_unsafe(std::u32string_view p_input, char16_t* p_output);
+
+
+		[[nodiscard]] uintptr_t ANSI_to_UCS2_estimate(std::u8string_view p_input);
+		void ANSI_to_UCS2_unsafe(std::u8string_view p_input, char16_t* p_output);
+
+		[[nodiscard]] std::optional<uintptr_t> UTF8_to_UCS2_estimate(std::u8string_view p_input);
+		void UTF8_to_UCS2_unsafe(std::u8string_view p_input, char16_t* p_output);
+
+		[[nodiscard]] std::optional<uintptr_t> UTF16_to_UCS2_estimate(std::u16string_view p_input);
+		void UTF16_to_UCS2_unsafe(std::u16string_view p_input, char16_t* p_output);
+
+		[[nodiscard]] std::optional<uintptr_t> UCS4_to_UCS2_estimate(std::u32string_view p_input);
+		void UCS4_to_UCS2_unsafe(std::u32string_view p_input, char16_t* p_output);
+
+
+		[[nodiscard]] uintptr_t ANSI_to_UCS4_estimate(std::u8string_view p_input);
+		void ANSI_to_UCS4_unsafe(std::u8string_view p_input, char32_t* p_output);
+
+		[[nodiscard]] std::optional<uintptr_t> UTF8_to_UCS4_estimate(std::u8string_view p_input);
+		void UTF8_to_UCS4_unsafe(std::u8string_view p_input, char32_t* p_output);
+
+		[[nodiscard]] std::optional<uintptr_t> UTF16_to_UCS4_estimate(std::u16string_view p_input);
+		void UTF16_to_UCS4_unsafe(std::u16string_view p_input, char32_t* p_output);
+
+		[[nodiscard]] uintptr_t UCS2_to_UCS4_estimate(std::u16string_view p_input);
+		void UCS2_to_UCS4_unsafe(std::u16string_view p_input, char32_t* p_output);
+
+
+		[[nodiscard]] uintptr_t UTF8_to_ANSI_faulty_estimate(std::u8string_view p_input);
+		void UTF8_to_ANSI_faulty_unsafe(std::u8string_view p_input, char8_t p_placeHolder, char8_t* p_output);
+
+		[[nodiscard]] uintptr_t UTF16_to_ANSI_faulty_estimate(std::u16string_view p_input);
+		void UTF16_to_ANSI_faulty_unsafe(std::u16string_view p_input, char8_t p_placeHolder, char8_t* p_output);
+
+		[[nodiscard]] uintptr_t UCS2_to_ANSI_faulty_estimate(std::u16string_view p_input);
+		void UCS2_to_ANSI_faulty_unsafe(std::u16string_view p_input, char8_t p_placeHolder, char8_t* p_output);
+
+		[[nodiscard]] uintptr_t UCS4_to_ANSI_faulty_estimate(std::u32string_view p_input);
+		void UCS4_to_ANSI_faulty_unsafe(std::u32string_view p_input, char8_t p_placeHolder, char8_t* p_output);
+
+		[[nodiscard]] uintptr_t UTF16_to_UTF8_faulty_estimate(std::u16string_view p_input, char32_t p_placeHolder);
+		void UTF16_to_UTF8_faulty_unsafe(std::u16string_view p_input, char32_t p_placeHolder, char8_t* p_output);
+
+		[[nodiscard]] uintptr_t UTF8_to_UTF16_faulty_estimate(std::u8string_view p_input, char32_t p_placeHolder);
+		void UTF8_to_UTF16_faulty_unsafe(std::u8string_view p_input, char32_t p_placeHolder, char16_t* p_output);
+
+		[[nodiscard]] uintptr_t UCS2_to_UTF16_faulty_estimate(std::u16string_view p_input, char32_t p_placeHolder);
+		void UCS2_to_UTF16_faulty_unsafe(std::u16string_view p_input, char32_t p_placeHolder, char16_t* p_output);
+
+		[[nodiscard]] uintptr_t UCS4_to_UTF16_faulty_estimate(std::u32string_view p_input, char32_t p_placeHolder);
+		void UCS4_to_UTF16_faulty_unsafe(std::u32string_view p_input, char32_t p_placeHolder, char16_t* p_output);
+
+		[[nodiscard]] uintptr_t UTF8_to_UCS2_faulty_estimate(std::u8string_view p_input);
+		void UTF8_to_UCS2_faulty_unsafe(std::u8string_view p_input, char16_t p_placeHolder, char16_t* p_output);
+
+		[[nodiscard]] uintptr_t UTF16_to_UCS2_faulty_estimate(std::u16string_view p_input);
+		void UTF16_to_UCS2_faulty_unsafe(std::u16string_view p_input, char16_t p_placeHolder, char16_t* p_output);
+
+		[[nodiscard]] uintptr_t UCS4_to_UCS2_faulty_estimate(std::u32string_view p_input);
+		void UCS4_to_UCS2_faulty_estimate(std::u32string_view p_input, char16_t p_placeHolder, char16_t* p_output);
+
+		[[nodiscard]] uintptr_t UTF8_to_UCS4_faulty_estimate(std::u8string_view p_input);
+		void UTF8_to_UCS4_faulty_estimate(std::u8string_view p_input, char32_t p_placeHolder, char32_t* p_output);
+
+		[[nodiscard]] uintptr_t UTF16_to_UCS4_faulty_estimate(std::u16string_view p_input);
+		void UTF16_to_UCS4_faulty_estimate(std::u16string_view p_input, char32_t p_placeHolder, char32_t* p_output);
+
+
+
+
+
+
+
+
+	}
 	//======== ======== Conversion
 
 	///	\brief	Converts a UTF8 string to ANSI.

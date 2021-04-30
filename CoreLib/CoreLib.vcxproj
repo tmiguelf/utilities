@@ -48,6 +48,7 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories>$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|x64'">stdcpp20</LanguageStandard>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -63,6 +64,7 @@
     <ClCompile Include="src\string\core_string_encoding.cpp" />
     <ClCompile Include="src\string\core_string_misc.cpp" />
     <ClCompile Include="src\string\core_string_numeric.cpp" />
+    <ClCompile Include="src\string\core_string_numeric2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\CoreLib\Core_Alloca.hpp" />
@@ -82,6 +84,7 @@
     <ClInclude Include="include\CoreLib\string\core_string_encoding.hpp" />
     <ClInclude Include="include\CoreLib\string\core_string_misc.hpp" />
     <ClInclude Include="include\CoreLib\string\core_string_numeric.hpp" />
+    <ClInclude Include="include\CoreLib\string\core_string_numeric2.hpp" />
     <ClInclude Include="include\CoreLib\string\core_string_streamers.hpp" />
     <ClInclude Include="include\CoreLib\string\core_string_tostream.hpp" />
   </ItemGroup>

@@ -21,6 +21,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MathLib", "MathLib\MathLib.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MathLibTest", "MathLib\Tests\MathLibTest.vcxproj", "{F0920B5D-5D5E-4F37-B9DA-45B73E241C09}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CoreLib_benchmark_encoding", "CoreLib\benchmarks\CoreLib_benchmark_encoding\CoreLib_benchmark_encoding.vcxproj", "{48D4927B-1973-4BD4-8F06-8BF035F2421D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -105,6 +107,16 @@ Global
 		{F0920B5D-5D5E-4F37-B9DA-45B73E241C09}.WSL_Release|x64.ActiveCfg = WSL_Release|x64
 		{F0920B5D-5D5E-4F37-B9DA-45B73E241C09}.WSL_Release|x64.Build.0 = WSL_Release|x64
 		{F0920B5D-5D5E-4F37-B9DA-45B73E241C09}.WSL_Release|x64.Deploy.0 = WSL_Release|x64
+		{48D4927B-1973-4BD4-8F06-8BF035F2421D}.Debug|x64.ActiveCfg = Debug|x64
+		{48D4927B-1973-4BD4-8F06-8BF035F2421D}.Debug|x64.Build.0 = Debug|x64
+		{48D4927B-1973-4BD4-8F06-8BF035F2421D}.Release|x64.ActiveCfg = Release|x64
+		{48D4927B-1973-4BD4-8F06-8BF035F2421D}.Release|x64.Build.0 = Release|x64
+		{48D4927B-1973-4BD4-8F06-8BF035F2421D}.WSL_Debug|x64.ActiveCfg = WSL_Debug|x64
+		{48D4927B-1973-4BD4-8F06-8BF035F2421D}.WSL_Debug|x64.Build.0 = WSL_Debug|x64
+		{48D4927B-1973-4BD4-8F06-8BF035F2421D}.WSL_Debug|x64.Deploy.0 = WSL_Debug|x64
+		{48D4927B-1973-4BD4-8F06-8BF035F2421D}.WSL_Release|x64.ActiveCfg = WSL_Release|x64
+		{48D4927B-1973-4BD4-8F06-8BF035F2421D}.WSL_Release|x64.Build.0 = WSL_Release|x64
+		{48D4927B-1973-4BD4-8F06-8BF035F2421D}.WSL_Release|x64.Deploy.0 = WSL_Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{48d4927b-1973-4bd4-8f06-8bf035f2421d}</ProjectGuid>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="WSL_Debug|x64">
+      <Configuration>WSL_Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="WSL_Release|x64">
+      <Configuration>WSL_Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="quickMSBuild" Condition="'$(Configuration)'=='Debug'">
+    <PlatformToolset>v142</PlatformToolset>
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Label="quickMSBuild" Condition="'$(Configuration)'=='Release'">
+    <PlatformToolset>v142</PlatformToolset>
+    <UseDebugLibraries>false</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Label="quickMSBuild" Condition="'$(Configuration)'=='WSL_Debug'">
+    <PlatformToolset>WSL_1_0</PlatformToolset>
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Label="quickMSBuild" Condition="'$(Configuration)'=='WSL_Release'">
+    <PlatformToolset>WSL_1_0</PlatformToolset>
+    <UseDebugLibraries>false</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+  </PropertyGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(SolutionDir)locations.props" />
+    <Import Project="$(quickMSBuildPath)default.cpp.props" />
+    <Import Project="$(benchmarkPath)benchmark.import.props" />
+    <Import Project="$(MSBuildThisFileDirectory)../../CoreLib.import.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup>
+    <Link>
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="src\CoreLib_benchmark_encoding.cpp" />
+  </ItemGroup>
+  <Import Project="$(quickMSBuildPath)default.cpp.targets" />
+</Project>

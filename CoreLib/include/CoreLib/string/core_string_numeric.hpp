@@ -185,17 +185,17 @@ namespace core
 	template <core_p::is_supported_char_c char_T, from_chars_supported_c num_T>
 	[[nodiscard]] std::basic_string<char_T> to_chars(num_T p_val);
 
-	template <core_p::is_supported_char_c  char_T, from_hex_chars_supported_c num_T>
+	template <core_p::is_supported_char_c char_T, from_hex_chars_supported_c num_T>
 	[[nodiscard]] uintptr_t to_hex_chars(num_T p_val, std::span<char_T, to_hex_chars_max_digits_v<num_T>> p_str);
 
-	template <core_p::is_supported_char_c  char_T, from_hex_chars_supported_c num_T>
+	template <core_p::is_supported_char_c char_T, from_hex_chars_supported_c num_T>
 	[[nodiscard]] std::basic_string<char_T> to_hex_chars(num_T p_val);
 
 
-	template <core_p::is_supported_char_c  char_T, from_hex_chars_supported_c num_T>
+	template <core_p::is_supported_char_c char_T, from_hex_chars_supported_c num_T>
 	void to_hex_chars_fix(num_T p_val, std::span<char_T, to_hex_chars_max_digits_v<num_T>> p_str);
 
-	template <core_p::is_supported_char_c  char_T, from_hex_chars_supported_c num_T>
+	template <core_p::is_supported_char_c char_T, from_hex_chars_supported_c num_T>
 	[[nodiscard]] std::basic_string<char_T> to_hex_chars_fix(num_T p_val);
 
 }	//namespace core

@@ -34,7 +34,7 @@
 namespace text_formating
 {
 
-TEST(string_format, UTF8_to_ANSI)
+TEST(string_encoding, UTF8_to_ANSI)
 {
 	std::vector<std::pair<std::vector<char8_t>, std::vector<char8_t>>> goodCases =
 	{
@@ -68,7 +68,7 @@ TEST(string_format, UTF8_to_ANSI)
 	}
 }
 
-TEST(string_format, UTF16_to_ANSI)
+TEST(string_encoding, UTF16_to_ANSI)
 {
 	std::vector<std::pair<std::vector<char16_t>, std::vector<char8_t>>> goodCases =
 	{
@@ -102,7 +102,7 @@ TEST(string_format, UTF16_to_ANSI)
 	}
 }
 
-TEST(string_format, UCS2_to_ANSI)
+TEST(string_encoding, UCS2_to_ANSI)
 {
 	std::vector<std::pair<std::vector<char16_t>, std::vector<char8_t>>> goodCases =
 	{
@@ -134,7 +134,7 @@ TEST(string_format, UCS2_to_ANSI)
 	}
 }
 
-TEST(string_format, UCS4_to_ANSI)
+TEST(string_encoding, UCS4_to_ANSI)
 {
 	std::vector<std::pair<std::vector<char32_t>, std::vector<char8_t>>> goodCases =
 	{
@@ -166,7 +166,7 @@ TEST(string_format, UCS4_to_ANSI)
 	}
 }
 
-TEST(string_format, ANSI_to_UTF8)
+TEST(string_encoding, ANSI_to_UTF8)
 {
 	std::vector<std::pair<std::vector<char8_t>, std::vector<char8_t>>> goodCases =
 	{
@@ -183,7 +183,7 @@ TEST(string_format, ANSI_to_UTF8)
 	}
 }
 
-TEST(string_format, UTF16_to_UTF8)
+TEST(string_encoding, UTF16_to_UTF8)
 {
 	std::vector<std::pair<std::vector<char16_t>, std::vector<char8_t>>> goodCases =
 	{
@@ -214,9 +214,16 @@ TEST(string_format, UTF16_to_UTF8)
 		ASSERT_FALSE(result.has_value()) << "Case " << num_case;
 		++num_case;
 	}
+
+	//corner case
+	{
+		std::vector<char16_t> t2 = {'B', 'a', 'd', ' ', 0xD801, 0xDC20	};	//bad code point
+		core::encodeResult<char8_t> result = core::UTF16_to_UTF8({t2.data(), t2.size() - 1});
+		ASSERT_FALSE(result.has_value());
+	}
 }
 
-TEST(string_format, UCS2_to_UTF8)
+TEST(string_encoding, UCS2_to_UTF8)
 {
 	std::vector<std::pair<std::vector<char16_t>, std::vector<char8_t>>> goodCases =
 	{
@@ -233,7 +240,7 @@ TEST(string_format, UCS2_to_UTF8)
 	}
 }
 
-TEST(string_format, UCS4_to_UTF8)
+TEST(string_encoding, UCS4_to_UTF8)
 {
 	std::vector<std::pair<std::vector<char32_t>, std::vector<char8_t>>> goodCases =
 	{
@@ -250,7 +257,7 @@ TEST(string_format, UCS4_to_UTF8)
 	}
 }
 
-TEST(string_format, ANSI_to_UTF16)
+TEST(string_encoding, ANSI_to_UTF16)
 {
 	std::vector<std::pair<std::vector<char8_t>, std::vector<char16_t>>> goodCases =
 	{
@@ -268,7 +275,7 @@ TEST(string_format, ANSI_to_UTF16)
 }
 
 
-TEST(string_format, UTF8_to_UTF16)
+TEST(string_encoding, UTF8_to_UTF16)
 {
 	std::vector<std::pair<std::vector<char8_t>, std::vector<char16_t>>> goodCases =
 	{
@@ -303,7 +310,7 @@ TEST(string_format, UTF8_to_UTF16)
 	}
 }
 
-TEST(string_format, UCS2_to_UTF16)
+TEST(string_encoding, UCS2_to_UTF16)
 {
 	std::vector<std::pair<std::vector<char16_t>, std::vector<char16_t>>> goodCases =
 	{
@@ -335,7 +342,7 @@ TEST(string_format, UCS2_to_UTF16)
 	}
 }
 
-TEST(string_format, UCS4_to_UTF16)
+TEST(string_encoding, UCS4_to_UTF16)
 {
 	std::vector<std::pair<std::vector<char32_t>, std::vector<char16_t>>> goodCases =
 	{
@@ -368,7 +375,7 @@ TEST(string_format, UCS4_to_UTF16)
 	}
 }
 
-TEST(string_format, ANSI_to_UCS2)
+TEST(string_encoding, ANSI_to_UCS2)
 {
 	std::vector<std::pair<std::vector<char8_t>, std::vector<char16_t>>> goodCases =
 	{
@@ -386,7 +393,7 @@ TEST(string_format, ANSI_to_UCS2)
 	}
 }
 
-TEST(string_format, UTF8_to_UCS2)
+TEST(string_encoding, UTF8_to_UCS2)
 {
 	std::vector<std::pair<std::vector<char8_t>, std::vector<char16_t>>> goodCases =
 	{
@@ -420,7 +427,7 @@ TEST(string_format, UTF8_to_UCS2)
 	}
 }
 
-TEST(string_format, UTF16_to_UCS2)
+TEST(string_encoding, UTF16_to_UCS2)
 {
 	std::vector<std::pair<std::vector<char16_t>, std::vector<char16_t>>> goodCases =
 	{
@@ -454,7 +461,7 @@ TEST(string_format, UTF16_to_UCS2)
 	}
 }
 
-TEST(string_format, UCS4_to_UCS2)
+TEST(string_encoding, UCS4_to_UCS2)
 {
 	std::vector<std::pair<std::vector<char32_t>, std::vector<char16_t>>> goodCases =
 	{
@@ -486,7 +493,7 @@ TEST(string_format, UCS4_to_UCS2)
 	}
 }
 
-TEST(string_format, ANSI_to_UCS4)
+TEST(string_encoding, ANSI_to_UCS4)
 {
 	std::vector<std::pair<std::vector<char8_t>, std::vector<char32_t>>> goodCases =
 	{
@@ -503,7 +510,7 @@ TEST(string_format, ANSI_to_UCS4)
 	}
 }
 
-TEST(string_format, UTF8_to_UCS4)
+TEST(string_encoding, UTF8_to_UCS4)
 {
 	std::vector<std::pair<std::vector<char8_t>, std::vector<char32_t>>> goodCases =
 	{
@@ -543,7 +550,7 @@ TEST(string_format, UTF8_to_UCS4)
 	}
 }
 
-TEST(string_format, UTF16_to_UCS4)
+TEST(string_encoding, UTF16_to_UCS4)
 {
 	std::vector<std::pair<std::vector<char16_t>, std::vector<char32_t>>> goodCases =
 	{
@@ -576,7 +583,7 @@ TEST(string_format, UTF16_to_UCS4)
 	}
 }
 
-TEST(string_format, UCS2_to_UCS4)
+TEST(string_encoding, UCS2_to_UCS4)
 {
 	std::vector<std::pair<std::vector<char16_t>, std::vector<char32_t>>> goodCases =
 	{
@@ -594,7 +601,7 @@ TEST(string_format, UCS2_to_UCS4)
 	}
 }
 
-TEST(string_format, UTF8_to_ANSI_faulty)
+TEST(string_encoding, UTF8_to_ANSI_faulty)
 {
 	std::vector<std::pair<std::vector<char8_t>, std::vector<char8_t>>> goodCases =
 	{
@@ -614,7 +621,7 @@ TEST(string_format, UTF8_to_ANSI_faulty)
 	}
 }
 
-TEST(string_format, UTF16_to_ANSI_faulty)
+TEST(string_encoding, UTF16_to_ANSI_faulty)
 {
 	std::vector<std::pair<std::vector<char16_t>, std::vector<char8_t>>> goodCases =
 	{
@@ -633,7 +640,7 @@ TEST(string_format, UTF16_to_ANSI_faulty)
 	}
 }
 
-TEST(string_format, UCS2_to_ANSI_faulty)
+TEST(string_encoding, UCS2_to_ANSI_faulty)
 {
 	std::vector<std::pair<std::vector<char16_t>, std::vector<char8_t>>> goodCases =
 	{
@@ -650,7 +657,7 @@ TEST(string_format, UCS2_to_ANSI_faulty)
 	}
 }
 
-TEST(string_format, UCS4_to_ANSI_faulty)
+TEST(string_encoding, UCS4_to_ANSI_faulty)
 {
 	std::vector<std::pair<std::vector<char32_t>, std::vector<char8_t>>> goodCases =
 	{
@@ -667,7 +674,7 @@ TEST(string_format, UCS4_to_ANSI_faulty)
 	}
 }
 
-TEST(string_format, UTF16_to_UTF8_faulty)
+TEST(string_encoding, UTF16_to_UTF8_faulty)
 {
 	std::vector<std::pair<std::vector<char16_t>, std::vector<char8_t>>> goodCases =
 	{
@@ -685,7 +692,7 @@ TEST(string_format, UTF16_to_UTF8_faulty)
 	}
 }
 
-TEST(string_format, UTF8_to_UTF16_faulty)
+TEST(string_encoding, UTF8_to_UTF16_faulty)
 {
 	std::vector<std::pair<std::vector<char8_t>, std::vector<char16_t>>> goodCases =
 	{
@@ -705,7 +712,7 @@ TEST(string_format, UTF8_to_UTF16_faulty)
 	}
 }
 
-TEST(string_format, UCS2_to_UTF16_faulty)
+TEST(string_encoding, UCS2_to_UTF16_faulty)
 {
 	std::vector<std::pair<std::vector<char16_t>, std::vector<char16_t>>> goodCases =
 	{
@@ -722,7 +729,7 @@ TEST(string_format, UCS2_to_UTF16_faulty)
 	}
 }
 
-TEST(string_format, UCS4_to_UTF16_faulty)
+TEST(string_encoding, UCS4_to_UTF16_faulty)
 {
 	std::vector<std::pair<std::vector<char32_t>, std::vector<char16_t>>> goodCases =
 	{
@@ -740,7 +747,7 @@ TEST(string_format, UCS4_to_UTF16_faulty)
 	}
 }
 
-TEST(string_format, UTF8_to_UCS2_faulty)
+TEST(string_encoding, UTF8_to_UCS2_faulty)
 {
 	std::vector<std::pair<std::vector<char8_t>, std::vector<char16_t>>> goodCases =
 	{
@@ -759,7 +766,7 @@ TEST(string_format, UTF8_to_UCS2_faulty)
 	}
 }
 
-TEST(string_format, UTF16_to_UCS2_faulty)
+TEST(string_encoding, UTF16_to_UCS2_faulty)
 {
 	std::vector<std::pair<std::vector<char16_t>, std::vector<char16_t>>> goodCases =
 	{
@@ -778,7 +785,7 @@ TEST(string_format, UTF16_to_UCS2_faulty)
 	}
 }
 
-TEST(string_format, UCS4_to_UCS2_faulty)
+TEST(string_encoding, UCS4_to_UCS2_faulty)
 {
 	std::vector<std::pair<std::vector<char32_t>, std::vector<char16_t>>> goodCases =
 	{
@@ -796,7 +803,7 @@ TEST(string_format, UCS4_to_UCS2_faulty)
 	}
 }
 
-TEST(string_format, UTF8_to_UCS4_faulty)
+TEST(string_encoding, UTF8_to_UCS4_faulty)
 {
 	std::vector<std::pair<std::vector<char8_t>, std::vector<char32_t>>> goodCases =
 	{
@@ -815,7 +822,7 @@ TEST(string_format, UTF8_to_UCS4_faulty)
 	}
 }
 
-TEST(string_format, UTF16_to_UCS4_faulty)
+TEST(string_encoding, UTF16_to_UCS4_faulty)
 {
 	std::vector<std::pair<std::vector<char16_t>, std::vector<char32_t>>> goodCases =
 	{
@@ -833,7 +840,7 @@ TEST(string_format, UTF16_to_UCS4_faulty)
 	}
 }
 
-TEST(string_format, UNICODE_Compliant)
+TEST(string_encoding, UNICODE_Compliant)
 {
 	std::vector<char32_t> goodCases =
 	{
@@ -856,7 +863,7 @@ TEST(string_format, UNICODE_Compliant)
 	}
 }
 
-TEST(string_format, ASCII_Compliant_char32_t)
+TEST(string_encoding, ASCII_Compliant_char32_t)
 {
 	std::vector<char32_t> goodCases =
 	{
@@ -879,7 +886,7 @@ TEST(string_format, ASCII_Compliant_char32_t)
 	}
 }
 
-TEST(string_format, ASCII_Compliant_char8_t)
+TEST(string_encoding, ASCII_Compliant_char8_t)
 {
 	std::vector<char8_t> goodCases =
 	{
@@ -902,7 +909,7 @@ TEST(string_format, ASCII_Compliant_char8_t)
 	}
 }
 
-TEST(string_format, UTF8_UNICODE_Compliant)
+TEST(string_encoding, UTF8_UNICODE_Compliant)
 {
 	std::vector<std::vector<char8_t>> goodCases =
 	{
@@ -930,7 +937,7 @@ TEST(string_format, UTF8_UNICODE_Compliant)
 	}
 }
 
-TEST(string_format, UTF16_UNICODE_Compliant)
+TEST(string_encoding, UTF16_UNICODE_Compliant)
 {
 	std::vector<std::vector<char16_t>> goodCases =
 	{
@@ -956,7 +963,7 @@ TEST(string_format, UTF16_UNICODE_Compliant)
 	}
 }
 
-TEST(string_format, UCS2_UNICODE_Compliant)
+TEST(string_encoding, UCS2_UNICODE_Compliant)
 {
 	std::vector<std::vector<char16_t>> goodCases =
 	{
@@ -979,7 +986,7 @@ TEST(string_format, UCS2_UNICODE_Compliant)
 	}
 }
 
-TEST(string_format, UCS4_UNICODE_Compliant)
+TEST(string_encoding, UCS4_UNICODE_Compliant)
 {
 	std::vector<std::vector<char32_t>> goodCases =
 	{
@@ -1002,7 +1009,7 @@ TEST(string_format, UCS4_UNICODE_Compliant)
 	}
 }
 
-TEST(string_format, ASCII_Compliant_uint8_t)
+TEST(string_encoding, ASCII_Compliant_uint8_t)
 {
 	std::vector<std::vector<char8_t>> goodCases =
 	{
@@ -1025,7 +1032,7 @@ TEST(string_format, ASCII_Compliant_uint8_t)
 	}
 }
 
-TEST(string_format, ASCII_Compliant_uint32_t)
+TEST(string_encoding, ASCII_Compliant_uint32_t)
 {
 	std::vector<std::vector<char32_t>> goodCases =
 	{
@@ -1048,7 +1055,7 @@ TEST(string_format, ASCII_Compliant_uint32_t)
 	}
 }
 
-TEST(string_format, UTF8_valid)
+TEST(string_encoding, UTF8_valid)
 {
 	std::vector<std::vector<char8_t>> goodCases =
 	{
