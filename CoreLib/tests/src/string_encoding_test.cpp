@@ -1055,17 +1055,4 @@ TEST(string_encoding, ASCII_Compliant_uint32_t)
 	}
 }
 
-TEST(string_encoding, UTF8_valid)
-{
-	std::vector<std::vector<char8_t>> goodCases =
-	{
-		{'T', 'e', 'x', 't', ' ', 0x7F, 0xC2, 0x80, 0x00, 0xC2, 0xA7, 0xC3, 0xBF, 0xF4, 0x8F, 0xBF, 0xBF, 0xF4, 0x90, 0x80, 0x80, 0xED, 0xA0, 0x80},
-	};
-
-	for(const std::vector<char8_t>& tcase : goodCases)
-	{
-		ASSERT_TRUE(core::UTF8_valid({tcase.data(), tcase.size()}));
-	}
-}
-
 } //namespace text_formating

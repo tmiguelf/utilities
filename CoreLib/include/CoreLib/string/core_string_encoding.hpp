@@ -62,7 +62,7 @@ namespace core
 	///		a reference to a std::basic_string container.
 	///		The class has been designed such that move semantics can be used on value()
 	template<typename T>
-	using encodeResult = alternate<std::basic_string<T>, bool, true, false>;
+	using encodeResult = std::optional<std::basic_string<T>>;
 
 	namespace _p
 	{
@@ -162,13 +162,13 @@ namespace core
 		void UTF16_to_UCS2_faulty_unsafe(std::u16string_view p_input, char16_t p_placeHolder, char16_t* p_output);
 
 		[[nodiscard]] uintptr_t UCS4_to_UCS2_faulty_estimate(std::u32string_view p_input);
-		void UCS4_to_UCS2_faulty_estimate(std::u32string_view p_input, char16_t p_placeHolder, char16_t* p_output);
+		void UCS4_to_UCS2_faulty_unsafe(std::u32string_view p_input, char16_t p_placeHolder, char16_t* p_output);
 
 		[[nodiscard]] uintptr_t UTF8_to_UCS4_faulty_estimate(std::u8string_view p_input);
-		void UTF8_to_UCS4_faulty_estimate(std::u8string_view p_input, char32_t p_placeHolder, char32_t* p_output);
+		void UTF8_to_UCS4_faulty_unsafe(std::u8string_view p_input, char32_t p_placeHolder, char32_t* p_output);
 
 		[[nodiscard]] uintptr_t UTF16_to_UCS4_faulty_estimate(std::u16string_view p_input);
-		void UTF16_to_UCS4_faulty_estimate(std::u16string_view p_input, char32_t p_placeHolder, char32_t* p_output);
+		void UTF16_to_UCS4_faulty_unsafe(std::u16string_view p_input, char32_t p_placeHolder, char32_t* p_output);
 
 
 
@@ -424,15 +424,5 @@ namespace core
 
 	///	\brief	Same as \ref core::ASCII_Compliant(const char8_t*, size_t), but for char32_t.
 	[[nodiscard]] bool ASCII_Compliant(std::u32string_view p_str);
-
-	///	\brief	Checks if string has a valid UTF8 encoding without it necessarily encoding a valid Unicode code point.
-	///	\param[in]	p_str - String to check
-	///	\param[in]	p_size - Size of string to check
-	///	\return true if input has a valid encoding, false if otherwise.
-	///	\note		Agnostic to null termination.
-	[[nodiscard]] bool UTF8_valid(std::u8string_view p_str);
-
-	///	\brief	Same as \ref UTF16_UNICODE_Compliant. UTF16 can only encode valid Unicode code points.
-	[[nodiscard]] inline bool UTF16_valid(std::u16string_view p_str) { return UTF16_UNICODE_Compliant(p_str); }
 
 }	//namespace core
