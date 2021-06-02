@@ -764,7 +764,7 @@ protected:
 	charconv_char_T() {}
 };
 
-using charTypes = ::testing::Types<char8_t, char32_t>;
+using charTypes = ::testing::Types<char8_t, char16_t, char32_t, char, wchar_t>;
 
 TYPED_TEST_SUITE(charconv_char_T, charTypes);
 

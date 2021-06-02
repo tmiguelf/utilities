@@ -188,32 +188,32 @@ private:
 };
 
 
-template<from_chars_supported_c num_T>
+template<char_conv_dec_supported_c num_T>
 void num2stream(std::ostream& p_stream, const num_T& p_data)
 {
-	constexpr uintptr_t buffSize = to_chars_max_digits_v<num_T>;
+	constexpr uintptr_t buffSize = to_char_dec_max_digits_v<num_T>;
 	char8_t buff[buffSize];
 	p_stream.write(reinterpret_cast<const char*>(buff), to_chars<char8_t>(p_data, buff));
 }
 
-template<from_chars_supported_c num_T>
+template<char_conv_hex_supported_c num_T>
 void num2stream_hex(std::ostream& p_stream, const num_T& p_data)
 {
-	constexpr uintptr_t buffSize = to_hex_chars_max_digits_v<num_T>;
+	constexpr uintptr_t buffSize = to_char_hex_max_digits_v<num_T>;
 	char8_t buff[buffSize];
 	p_stream.write(reinterpret_cast<const char*>(buff), to_hex_chars<char8_t>(p_data, buff));
 }
 
-template<from_chars_supported_c num_T>
+template<char_conv_hex_supported_c num_T>
 void num2stream_hex_fix(std::ostream& p_stream, const num_T& p_data)
 {
-	constexpr uintptr_t buffSize = to_hex_chars_max_digits_v<num_T>;
+	constexpr uintptr_t buffSize = to_char_hex_max_digits_v<num_T>;
 	char8_t buff[buffSize];
 	to_hex_chars_fix<char8_t>(p_data, buff);
 	p_stream.write(reinterpret_cast<const char*>(buff), buffSize);
 }
 
-template<from_chars_supported_c num_T>
+template<char_conv_dec_supported_c num_T>
 class toStream<num_T>
 {
 public:
@@ -227,21 +227,6 @@ private:
 	const num_T m_data;
 };
 
-#if !defined(_MSC_BUILD)
-template<std::floating_point fp_T>
-class toStream<fp_T>
-{
-public:
-	toStream(fp_T p_data): m_data{p_data}{}
-	inline void stream(std::ostream& p_stream) const
-	{
-		p_stream << m_data;
-	}
-
-private:
-	const fp_T m_data;
-};
-#endif
 
 template<>
 class toStream<void*>

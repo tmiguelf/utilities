@@ -2540,7 +2540,7 @@ bool ASCII_Compliant(std::u32string_view p_input)
 	return true;
 }
 
-encodeResult<char8_t> UTF8_to_ANSI(std::u8string_view p_input)
+std::optional<std::u8string> UTF8_to_ANSI(std::u8string_view p_input)
 {
 	std::optional<uintptr_t> res = _p::UTF8_to_ANSI_estimate(p_input);
 	if(!res.has_value()) return {};
@@ -2550,7 +2550,7 @@ encodeResult<char8_t> UTF8_to_ANSI(std::u8string_view p_input)
 	return output;
 }
 
-encodeResult<char8_t> UTF16_to_ANSI(std::u16string_view p_input)
+std::optional<std::u8string> UTF16_to_ANSI(std::u16string_view p_input)
 {
 	//Because ANSI code points can not be larger than 0xFF
 	//if input has code points larger than 0xFF then it's already an error
@@ -2558,7 +2558,7 @@ encodeResult<char8_t> UTF16_to_ANSI(std::u16string_view p_input)
 	return UCS2_to_ANSI(p_input);
 }
 
-encodeResult<char8_t> UCS2_to_ANSI(std::u16string_view p_input)
+std::optional<std::u8string> UCS2_to_ANSI(std::u16string_view p_input)
 {
 	std::optional<uintptr_t> res = _p::UCS2_to_ANSI_estimate(p_input);
 	if(!res.has_value()) return {};
@@ -2568,7 +2568,7 @@ encodeResult<char8_t> UCS2_to_ANSI(std::u16string_view p_input)
 	return output;
 }
 
-encodeResult<char8_t> UCS4_to_ANSI(std::u32string_view p_input)
+std::optional<std::u8string> UCS4_to_ANSI(std::u32string_view p_input)
 {
 	std::optional<uintptr_t> res = _p::UCS4_to_ANSI_estimate(p_input);
 	if(!res.has_value()) return {};
@@ -2586,7 +2586,7 @@ std::u8string ANSI_to_UTF8(std::u8string_view p_input)
 	return output;
 }
 
-encodeResult<char8_t> UTF16_to_UTF8(std::u16string_view p_input)
+std::optional<std::u8string> UTF16_to_UTF8(std::u16string_view p_input)
 {
 	std::optional<uintptr_t> res = _p::UTF16_to_UTF8_estimate(p_input);
 	if(!res.has_value()) return {};
@@ -2620,7 +2620,7 @@ std::u16string ANSI_to_UTF16(std::u8string_view p_input)
 	return output;
 }
 
-encodeResult<char16_t> UTF8_to_UTF16(std::u8string_view p_input)
+std::optional<std::u16string> UTF8_to_UTF16(std::u8string_view p_input)
 {
 	std::optional<uintptr_t> res = _p::UTF8_to_UTF16_estimate(p_input);
 	if(!res.has_value()) return {};
@@ -2630,7 +2630,7 @@ encodeResult<char16_t> UTF8_to_UTF16(std::u8string_view p_input)
 	return output;
 }
 
-encodeResult<char16_t> UCS2_to_UTF16(std::u16string_view p_input)
+std::optional<std::u16string> UCS2_to_UTF16(std::u16string_view p_input)
 {
 	for(char16_t tchar: p_input)
 	{
@@ -2639,7 +2639,7 @@ encodeResult<char16_t> UCS2_to_UTF16(std::u16string_view p_input)
 	return {std::u16string{p_input}};
 }
 
-encodeResult<char16_t> UCS4_to_UTF16(std::u32string_view p_input)
+std::optional<std::u16string> UCS4_to_UTF16(std::u32string_view p_input)
 {
 	std::optional<uintptr_t> res = _p::UCS4_to_UTF16_estimate(p_input);
 	if(!res.has_value()) return {};
@@ -2657,7 +2657,7 @@ std::u16string ANSI_to_UCS2(std::u8string_view p_input)
 	return output;
 }
 
-encodeResult<char16_t> UTF8_to_UCS2(std::u8string_view p_input)
+std::optional<std::u16string> UTF8_to_UCS2(std::u8string_view p_input)
 {
 	std::optional<uintptr_t> res = _p::UTF8_to_UCS2_estimate(p_input);
 	if(!res.has_value()) return {};
@@ -2667,7 +2667,7 @@ encodeResult<char16_t> UTF8_to_UCS2(std::u8string_view p_input)
 	return output;
 }
 
-encodeResult<char16_t> UTF16_to_UCS2(std::u16string_view p_input)
+std::optional<std::u16string> UTF16_to_UCS2(std::u16string_view p_input)
 {
 	for(char16_t tchar: p_input)
 	{
@@ -2676,7 +2676,7 @@ encodeResult<char16_t> UTF16_to_UCS2(std::u16string_view p_input)
 	return {std::u16string{p_input}};
 }
 
-encodeResult<char16_t> UCS4_to_UCS2(std::u32string_view p_input)
+std::optional<std::u16string> UCS4_to_UCS2(std::u32string_view p_input)
 {
 	std::optional<uintptr_t> res = _p::UCS4_to_UCS2_estimate(p_input);
 	if(!res.has_value()) return {};
@@ -2694,7 +2694,7 @@ std::u32string ANSI_to_UCS4(std::u8string_view p_input)
 	return output;
 }
 
-encodeResult<char32_t> UTF8_to_UCS4(std::u8string_view p_input)
+std::optional<std::u32string> UTF8_to_UCS4(std::u8string_view p_input)
 {
 	std::optional<uintptr_t> res = _p::UTF8_to_UCS4_estimate(p_input);
 	if(!res.has_value()) return {};
@@ -2704,7 +2704,7 @@ encodeResult<char32_t> UTF8_to_UCS4(std::u8string_view p_input)
 	return output;
 }
 
-encodeResult<char32_t> UTF16_to_UCS4(std::u16string_view p_input)
+std::optional<std::u32string> UTF16_to_UCS4(std::u16string_view p_input)
 {
 	std::optional<uintptr_t> res = _p::UTF16_to_UCS4_estimate(p_input);
 	if(!res.has_value()) return {};
