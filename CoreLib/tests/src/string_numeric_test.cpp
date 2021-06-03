@@ -54,6 +54,22 @@ static stream_t& operator << (stream_t& p_stream, std::u8string_view p_str)
 	return p_stream;
 }*/
 
+static stream_t& operator << (stream_t& p_stream, const std::u16string& p_str)
+{
+	std::u8string temp;
+	temp.resize(p_str.size());
+
+	{
+		uintptr_t i = 0;
+		for(char16_t t_char : p_str)
+		{
+			temp[i++] = static_cast<char8_t>(t_char);
+		}
+	}
+
+	return p_stream << temp;
+}
+
 static stream_t& operator << (stream_t& p_stream, const std::u32string& p_str)
 {
 	std::u8string temp;
@@ -461,19 +477,28 @@ protected:
 };
 
 using DecTypes = ::testing::Types<
-	std::pair<uint8_t		, char8_t>,
-	std::pair<uint16_t		, char8_t>,
-	std::pair<uint32_t		, char8_t>,
-	std::pair<uint64_t		, char8_t>,
-	std::pair<int8_t		, char8_t>,
-	std::pair<int16_t		, char8_t>,
-	std::pair<int32_t		, char8_t>,
-	std::pair<int64_t		, char8_t>,
-#if defined(_MSC_BUILD)
-	std::pair<float			, char8_t>,
-	std::pair<double		, char8_t>,
-	std::pair<long double	, char8_t>,
-#endif
+	std::pair<uint8_t		, char8_t >,
+	std::pair<uint16_t		, char8_t >,
+	std::pair<uint32_t		, char8_t >,
+	std::pair<uint64_t		, char8_t >,
+	std::pair<int8_t		, char8_t >,
+	std::pair<int16_t		, char8_t >,
+	std::pair<int32_t		, char8_t >,
+	std::pair<int64_t		, char8_t >,
+	std::pair<float			, char8_t >,
+	std::pair<double		, char8_t >,
+	std::pair<long double	, char8_t >,
+	std::pair<uint8_t		, char16_t>,
+	std::pair<uint16_t		, char16_t>,
+	std::pair<uint32_t		, char16_t>,
+	std::pair<uint64_t		, char16_t>,
+	std::pair<int8_t		, char16_t>,
+	std::pair<int16_t		, char16_t>,
+	std::pair<int32_t		, char16_t>,
+	std::pair<int64_t		, char16_t>,
+	std::pair<float			, char16_t>,
+	std::pair<double		, char16_t>,
+	std::pair<long double	, char16_t>,
 	std::pair<uint8_t		, char32_t>,
 	std::pair<uint16_t		, char32_t>,
 	std::pair<uint32_t		, char32_t>,
@@ -481,16 +506,14 @@ using DecTypes = ::testing::Types<
 	std::pair<int8_t		, char32_t>,
 	std::pair<int16_t		, char32_t>,
 	std::pair<int32_t		, char32_t>,
-	std::pair<int64_t		, char32_t>
-#if defined(_MSC_BUILD)
-	,std::pair<float			, char32_t>,
+	std::pair<int64_t		, char32_t>,
+	std::pair<float			, char32_t>,
 	std::pair<double		, char32_t>,
 	std::pair<long double	, char32_t>
-#endif
 >;
 TYPED_TEST_SUITE(charconv_Decimal_T, DecTypes);
 
-TYPED_TEST(charconv_Decimal_T, from_string_good)
+TYPED_TEST(charconv_Decimal_T, from_chars_good)
 {
 	using num_T = typename TypeParam::first_type;
 	using char_T = typename TypeParam::second_type;
@@ -501,7 +524,7 @@ TYPED_TEST(charconv_Decimal_T, from_string_good)
 		{
 			core::from_chars_result<num_T> result = core::from_chars<num_T>(testCase.second);
 
-			ASSERT_TRUE(result.has_value()) << "Case" << testCase.second;
+			ASSERT_TRUE(result.has_value()) << "Case " << testCase.second;
 			ASSERT_EQ(result.value(), testCase.first);
 		}
 	}
@@ -513,14 +536,14 @@ TYPED_TEST(charconv_Decimal_T, from_string_good)
 		{
 			core::from_chars_result<num_T> result = core::from_chars<num_T>(testCase.second);
 
-			ASSERT_TRUE(result.has_value()) << "Case" << testCase.second;
+			ASSERT_TRUE(result.has_value()) << "Case " << testCase.second;
 			ASSERT_EQ(result.value(), testCase.first);
 		}
 	}
 
 }
 
-TYPED_TEST(charconv_Decimal_T, from_string_bad)
+TYPED_TEST(charconv_Decimal_T, from_chars_bad)
 {
 	using num_T = typename TypeParam::first_type;
 	using char_T = typename TypeParam::second_type;
@@ -534,7 +557,7 @@ TYPED_TEST(charconv_Decimal_T, from_string_bad)
 	}
 }
 
-TYPED_TEST(charconv_Decimal_T, to_string)
+TYPED_TEST(charconv_Decimal_T, to_chars)
 {
 	using num_T = typename TypeParam::first_type;
 	using char_T = typename TypeParam::second_type;
@@ -764,7 +787,11 @@ protected:
 	charconv_char_T() {}
 };
 
-using charTypes = ::testing::Types<char8_t, char16_t, char32_t, char, wchar_t>;
+using charTypes = ::testing::Types<
+		char8_t,
+		char16_t,
+		char32_t
+	>;
 
 TYPED_TEST_SUITE(charconv_char_T, charTypes);
 
