@@ -28,11 +28,13 @@
 
 #include <array>
 #include <concepts>
+#include <limits>
 #include <optional>
 #include <span>
 #include <string_view>
 #include <system_error>
 #include <type_traits>
+
 
 #include <CoreLib/Core_Alternate.hpp>
 
