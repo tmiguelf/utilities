@@ -722,7 +722,7 @@ TYPED_TEST(charconv_Hex_T, from_string_good)
 	const std::vector<std::pair<num_T, std::basic_string<char_T>>>& goodCases = get_goodCases_hex<num_T, char_T>();
 	for(const std::pair<num_T, std::basic_string<char_T>>& testCase: goodCases)
 	{
-		core::from_chars_result<num_T> result = core::from_hex_chars<num_T>(testCase.second);
+		core::from_chars_result<num_T> result = core::from_chars_hex<num_T>(testCase.second);
 
 		ASSERT_TRUE(result.has_value()) << "Case" << testCase.second;
 		ASSERT_EQ(result.value(), testCase.first);
@@ -737,7 +737,7 @@ TYPED_TEST(charconv_Hex_T, from_string_bad)
 	const std::vector<std::basic_string<char_T>>& badCases = get_badCases_hex<num_T, char_T>();
 	for(const std::basic_string<char_T>& testCase: badCases)
 	{
-		core::from_chars_result<num_T> result = core::from_hex_chars<num_T>(testCase);
+		core::from_chars_result<num_T> result = core::from_chars_hex<num_T>(testCase);
 
 		ASSERT_FALSE(result.has_value()) << "Case " << testCase;
 	}
@@ -751,7 +751,7 @@ TYPED_TEST(charconv_Hex_T, to_string)
 	const std::vector<std::pair<num_T, std::basic_string<char_T>>>& goodCases = get_goodCases_hex<num_T, char_T>();
 	for(const std::pair<num_T, std::basic_string<char_T>>& testCase: goodCases)
 	{
-		const std::basic_string<char_T>& result = core::to_hex_chars<char_T>(testCase.first);
+		const std::basic_string<char_T>& result = core::to_chars_hex<char_T>(testCase.first);
 
 		ASSERT_EQ(result, testCase.second) << "Case " << testCase.second;
 	}
@@ -765,7 +765,7 @@ TYPED_TEST(charconv_Hex_T, to_string_fix)
 	const std::vector<std::pair<num_T, std::basic_string<char_T>>>& goodCases = get_goodCases_hex<num_T, char_T>();
 	for(const std::pair<num_T, std::basic_string<char_T>>& testCase: goodCases)
 	{
-		const std::basic_string<char_T>& result = core::to_hex_chars_fix<char_T>(testCase.first);
+		const std::basic_string<char_T>& result = core::to_chars_hex_fix<char_T>(testCase.first);
 
 		std::basic_string<char_T> comp;
 

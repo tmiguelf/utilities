@@ -46,6 +46,7 @@
     <Import Project="$(MSBuildThisFileDirectory)..\MathLib.include.props" />
     <Import Project="$(googletestPath)googletest.import.props" />
     <Import Project="$(googlemockPath)googlemock.import.props" />
+    <Import Project="$(TestUtilsPath)TestUtils.include.props" />
     <Import Project="$(CoreLibPath)CoreLib.import.props" />
   </ImportGroup>
   <ItemDefinitionGroup>

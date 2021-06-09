@@ -35,6 +35,8 @@
 
 #include <MathLib/HyperComplex/quaternions.hpp>
 
+#include <TestUtils/string_streamers.hpp>
+
 using core::toStream;
 
 //======== Stream assists ========

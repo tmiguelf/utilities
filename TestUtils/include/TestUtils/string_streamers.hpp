@@ -32,9 +32,10 @@
 #include <cstdint>
 #include <string>
 #include <string_view>
-#include "core_string_tostream.hpp"
-#include "core_string_encoding.hpp"
-#include "core_string_numeric.hpp"
+#include <filesystem>
+#include <CoreLib/string/core_string_encoding.hpp>
+#include <CoreLib/string/core_string_numeric.hpp>
+#include "string_tostream.hpp"
 
 namespace core
 {
@@ -201,7 +202,7 @@ void num2stream_hex(std::ostream& p_stream, const num_T& p_data)
 {
 	constexpr uintptr_t buffSize = to_char_hex_max_digits_v<num_T>;
 	char8_t buff[buffSize];
-	p_stream.write(reinterpret_cast<const char*>(buff), to_hex_chars(p_data, buff));
+	p_stream.write(reinterpret_cast<const char*>(buff), to_chars_hex(p_data, buff));
 }
 
 template<char_conv_hex_supported_c num_T>
@@ -209,7 +210,7 @@ void num2stream_hex_fix(std::ostream& p_stream, const num_T& p_data)
 {
 	constexpr uintptr_t buffSize = to_char_hex_max_digits_v<num_T>;
 	char8_t buff[buffSize];
-	to_hex_chars_fix(p_data, buff);
+	to_chars_hex_fix(p_data, buff);
 	p_stream.write(reinterpret_cast<const char*>(buff), buffSize);
 }
 
@@ -243,7 +244,26 @@ private:
 	const void* m_data;
 };
 
+template<>
+class toStream<std::filesystem::path>
+{
+public:
+	toStream(const std::filesystem::path& p_data): m_data{p_data}{}
+	inline void stream(std::ostream& p_stream) const
+	{
+#ifdef _WIN32
+		const std::wstring& native = m_data.native();
+		const std::u8string res = UTF16_to_UTF8_faulty({reinterpret_cast<const char16_t*>(native.data()), native.size()}, '?');
+		p_stream.write(reinterpret_cast<const char*>(res.data()), res.size());
+#else
+		const std::string& native = m_data.native();
+		p_stream.write(native.data(), native.size());
+#endif
+	}
 
+private:
+	const std::filesystem::path& m_data;
+};
 
 } //namespace core
 

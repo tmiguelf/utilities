@@ -27,24 +27,18 @@
 
 #include <cstdint>
 #include <filesystem>
+#include <optional>
 
-#include "Core_Alternate.hpp"
 #include "string/core_os_string.hpp"
-#include "string/core_string_tostream.hpp"
-#include "string/core_string_encoding.hpp"
-
 
 namespace core
 {
 
-using env_result = alternate<core::os_string, bool, true, false>;
-
-bool		env_exists	(const core::os_string& p_key);
-bool		set_env		(const core::os_string& p_key, const core::os_string& p_value);
-env_result	get_env		(const core::os_string& p_key);
-bool		delete_env	(const core::os_string& p_key);
-
-env_result	machine_name();
+bool env_exists	(const core::os_string& p_key);
+bool set_env	(const core::os_string& p_key, const core::os_string& p_value);
+bool delete_env	(const core::os_string& p_key);
+std::optional<core::os_string>	get_env		(const core::os_string& p_key);
+std::optional<core::os_string>	machine_name();
 
 std::filesystem::path application_path();
 
@@ -59,26 +53,5 @@ inline std::filesystem::path to_absolute_lexical(const std::filesystem::path& p_
 		return (p_base / p_path).lexically_normal();
 	}
 }
-
-template<>
-class toStream<std::filesystem::path>
-{
-public:
-	toStream(const std::filesystem::path& p_data): m_data{p_data}{}
-	inline void stream(std::ostream& p_stream) const
-	{
-#ifdef _WIN32
-		const std::wstring& native = m_data.native();
-		const std::u8string res = UTF16_to_UTF8_faulty({reinterpret_cast<const char16_t*>(native.data()), native.size()}, '?');
-		p_stream.write(reinterpret_cast<const char*>(res.data()), res.size());
-#else
-		const std::string& native = m_data.native();
-		p_stream.write(native.data(), native.size());
-#endif
-	}
-
-private:
-	const std::filesystem::path& m_data;
-};
 
 } //namespace core

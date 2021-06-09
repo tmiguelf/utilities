@@ -1349,7 +1349,7 @@ namespace core
 				if(size == pos2) break;
 				if(size - pos2 > 4) return false;
 
-				from_chars_result<uint16_t> auxRet = from_hex_chars<uint16_t>({tdata + pos2, size - pos2});
+				from_chars_result<uint16_t> auxRet = from_chars_hex<uint16_t>({tdata + pos2, size - pos2});
 				if(!auxRet.has_value())
 				{
 					return false;
@@ -1370,7 +1370,7 @@ namespace core
 				continue;
 			}
 
-			from_chars_result<uint16_t> auxRet = from_hex_chars<uint16_t>({tdata + pos2, pos1 - pos2});
+			from_chars_result<uint16_t> auxRet = from_chars_hex<uint16_t>({tdata + pos2, pos1 - pos2});
 			if(!auxRet.has_value())
 			{
 				return false;
@@ -1490,7 +1490,7 @@ namespace core
 			{
 				for(it = 0; it < posEliad; ++it)
 				{
-					pivot += core::to_hex_chars(core::endian_big2host(p_raw[it]), std::span<char8_t, 4>{pivot, 4});
+					pivot += core::to_chars_hex(core::endian_big2host(p_raw[it]), std::span<char8_t, 4>{pivot, 4});
 					*pivot = ':';
 					++pivot;
 				}
@@ -1503,22 +1503,22 @@ namespace core
 			{
 				for(; it < 7; ++it)
 				{
-					pivot += core::to_hex_chars(core::endian_big2host(p_raw[it]), std::span<char8_t, 4>{pivot, 4});
+					pivot += core::to_chars_hex(core::endian_big2host(p_raw[it]), std::span<char8_t, 4>{pivot, 4});
 					*pivot = ':';
 					++pivot;
 				}
-				pivot += core::to_hex_chars(core::endian_big2host(p_raw[7]), std::span<char8_t, 4>{pivot, 4});
+				pivot += core::to_chars_hex(core::endian_big2host(p_raw[7]), std::span<char8_t, 4>{pivot, 4});
 			}
 		}
 		else
 		{
 			for(it = 0; it < 7; ++it)
 			{
-				pivot += core::to_hex_chars(core::endian_big2host(p_raw[it]), std::span<char8_t, 4>{pivot, 4});
+				pivot += core::to_chars_hex(core::endian_big2host(p_raw[it]), std::span<char8_t, 4>{pivot, 4});
 				*pivot = ':';
 				++pivot;
 			}
-			pivot += core::to_hex_chars(core::endian_big2host(p_raw[7]), std::span<char8_t, 4>{pivot, 4});
+			pivot += core::to_chars_hex(core::endian_big2host(p_raw[7]), std::span<char8_t, 4>{pivot, 4});
 		}
 		return static_cast<uintptr_t> (pivot - p_output.data());
 	}

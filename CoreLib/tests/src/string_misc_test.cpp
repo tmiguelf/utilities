@@ -29,13 +29,12 @@
 #include <ostream>
 #include <string>
 
-#include <CoreLib/string/core_string_streamers.hpp>
+#include <TestUtils/string_streamers.hpp>
 
 using core::toStream;
 
 #include <gtest/gtest.h>
 #include <CoreLib/string/core_string_misc.hpp>
-
 
 
 namespace text_misc

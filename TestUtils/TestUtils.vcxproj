@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{290592c2-399c-4e12-8599-baa3af962939}</ProjectGuid>
+    <ProjectGuid>{d7501bda-93c2-4903-a0db-b23beaba88a2}</ProjectGuid>
   </PropertyGroup>
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -38,27 +38,25 @@
     <UseDebugLibraries>false</UseDebugLibraries>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>Utility</ConfigurationType>
   </PropertyGroup>
   <ImportGroup Label="PropertySheets">
     <Import Project="$(SolutionDir)locations.props" />
     <Import Project="$(quickMSBuildPath)default.cpp.props" />
-    <Import Project="$(googletestPath)googletest.import.props" />
-    <Import Project="$(googlemockPath)googlemock.import.props" />
-    <Import Project="$(TestUtilsPath)TestUtils.include.props" />
-    <Import Project="$(MSBuildThisFileDirectory)../CoreLib.import.props" />
+    <Import Project="$(CoreLibPath)CoreLib.import.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup>
-    <Link>
-      <SubSystem>Console</SubSystem>
-    </Link>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\core_endian_test.cpp" />
-    <ClCompile Include="src\string_encoding_test.cpp" />
-    <ClCompile Include="src\string_misc_test.cpp" />
-    <ClCompile Include="src\string_numeric_test.cpp" />
+    <None Include="TestUtils.include.props" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\TestUtils\string_streamers.hpp" />
+    <ClInclude Include="include\TestUtils\string_tostream.hpp" />
   </ItemGroup>
   <Import Project="$(quickMSBuildPath)default.cpp.targets" />
 </Project>

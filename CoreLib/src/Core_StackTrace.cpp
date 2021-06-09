@@ -45,14 +45,85 @@
 
 #include "CoreLib/string/core_string_encoding.hpp"
 #include "CoreLib/string/core_string_numeric.hpp"
-#include "CoreLib/string/core_string_streamers.hpp"
+
+namespace core
+{
+
+namespace
+{
+template <typename T>
+static inline void push_hex_fix(std::ofstream& p_out, T p_num)
+{
+	std::array<char, to_char_hex_max_digits_v<T>> buff;
+	uintptr_t size = to_chars_hex(p_num, buff);
+	p_out.write(buff.data(), size);
+}
+
+template <typename T>
+static inline void push_dec(std::ofstream& p_out, T p_num)
+{
+	std::array<char, to_char_dec_max_digits_v<T>> buff;
+	uintptr_t size = to_chars(p_num, buff);
+	p_out.write(buff.data(), size);
+}
+
+static inline void push_time(std::ofstream& p_out, const DateTime& p_time)
+{
+	char8_t buff[16];
+	uintptr_t reSize;
+
+	reSize = to_chars(p_time.date.year, std::span<char8_t, 5>(buff, 5));
+	p_out.write(reinterpret_cast<const char*>(buff), reSize);
+	p_out.put('/');
+
+	reSize = to_chars(p_time.date.month, std::span<char8_t, 3>(buff, 3));
+	if(reSize < 2) p_out.put('0');
+	p_out.write(reinterpret_cast<const char*>(buff), reSize);
+	p_out.put('/');
+
+	reSize = to_chars(p_time.date.day, std::span<char8_t, 3>(buff, 3));
+	if(reSize < 2) p_out.put('0');
+	p_out.write(reinterpret_cast<const char*>(buff), reSize);
+	p_out.put(' ');
+
+	reSize = to_chars(p_time.time.hour, std::span<char8_t, 3>(buff, 3));
+	if(reSize < 2) p_out.put('0');
+	p_out.write(reinterpret_cast<const char*>(buff), reSize);
+	p_out.put(':');
+
+	reSize = to_chars(p_time.time.minute, std::span<char8_t, 3>(buff, 3));
+	if(reSize < 2) p_out.put('0');
+	p_out.write(reinterpret_cast<const char*>(buff), reSize);
+	p_out.put(':');
+
+	reSize = to_chars(p_time.time.second, std::span<char8_t, 3>(buff, 3));
+	if(reSize < 2) p_out.put('0');
+	p_out.write(reinterpret_cast<const char*>(buff), reSize);
+	p_out.put('.');
+
+	reSize = to_chars(p_time.time.msecond, std::span<char8_t, 5>(buff, 5));
+	if(reSize < 3) p_out.put('0');
+	if(reSize < 2) p_out.put('0');
+	p_out.write(reinterpret_cast<const char*>(buff), reSize);
+	p_out.put('\n');
+}
+
+static inline void push_data(std::ofstream& p_out, os_string_view p_string)
+{
+#ifdef _WIN32
+	const std::u8string& res = UTF16_to_UTF8_faulty(std::u16string_view{reinterpret_cast<const char16_t*>(p_string.data()), p_string.size()}, u'?');
+	p_out.write(reinterpret_cast<const char*>(res.data()), res.size());
+#else
+	p_out.write(p_string.data(), p_string.size());
+#endif
+}
+
+
+
+} //namespace
+} //namespace core
 
 #ifdef _WIN32
-
-#ifdef GetEnvironmentStrings
-#	undef GetEnvironmentStrings
-#endif
-#define GetEnvironmentStringsA GetEnvironmentStrings
 
 #ifdef EnumerateLoadedModules64
 #	undef EnumerateLoadedModules64
@@ -68,7 +139,6 @@ namespace
 {
 
 	///	\brief Used to store global sack trace options
-	//
 	class Stack_Trace_Options
 	{
 	public:
@@ -79,7 +149,6 @@ namespace
 
 
 	///	\brief Used to pass the process handle and the file we are outputting to to the module enumeration call back.
-	//
 	struct enumerate2file_context
 	{
 		std::ofstream*	m_file;	//!< Output file
@@ -87,7 +156,6 @@ namespace
 	};
 
 	///	\brief Used to pass the process handle and the list we are outputting to to the module enumeration call back.
-	//
 	struct enumerate2list_context
 	{
 		std::list<ModuleAddr>*	m_list;	//!< output list
@@ -97,7 +165,6 @@ namespace
 	///	\brief Used to store the data for the module. The default structure is a prototype where
 	///		the name has 0 bytes, we are supposed to define this to allocate space for the name
 	///		make sure to correctly initialize the members after.
-	//
 	struct core_symb
 	{
 
@@ -111,7 +178,6 @@ namespace
 
 	///	\brief	Used to generate the correct set of flags such that most of the necessary information is output
 	///			yet still be able to succeed the function call no matter the version actually present.
-	//
 	static MINIDUMP_TYPE GenerateMinidumpFlags()
 	{
 		API_VERSION* t_version = ImagehlpApiVersion();
@@ -157,74 +223,47 @@ namespace
 	}
 
 	/// \brief Auxiliary function used to print environment variables
-	///	\bug System use multi-byte array and not ANSI, output is likely to be completely garbled
-	//
 	static void PrintEnv(std::ofstream& p_file)
 	{
-		if(_wenviron)	//wchar environ
+		wchar_t* const t_base = GetEnvironmentStringsW();
+		const wchar_t* t_pivot = t_base;
+		if(t_base)
 		{
-			wchar_t* t_env = GetEnvironmentStringsW();
-			wchar_t* t_base = t_env;
-			std::wstring t_str;
-			if(t_env)
+			while(*t_pivot)
 			{
-				while(*t_env)
-				{
-					do
-					{
-						p_file << (char) *t_env;
-						++t_env;
-					}
-					while(*t_env);
-					++t_env;
-					p_file << '\n';
-				}
-				FreeEnvironmentStringsW(t_base);
+				core::os_string_view data{t_pivot};
+				push_data(p_file, data);
+				p_file.put('\n');
+				t_pivot += data.size() + 1;
 			}
-		}
-		else if(_environ)	//char environ
-		{
-			char* t_env = GetEnvironmentStringsA();
-			char* t_base = t_env;
-			if(t_env)
-			{
-				while(*t_env)
-				{
-					do
-					{
-						p_file << *t_env;
-						++t_env;
-					}
-					while(*t_env);
-					++t_env;
-					p_file << '\n';
-				}
-				FreeEnvironmentStringsA(t_base);
-			}
+			FreeEnvironmentStringsW(t_base);
 		}
 	}
 
 	/// \brief Auxiliary function used to enumerate modules and print onto file
-	//
 	static BOOL CALLBACK EnumerateModules2File(PCWSTR ModuleName, DWORD64 BaseOfDll, ULONG ModuleSize, PVOID UserContext)
 	{
-		enumerate2file_context* t_context = (enumerate2file_context*) UserContext;
+		enumerate2file_context* t_context = reinterpret_cast<enumerate2file_context*>(UserContext);
+		std::ofstream& tfile = *(t_context->m_file);
 
-		*(t_context->m_file)
-			<< core::toStream{BaseOfDll, num2stream_hex_fix} << ' ' << core::toStream{BaseOfDll + ModuleSize, num2stream_hex_fix}
-			<< " \"" << toStream{os_string_view{ModuleName}} << "\"\n";
+		push_hex_fix(tfile, BaseOfDll);
+		tfile.put(' ');
+		push_hex_fix(tfile, BaseOfDll + ModuleSize);
+		tfile.write(" \"", 2);
+		push_data(tfile, os_string_view{ModuleName});
+		tfile.write("\"\n", 2);
 		return TRUE;
 	}
 
 	/// \brief Auxiliary function used to enumerate modules onto list
 	//
-	static BOOL CALLBACK EnumerateModules2List(PCWSTR ModuleName, DWORD64 BaseOfDll, ULONG /*ModuleSize*/, PVOID UserContext)
+	static BOOL CALLBACK EnumerateModules2List(PCWSTR ModuleName, DWORD64 BaseOfDll, ULONG ModuleSize, PVOID UserContext)
 	{
 		ModuleAddr t_entry;
-		enumerate2list_context* t_context = (enumerate2list_context*) UserContext;
+		enumerate2list_context* t_context = reinterpret_cast<enumerate2list_context*>(UserContext);
 		
 		t_entry.m_addr = static_cast<uintptr_t>(BaseOfDll);
-		//t_entry.m_size = ModuleSize;
+		t_entry.m_size = static_cast<uintptr_t>(ModuleSize);
 		t_entry.m_name = ModuleName;
 
 		t_context->m_list->push_back(std::move(t_entry)); //why the hell the standard didn't have in place construction from the start??
@@ -237,7 +276,6 @@ namespace
 	///	\warning Function names may not necessarily be correct. \n
 	///		Name is determined based on last know name prior to current address, which is not necessarily the same function as the one the address belongs to.
 	///		Use .map files to confirm names.
-	//
 	static void print_function_addr(HANDLE p_proc, DWORD64 p_address, std::ofstream& p_file)
 	{
 		core_symb t_symb;
@@ -256,14 +294,14 @@ namespace
 		if(base && (base <= p_address))
 		{
 			//Prints the module address + offset inside the module example: 0x0000123400+567
-			p_file
-				<< toStream{static_cast<uintptr_t>(base), num2stream_hex_fix} << '+'
-				<< toStream{static_cast<uintptr_t>(p_address - base), num2stream_hex_fix};
+			push_hex_fix(p_file, static_cast<uintptr_t>(base));
+			p_file.put('+');
+			push_hex_fix(p_file, static_cast<uintptr_t>(p_address - base));
 		}
 		else
 		{	//in theory this should never be the case, this is just in case SymGetModuleBase64 fails, or it produces
 			//data that makes no sense, you may not be able to accurately correlated it to the module, but at least you have something
-			p_file << toStream{static_cast<uintptr_t>(p_address), num2stream_hex_fix};
+			push_hex_fix(p_file, static_cast<uintptr_t>(p_address));
 		}
 
 		//======== IMPORTANT ======== 
@@ -286,7 +324,6 @@ namespace
 	///	\warning Function names may not necessarily be correct. \n
 	///		Name is determined based on last know name prior to current address, which is not necessarily the same function as the one the address belongs to.
 	///		Use .map files to confirm names.
-	//
 	static void AppendStackAddr2List(HANDLE p_proc, uint64_t p_addr, std::list<StackBaseInfo>& p_list)
 	{
 		StackBaseInfo t_info;
@@ -323,7 +360,6 @@ namespace
 	///	\warning Function names may not necessarily be correct. \n
 	///		Name is determined based on last know name prior to current address, which is not necessarily the same function as the one the address belongs to.
 	///		Use .map files to confirm names.
-	//
 	static void AppendStackAddr2List(HANDLE p_proc, uint64_t p_addr, std::list<StackInfo>& p_list)
 	{
 		StackInfo t_info;
@@ -364,7 +400,6 @@ namespace
 	///			- Number of open handles
 	///			- Environment variables
 	///	\note Windows version
-	//
 	static LONG WINAPI WIN_exception_handler(EXCEPTION_POINTERS * ExceptionInfo)
 	{
 		if(!g_straceOpt.m_output_file.empty())
@@ -380,54 +415,19 @@ namespace
 			if(o_file.is_open())
 			{
 				std::string_view section_seperator = "-------- -------- -------- --------\n";
-				{
-					char8_t buff[16];
-					uintptr_t reSize;
-
-					////---- Date and Time
-					o_file	<< section_seperator;
-
-					reSize = to_chars(t_time.date.year, std::span<char8_t, 5>(buff, 5));
-					o_file.write(reinterpret_cast<const char*>(buff), reSize);
-					o_file.put('/');
-
-					reSize = to_chars(t_time.date.month, std::span<char8_t, 3>(buff, 3));
-					if(reSize < 2) o_file.put('0');
-					o_file.write(reinterpret_cast<const char*>(buff), reSize);
-					o_file.put('/');
-
-					reSize = to_chars(t_time.date.day, std::span<char8_t, 3>(buff, 3));
-					if(reSize < 2) o_file.put('0');
-					o_file.write(reinterpret_cast<const char*>(buff), reSize);
-					o_file.put(' ');
-
-					reSize = to_chars(t_time.time.hour, std::span<char8_t, 3>(buff, 3));
-					if(reSize < 2) o_file.put('0');
-					o_file.write(reinterpret_cast<const char*>(buff), reSize);
-					o_file.put(':');
-
-					reSize = to_chars(t_time.time.minute, std::span<char8_t, 3>(buff, 3));
-					if(reSize < 2) o_file.put('0');
-					o_file.write(reinterpret_cast<const char*>(buff), reSize);
-					o_file.put(':');
-
-					reSize = to_chars(t_time.time.second, std::span<char8_t, 3>(buff, 3));
-					if(reSize < 2) o_file.put('0');
-					o_file.write(reinterpret_cast<const char*>(buff), reSize);
-					o_file.put('.');
-
-					reSize = to_chars(t_time.time.msecond, std::span<char8_t, 5>(buff, 5));
-					if(reSize < 3) o_file.put('0');
-					if(reSize < 2) o_file.put('0');
-					o_file.write(reinterpret_cast<const char*>(buff), reSize);
-					o_file.put('\n');
-				}
+				o_file	<< section_seperator;
+				push_time(o_file, t_time);
 
 				//---- The reason of the crash see: https://msdn.microsoft.com/en-us/library/cc704588.aspx
-				o_file
-					<< "Exception:\t0x" << toStream{static_cast<uint32_t>(ExceptionInfo->ExceptionRecord->ExceptionCode), num2stream_hex_fix}
-					<< "\nAddress:\t0x" << toStream{reinterpret_cast<uint64_t>(ExceptionInfo->ExceptionRecord->ExceptionAddress), num2stream_hex_fix} << '\n';
+				o_file << "Exception:\t0x";
+				push_hex_fix(o_file, static_cast<uint32_t>(ExceptionInfo->ExceptionRecord->ExceptionCode));
+				o_file << "\nAddress:\t0x";
+				push_hex_fix(o_file, reinterpret_cast<uint64_t>(ExceptionInfo->ExceptionRecord->ExceptionAddress));
+				o_file.put('\n');
 
+				//commits current known data to file
+				//prevents from getting nothing if anything further causes a fatal terminate
+				o_file << std::flush;
 
 				//---- Moduie list
 				o_file	<< section_seperator
@@ -499,49 +499,68 @@ namespace
 				}
 
 				SymCleanup(t_proc); //frees resources allocated when SymInitialize was called
-				//======== END ======== 
-
+				//======== END ========
+				//commits current known data to file
+				//prevents from getting nothing if anything further causes a fatal terminate
+				o_file << std::flush;
 				
 				//---- Extra information
 				o_file << section_seperator;
-				o_file << "Proc:\t\t" << toStream{static_cast<uint32_t>(proc_ID)};
-				o_file << "\nThread:\t\t" << toStream{static_cast<uint32_t>(thread_ID)};
-				o_file << "\nProcDir:\t\"" << toStream{application_path()};
+				o_file << "Proc:\t\t";
+				push_dec(o_file, static_cast<uint32_t>(proc_ID));
+				o_file << "\nThread:\t\t";
+				push_dec(o_file, static_cast<uint32_t>(thread_ID));
+				o_file << "\nProcDir:\t\"";;
+				push_data(o_file, application_path().native());
+				
 				{
 					std::error_code ec;
-					o_file << "\"\nWorkDir:\t\"" << toStream{std::filesystem::current_path(ec)} << "\"\n";
+					o_file << "\nWorkDir:\t\"";
+					push_data(o_file, std::filesystem::current_path(ec).native());
+					o_file.write("\"\n", 2);
 				}
 
 				{
-					LPWSTR temp_str = GetCommandLineW(); // general purpose temporary string "Windows" version
-					if(temp_str)
+					const std::optional<core::os_string>& res = machine_name();
+					if(res.has_value())
 					{
-						o_file << "CommandLine: " << toStream{os_string_view{temp_str}} << '\n';				//The name of this machine
+						o_file	<< "Machine:\t\"";
+						push_data(o_file, res.value());
+						o_file.write("\"\n", 2);
 					}
 				}
 
-				o_file	<< "Machine:\t\"" << toStream{machine_name().value()} << "\"\n";
+				{
+					LPWSTR temp_str = GetCommandLineW();
+					if(temp_str)
+					{
+						o_file << "CommandLine: ";
+						push_data(o_file, os_string_view{temp_str});
+						o_file.put('\n');
+					}
+				}
 
 				{
 					DWORD hcount;
 					if(GetProcessHandleCount(GetCurrentProcess(), &hcount) == TRUE)
 					{
-						o_file << "Handles:\t" << toStream{static_cast<uint32_t>(hcount)} << '\n';					//Number of open handles (can be open files, network ports, etc.)
+						//Number of open handles (can be open files, network ports, etc.)
+						o_file << "Handles:\t";
+						push_dec(o_file, static_cast<uint32_t>(hcount));
+						o_file.put('\n');
 					}
 				}
 
 				o_file	<< section_seperator;
 				o_file	<< "Env:\n";
-				PrintEnv(o_file);													//Prints the environment variables at this moment
+				PrintEnv(o_file);			//Prints the environment variables at this moment
 
 				o_file	<< section_seperator;
 				o_file.close();
 			}
 		}
 
-//		return EXCEPTION_EXECUTE_HANDLER;		//This will exit without causing a mini-dump
-		return EXCEPTION_CONTINUE_SEARCH;		//This will exit, and still cause a mini-dump
-		//Note: Never use EXCEPTION_CONTINUE_EXECUTION, this will cause the application to loop in a perpetual crash
+		return EXCEPTION_CONTINUE_SEARCH;	//This will exit, and still cause a mini-dump
 	}
 } //namesapce
 
@@ -698,7 +717,6 @@ namespace core
 namespace
 {
 	///	\brief Used to store global sack trace options
-	//
 	class Stack_Trace_Options
 	{
 	public:
@@ -711,7 +729,6 @@ namespace
 	static uint8_t Except_stack[SIGSTKSZ];	//!< Used a stack for the exception handling
 
 	/// \brief Helper function to print environment variables
-	//
 	static void PrintEnv(std::ofstream& p_file)
 	{
 		char** current;
@@ -722,7 +739,6 @@ namespace
 	}
 
 	/// \brief Helper function to print the command line arguments
-	//
 	static void PrintCMD(std::ofstream& p_file)
 	{
 		std::ifstream p_in;
@@ -768,11 +784,10 @@ namespace
 	///			- the application address (which is different from the application base address)
 	///			- the next free address where modules can be loaded
 	///		however I'm not sure, this is not documented, take this information with a grain of salt.
-	//
 	static int EnumerateModules2List(struct dl_phdr_info *p_info, size_t /*p_size*/, void *p_context)
 	{
 		ModuleAddr t_entry;
-		std::list<ModuleAddr>* t_list = (std::list<ModuleAddr>*) p_context;
+		std::list<ModuleAddr>* t_list = reinterpret_cast<std::list<ModuleAddr>*>(p_context);
 
 		t_entry.m_addr = p_info->dlpi_addr;
 		//t_entry.m_size = ???;
@@ -788,11 +803,15 @@ namespace
 	///			- the application address (which is different from the application base address)
 	///			- the next free address where modules can be loaded
 	///		however I'm not sure, this is not documented, take this information with a grain of salt.
-	//
 	static int EnumerateModules2File(struct dl_phdr_info *p_info, size_t /*p_size*/, void *p_context)
 	{
-		std::ofstream* t_context = (std::ofstream*) p_context;
-		*(t_context) << toStream{reinterpret_cast<uintptr_t>(p_info->dlpi_addr)} /*<< ' ' << FORM_HEX8(BaseOfDll + ModuleSize)*/ << " \"" << p_info->dlpi_name << '\"' << '\n';
+		std::ofstream& tfile = *reinterpret_cast<std::ofstream*>(p_context);
+		push_hex_fix(tfile, reinterpret_cast<uintptr_t>(p_info->dlpi_addr));
+		//tfile.put(' ');
+		//push_hex_fix(tfile, BaseOfDll + ModuleSize);
+		tfile.write(" \"", 2);
+		push_data(tfile, os_string_view{p_info->dlpi_name});
+		tfile.write("\"\n", 2);
 		return 0;
 	}
 
@@ -802,7 +821,6 @@ namespace
 	///	\warning Function names may not necessarily be correct. \n
 	///		Name is determined based on last know name prior to current address, which is not necessarily the same function as the one the address belongs to.
 	///		Use .map files to confirm names.
-	//
 	static void print_function_addr(void* p_address, char* p_name, std::ofstream& p_file)
 	{
 		Dl_info t_info;
@@ -814,11 +832,13 @@ namespace
 		{
 			//prints it in the form of base address + offset ex: 0x0000123400+567
 			uintptr_t diff = reinterpret_cast<uintptr_t>(p_address) - reinterpret_cast<uintptr_t>(t_info.dli_fbase);
-			p_file << toStream{reinterpret_cast<uintptr_t>(t_info.dli_fbase), num2stream_hex_fix} << '+' << toStream{diff};
+			push_hex_fix(p_file, reinterpret_cast<uintptr_t>(t_info.dli_fbase));
+			p_file.put('+');
+			push_hex_fix(p_file, diff);
 		}
 		else
 		{
-			p_file << toStream{reinterpret_cast<uintptr_t>(p_address), num2stream_hex_fix};
+			push_hex_fix(p_file, reinterpret_cast<uintptr_t>(p_address));
 		}
 		
 		//do not forget to print the symbol name, if there is one
@@ -842,7 +862,6 @@ namespace
 	///			- Machine name
 	///			- Environment variables
 	///	\note Linux version
-	//
 	static void Linux_exception_handler(int sig, siginfo_t *siginfo, void *context)
 	{
 		static bool b_has_sig = false;
@@ -873,48 +892,9 @@ namespace
 				if(o_file.is_open())
 				{
 					std::string_view section_seperator = "-------- -------- -------- --------\n";
-					{
-						char8_t buff[16];
-						uintptr_t reSize;
 
-						////---- Date and Time
-						o_file << section_seperator;
-
-						reSize = to_chars(t_time.date.year, std::span<char8_t, 5>(buff, 5));
-						o_file.write(reinterpret_cast<const char*>(buff), reSize);
-						o_file.put('/');
-
-						reSize = to_chars(t_time.date.month, std::span<char8_t, 3>(buff, 3));
-						if(reSize < 2) o_file.put('0');
-						o_file.write(reinterpret_cast<const char*>(buff), reSize);
-						o_file.put('/');
-
-						reSize = to_chars(t_time.date.day, std::span<char8_t, 3>(buff, 3));
-						if(reSize < 2) o_file.put('0');
-						o_file.write(reinterpret_cast<const char*>(buff), reSize);
-						o_file.put(' ');
-
-						reSize = to_chars(t_time.time.hour, std::span<char8_t, 3>(buff, 3));
-						if(reSize < 2) o_file.put('0');
-						o_file.write(reinterpret_cast<const char*>(buff), reSize);
-						o_file.put(':');
-
-						reSize = to_chars(t_time.time.minute, std::span<char8_t, 3>(buff, 3));
-						if(reSize < 2) o_file.put('0');
-						o_file.write(reinterpret_cast<const char*>(buff), reSize);
-						o_file.put(':');
-
-						reSize = to_chars(t_time.time.second, std::span<char8_t, 3>(buff, 3));
-						if(reSize < 2) o_file.put('0');
-						o_file.write(reinterpret_cast<const char*>(buff), reSize);
-						o_file.put('.');
-
-						reSize = to_chars(t_time.time.msecond, std::span<char8_t, 5>(buff, 5));
-						if(reSize < 3) o_file.put('0');
-						if(reSize < 2) o_file.put('0');
-						o_file.write(reinterpret_cast<const char*>(buff), reSize);
-						o_file.put('\n');
-					}
+					o_file << section_seperator;
+					push_time(o_file, t_time);
 
 					ucontext_t* t_context = (ucontext_t*) context;
 					void* t_criticalAddr;	// the address were the crash occurred
@@ -936,16 +916,25 @@ namespace
 						t_criticalAddr = nullptr;
 					}
 
-					o_file	<< "Sig:\t\t"	<< toStream{static_cast<uint32_t>(sig), num2stream_hex_fix} << '\n'	//the signal that caused the crash
-							<< "Code:\t\t"	<< toStream{static_cast<uint32_t>(siginfo->si_code), num2stream_hex_fix} << '\n';	//the additional code associated with the signal
-					//for example the type of floating point error
+					o_file	<< "Sig:\t\t0x";
+					push_hex_fix(o_file, static_cast<uint32_t>(sig)); //the signal that caused the crash
+					o_file	<< "\nCode:\t\t0x";
+					push_hex_fix(o_file, static_cast<uint32_t>(siginfo->si_code));	//the additional code associated with the signal
+					o_file.put('\n');
+																					//for example the type of floating point error
 					//see: http://linux.die.net/man/2/sigaction
 
 					//print the address where the problem occurred, if there is one
 					if(t_criticalAddr)
 					{
-						o_file	<< "Address:\t"	<< toStream{reinterpret_cast<uintptr_t>(t_criticalAddr), num2stream_hex_fix} << '\n';
+						o_file	<< "Address:\t0x";
+						push_hex_fix(o_file, reinterpret_cast<uintptr_t>(t_criticalAddr));
+						o_file.put('\n');
 					}
+
+					//commits current known data to file
+					//prevents from getting nothing if anything further causes a fatal terminate
+					o_file << std::flush;
 
 					o_file	<< section_seperator
 							<< "Modules:" << '\n';
@@ -1014,13 +1003,18 @@ namespace
 						}
 					}
 
+					//commits current known data to file
+					//prevents from getting nothing if anything further causes a fatal terminate
+					o_file << std::flush;
+
 					uint32_t	proc_ID		= getpid();
 					pthread_t	thread_ID	= pthread_self();
 
-					o_file
-						<< section_seperator
-						<< "Proc:\t\t"		<< toStream{proc_ID} << '\n'
-						<< "Thread:\t\t"	<< toStream{thread_ID};
+					o_file << section_seperator;
+					o_file << "Proc:\t\t";
+					push_dec(o_file, static_cast<uint32_t>(proc_ID));
+					o_file << "\nThread:\t\t";
+					push_dec(o_file, static_cast<uint32_t>(thread_ID));
 
 
 					{
@@ -1035,10 +1029,20 @@ namespace
 
 					{
 						std::error_code ec;
-						o_file << "\nWorkDir:\t\"" << toStream{std::filesystem::current_path(ec)} << "\"\n";
+						o_file << "\nWorkDir:\t\"";
+						push_data(o_file, std::filesystem::current_path(ec).native());
+						o_file.write("\"\n", 2);
 					}
 
-					o_file	<< "Machine:\t\"" << toStream{machine_name().value()} << "\"\n";
+					{
+						const std::optional<core::os_string>& res = machine_name();
+						if(res.has_value())
+						{
+							o_file	<< "Machine:\t\"";
+							push_data(o_file, res.value());
+							o_file.write("\"\n", 2);
+						}
+					}
 
 					/*
 						TODO: put file descriptor count here
@@ -1074,7 +1078,6 @@ bool register_crash_trace(const std::filesystem::path& p_output_file)
 	{
 		g_straceOpt.m_output_file = (core::application_path().parent_path() / p_output_file).lexically_normal();
 	}
-
 
 	//======== IMPORTANT ========
 	//this sets up an alternative stack to run on when we are doing our stack trace

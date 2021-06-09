@@ -39,6 +39,8 @@
 
 #include <MathLib/HyperComplex/quaternionRotator.hpp>
 
+#include <TestUtils/string_streamers.hpp>
+
 using core::toStream;
 
 template<typename T>

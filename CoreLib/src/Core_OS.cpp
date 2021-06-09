@@ -48,13 +48,13 @@ bool set_env(const core::os_string& p_key, const core::os_string& p_value)
 	return (SetEnvironmentVariableW(p_key.c_str(), p_value.c_str()) != FALSE);
 }
 
-env_result get_env(const core::os_string& p_key)
+std::optional<core::os_string> get_env(const core::os_string& p_key)
 {
 	DWORD size;
 	size = GetEnvironmentVariableW(p_key.c_str(), nullptr, 0);
 	if(size == 0)
 	{
-		return false;
+		return {};
 	}
 	os_string outp;
 	outp.resize(size - 1);
@@ -62,7 +62,7 @@ env_result get_env(const core::os_string& p_key)
 	{
 		return core::os_string{std::move(outp)};
 	}
-	return false;
+	return {};
 }
 
 bool delete_env(const core::os_string& p_key)
@@ -70,7 +70,7 @@ bool delete_env(const core::os_string& p_key)
 	return SetEnvironmentVariableW(reinterpret_cast<const wchar_t*>(p_key.c_str()), L"") != FALSE;
 }
 
-env_result machine_name()
+std::optional<core::os_string> machine_name()
 {
 	constexpr uintptr_t maxSize = MAX_COMPUTERNAME_LENGTH + 1;
 	std::array<os_char, maxSize> buff;
@@ -80,7 +80,7 @@ env_result machine_name()
 		return core::os_string{buff.data(), static_cast<uintptr_t>(size)};
 	}
 
-	return false;
+	return {};
 }
 
 std::filesystem::path application_path()
@@ -125,12 +125,12 @@ bool set_env(const core::os_string& p_key, const core::os_string& p_value)
 	return setenv(p_key.c_str(), p_value.c_str(), 1) == 0;
 }
 
-env_result get_env(const core::os_string& p_key)
+std::optional<core::os_string> get_env(const core::os_string& p_key)
 {
 	const char* const retvar = getenv(p_key.c_str());
 	if(retvar == nullptr)
 	{
-		return false;
+		return {};
 	}
 	return core::os_string{retvar};
 }
@@ -140,7 +140,7 @@ bool delete_env(const core::os_string& p_key)
 	return unsetenv(p_key.c_str()) == 0;
 }
 
-env_result machine_name()
+std::optional<core::os_string> machine_name()
 {
 	constexpr uintptr_t host_name_max = 64; //https://man7.org/linux/man-pages/man2/gethostname.2.html
 	std::array<os_char, host_name_max + 1> buff;
@@ -150,7 +150,7 @@ env_result machine_name()
 		return core::os_string{buff.data()};
 	}
 
-	return false;
+	return {};
 }
 
 std::filesystem::path application_path()
