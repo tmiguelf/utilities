@@ -37,6 +37,7 @@
 
 
 #include <CoreLib/Core_Alternate.hpp>
+#include "core_wchar_alias.hpp"
 
 /// \n
 namespace core
@@ -229,18 +230,7 @@ namespace core
 	}
 	[[nodiscard]] inline bool is_uint(std::basic_string_view<wchar_t > p_str)
 	{
-		static_assert(
-			((sizeof(wchar_t) == sizeof(char32_t)) && (alignof(wchar_t) == alignof(char32_t))) || 
-			((sizeof(wchar_t) == sizeof(char16_t)) && (alignof(wchar_t) == alignof(char16_t))));
-
-		if constexpr(sizeof(wchar_t) == sizeof(char16_t))
-		{
-			return _p::is_uint(std::u16string_view{reinterpret_cast<const char16_t*>(p_str.data()), p_str.size()});
-		}
-		else if constexpr(sizeof(wchar_t) == sizeof(char32_t))
-		{
-			return _p::is_uint(std::u32string_view{reinterpret_cast<const char32_t*>(p_str.data()), p_str.size()});
-		}
+		return _p::is_uint(std::basic_string_view<wchar_alias>{reinterpret_cast<const wchar_alias*>(p_str.data()), p_str.size()});
 	}
 
 	[[nodiscard]] inline bool is_int(std::basic_string_view<char8_t > p_str) { return _p::is_int(p_str); }
@@ -254,18 +244,7 @@ namespace core
 
 	[[nodiscard]] inline bool is_int(std::basic_string_view<wchar_t > p_str)
 	{
-		static_assert(
-			((sizeof(wchar_t) == sizeof(char32_t)) && (alignof(wchar_t) == alignof(char32_t))) || 
-			((sizeof(wchar_t) == sizeof(char16_t)) && (alignof(wchar_t) == alignof(char16_t))));
-
-		if constexpr(sizeof(wchar_t) == sizeof(char16_t))
-		{
-			return _p::is_int(std::u16string_view{reinterpret_cast<const char16_t*>(p_str.data()), p_str.size()});
-		}
-		else if constexpr(sizeof(wchar_t) == sizeof(char32_t))
-		{
-			return _p::is_int(std::u32string_view{reinterpret_cast<const char32_t*>(p_str.data()), p_str.size()});
-		}
+		return _p::is_int(std::basic_string_view<wchar_alias>{reinterpret_cast<const wchar_alias*>(p_str.data()), p_str.size()});
 	}
 
 	[[nodiscard]] inline bool is_hex(std::basic_string_view<char8_t > p_str) { return _p::is_hex(p_str); }
@@ -279,18 +258,7 @@ namespace core
 
 	[[nodiscard]] inline bool is_hex(std::basic_string_view<wchar_t > p_str)
 	{
-		static_assert(
-			((sizeof(wchar_t) == sizeof(char32_t)) && (alignof(wchar_t) == alignof(char32_t))) || 
-			((sizeof(wchar_t) == sizeof(char16_t)) && (alignof(wchar_t) == alignof(char16_t))));
-
-		if constexpr(sizeof(wchar_t) == sizeof(char16_t))
-		{
-			return _p::is_hex(std::u16string_view{reinterpret_cast<const char16_t*>(p_str.data()), p_str.size()});
-		}
-		else if constexpr(sizeof(wchar_t) == sizeof(char32_t))
-		{
-			return _p::is_hex(std::u32string_view{reinterpret_cast<const char32_t*>(p_str.data()), p_str.size()});
-		}
+		return _p::is_hex(std::basic_string_view<wchar_alias>{reinterpret_cast<const wchar_alias*>(p_str.data()), p_str.size()});
 	}
 
 
@@ -312,18 +280,7 @@ namespace core
 	template<char_conv_dec_supported_c num_T>
 	[[nodiscard]] inline from_chars_result<num_T> from_chars(std::basic_string_view<wchar_t > p_str)
 	{
-		static_assert(
-			((sizeof(wchar_t) == sizeof(char32_t)) && (alignof(wchar_t) == alignof(char32_t))) || 
-			((sizeof(wchar_t) == sizeof(char16_t)) && (alignof(wchar_t) == alignof(char16_t))));
-
-		if constexpr(sizeof(wchar_t) == sizeof(char16_t))
-		{
-			return _p::from_chars<num_T>(std::u16string_view{reinterpret_cast<const char16_t*>(p_str.data()), p_str.size()});
-		}
-		else if constexpr(sizeof(wchar_t) == sizeof(char32_t))
-		{
-			return _p::from_chars<num_T>(std::u32string_view{reinterpret_cast<const char32_t*>(p_str.data()), p_str.size()});
-		}
+		return _p::from_chars<num_T>(std::basic_string_view<wchar_alias>{reinterpret_cast<const wchar_alias*>(p_str.data()), p_str.size()});
 	}
 
 
@@ -345,18 +302,7 @@ namespace core
 	template<char_conv_hex_supported_c num_T>
 	[[nodiscard]] from_chars_result<num_T> from_chars_hex(std::basic_string_view<wchar_t > p_str)
 	{
-		static_assert(
-			((sizeof(wchar_t) == sizeof(char32_t)) && (alignof(wchar_t) == alignof(char32_t))) || 
-			((sizeof(wchar_t) == sizeof(char16_t)) && (alignof(wchar_t) == alignof(char16_t))));
-
-		if constexpr(sizeof(wchar_t) == sizeof(char16_t))
-		{
-			return _p::from_chars_hex<num_T>(std::u16string_view{reinterpret_cast<const char16_t*>(p_str.data()), p_str.size()});
-		}
-		else if constexpr(sizeof(wchar_t) == sizeof(char32_t))
-		{
-			return _p::from_chars_hex<num_T>(std::u32string_view{reinterpret_cast<const char32_t*>(p_str.data()), p_str.size()});
-		}
+		return _p::from_chars_hex<num_T>(std::basic_string_view<wchar_alias>{reinterpret_cast<const wchar_alias*>(p_str.data()), p_str.size()});
 	}
 
 	template <char_conv_dec_supported_c num_T>
@@ -378,19 +324,8 @@ namespace core
 	template <char_conv_dec_supported_c num_T>
 	[[nodiscard]] inline uintptr_t to_chars(num_T p_val, std::span<wchar_t , to_chars_dec_max_digits_v<num_T>> p_str)
 	{
-		static_assert(
-			((sizeof(wchar_t) == sizeof(char32_t)) && (alignof(wchar_t) == alignof(char32_t))) || 
-			((sizeof(wchar_t) == sizeof(char16_t)) && (alignof(wchar_t) == alignof(char16_t))));
-
 		constexpr uintptr_t size = to_chars_dec_max_digits_v<num_T>;
-		if constexpr(sizeof(wchar_t) == sizeof(char16_t))
-		{
-			return _p::to_chars(p_val, std::span<char16_t, size>{reinterpret_cast<char16_t*>(p_str.data()), size});
-		}
-		else if constexpr(sizeof(wchar_t) == sizeof(char32_t))
-		{
-			return _p::to_chars(p_val, std::span<char32_t, size>{reinterpret_cast<char32_t*>(p_str.data()), size});
-		}
+		return _p::to_chars(p_val, std::span<wchar_alias, size>{reinterpret_cast<wchar_alias*>(p_str.data()), size});
 	}
 
 
@@ -413,19 +348,8 @@ namespace core
 	template <char_conv_hex_supported_c num_T>
 	[[nodiscard]] inline uintptr_t to_chars_hex(num_T p_val, std::span<wchar_t, to_chars_hex_max_digits_v<num_T>> p_str)
 	{
-		static_assert(
-			((sizeof(wchar_t) == sizeof(char32_t)) && (alignof(wchar_t) == alignof(char32_t))) || 
-			((sizeof(wchar_t) == sizeof(char16_t)) && (alignof(wchar_t) == alignof(char16_t))));
-
 		constexpr uintptr_t size = to_chars_hex_max_digits_v<num_T>;
-		if constexpr(sizeof(wchar_t) == sizeof(char16_t))
-		{
-			return _p::to_chars_hex(p_val, std::span<char16_t, size>{reinterpret_cast<char16_t*>(p_str.data()), size});
-		}
-		else if constexpr(sizeof(wchar_t) == sizeof(char32_t))
-		{
-			return _p::to_chars_hex(p_val, std::span<char32_t, size>{reinterpret_cast<char32_t*>(p_str.data()), size});
-		}
+		return _p::to_chars_hex(p_val, std::span<wchar_alias, size>{reinterpret_cast<wchar_alias*>(p_str.data()), size});
 	}
 
 
@@ -448,19 +372,8 @@ namespace core
 	template <char_conv_hex_supported_c num_T>
 	inline void to_chars_hex_fix(num_T p_val, std::span<wchar_t , to_chars_hex_max_digits_v<num_T>> p_str)
 	{
-		static_assert(
-			((sizeof(wchar_t) == sizeof(char32_t)) && (alignof(wchar_t) == alignof(char32_t))) || 
-			((sizeof(wchar_t) == sizeof(char16_t)) && (alignof(wchar_t) == alignof(char16_t))));
-
-		constexpr uintptr_t size = to_chars_hex_max_digits_v<num_T>;
-		if constexpr(sizeof(wchar_t) == sizeof(char16_t))
-		{
-			_p::to_chars_hex(p_val, std::span<char16_t, size>{reinterpret_cast<char16_t*>(p_str.data()), size});
-		}
-		else if constexpr(sizeof(wchar_t) == sizeof(char32_t))
-		{
-			_p::to_chars_hex(p_val, std::span<char32_t, size>{reinterpret_cast<char32_t*>(p_str.data()), size});
-		}
+		constexpr uintptr_t size = to_chars_dec_max_digits_v<num_T>;
+		_p::to_chars_hex_fix(p_val, std::span<wchar_alias, size>{reinterpret_cast<wchar_alias*>(p_str.data()), size});
 	}
 
 

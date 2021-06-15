@@ -83,6 +83,7 @@
     <ClInclude Include="include\CoreLib\string\core_string_encoding.hpp" />
     <ClInclude Include="include\CoreLib\string\core_string_misc.hpp" />
     <ClInclude Include="include\CoreLib\string\core_string_numeric.hpp" />
+    <ClInclude Include="include\CoreLib\string\core_wchar_alias.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="CoreLib.import.props" />
