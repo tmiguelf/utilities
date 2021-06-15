@@ -192,7 +192,7 @@ private:
 template<char_conv_dec_supported_c num_T>
 void num2stream(std::ostream& p_stream, const num_T& p_data)
 {
-	constexpr uintptr_t buffSize = to_char_dec_max_digits_v<num_T>;
+	constexpr uintptr_t buffSize = to_chars_dec_max_digits_v<num_T>;
 	char8_t buff[buffSize];
 	p_stream.write(reinterpret_cast<const char*>(buff), to_chars(p_data, buff));
 }
@@ -200,7 +200,7 @@ void num2stream(std::ostream& p_stream, const num_T& p_data)
 template<char_conv_hex_supported_c num_T>
 void num2stream_hex(std::ostream& p_stream, const num_T& p_data)
 {
-	constexpr uintptr_t buffSize = to_char_hex_max_digits_v<num_T>;
+	constexpr uintptr_t buffSize = to_chars_hex_max_digits_v<num_T>;
 	char8_t buff[buffSize];
 	p_stream.write(reinterpret_cast<const char*>(buff), to_chars_hex(p_data, buff));
 }
@@ -208,7 +208,7 @@ void num2stream_hex(std::ostream& p_stream, const num_T& p_data)
 template<char_conv_hex_supported_c num_T>
 void num2stream_hex_fix(std::ostream& p_stream, const num_T& p_data)
 {
-	constexpr uintptr_t buffSize = to_char_hex_max_digits_v<num_T>;
+	constexpr uintptr_t buffSize = to_chars_hex_max_digits_v<num_T>;
 	char8_t buff[buffSize];
 	to_chars_hex_fix(p_data, buff);
 	p_stream.write(reinterpret_cast<const char*>(buff), buffSize);

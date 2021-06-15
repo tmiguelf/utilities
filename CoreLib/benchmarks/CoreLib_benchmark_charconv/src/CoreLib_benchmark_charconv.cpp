@@ -646,7 +646,7 @@ static void std_to_chars(benchmark::State& state)
 	const std::vector<num_T>& testList = get_num<num_T>();
 	uintptr_t index = 0;
 
-	constexpr uintptr_t buffSize = core::to_char_dec_max_digits_v<num_T>;
+	constexpr uintptr_t buffSize = core::to_chars_dec_max_digits_v<num_T>;
 	std::array<char8_t, buffSize> buffer;
 
 	for (auto _ : state)
@@ -669,7 +669,7 @@ static void core_to_chars(benchmark::State& state)
 	const std::vector<num_T>& testList = get_num<num_T>();
 	uintptr_t index = 0;
 
-	constexpr uintptr_t buffSize = core::to_char_dec_max_digits_v<num_T>;
+	constexpr uintptr_t buffSize = core::to_chars_dec_max_digits_v<num_T>;
 	std::array<char8_t, buffSize> buffer;
 
 	for (auto _ : state)
@@ -691,7 +691,7 @@ static void std_to_hex_chars(benchmark::State& state)
 	const std::vector<num_T>& testList = get_num_hex<num_T>();
 	uintptr_t index = 0;
 
-	constexpr uintptr_t buffSize = core::to_char_hex_max_digits_v<num_T>;
+	constexpr uintptr_t buffSize = core::to_chars_hex_max_digits_v<num_T>;
 	std::array<char8_t, buffSize> buffer;
 
 	for (auto _ : state)
@@ -714,7 +714,7 @@ static void core_to_hex_chars(benchmark::State& state)
 	const std::vector<num_T>& testList = get_num_hex<num_T>();
 	uintptr_t index = 0;
 
-	constexpr uintptr_t buffSize = core::to_char_hex_max_digits_v<num_T>;
+	constexpr uintptr_t buffSize = core::to_chars_hex_max_digits_v<num_T>;
 	std::array<char8_t, buffSize> buffer;
 
 	for (auto _ : state)
@@ -735,7 +735,7 @@ static void core_to_hex_chars_fix(benchmark::State& state)
 	const std::vector<num_T>& testList = get_num_hex<num_T>();
 	uintptr_t index = 0;
 
-	constexpr uintptr_t buffSize = core::to_char_hex_max_digits_v<num_T>;
+	constexpr uintptr_t buffSize = core::to_chars_hex_max_digits_v<num_T>;
 	std::array<char8_t, buffSize> buffer;
 
 	for (auto _ : state)

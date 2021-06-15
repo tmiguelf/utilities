@@ -315,11 +315,11 @@ namespace core
 		}
 
 		template <typename char_T, typename num_T>
-		static inline uintptr_t uint2dec(num_T p_val, std::span<char_T, to_char_dec_max_digits_v<num_T>> p_str)
+		static inline uintptr_t uint2dec(num_T p_val, std::span<char_T, to_chars_dec_max_digits_v<num_T>> p_str)
 		{
 			uint8_t		t_rem;
 
-			std::array<char_T, to_char_dec_max_digits_v<num_T>> t_buff;
+			std::array<char_T, to_chars_dec_max_digits_v<num_T>> t_buff;
 			char_T* const	last	= t_buff.data() + t_buff.size();
 			char_T*			pivot	= last;
 
@@ -345,7 +345,7 @@ namespace core
 		}
 
 		template <typename char_T, typename num_T>
-		static inline uintptr_t int2dec(num_T p_val, std::span<char_T, to_char_dec_max_digits_v<num_T>> p_str)
+		static inline uintptr_t int2dec(num_T p_val, std::span<char_T, to_chars_dec_max_digits_v<num_T>> p_str)
 		{
 			if(p_val < 0)
 			{
@@ -353,7 +353,7 @@ namespace core
 
 				uint8_t		t_rem;
 
-				std::array<char_T, to_char_dec_max_digits_v<num_T>> t_buff;
+				std::array<char_T, to_chars_dec_max_digits_v<num_T>> t_buff;
 				char_T* const	last	= t_buff.data() + t_buff.size();
 				char_T*			pivot	= last;
 
@@ -382,7 +382,7 @@ namespace core
 
 
 		template <typename char_T, typename num_T>
-		static inline uintptr_t uint2hex(num_T p_val, std::span<char_T, to_char_hex_max_digits_v<num_T>> p_str)
+		static inline uintptr_t uint2hex(num_T p_val, std::span<char_T, to_chars_hex_max_digits_v<num_T>> p_str)
 		{
 			uint8_t index;
 			if(p_val)
@@ -455,7 +455,7 @@ namespace core
 
 
 		template<typename Fp_t>
-		static inline uintptr_t fp2dec(Fp_t p_val, std::span<char8_t, to_char_dec_max_digits_v<Fp_t>> p_out)
+		static inline uintptr_t fp2dec(Fp_t p_val, std::span<char8_t, to_chars_dec_max_digits_v<Fp_t>> p_out)
 		{
 			char* start = reinterpret_cast<char*>(p_out.data());
 			std::to_chars_result res = std::to_chars(start, start + p_out.size(), p_val);
@@ -468,9 +468,9 @@ namespace core
 		}
 
 		template<typename char_T, typename Fp_t>
-		static inline uintptr_t fp2dec(Fp_t p_val, std::span<char_T, to_char_dec_max_digits_v<Fp_t>> p_out)
+		static inline uintptr_t fp2dec(Fp_t p_val, std::span<char_T, to_chars_dec_max_digits_v<Fp_t>> p_out)
 		{
-			std::array<char8_t, to_char_dec_max_digits_v<Fp_t>> buff;
+			std::array<char8_t, to_chars_dec_max_digits_v<Fp_t>> buff;
 			uintptr_t ret = fp2dec<Fp_t>(p_val, buff);
 			for(uintptr_t i = 0; i < ret; ++i)
 			{
@@ -489,7 +489,7 @@ namespace core
 			struct help_to_chars<num_T>
 			{
 				template<typename char_T>
-				static inline uintptr_t to_chars(num_T p_val, std::span<char_T, to_char_dec_max_digits_v<num_T>> p_str)
+				static inline uintptr_t to_chars(num_T p_val, std::span<char_T, to_chars_dec_max_digits_v<num_T>> p_str)
 				{
 					return fp2dec(p_val, p_str);
 				}
@@ -499,7 +499,7 @@ namespace core
 			struct help_to_chars<num_T>
 			{
 				template<typename char_T>
-				static inline uintptr_t to_chars(num_T p_val, std::span<char_T, to_char_dec_max_digits_v<num_T>> p_str)
+				static inline uintptr_t to_chars(num_T p_val, std::span<char_T, to_chars_dec_max_digits_v<num_T>> p_str)
 				{
 					return int2dec(p_val, p_str);
 				}
@@ -509,7 +509,7 @@ namespace core
 			struct help_to_chars<num_T>
 			{
 				template<typename char_T>
-				static inline uintptr_t to_chars(num_T p_val, std::span<char_T, to_char_dec_max_digits_v<num_T>> p_str)
+				static inline uintptr_t to_chars(num_T p_val, std::span<char_T, to_chars_dec_max_digits_v<num_T>> p_str)
 				{
 					return uint2dec(p_val, p_str);
 				}
@@ -570,20 +570,20 @@ namespace core
 
 
 		template <_p::is_internal_charconv_c char_T, char_conv_dec_supported_c num_T>
-		[[nodiscard]] uintptr_t to_chars(num_T p_val, std::span<char_T, to_char_dec_max_digits_v<num_T>> p_str)
+		[[nodiscard]] uintptr_t to_chars(num_T p_val, std::span<char_T, to_chars_dec_max_digits_v<num_T>> p_str)
 		{
 			return _p::help_to_chars<num_T>::to_chars(p_val, p_str);
 		}
 
 
 		template <_p::is_internal_charconv_c char_T, char_conv_hex_supported_c num_T>
-		[[nodiscard]] uintptr_t to_chars_hex(num_T p_val, std::span<char_T, to_char_hex_max_digits_v<num_T>> p_str)
+		[[nodiscard]] uintptr_t to_chars_hex(num_T p_val, std::span<char_T, to_chars_hex_max_digits_v<num_T>> p_str)
 		{
 			return _p::uint2hex(p_val, p_str);
 		}
 
 		template <_p::is_internal_charconv_c char_T, char_conv_hex_supported_c num_T>
-		void to_chars_hex_fix(num_T p_val, std::span<char_T, to_char_hex_max_digits_v<num_T>> p_str)
+		void to_chars_hex_fix(num_T p_val, std::span<char_T, to_chars_hex_max_digits_v<num_T>> p_str)
 		{
 			_p::uint2hex_fix(p_val, p_str);
 		}
@@ -657,71 +657,71 @@ namespace core
 		template from_chars_result<uint8_t > from_chars_hex<uint8_t , char32_t>(std::basic_string_view<char32_t>);
 
 
-		template uintptr_t to_chars(uint8_t    , std::span<char8_t, to_char_dec_max_digits_v<uint8_t    >>);
-		template uintptr_t to_chars(uint16_t   , std::span<char8_t, to_char_dec_max_digits_v<uint16_t   >>);
-		template uintptr_t to_chars(uint32_t   , std::span<char8_t, to_char_dec_max_digits_v<uint32_t   >>);
-		template uintptr_t to_chars(uint64_t   , std::span<char8_t, to_char_dec_max_digits_v<uint64_t   >>);
-		template uintptr_t to_chars(int8_t     , std::span<char8_t, to_char_dec_max_digits_v<int8_t     >>);
-		template uintptr_t to_chars(int16_t    , std::span<char8_t, to_char_dec_max_digits_v<int16_t    >>);
-		template uintptr_t to_chars(int32_t    , std::span<char8_t, to_char_dec_max_digits_v<int32_t    >>);
-		template uintptr_t to_chars(int64_t    , std::span<char8_t, to_char_dec_max_digits_v<int64_t    >>);
-		template uintptr_t to_chars(float      , std::span<char8_t, to_char_dec_max_digits_v<float      >>);
-		template uintptr_t to_chars(double     , std::span<char8_t, to_char_dec_max_digits_v<double     >>);
-		template uintptr_t to_chars(long double, std::span<char8_t, to_char_dec_max_digits_v<long double>>);
+		template uintptr_t to_chars(uint8_t    , std::span<char8_t, to_chars_dec_max_digits_v<uint8_t    >>);
+		template uintptr_t to_chars(uint16_t   , std::span<char8_t, to_chars_dec_max_digits_v<uint16_t   >>);
+		template uintptr_t to_chars(uint32_t   , std::span<char8_t, to_chars_dec_max_digits_v<uint32_t   >>);
+		template uintptr_t to_chars(uint64_t   , std::span<char8_t, to_chars_dec_max_digits_v<uint64_t   >>);
+		template uintptr_t to_chars(int8_t     , std::span<char8_t, to_chars_dec_max_digits_v<int8_t     >>);
+		template uintptr_t to_chars(int16_t    , std::span<char8_t, to_chars_dec_max_digits_v<int16_t    >>);
+		template uintptr_t to_chars(int32_t    , std::span<char8_t, to_chars_dec_max_digits_v<int32_t    >>);
+		template uintptr_t to_chars(int64_t    , std::span<char8_t, to_chars_dec_max_digits_v<int64_t    >>);
+		template uintptr_t to_chars(float      , std::span<char8_t, to_chars_dec_max_digits_v<float      >>);
+		template uintptr_t to_chars(double     , std::span<char8_t, to_chars_dec_max_digits_v<double     >>);
+		template uintptr_t to_chars(long double, std::span<char8_t, to_chars_dec_max_digits_v<long double>>);
 
-		template uintptr_t to_chars(uint8_t    , std::span<char16_t, to_char_dec_max_digits_v<uint8_t    >>);
-		template uintptr_t to_chars(uint16_t   , std::span<char16_t, to_char_dec_max_digits_v<uint16_t   >>);
-		template uintptr_t to_chars(uint32_t   , std::span<char16_t, to_char_dec_max_digits_v<uint32_t   >>);
-		template uintptr_t to_chars(uint64_t   , std::span<char16_t, to_char_dec_max_digits_v<uint64_t   >>);
-		template uintptr_t to_chars(int8_t     , std::span<char16_t, to_char_dec_max_digits_v<int8_t     >>);
-		template uintptr_t to_chars(int16_t    , std::span<char16_t, to_char_dec_max_digits_v<int16_t    >>);
-		template uintptr_t to_chars(int32_t    , std::span<char16_t, to_char_dec_max_digits_v<int32_t    >>);
-		template uintptr_t to_chars(int64_t    , std::span<char16_t, to_char_dec_max_digits_v<int64_t    >>);
-		template uintptr_t to_chars(float      , std::span<char16_t, to_char_dec_max_digits_v<float      >>);
-		template uintptr_t to_chars(double     , std::span<char16_t, to_char_dec_max_digits_v<double     >>);
-		template uintptr_t to_chars(long double, std::span<char16_t, to_char_dec_max_digits_v<long double>>);
+		template uintptr_t to_chars(uint8_t    , std::span<char16_t, to_chars_dec_max_digits_v<uint8_t    >>);
+		template uintptr_t to_chars(uint16_t   , std::span<char16_t, to_chars_dec_max_digits_v<uint16_t   >>);
+		template uintptr_t to_chars(uint32_t   , std::span<char16_t, to_chars_dec_max_digits_v<uint32_t   >>);
+		template uintptr_t to_chars(uint64_t   , std::span<char16_t, to_chars_dec_max_digits_v<uint64_t   >>);
+		template uintptr_t to_chars(int8_t     , std::span<char16_t, to_chars_dec_max_digits_v<int8_t     >>);
+		template uintptr_t to_chars(int16_t    , std::span<char16_t, to_chars_dec_max_digits_v<int16_t    >>);
+		template uintptr_t to_chars(int32_t    , std::span<char16_t, to_chars_dec_max_digits_v<int32_t    >>);
+		template uintptr_t to_chars(int64_t    , std::span<char16_t, to_chars_dec_max_digits_v<int64_t    >>);
+		template uintptr_t to_chars(float      , std::span<char16_t, to_chars_dec_max_digits_v<float      >>);
+		template uintptr_t to_chars(double     , std::span<char16_t, to_chars_dec_max_digits_v<double     >>);
+		template uintptr_t to_chars(long double, std::span<char16_t, to_chars_dec_max_digits_v<long double>>);
 
-		template uintptr_t to_chars(uint8_t    , std::span<char32_t, to_char_dec_max_digits_v<uint8_t    >>);
-		template uintptr_t to_chars(uint16_t   , std::span<char32_t, to_char_dec_max_digits_v<uint16_t   >>);
-		template uintptr_t to_chars(uint32_t   , std::span<char32_t, to_char_dec_max_digits_v<uint32_t   >>);
-		template uintptr_t to_chars(uint64_t   , std::span<char32_t, to_char_dec_max_digits_v<uint64_t   >>);
-		template uintptr_t to_chars(int8_t     , std::span<char32_t, to_char_dec_max_digits_v<int8_t     >>);
-		template uintptr_t to_chars(int16_t    , std::span<char32_t, to_char_dec_max_digits_v<int16_t    >>);
-		template uintptr_t to_chars(int32_t    , std::span<char32_t, to_char_dec_max_digits_v<int32_t    >>);
-		template uintptr_t to_chars(int64_t    , std::span<char32_t, to_char_dec_max_digits_v<int64_t    >>);
-		template uintptr_t to_chars(float      , std::span<char32_t, to_char_dec_max_digits_v<float      >>);
-		template uintptr_t to_chars(double     , std::span<char32_t, to_char_dec_max_digits_v<double     >>);
-		template uintptr_t to_chars(long double, std::span<char32_t, to_char_dec_max_digits_v<long double>>);
+		template uintptr_t to_chars(uint8_t    , std::span<char32_t, to_chars_dec_max_digits_v<uint8_t    >>);
+		template uintptr_t to_chars(uint16_t   , std::span<char32_t, to_chars_dec_max_digits_v<uint16_t   >>);
+		template uintptr_t to_chars(uint32_t   , std::span<char32_t, to_chars_dec_max_digits_v<uint32_t   >>);
+		template uintptr_t to_chars(uint64_t   , std::span<char32_t, to_chars_dec_max_digits_v<uint64_t   >>);
+		template uintptr_t to_chars(int8_t     , std::span<char32_t, to_chars_dec_max_digits_v<int8_t     >>);
+		template uintptr_t to_chars(int16_t    , std::span<char32_t, to_chars_dec_max_digits_v<int16_t    >>);
+		template uintptr_t to_chars(int32_t    , std::span<char32_t, to_chars_dec_max_digits_v<int32_t    >>);
+		template uintptr_t to_chars(int64_t    , std::span<char32_t, to_chars_dec_max_digits_v<int64_t    >>);
+		template uintptr_t to_chars(float      , std::span<char32_t, to_chars_dec_max_digits_v<float      >>);
+		template uintptr_t to_chars(double     , std::span<char32_t, to_chars_dec_max_digits_v<double     >>);
+		template uintptr_t to_chars(long double, std::span<char32_t, to_chars_dec_max_digits_v<long double>>);
 
-		template uintptr_t to_chars_hex(uint8_t , std::span<char8_t, to_char_hex_max_digits_v<uint8_t >>);
-		template uintptr_t to_chars_hex(uint16_t, std::span<char8_t, to_char_hex_max_digits_v<uint16_t>>);
-		template uintptr_t to_chars_hex(uint32_t, std::span<char8_t, to_char_hex_max_digits_v<uint32_t>>);
-		template uintptr_t to_chars_hex(uint64_t, std::span<char8_t, to_char_hex_max_digits_v<uint64_t>>);
+		template uintptr_t to_chars_hex(uint8_t , std::span<char8_t, to_chars_hex_max_digits_v<uint8_t >>);
+		template uintptr_t to_chars_hex(uint16_t, std::span<char8_t, to_chars_hex_max_digits_v<uint16_t>>);
+		template uintptr_t to_chars_hex(uint32_t, std::span<char8_t, to_chars_hex_max_digits_v<uint32_t>>);
+		template uintptr_t to_chars_hex(uint64_t, std::span<char8_t, to_chars_hex_max_digits_v<uint64_t>>);
 
-		template uintptr_t to_chars_hex(uint8_t , std::span<char16_t, to_char_hex_max_digits_v<uint8_t >>);
-		template uintptr_t to_chars_hex(uint16_t, std::span<char16_t, to_char_hex_max_digits_v<uint16_t>>);
-		template uintptr_t to_chars_hex(uint32_t, std::span<char16_t, to_char_hex_max_digits_v<uint32_t>>);
-		template uintptr_t to_chars_hex(uint64_t, std::span<char16_t, to_char_hex_max_digits_v<uint64_t>>);
+		template uintptr_t to_chars_hex(uint8_t , std::span<char16_t, to_chars_hex_max_digits_v<uint8_t >>);
+		template uintptr_t to_chars_hex(uint16_t, std::span<char16_t, to_chars_hex_max_digits_v<uint16_t>>);
+		template uintptr_t to_chars_hex(uint32_t, std::span<char16_t, to_chars_hex_max_digits_v<uint32_t>>);
+		template uintptr_t to_chars_hex(uint64_t, std::span<char16_t, to_chars_hex_max_digits_v<uint64_t>>);
 
-		template uintptr_t to_chars_hex(uint8_t , std::span<char32_t, to_char_hex_max_digits_v<uint8_t >>);
-		template uintptr_t to_chars_hex(uint16_t, std::span<char32_t, to_char_hex_max_digits_v<uint16_t>>);
-		template uintptr_t to_chars_hex(uint32_t, std::span<char32_t, to_char_hex_max_digits_v<uint32_t>>);
-		template uintptr_t to_chars_hex(uint64_t, std::span<char32_t, to_char_hex_max_digits_v<uint64_t>>);
+		template uintptr_t to_chars_hex(uint8_t , std::span<char32_t, to_chars_hex_max_digits_v<uint8_t >>);
+		template uintptr_t to_chars_hex(uint16_t, std::span<char32_t, to_chars_hex_max_digits_v<uint16_t>>);
+		template uintptr_t to_chars_hex(uint32_t, std::span<char32_t, to_chars_hex_max_digits_v<uint32_t>>);
+		template uintptr_t to_chars_hex(uint64_t, std::span<char32_t, to_chars_hex_max_digits_v<uint64_t>>);
 
-		template void to_chars_hex_fix(uint8_t , std::span<char8_t, to_char_hex_max_digits_v<uint8_t >>);
-		template void to_chars_hex_fix(uint16_t, std::span<char8_t, to_char_hex_max_digits_v<uint16_t>>);
-		template void to_chars_hex_fix(uint32_t, std::span<char8_t, to_char_hex_max_digits_v<uint32_t>>);
-		template void to_chars_hex_fix(uint64_t, std::span<char8_t, to_char_hex_max_digits_v<uint64_t>>);
+		template void to_chars_hex_fix(uint8_t , std::span<char8_t, to_chars_hex_max_digits_v<uint8_t >>);
+		template void to_chars_hex_fix(uint16_t, std::span<char8_t, to_chars_hex_max_digits_v<uint16_t>>);
+		template void to_chars_hex_fix(uint32_t, std::span<char8_t, to_chars_hex_max_digits_v<uint32_t>>);
+		template void to_chars_hex_fix(uint64_t, std::span<char8_t, to_chars_hex_max_digits_v<uint64_t>>);
 
-		template void to_chars_hex_fix(uint8_t , std::span<char16_t, to_char_hex_max_digits_v<uint8_t >>);
-		template void to_chars_hex_fix(uint16_t, std::span<char16_t, to_char_hex_max_digits_v<uint16_t>>);
-		template void to_chars_hex_fix(uint32_t, std::span<char16_t, to_char_hex_max_digits_v<uint32_t>>);
-		template void to_chars_hex_fix(uint64_t, std::span<char16_t, to_char_hex_max_digits_v<uint64_t>>);
+		template void to_chars_hex_fix(uint8_t , std::span<char16_t, to_chars_hex_max_digits_v<uint8_t >>);
+		template void to_chars_hex_fix(uint16_t, std::span<char16_t, to_chars_hex_max_digits_v<uint16_t>>);
+		template void to_chars_hex_fix(uint32_t, std::span<char16_t, to_chars_hex_max_digits_v<uint32_t>>);
+		template void to_chars_hex_fix(uint64_t, std::span<char16_t, to_chars_hex_max_digits_v<uint64_t>>);
 
-		template void to_chars_hex_fix(uint8_t , std::span<char32_t, to_char_hex_max_digits_v<uint8_t >>);
-		template void to_chars_hex_fix(uint16_t, std::span<char32_t, to_char_hex_max_digits_v<uint16_t>>);
-		template void to_chars_hex_fix(uint32_t, std::span<char32_t, to_char_hex_max_digits_v<uint32_t>>);
-		template void to_chars_hex_fix(uint64_t, std::span<char32_t, to_char_hex_max_digits_v<uint64_t>>);
+		template void to_chars_hex_fix(uint8_t , std::span<char32_t, to_chars_hex_max_digits_v<uint8_t >>);
+		template void to_chars_hex_fix(uint16_t, std::span<char32_t, to_chars_hex_max_digits_v<uint16_t>>);
+		template void to_chars_hex_fix(uint32_t, std::span<char32_t, to_chars_hex_max_digits_v<uint32_t>>);
+		template void to_chars_hex_fix(uint64_t, std::span<char32_t, to_chars_hex_max_digits_v<uint64_t>>);
 	} //namespace
 
 } //namespace core

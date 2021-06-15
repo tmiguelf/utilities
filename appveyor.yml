@@ -12,8 +12,8 @@ install:
 build: off
 
 build_script:
-    - msbuild /t:Build /p:Configuration=Release "./CoreLib.sln" -maxcpucount
-    - msbuild /t:Build /p:Configuration=WSL_Release "./CoreLib.sln" -maxcpucount
+    - msbuild /t:Build /p:Configuration=Release "./Utilities.sln" -maxcpucount
+    - msbuild /t:Build /p:Configuration=WSL_Release "./Utilities.sln" -maxcpucount
 
 test_script:
     - '&"./Runtime/win_x64_Release/CoreLib_Test.exe" --gtest_output="xml:Corelib_result.xml"'

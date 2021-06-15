@@ -54,7 +54,7 @@ namespace
 template <typename T>
 static inline void push_hex_fix(std::ofstream& p_out, T p_num)
 {
-	std::array<char, to_char_hex_max_digits_v<T>> buff;
+	std::array<char, to_chars_hex_max_digits_v<T>> buff;
 	uintptr_t size = to_chars_hex(p_num, buff);
 	p_out.write(buff.data(), size);
 }
@@ -62,7 +62,7 @@ static inline void push_hex_fix(std::ofstream& p_out, T p_num)
 template <typename T>
 static inline void push_dec(std::ofstream& p_out, T p_num)
 {
-	std::array<char, to_char_dec_max_digits_v<T>> buff;
+	std::array<char, to_chars_dec_max_digits_v<T>> buff;
 	uintptr_t size = to_chars(p_num, buff);
 	p_out.write(buff.data(), size);
 }
