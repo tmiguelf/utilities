@@ -39,6 +39,7 @@
 
 #include <CoreLib/string/core_string_encoding.hpp>
 #include <CoreLib/Core_Alloca.hpp>
+#include <CoreLib/string/core_wchar_alias.hpp>
 
 
 namespace core
@@ -151,16 +152,7 @@ void console_out::write(std::string_view p_out) const
 
 void console_out::write(std::wstring_view p_out) const
 {
-	if constexpr (sizeof(wchar_t) == sizeof(char16_t))
-	{
-		write(std::u16string_view{reinterpret_cast<const char16_t*>(p_out.data()), p_out.size()});
-	}
-	else if constexpr (sizeof(wchar_t) == sizeof(char32_t))
-	{
-		write(std::u32string_view{reinterpret_cast<const char32_t*>(p_out.data()), p_out.size()});
-	}
-
-	static_assert(sizeof(wchar_t) == sizeof(char16_t) || sizeof(wchar_t) == sizeof(char32_t), "Unsuported wchar_t size");
+	write(std::basic_string_view<wchar_alias>{reinterpret_cast<const wchar_alias*>(p_out.data()), p_out.size()});
 }
 
 void console_out::write(std::u8string_view p_out) const
@@ -213,16 +205,7 @@ void console_out::put(char p_out) const
 
 void console_out::put(wchar_t p_out) const
 {
-	if constexpr (sizeof(wchar_t) == sizeof(char16_t))
-	{
-		put(static_cast<char16_t>(p_out));
-	}
-	else if constexpr (sizeof(wchar_t) == sizeof(char32_t))
-	{
-		put(static_cast<char32_t>(p_out));
-	}
-	
-	static_assert(sizeof(wchar_t) == sizeof(char16_t) || sizeof(wchar_t) == sizeof(char32_t), "Unsuported wchar_t size");
+	put(static_cast<wchar_alias>(p_out));
 }
 
 void console_out::put(char8_t p_out) const
