@@ -36,6 +36,7 @@
 #include <CoreLib/string/core_string_encoding.hpp>
 #include <CoreLib/string/core_string_numeric.hpp>
 #include <CoreLib/string/core_wchar_alias.hpp>
+#include <CoreLib/string/core_os_string.hpp>
 
 #include "string_tostream.hpp"
 
@@ -99,9 +100,9 @@ class toStream<std::wstring_view>: public toStream<std::basic_string_view<wchar_
 {
 public:
 	toStream(const std::wstring_view& p_data):
-		toStream<std::basic_string_view<wchar_alias>>{
+		toStream<std::basic_string_view<wchar_alias>>(
 			std::basic_string_view<wchar_alias>{reinterpret_cast<const wchar_alias*>(p_data.data()), p_data.size()}
-		}
+		)
 	{}
 };
 
@@ -109,7 +110,7 @@ template<typename T>
 class toStream<std::basic_string<T>>: public toStream<std::basic_string_view<T>>
 {
 public:
-	toStream(const std::basic_string<T>& p_data): toStream<std::basic_string_view<T>>{std::basic_string_view<T>{p_data}}{}
+	toStream(const std::basic_string<T>& p_data): toStream<std::basic_string_view<T>>(std::basic_string_view<T>{p_data}){}
 };
 
 
@@ -169,24 +170,12 @@ private:
 };
 
 template<>
-class toStream<std::filesystem::path>
+class toStream<std::filesystem::path>: public toStream<std::basic_string_view<os_char>>
 {
 public:
-	toStream(const std::filesystem::path& p_data): m_data{p_data}{}
-	inline void stream(std::ostream& p_stream) const
-	{
-#ifdef _WIN32
-		const std::wstring& native = m_data.native();
-		const std::u8string res = UTF16_to_UTF8_faulty({reinterpret_cast<const char16_t*>(native.data()), native.size()}, '?');
-		p_stream.write(reinterpret_cast<const char*>(res.data()), res.size());
-#else
-		const std::string& native = m_data.native();
-		p_stream.write(native.data(), native.size());
-#endif
-	}
-
-private:
-	const std::filesystem::path& m_data;
+	toStream(const std::filesystem::path& p_data)
+		: toStream<std::basic_string_view<os_char>>(std::basic_string_view<os_char>{p_data.native()})
+	{}
 };
 
 } //namespace core
