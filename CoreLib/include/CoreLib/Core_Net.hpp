@@ -42,7 +42,7 @@
 #include <cstring>
 #include <utility>
 
-#include <CoreLib/Core_Type.hpp>
+#include "Core_Type.hpp"
 
 /// \n
 namespace core

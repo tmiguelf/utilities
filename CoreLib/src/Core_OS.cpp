@@ -23,7 +23,8 @@
 ///		SOFTWARE.
 //======== ======== ======== ======== ======== ======== ======== ========
 
-#include "CoreLib/Core_OS.hpp"
+#include <CoreLib/Core_OS.hpp>
+
 #include <array>
 
 #if	defined(_WIN32) //OS

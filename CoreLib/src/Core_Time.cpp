@@ -23,7 +23,7 @@
 ///		SOFTWARE.
 //======== ======== ======== ======== ======== ======== ======== ========
 
-#include "CoreLib/Core_Time.hpp"
+#include <CoreLib/Core_Time.hpp>
 
 #include <CoreLib/Core_Type.hpp>
 

@@ -23,7 +23,7 @@
 ///		SOFTWARE.
 //======== ======== ======== ======== ======== ======== ======== ========
 
-#include "CoreLib/Core_StackTrace.hpp"
+#include <CoreLib/Core_StackTrace.hpp>
 
 #include <fstream>
 #include <iomanip>
