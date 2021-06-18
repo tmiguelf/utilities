@@ -30,7 +30,7 @@
 #include <utility>
 
 #include "Vector.hpp"
-#include "MathLib/_p/mathlib_type_help.hpp"
+#include <MathLib/_p/mathlib_type_help.hpp>
 
 namespace mathlib
 {

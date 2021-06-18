@@ -24,14 +24,14 @@
 ///		SOFTWARE.
 //======== ======== ======== ======== ======== ======== ======== ========
 
-#include <benchmark/benchmark.h>
-
 #include <array>
 #include <string>
 #include <vector>
 #include <charconv>
 #include <limits>
 #include <type_traits>
+
+#include <benchmark/benchmark.h>
 
 #include <CoreLib/string/core_string_numeric.hpp>
 #include <CoreLib/string/core_string_misc.hpp>
