@@ -174,7 +174,7 @@ void console_out::write(std::u16string_view p_out) const
 	else
 	{
 		char8_t* buff = reinterpret_cast<char8_t*>(core_alloca(buff_size));
-		core::_p::UTF16_to_UTF8_faulty(p_out, '?', buff);
+		core::_p::UTF16_to_UTF8_faulty_unsafe(p_out, '?', buff);
 		write(std::u8string_view{buff, buff_size});
 	}
 }
