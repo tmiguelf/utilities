@@ -262,47 +262,6 @@ static bool __fmove_UTF8_UCS4(const char8_t*& p_input, const char8_t* const p_en
 				}
 				p_input += 3;
 			}
-			else if((testp & 0xFC) == 0xF8) //level 4
-			{
-				if(	p_end - tlocal < 5			||
-					(!(*(tlocal++) & 0x03) && (*tlocal < 0x88)) || //validate range
-					(*tlocal & 0xC0) != 0x80	||	//validate encoding
-					(*++tlocal & 0xC0) != 0x80	||
-					(*++tlocal & 0xC0) != 0x80	||
-					(*++tlocal & 0xC0) != 0x80	)
-				{
-					return false;
-				}
-				p_input += 4;
-			}
-			else if((testp & 0xFE) == 0xFC) //level 5
-			{
-				if(	p_end - tlocal < 6			||
-					(!(*(tlocal++) & 0x01) && (*tlocal < 0x84)) || //validate range
-					(*tlocal & 0xC0) != 0x80	||	//validate encoding
-					(*++tlocal & 0xC0) != 0x80	||
-					(*++tlocal & 0xC0) != 0x80	||
-					(*++tlocal & 0xC0) != 0x80	||
-					(*++tlocal & 0xC0) != 0x80	)
-				{
-					return false;
-				}
-				p_input += 5;
-			}
-			else if(testp == 0xFE) //level 6
-			{
-				if(	p_end - tlocal < 7			||
-					(*++tlocal != 0x82 && *tlocal != 0x83) || //validate range and encoding
-					(*++tlocal & 0xC0) != 0x80	||	//validate encoding
-					(*++tlocal & 0xC0) != 0x80	||
-					(*++tlocal & 0xC0) != 0x80	||
-					(*++tlocal & 0xC0) != 0x80	||
-					(*++tlocal & 0xC0) != 0x80	)
-				{
-					return false;
-				}
-				p_input += 6;
-			}
 			else
 			{
 				return false;
@@ -339,44 +298,10 @@ static char32_t __convert_UTF8_UCS4(const char8_t*& p_input)
 		return tcode | static_cast<char32_t>(*++codeStart & 0x3F);
 	}
 
-	if((testp & 0xF8) == 0xF0) //level 3
-	{
-		p_input += 3;
-		char32_t tcode =
-			static_cast<char32_t>(testp & 0x07) << 18 |
-			static_cast<char32_t>(*++codeStart & 0x3F) << 12;
-		tcode |= static_cast<char32_t>(*++codeStart & 0x3F) << 6;
-		return tcode | static_cast<char32_t>(*++codeStart & 0x3F);
-	}
-
-	if((testp & 0xFC) == 0xF8) //level 4
-	{
-		p_input += 4;
-		char32_t tcode =
-			static_cast<char32_t>(testp & 0x03) << 24 |
-			static_cast<char32_t>(*++codeStart & 0x3F) << 18;
-		tcode |= static_cast<char32_t>(*++codeStart & 0x3F) << 12;
-		tcode |= static_cast<char32_t>(*++codeStart & 0x3F) << 6;
-		return tcode | static_cast<char32_t>(*++codeStart & 0x3F);
-	}
-
-	if((testp & 0xFE) == 0xFC) //level 5
-	{
-		p_input += 5;
-		char32_t tcode =
-			static_cast<char32_t>(testp & 0x01) << 30 |
-			static_cast<char32_t>(*++codeStart & 0x3F) << 24;
-		tcode |= static_cast<char32_t>(*++codeStart & 0x3F) << 18;
-		tcode |= static_cast<char32_t>(*++codeStart & 0x3F) << 12;
-		tcode |= static_cast<char32_t>(*++codeStart & 0x3F) << 6;
-		return tcode | static_cast<char32_t>(*++codeStart & 0x3F);
-	}
-
-	p_input += 6;
-	char32_t tcode = *++codeStart << 30;
-	tcode |= static_cast<char32_t>(*++codeStart & 0x3F) << 24;
-	tcode |= static_cast<char32_t>(*++codeStart & 0x3F) << 18;
-	tcode |= static_cast<char32_t>(*++codeStart & 0x3F) << 12;
+	p_input += 3;
+	char32_t tcode =
+		static_cast<char32_t>(testp & 0x07) << 18 |
+		static_cast<char32_t>(*++codeStart & 0x3F) << 12;
 	tcode |= static_cast<char32_t>(*++codeStart & 0x3F) << 6;
 	return tcode | static_cast<char32_t>(*++codeStart & 0x3F);
 }
@@ -769,6 +694,7 @@ static char32_t __convert_UTF8_UCS4_failforward(const char8_t*& p_input, const c
 		tcode |= static_cast<char32_t>(*++testp & 0x3F) << 6;
 		return tcode | static_cast<char32_t>(*++testp & 0x3F);
 	}
+
 	if((*testp & 0xFC) == 0xF8) //level 4
 	{
 		if(	p_end - testp < 5) goto unwind_as_much_as_possible;
@@ -778,22 +704,9 @@ static char32_t __convert_UTF8_UCS4_failforward(const char8_t*& p_input, const c
 			(*++testp & 0xC0) != 0x80	)
 		{
 			p_input = testp -1;
-			return p_placeholder;
 		}
-
-		p_input += 4;
-
-		testp = codeStart;
-		if(!(*codeStart & 0x03) && (*++codeStart < 0x88))
-		{
-			return p_placeholder;
-		}
-
-		char32_t tcode = (*testp & 0x03) << 24;
-		tcode |= static_cast<char32_t>(*++testp & 0x3F) << 18;
-		tcode |= static_cast<char32_t>(*++testp & 0x3F) << 12;
-		tcode |= static_cast<char32_t>(*++testp & 0x3F) << 6;
-		return tcode | static_cast<char32_t>(*++testp & 0x3F);
+		else p_input += 4;
+		return p_placeholder;
 	}
 	if((*testp & 0xFE) == 0xFC) //level 5
 	{
@@ -805,23 +718,9 @@ static char32_t __convert_UTF8_UCS4_failforward(const char8_t*& p_input, const c
 			(*++testp & 0xC0) != 0x80	)
 		{
 			p_input = testp -1;
-			return p_placeholder;
 		}
-
-		p_input += 5;
-
-		testp = codeStart;
-		if(!(*codeStart & 0x01) && (*++codeStart < 0x84))
-		{
-			return p_placeholder;
-		}
-
-		char32_t tcode = (*testp & 0x01) << 30;
-		tcode |= static_cast<char32_t>(*++testp & 0x3F) << 24;
-		tcode |= static_cast<char32_t>(*++testp & 0x3F) << 18;
-		tcode |= static_cast<char32_t>(*++testp & 0x3F) << 12;
-		tcode |= static_cast<char32_t>(*++testp & 0x3F) << 6;
-		return tcode | static_cast<char32_t>(*++testp & 0x3F);
+		else p_input += 5;
+		return p_placeholder;
 	}
 	if(*testp == 0xFE) //level 6
 	{
@@ -834,24 +733,10 @@ static char32_t __convert_UTF8_UCS4_failforward(const char8_t*& p_input, const c
 			(*++testp & 0xC0) != 0x80	)
 		{
 			p_input = testp -1;
-			return p_placeholder;
 		}
+		else p_input += 6;
 
-		p_input += 6;
-
-		testp = ++codeStart;
-
-		if((*codeStart != 0x82) && (*codeStart != 0x83))
-		{
-			return p_placeholder;
-		}
-
-		char32_t tcode = *testp << 30;
-		tcode |= static_cast<char32_t>(*++testp & 0x3F) << 24;
-		tcode |= static_cast<char32_t>(*++testp & 0x3F) << 18;
-		tcode |= static_cast<char32_t>(*++testp & 0x3F) << 12;
-		tcode |= static_cast<char32_t>(*++testp & 0x3F) << 6;
-		return tcode | static_cast<char32_t>(*++testp & 0x3F);
+		return p_placeholder;
 	}
 
 unwind_as_much_as_possible:
@@ -1075,9 +960,8 @@ static uintptr_t __convert_UTF8_UTF16_failforward(const char8_t*& p_input, const
 			(*++testp & 0xC0) != 0x80	)
 		{
 			p_input = testp -1;
-			return 0;
 		}
-		p_input += 4;
+		else p_input += 4;
 		return 0;
 	}
 	if((*testp & 0xFE) == 0xFC) //level 5
@@ -1090,9 +974,8 @@ static uintptr_t __convert_UTF8_UTF16_failforward(const char8_t*& p_input, const
 			(*++testp & 0xC0) != 0x80	)
 		{
 			p_input = testp -1;
-			return 0;
 		}
-		p_input += 5;
+		else p_input += 5;
 		return 0;
 	}
 	if(*testp == 0xFE) //level 6
@@ -1106,9 +989,8 @@ static uintptr_t __convert_UTF8_UTF16_failforward(const char8_t*& p_input, const
 			(*++testp & 0xC0) != 0x80	)
 		{
 			p_input = testp -1;
-			return 0;
 		}
-		p_input += 6;
+		else p_input += 6;
 		return 0;
 	}
 
@@ -1150,36 +1032,7 @@ uintptr_t __inline_encode_UTF8(char32_t p_char, char8_t* p_output)
 		return 4;
 	}
 
-	if(p_char < 0x04000000) //Level 4
-	{
-		*p_output   = static_cast<char8_t>( (p_char >> 24			) | 0xF8);
-		*++p_output = static_cast<char8_t>(((p_char >> 18)	& 0x3F	) | 0x80);
-		*++p_output = static_cast<char8_t>(((p_char >> 12)	& 0x3F	) | 0x80);
-		*++p_output = static_cast<char8_t>(((p_char >>  6)	& 0x3F	) | 0x80);
-		*++p_output = static_cast<char8_t>(( p_char			& 0x3F	) | 0x80);
-		return 5;
-	}
-
-	if(p_char < 0x80000000) //Level 5
-	{
-		*p_output   = static_cast<char8_t>(( p_char >> 30			) | 0xFC);
-		*++p_output = static_cast<char8_t>(((p_char >> 24)	& 0x3F	) | 0x80);
-		*++p_output = static_cast<char8_t>(((p_char >> 18)	& 0x3F	) | 0x80);
-		*++p_output = static_cast<char8_t>(((p_char >> 12)	& 0x3F	) | 0x80);
-		*++p_output = static_cast<char8_t>(((p_char >>  6)	& 0x3F	) | 0x80);
-		*++p_output = static_cast<char8_t>(( p_char			& 0x3F	) | 0x80);
-		return 6;
-	}
-
-	//Level 6
-	*p_output   = char8_t			{0xFE						};
-	*++p_output = static_cast<char8_t>(((p_char >> 30)	& 0x3F	) | 0x80);
-	*++p_output = static_cast<char8_t>(((p_char >> 24)	& 0x3F	) | 0x80);
-	*++p_output = static_cast<char8_t>(((p_char >> 18)	& 0x3F	) | 0x80);
-	*++p_output = static_cast<char8_t>(((p_char >> 12)	& 0x3F	) | 0x80);
-	*++p_output = static_cast<char8_t>(((p_char >>  6)	& 0x3F	) | 0x80);
-	*++p_output = static_cast<char8_t>(( p_char			& 0x3F	) | 0x80);
-	return 7;
+	return 0;
 }
 
 static uintptr_t __estimate_UTF16_UTF8(const char16_t*& p_input, const char16_t* const p_end)
@@ -1420,75 +1273,67 @@ static uintptr_t __estimate_UCS4_UTF8(const char32_t p_input)
 	{
 		return 4;
 	}
-	if(p_input < 0x04000000) //Level 4
-	{
-		return 5;
-	}
-	if(p_input < 0x80000000) //Level 5
-	{
-		return 6;
-	}
-	//Level 6
-	return 7;
+
+	return 0;
 }
 
-static void __convert_UCS4_UTF8(const char32_t p_input, char8_t*& p_out)
+static uintptr_t __convert_UCS4_UTF8(const char32_t p_input, char8_t* p_out)
 {
 	if(p_input < 0x00000080) //Level 0
 	{
-		*(p_out++) = static_cast<char8_t>(p_input);
-		return;
+		*p_out = static_cast<char8_t>(p_input);
+		return 1;
 	}
 	if(p_input < 0x00000800) //Level 1
 	{
 		*(p_out++) = static_cast<char8_t>(p_input >> 6  ) | char8_t{0xC0};
-		*(p_out++) = static_cast<char8_t>(p_input & 0x3F) | char8_t{0x80};
-		return;
+		*p_out     = static_cast<char8_t>(p_input & 0x3F) | char8_t{0x80};
+		return 2;
 	}
 	if(p_input < 0x00010000) //Level 2
 	{
 		*(p_out++) = static_cast<char8_t>( p_input >> 12        ) | char8_t{0xE0};
 		*(p_out++) = static_cast<char8_t>((p_input >>  6) & 0x3F) | char8_t{0x80};
-		*(p_out++) = static_cast<char8_t>( p_input        & 0x3F) | char8_t{0x80};
-		return;
+		*p_out     = static_cast<char8_t>( p_input        & 0x3F) | char8_t{0x80};
+		return 3;
+	}
+
+	*(p_out++) = static_cast<char8_t>( p_input >> 18        ) | char8_t{0xF0};
+	*(p_out++) = static_cast<char8_t>((p_input >> 12) & 0x3F) | char8_t{0x80};
+	*(p_out++) = static_cast<char8_t>((p_input >>  6) & 0x3F) | char8_t{0x80};
+	*p_out     = static_cast<char8_t>( p_input        & 0x3F) | char8_t{0x80};
+	return 4;
+} 
+
+static uintptr_t __convert_UCS4_UTF8_checked(const char32_t p_input, char8_t* p_out)
+{
+	if(p_input < 0x00000080) //Level 0
+	{
+		*p_out = static_cast<char8_t>(p_input);
+		return 1;
+	}
+	if(p_input < 0x00000800) //Level 1
+	{
+		*(p_out++) = static_cast<char8_t>(p_input >> 6  ) | char8_t{0xC0};
+		*p_out     = static_cast<char8_t>(p_input & 0x3F) | char8_t{0x80};
+		return 2;
+	}
+	if(p_input < 0x00010000) //Level 2
+	{
+		*(p_out++) = static_cast<char8_t>( p_input >> 12        ) | char8_t{0xE0};
+		*(p_out++) = static_cast<char8_t>((p_input >>  6) & 0x3F) | char8_t{0x80};
+		*p_out     = static_cast<char8_t>( p_input        & 0x3F) | char8_t{0x80};
+		return 3;
 	}
 	if(p_input < 0x00200000) //Level 3
 	{
 		*(p_out++) = static_cast<char8_t>( p_input >> 18        ) | char8_t{0xF0};
 		*(p_out++) = static_cast<char8_t>((p_input >> 12) & 0x3F) | char8_t{0x80};
 		*(p_out++) = static_cast<char8_t>((p_input >>  6) & 0x3F) | char8_t{0x80};
-		*(p_out++) = static_cast<char8_t>( p_input        & 0x3F) | char8_t{0x80};
-		return;
+		*p_out     = static_cast<char8_t>( p_input        & 0x3F) | char8_t{0x80};
+		return 4;
 	}
-	if(p_input < 0x04000000) //Level 4
-	{
-		*(p_out++) = static_cast<char8_t>( p_input >> 24        ) | char8_t{0xF8};
-		*(p_out++) = static_cast<char8_t>((p_input >> 18) & 0x3F) | char8_t{0x80};
-		*(p_out++) = static_cast<char8_t>((p_input >> 12) & 0x3F) | char8_t{0x80};
-		*(p_out++) = static_cast<char8_t>((p_input >>  6) & 0x3F) | char8_t{0x80};
-		*(p_out++) = static_cast<char8_t>( p_input        & 0x3F) | char8_t{0x80};
-		return;
-	}
-	if(p_input < 0x80000000) //Level 5
-	{
-		*(p_out++) = static_cast<char8_t>( p_input >> 30        ) | char8_t{0xFC};
-		*(p_out++) = static_cast<char8_t>((p_input >> 24) & 0x3F) | char8_t{0x80};
-		*(p_out++) = static_cast<char8_t>((p_input >> 18) & 0x3F) | char8_t{0x80};
-		*(p_out++) = static_cast<char8_t>((p_input >> 12) & 0x3F) | char8_t{0x80};
-		*(p_out++) = static_cast<char8_t>((p_input >>  6) & 0x3F) | char8_t{0x80};
-		*(p_out++) = static_cast<char8_t>( p_input        & 0x3F) | char8_t{0x80};
-		return;
-	}
-
-	//Level 6
-	*(p_out++) = char8_t{0xFE};
-	*(p_out++) = static_cast<char8_t>((p_input >> 30) & 0x3F) | char8_t{0x80};
-	*(p_out++) = static_cast<char8_t>((p_input >> 24) & 0x3F) | char8_t{0x80};
-	*(p_out++) = static_cast<char8_t>((p_input >> 18) & 0x3F) | char8_t{0x80};
-	*(p_out++) = static_cast<char8_t>((p_input >> 12) & 0x3F) | char8_t{0x80};
-	*(p_out++) = static_cast<char8_t>((p_input >>  6) & 0x3F) | char8_t{0x80};
-	*(p_out++) = static_cast<char8_t>( p_input        & 0x3F) | char8_t{0x80};
-	return;
+	return 0;
 } 
 
 uintptr_t __estimate_UCS4_UTF16(char32_t p_char)
@@ -1511,8 +1356,6 @@ uintptr_t __estimate_UCS4_UTF16(char32_t p_char)
 	}
 	return 0;
 }
-
-
 
 namespace _p
 {
@@ -1709,13 +1552,20 @@ void UCS2_to_UTF8_unsafe(std::u16string_view p_input, char8_t* p_output)
 	}
 }
 
-
-[[nodiscard]] uintptr_t UCS4_to_UTF8_estimate(std::u32string_view p_input)
+[[nodiscard]] std::optional<uintptr_t> UCS4_to_UTF8_estimate(std::u32string_view p_input)
 {
 	uintptr_t count = 0;
 	for(const char32_t tchar : p_input)
 	{
-		count += __estimate_UCS4_UTF8(tchar);
+		const uintptr_t res = __estimate_UCS4_UTF8(tchar);
+		if(!res)
+		{
+			return {};
+		}
+		else
+		{
+			count += res;
+		}
 	}
 	return count;
 }
@@ -1724,7 +1574,7 @@ void UCS4_to_UTF8_unsafe(std::u32string_view p_input, char8_t* p_output)
 {
 	for(const char32_t tchar : p_input)
 	{
-		__convert_UCS4_UTF8(tchar, p_output);
+		p_output += __convert_UCS4_UTF8(tchar, p_output);
 	}
 }
 
@@ -2100,14 +1950,7 @@ void UCS4_to_ANSI_faulty_unsafe(std::u32string_view p_input, char8_t p_placeHold
 	for(; pos < end; ++pos)
 	{
 		const uintptr_t tcount = __estimate_UTF16_UTF8_failforward(pos, end);
-		if(tcount)
-		{
-			count += tcount;
-		}
-		else
-		{
-			count += ph_count;
-		}
+		count += tcount ? tcount: ph_count;
 	}
 
 	return count;
@@ -2115,7 +1958,7 @@ void UCS4_to_ANSI_faulty_unsafe(std::u32string_view p_input, char8_t p_placeHold
 
 void UTF16_to_UTF8_faulty_unsafe(std::u16string_view p_input, char32_t p_placeHolder, char8_t* p_output)
 {
-	std::array<char8_t, 7> placeHolder;
+	std::array<char8_t, 4> placeHolder;
 	uintptr_t placeHolderSize = __inline_encode_UTF8(p_placeHolder, placeHolder.data());
 
 	const char16_t* pos = p_input.data();
@@ -2136,6 +1979,38 @@ void UTF16_to_UTF8_faulty_unsafe(std::u16string_view p_input, char32_t p_placeHo
 	}
 }
 
+[[nodiscard]] uintptr_t UCS4_to_UTF8_faulty_estimate(std::u32string_view p_input, char32_t p_placeHolder)
+{
+	uintptr_t count = 0;
+	const uintptr_t ph_count = __estimate_UCS4_UTF8(p_placeHolder);
+	for(const char32_t tchar : p_input)
+	{
+		const uintptr_t tcount = __estimate_UCS4_UTF8(tchar);
+		count += tcount ? tcount: ph_count;
+	}
+
+	return count;
+}
+
+void UCS4_to_UTF8_faulty_unsafe(std::u32string_view p_input, char32_t p_placeHolder, char8_t* p_output)
+{
+	std::array<char8_t, 4> placeHolder;
+	uintptr_t placeHolderSize = __inline_encode_UTF8(p_placeHolder, placeHolder.data());
+
+	for(const char32_t tchar : p_input)
+	{
+		const uintptr_t tcount = __convert_UCS4_UTF8_checked(tchar, p_output);
+		if(tcount)
+		{
+			p_output += tcount;
+		}
+		else
+		{
+			memcpy(p_output, placeHolder.data(), placeHolderSize);
+			p_output += placeHolderSize;
+		}
+	}
+}
 
 [[nodiscard]] uintptr_t UTF8_to_UTF16_faulty_estimate(std::u8string_view p_input, char32_t p_placeHolder)
 {
@@ -2353,7 +2228,7 @@ void UTF16_to_UCS4_faulty_unsafe(std::u16string_view p_input, char32_t p_placeHo
 } //namespace _p
 
 
-uint8_t encode_UTF8(char32_t p_char, std::span<char8_t, 7> p_output)
+uint8_t encode_UTF8(char32_t p_char, std::span<char8_t, 4> p_output)
 {
 	if(p_char < 0x00000080) //Level 0
 	{
@@ -2385,36 +2260,7 @@ uint8_t encode_UTF8(char32_t p_char, std::span<char8_t, 7> p_output)
 		return 4;
 	}
 
-	if(p_char < 0x04000000) //Level 4
-	{
-		p_output[0] = static_cast<char8_t>( (p_char >> 24			) | 0xF8);
-		p_output[1] = static_cast<char8_t>(((p_char >> 18)	& 0x3F	) | 0x80);
-		p_output[2] = static_cast<char8_t>(((p_char >> 12)	& 0x3F	) | 0x80);
-		p_output[3] = static_cast<char8_t>(((p_char >>  6)	& 0x3F	) | 0x80);
-		p_output[4] = static_cast<char8_t>(( p_char			& 0x3F	) | 0x80);
-		return 5;
-	}
-
-	if(p_char < 0x80000000) //Level 5
-	{
-		p_output[0] = static_cast<char8_t>(( p_char >> 30			) | 0xFC);
-		p_output[1] = static_cast<char8_t>(((p_char >> 24)	& 0x3F	) | 0x80);
-		p_output[2] = static_cast<char8_t>(((p_char >> 18)	& 0x3F	) | 0x80);
-		p_output[3] = static_cast<char8_t>(((p_char >> 12)	& 0x3F	) | 0x80);
-		p_output[4] = static_cast<char8_t>(((p_char >>  6)	& 0x3F	) | 0x80);
-		p_output[5] = static_cast<char8_t>(( p_char			& 0x3F	) | 0x80);
-		return 6;
-	}
-
-	//Level 6
-	p_output[0] = char8_t			{0xFE						};
-	p_output[1] = static_cast<char8_t>(((p_char >> 30)	& 0x3F	) | 0x80);
-	p_output[2] = static_cast<char8_t>(((p_char >> 24)	& 0x3F	) | 0x80);
-	p_output[3] = static_cast<char8_t>(((p_char >> 18)	& 0x3F	) | 0x80);
-	p_output[4] = static_cast<char8_t>(((p_char >> 12)	& 0x3F	) | 0x80);
-	p_output[5] = static_cast<char8_t>(((p_char >>  6)	& 0x3F	) | 0x80);
-	p_output[6] = static_cast<char8_t>(( p_char			& 0x3F	) | 0x80);
-	return 7;
+	return 0;
 }
 
 uint8_t encode_UTF16(char32_t p_char, std::span<char16_t, 2> p_output)
@@ -2604,10 +2450,13 @@ std::u8string UCS2_to_UTF8(std::u16string_view p_input)
 	return output;
 }
 
-std::u8string UCS4_to_UTF8(std::u32string_view p_input)
+std::optional<std::u8string> UCS4_to_UTF8(std::u32string_view p_input)
 {
+	std::optional<uintptr_t> res = _p::UCS4_to_UTF8_estimate(p_input);
+	if(!res.has_value()) return {};
+
 	std::u8string output;
-	output.resize(_p::UCS4_to_UTF8_estimate(p_input));
+	output.resize(res.value());
 	_p::UCS4_to_UTF8_unsafe(p_input, output.data());
 	return output;
 }
@@ -2761,6 +2610,16 @@ std::u8string UTF16_to_UTF8_faulty(std::u16string_view p_input, char32_t p_place
 	_p::UTF16_to_UTF8_faulty_unsafe(p_input, p_placeHolder, output.data());
 	return output;
 }
+
+
+[[nodiscard]] std::u8string UCS4_to_UTF8_faulty(std::u32string_view p_input, char32_t p_placeHolder)
+{
+	std::u8string output;
+	output.resize(_p::UCS4_to_UTF8_faulty_estimate(p_input, p_placeHolder));
+	_p::UCS4_to_UTF8_faulty_unsafe(p_input, p_placeHolder, output.data());
+	return output;
+}
+
 
 std::u16string UTF8_to_UTF16_faulty(std::u8string_view p_input, char32_t p_placeHolder)
 {

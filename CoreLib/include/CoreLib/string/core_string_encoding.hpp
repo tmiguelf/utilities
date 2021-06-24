@@ -79,7 +79,7 @@ namespace core
 		[[nodiscard]] uintptr_t UCS2_to_UTF8_estimate(std::u16string_view p_input);
 		void UCS2_to_UTF8_unsafe(std::u16string_view p_input, char8_t* p_output);
 
-		[[nodiscard]] uintptr_t UCS4_to_UTF8_estimate(std::u32string_view p_input);
+		[[nodiscard]] std::optional<uintptr_t> UCS4_to_UTF8_estimate(std::u32string_view p_input);
 		void UCS4_to_UTF8_unsafe(std::u32string_view p_input, char8_t* p_output);
 
 
@@ -136,6 +136,9 @@ namespace core
 
 		[[nodiscard]] uintptr_t UTF16_to_UTF8_faulty_estimate(std::u16string_view p_input, char32_t p_placeHolder);
 		void UTF16_to_UTF8_faulty_unsafe(std::u16string_view p_input, char32_t p_placeHolder, char8_t* p_output);
+
+		[[nodiscard]] uintptr_t UCS4_to_UTF8_faulty_estimate(std::u32string_view p_input, char32_t p_placeHolder);
+		void UCS4_to_UTF8_faulty_unsafe(std::u32string_view p_input, char32_t p_placeHolder, char8_t* p_output);
 
 		[[nodiscard]] uintptr_t UTF8_to_UTF16_faulty_estimate(std::u8string_view p_input, char32_t p_placeHolder);
 		void UTF8_to_UTF16_faulty_unsafe(std::u8string_view p_input, char32_t p_placeHolder, char16_t* p_output);
@@ -198,9 +201,9 @@ namespace core
 	[[nodiscard]] std::u8string UCS2_to_UTF8(std::u16string_view p_input);
 
 	///	\brief	Converts a UCS4 (or UTF32) string to UTF8.
-	///			Note: always convertible.
+	///			Failure can occur if input string has code points not representable in UTF8
 	///	\warning	Input/Output does not require to have all valid Unicode code points.
-	[[nodiscard]] std::u8string UCS4_to_UTF8(std::u32string_view p_input);
+	[[nodiscard]] std::optional<std::u8string> UCS4_to_UTF8(std::u32string_view p_input);
 
 	///	\brief	Converts a ANSI string to UTF16.
 	///			Note: always convertible.
@@ -288,6 +291,12 @@ namespace core
 	///	\param[in]	p_placeHolder - Replacement codepoint to be used when a UTF16 sequence is invalid
 	///	\warning	Output does not require to have all valid Unicode code points.
 	[[nodiscard]] std::u8string UTF16_to_UTF8_faulty(std::u16string_view p_input, char32_t p_placeHolder);
+
+	///	\brief	Converts a UCS4 string to UTF8.
+	///	\param[in]	p_input - UCS4 sequence to convert
+	///	\param[in]	p_placeHolder - Replacement codepoint to be used when the codepoint can not be encoded in UTF8
+	///	\warning	Output does not require to have all valid Unicode code points.
+	[[nodiscard]] std::u8string UCS4_to_UTF8_faulty(std::u32string_view p_input, char32_t p_placeHolder);
 
 	///	\brief	Converts a UTF8 string to UTF16.
 	///	\param[in]	p_input - UTF8 sequence to convert

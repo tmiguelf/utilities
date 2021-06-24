@@ -76,7 +76,7 @@ public:
 	toStream(const std::u32string_view& p_data): m_data{p_data}{}
 	inline void stream(std::ostream& p_stream) const
 	{
-		const std::u8string& temp = core::UCS4_to_UTF8(m_data);
+		const std::u8string& temp = core::UCS4_to_UTF8_faulty(m_data, '?');
 		p_stream << toStream<std::u8string_view>{temp};
 	}
 

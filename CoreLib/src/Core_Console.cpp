@@ -181,19 +181,19 @@ void console_out::write(std::u16string_view p_out) const
 
 void console_out::write(std::u32string_view p_out) const
 {
-	const uintptr_t buff_size = core::_p::UCS4_to_UTF8_estimate(p_out);
+	const uintptr_t buff_size = core::_p::UCS4_to_UTF8_faulty_estimate(p_out, '?');
 
 	if(buff_size > alloca_treshold)
 	{
 		std::vector<char8_t> buff;
 		buff.resize(buff_size);
-		core::_p::UCS4_to_UTF8_unsafe(p_out, buff.data());
+		core::_p::UCS4_to_UTF8_faulty_unsafe(p_out, '?', buff.data());
 		write(std::u8string_view{buff.data(), buff_size});
 	}
 	else
 	{
 		char8_t* buff = reinterpret_cast<char8_t*>(core_alloca(buff_size));
-		core::_p::UCS4_to_UTF8_unsafe(p_out, buff);
+		core::_p::UCS4_to_UTF8_faulty_unsafe(p_out, '?', buff);
 		write(std::u8string_view{buff, buff_size});
 	}
 }
