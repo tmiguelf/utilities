@@ -356,7 +356,7 @@ namespace core
 	///	\param[out]	p_output - Resulting UTF8 encoding. Not Null terminated
 	///	\return		The number of bytes (char8_t blocks) used, in the output encoding.
 	///	\warning	Input/Output does not require to encode a valid Unicode code point. Never fails.
-	uint8_t encode_UTF8(char32_t p_char, std::span<char8_t, 7> p_output);
+	uint8_t encode_UTF8(char32_t p_char, std::span<char8_t, 4> p_output);
 
 	///	\brief	Converts a code point to UTF16
 	///	\param[in]	p_char - Code point to convert
