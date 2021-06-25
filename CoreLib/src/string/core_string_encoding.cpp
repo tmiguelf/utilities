@@ -252,11 +252,19 @@ static bool __fmove_UTF8_UCS4(const char8_t*& p_input, const char8_t* const p_en
 			}
 			else if((testp & 0xF8) == 0xF0) //level 3
 			{
-				if(	p_end - tlocal < 4			||
-					(!(*(tlocal++) & 0x07) && (*tlocal < 0x90)) || //validate range
-					(*tlocal & 0xC0) != 0x80	||	//validate encoding
+				const char8_t t1 = testp & 0x07;
+				if((p_end - tlocal < 4) || t1 > 4) //validate size, and partial upper_range
+				{
+					return false;
+				}
+
+				const char8_t t2 = *++tlocal;
+				if(
+					(t1 == 4 && (t2 & 0x30))	|| //validate upper_range
+					(!t1 && (t2 < 0x90))		|| //validate sub-range
+					(t2 & 0xC0) != 0x80			|| //validate encoding
 					(*++tlocal & 0xC0) != 0x80	||
-					(*++tlocal & 0xC0) != 0x80	)
+					(*++tlocal & 0xC0) != 0x80)
 				{
 					return false;
 				}
@@ -330,9 +338,8 @@ static void __fmove_UTF8_failForward(const char8_t*& p_input, const char8_t* con
 			(*++testp & 0xC0) != 0x80	)
 		{
 			p_input = testp -1;
-			return;
 		}
-		p_input += 2;
+		else p_input += 2;
 		return;
 	}
 	if((*testp & 0xF8) == 0xF0) //level 3
@@ -343,9 +350,8 @@ static void __fmove_UTF8_failForward(const char8_t*& p_input, const char8_t* con
 			(*++testp & 0xC0) != 0x80	)
 		{
 			p_input = testp -1;
-			return;
 		}
-		p_input += 3;
+		else p_input += 3;
 		return;
 	}
 	if((*testp & 0xFC) == 0xF8) //level 4
@@ -357,9 +363,8 @@ static void __fmove_UTF8_failForward(const char8_t*& p_input, const char8_t* con
 			(*++testp & 0xC0) != 0x80	)
 		{
 			p_input = testp -1;
-			return;
 		}
-		p_input += 4;
+		else p_input += 4;
 		return;
 	}
 	if((*testp & 0xFE) == 0xFC) //level 5
@@ -372,9 +377,8 @@ static void __fmove_UTF8_failForward(const char8_t*& p_input, const char8_t* con
 			(*++testp & 0xC0) != 0x80	)
 		{
 			p_input = testp -1;
-			return;
 		}
-		p_input += 5;
+		else p_input += 5;
 		return;
 	}
 	if(*testp == 0xFE) //level 6
@@ -388,16 +392,14 @@ static void __fmove_UTF8_failForward(const char8_t*& p_input, const char8_t* con
 			(*++testp & 0xC0) != 0x80	)
 		{
 			p_input = testp -1;
-			return;
 		}
-		p_input += 6;
+		else p_input += 6;
 		return;
 	}
 
 unwind_as_much_as_possible:
 	while(++testp != p_end && (*testp & 0xC0) == 0x80);
 	p_input = testp -1;
-	return;
 }
 
 static char8_t __convert_UTF8_ANSI_failforward(const char8_t*& p_input, const char8_t* const p_end, const char8_t p_placeholder)
@@ -433,10 +435,8 @@ static char8_t __convert_UTF8_ANSI_failforward(const char8_t*& p_input, const ch
 			(*++testp & 0xC0) != 0x80	)
 		{
 			p_input = testp -1;
-			return p_placeholder;
 		}
-
-		p_input += 2;
+		else p_input += 2;
 		return p_placeholder;
 	}
 	else if((*testp & 0xF8) == 0xF0) //level 3
@@ -447,10 +447,8 @@ static char8_t __convert_UTF8_ANSI_failforward(const char8_t*& p_input, const ch
 			(*++testp & 0xC0) != 0x80	)
 		{
 			p_input = testp -1;
-			return p_placeholder;
 		}
-
-		p_input += 3;
+		else p_input += 3;
 		return p_placeholder;
 	}
 	else if((*testp & 0xFC) == 0xF8) //level 4
@@ -462,10 +460,8 @@ static char8_t __convert_UTF8_ANSI_failforward(const char8_t*& p_input, const ch
 			(*++testp & 0xC0) != 0x80	)
 		{
 			p_input = testp -1;
-			return p_placeholder;
 		}
-
-		p_input += 4;
+		else p_input += 4;
 		return p_placeholder;
 	}
 	else if((*testp & 0xFE) == 0xFC) //level 5
@@ -478,10 +474,8 @@ static char8_t __convert_UTF8_ANSI_failforward(const char8_t*& p_input, const ch
 			(*++testp & 0xC0) != 0x80	)
 		{
 			p_input = testp -1;
-			return p_placeholder;
 		}
-
-		p_input += 5;
+		else p_input += 5;
 		return p_placeholder;
 	}
 	else if(*testp == 0xFE) //level 6
@@ -495,10 +489,8 @@ static char8_t __convert_UTF8_ANSI_failforward(const char8_t*& p_input, const ch
 			(*++testp & 0xC0) != 0x80	)
 		{
 			p_input = testp -1;
-			return p_placeholder;
 		}
-
-		p_input += 6;
+		else p_input += 6;
 		return p_placeholder;
 	}
 
@@ -563,10 +555,8 @@ static char16_t __convert_UTF8_UCS2_failforward(const char8_t*& p_input, const c
 			(*++testp & 0xC0) != 0x80	)
 		{
 			p_input = testp -1;
-			return p_placeholder;
 		}
-
-		p_input += 3;
+		else p_input += 3;
 		return p_placeholder;
 	}
 	if((*testp & 0xFC) == 0xF8) //level 4
@@ -578,10 +568,8 @@ static char16_t __convert_UTF8_UCS2_failforward(const char8_t*& p_input, const c
 			(*++testp & 0xC0) != 0x80	)
 		{
 			p_input = testp -1;
-			return p_placeholder;
 		}
-
-		p_input += 4;
+		else p_input += 4;
 		return p_placeholder;
 	}
 	if((*testp & 0xFE) == 0xFC) //level 5
@@ -594,10 +582,8 @@ static char16_t __convert_UTF8_UCS2_failforward(const char8_t*& p_input, const c
 			(*++testp & 0xC0) != 0x80	)
 		{
 			p_input = testp -1;
-			return p_placeholder;
 		}
-
-		p_input += 5;
+		else p_input += 5;
 		return p_placeholder;
 	}
 	if(*testp == 0xFE) //level 6
@@ -611,10 +597,8 @@ static char16_t __convert_UTF8_UCS2_failforward(const char8_t*& p_input, const c
 			(*++testp & 0xC0) != 0x80	)
 		{
 			p_input = testp -1;
-			return p_placeholder;
 		}
-
-		p_input += 6;
+		else p_input += 6;
 		return p_placeholder;
 	}
 
@@ -680,19 +664,24 @@ static char32_t __convert_UTF8_UCS4_failforward(const char8_t*& p_input, const c
 			p_input = testp -1;
 			return p_placeholder;
 		}
-
 		p_input += 3;
 
-		testp = codeStart;
-		if(!(*codeStart & 0x07) && (*++codeStart < 0x90))
+		const char8_t t1 = *codeStart & 0x07;
+		if(t1 > 4) //validate size, and partial upper_range
+		{
+			return p_placeholder;
+		}
+		const char8_t t2 = *++codeStart;
+		if(	(t1 == 4 && (t2 & 0x30))	|| //validate upper_range
+			(!t1 && (t2 < 0x90))) //validate sub-range
 		{
 			return p_placeholder;
 		}
 
-		char32_t tcode = (*testp & 0x07) << 18;
-		tcode |= static_cast<char32_t>(*++testp & 0x3F) << 12;
-		tcode |= static_cast<char32_t>(*++testp & 0x3F) << 6;
-		return tcode | static_cast<char32_t>(*++testp & 0x3F);
+		char32_t tcode = t1 << 18;
+		tcode |= static_cast<char32_t>(t2 & 0x3F) << 12;
+		tcode |= static_cast<char32_t>(*++codeStart & 0x3F) << 6;
+		return tcode | static_cast<char32_t>(*++codeStart & 0x3F);
 	}
 
 	if((*testp & 0xFC) == 0xF8) //level 4
@@ -1023,7 +1012,7 @@ uintptr_t __inline_encode_UTF8(char32_t p_char, char8_t* p_output)
 		return 3;
 	}
 
-	if(p_char < 0x00200000) //Level 3
+	if(p_char < 0x00110000) //Level 3
 	{
 		*p_output   = static_cast<char8_t>( (p_char >> 18			) | 0xF0);
 		*++p_output = static_cast<char8_t>(((p_char >> 12)	& 0x3F	) | 0x80);
@@ -1269,7 +1258,7 @@ static uintptr_t __estimate_UCS4_UTF8(const char32_t p_input)
 	{
 		return 3;
 	}
-	if(p_input < 0x00200000) //Level 3
+	if(p_input < 0x00110000) //Level 3
 	{
 		return 4;
 	}
@@ -1325,7 +1314,7 @@ static uintptr_t __convert_UCS4_UTF8_checked(const char32_t p_input, char8_t* p_
 		*p_out     = static_cast<char8_t>( p_input        & 0x3F) | char8_t{0x80};
 		return 3;
 	}
-	if(p_input < 0x00200000) //Level 3
+	if(p_input < 0x00110000) //Level 3
 	{
 		*(p_out++) = static_cast<char8_t>( p_input >> 18        ) | char8_t{0xF0};
 		*(p_out++) = static_cast<char8_t>((p_input >> 12) & 0x3F) | char8_t{0x80};
@@ -1443,7 +1432,6 @@ void UCS4_to_ANSI_unsafe(std::u32string_view p_input, char8_t* p_output)
 		*(p_output++) = static_cast<char8_t>(tchar);
 	}
 }
-
 
 [[nodiscard]] uintptr_t ANSI_to_UTF8_estimate(std::u8string_view p_input)
 {
