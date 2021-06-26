@@ -457,28 +457,22 @@ namespace core
 		template<typename Fp_t>
 		static inline uintptr_t fp2dec(Fp_t p_val, std::span<char8_t, to_chars_dec_max_digits_v<Fp_t>> p_out)
 		{
-			char* start = reinterpret_cast<char*>(p_out.data());
-			std::to_chars_result res = std::to_chars(start, start + p_out.size(), p_val);
-
-			if(res.ec == std::errc{})
-			{
-				return static_cast<uintptr_t>(res.ptr - start);
-			}
-			return 0;
+			char* const start = reinterpret_cast<char*>(p_out.data());
+			const std::to_chars_result res = std::to_chars(start, start + p_out.size(), p_val);
+			return static_cast<uintptr_t>(res.ptr - start);
 		}
 
 		template<typename char_T, typename Fp_t>
 		static inline uintptr_t fp2dec(Fp_t p_val, std::span<char_T, to_chars_dec_max_digits_v<Fp_t>> p_out)
 		{
 			std::array<char8_t, to_chars_dec_max_digits_v<Fp_t>> buff;
-			uintptr_t ret = fp2dec<Fp_t>(p_val, buff);
+			const uintptr_t ret = fp2dec<Fp_t>(p_val, buff);
 			for(uintptr_t i = 0; i < ret; ++i)
 			{
 				p_out[i] = static_cast<char32_t>(buff[i]);
 			}
 			return ret;
 		}
-
 
 		namespace
 		{
@@ -515,6 +509,168 @@ namespace core
 				}
 			};
 		}	//namespace
+
+
+		uintptr_t uint2dec_estimate(uint8_t p_val)
+		{
+			if(p_val < uint8_t{ 10}) return 1;
+			if(p_val < uint8_t{100}) return 2;
+			return 3;
+		}
+
+		uintptr_t uint2dec_estimate(uint16_t p_val)
+		{
+			if(p_val < uint16_t{   10}) return 1;
+			if(p_val < uint16_t{  100}) return 2;
+			if(p_val < uint16_t{ 1000}) return 3;
+			if(p_val < uint16_t{10000}) return 4;
+			return 5;
+		}
+
+		uintptr_t uint2dec_estimate(uint32_t p_val)
+		{
+			if(p_val < uint32_t{        10}) return 1;
+			if(p_val < uint32_t{       100}) return 2;
+			if(p_val < uint32_t{      1000}) return 3;
+			if(p_val < uint32_t{     10000}) return 4;
+			if(p_val < uint32_t{    100000}) return 5;
+			if(p_val < uint32_t{   1000000}) return 6;
+			if(p_val < uint32_t{  10000000}) return 7;
+			if(p_val < uint32_t{ 100000000}) return 8;
+			if(p_val < uint32_t{1000000000}) return 9;
+			return 10;
+		}
+
+		uintptr_t uint2dec_estimate(uint64_t p_val)
+		{
+			if(p_val < uint64_t{                  10}) return  1;
+			if(p_val < uint64_t{                 100}) return  2;
+			if(p_val < uint64_t{                1000}) return  3;
+			if(p_val < uint64_t{               10000}) return  4;
+			if(p_val < uint64_t{              100000}) return  5;
+			if(p_val < uint64_t{             1000000}) return  6;
+			if(p_val < uint64_t{            10000000}) return  7;
+			if(p_val < uint64_t{           100000000}) return  8;
+			if(p_val < uint64_t{          1000000000}) return  9;
+			if(p_val < uint64_t{         10000000000}) return 10;
+			if(p_val < uint64_t{        100000000000}) return 11;
+			if(p_val < uint64_t{       1000000000000}) return 12;
+			if(p_val < uint64_t{      10000000000000}) return 13;
+			if(p_val < uint64_t{     100000000000000}) return 14;
+			if(p_val < uint64_t{    1000000000000000}) return 15;
+			if(p_val < uint64_t{   10000000000000000}) return 16;
+			if(p_val < uint64_t{  100000000000000000}) return 17;
+			if(p_val < uint64_t{ 1000000000000000000}) return 18;
+			if(p_val < uint64_t{10000000000000000000}) return 19;
+			return 20;
+		}
+
+		uintptr_t int2dec_estimate(int8_t p_val)
+		{
+			if(p_val < 0)
+			{
+				return uint2dec_estimate(static_cast<uint8_t>(-p_val)) + 1;
+			}
+			return uint2dec_estimate(static_cast<uint8_t>(p_val));
+		}
+
+		uintptr_t int2dec_estimate(int16_t p_val)
+		{
+			if(p_val < 0)
+			{
+				return uint2dec_estimate(static_cast<uint16_t>(-p_val)) + 1;
+			}
+			return uint2dec_estimate(static_cast<uint16_t>(p_val));
+		}
+
+		uintptr_t int2dec_estimate(int32_t p_val)
+		{
+			if(p_val < 0)
+			{
+				return uint2dec_estimate(static_cast<uint32_t>(-p_val)) + 1;
+			}
+			return uint2dec_estimate(static_cast<uint32_t>(p_val));
+		}
+
+		uintptr_t int2dec_estimate(int64_t p_val)
+		{
+			if(p_val < 0)
+			{
+				return uint2dec_estimate(static_cast<uint64_t>(-p_val)) + 1;
+			}
+			return uint2dec_estimate(static_cast<uint64_t>(p_val));
+		}
+
+		template<typename Fp_t>
+		uintptr_t fp2dec_estimate(Fp_t p_val)
+		{
+			std::array<char, to_chars_dec_max_digits_v<Fp_t>> buff;
+			char* const start = reinterpret_cast<char*>(buff.data());
+			const std::to_chars_result res = std::to_chars(start, start + buff.size(), p_val);
+			return static_cast<uintptr_t>(res.ptr - start);
+		}
+
+		namespace
+		{
+			template<typename>
+			struct help_to_chars_estimate;
+
+			template<std::floating_point num_T>
+			struct help_to_chars_estimate<num_T>
+			{
+				static inline uintptr_t estimate(num_T p_val)
+				{
+					return fp2dec_estimate(p_val);
+				}
+			};
+
+			template<std::signed_integral num_T>
+			struct help_to_chars_estimate<num_T>
+			{
+				static inline uintptr_t estimate(num_T p_val)
+				{
+					return int2dec_estimate(p_val);
+				}
+			};
+
+			template<std::unsigned_integral num_T>
+			struct help_to_chars_estimate<num_T>
+			{
+				static inline uintptr_t estimate(num_T p_val)
+				{
+					return uint2dec_estimate(p_val);
+				}
+			};
+		}	//namespace
+
+
+		template <char_conv_dec_supported_c num_T>
+		[[nodiscard]] uintptr_t to_chars_dec_estimate(num_T p_val)
+		{
+			return help_to_chars_estimate<num_T>::estimate(p_val);
+		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	} //namespace _p
 
@@ -655,6 +811,22 @@ namespace core
 		template from_chars_result<uint32_t> from_chars_hex<uint32_t, char32_t>(std::basic_string_view<char32_t>);
 		template from_chars_result<uint16_t> from_chars_hex<uint16_t, char32_t>(std::basic_string_view<char32_t>);
 		template from_chars_result<uint8_t > from_chars_hex<uint8_t , char32_t>(std::basic_string_view<char32_t>);
+
+
+
+
+
+		template uintptr_t to_chars_dec_estimate(uint8_t    );
+		template uintptr_t to_chars_dec_estimate(uint16_t   );
+		template uintptr_t to_chars_dec_estimate(uint32_t   );
+		template uintptr_t to_chars_dec_estimate(uint64_t   );
+		template uintptr_t to_chars_dec_estimate(int8_t     );
+		template uintptr_t to_chars_dec_estimate(int16_t    );
+		template uintptr_t to_chars_dec_estimate(int32_t    );
+		template uintptr_t to_chars_dec_estimate(int64_t    );
+		template uintptr_t to_chars_dec_estimate(float      );
+		template uintptr_t to_chars_dec_estimate(double     );
+		template uintptr_t to_chars_dec_estimate(long double);
 
 
 		template uintptr_t to_chars(uint8_t    , std::span<char8_t, to_chars_dec_max_digits_v<uint8_t    >>);
