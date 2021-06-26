@@ -1566,12 +1566,6 @@ void UCS4_to_UTF8_unsafe(std::u32string_view p_input, char8_t* p_output)
 	}
 }
 
-
-[[nodiscard]] uintptr_t ANSI_to_UTF16_estimate(std::u8string_view p_input)
-{
-	return p_input.size();
-}
-
 void ANSI_to_UTF16_unsafe(std::u8string_view p_input, char16_t* p_output)
 {
 	for(const char8_t tchar : p_input)
@@ -1662,11 +1656,6 @@ void UCS4_to_UTF16_unsafe(std::u32string_view p_input, char16_t* p_output)
 	}
 }
 
-
-[[nodiscard]] uintptr_t ANSI_to_UCS2_estimate(std::u8string_view p_input)
-{
-	return p_input.size();
-}
 
 void ANSI_to_UCS2_unsafe(std::u8string_view p_input, char16_t* p_output)
 {
@@ -1811,12 +1800,6 @@ void UTF16_to_UCS4_unsafe(std::u16string_view p_input, char32_t* p_output)
 	}
 }
 
-
-[[nodiscard]] uintptr_t UCS2_to_UCS4_estimate(std::u16string_view p_input)
-{
-	return p_input.size();
-}
-
 void UCS2_to_UCS4_unsafe(std::u16string_view p_input, char32_t* p_output)
 {
 	for(const char16_t tchar : p_input)
@@ -1883,11 +1866,6 @@ void UTF16_to_ANSI_faulty_unsafe(std::u16string_view p_input, char8_t p_placeHol
 }
 
 
-[[nodiscard]] uintptr_t UCS2_to_ANSI_faulty_estimate(std::u16string_view p_input)
-{
-	return p_input.size();
-}
-
 void UCS2_to_ANSI_faulty_unsafe(std::u16string_view p_input, char8_t p_placeHolder, char8_t* p_output)
 {
 	for(const char16_t tchar : p_input)
@@ -1904,11 +1882,6 @@ void UCS2_to_ANSI_faulty_unsafe(std::u16string_view p_input, char8_t p_placeHold
 	}
 }
 
-
-[[nodiscard]] uintptr_t UCS4_to_ANSI_faulty_estimate(std::u32string_view p_input)
-{
-	return p_input.size();
-}
 
 void UCS4_to_ANSI_faulty_unsafe(std::u32string_view p_input, char8_t p_placeHolder, char8_t* p_output)
 {
@@ -2144,7 +2117,6 @@ void UTF8_to_UCS2_faulty_unsafe(std::u8string_view p_input, char16_t p_placeHold
 }
 
 
-
 [[nodiscard]] uintptr_t UTF16_to_UCS2_faulty_estimate(std::u16string_view p_input)
 {
 	return UTF16_to_fix_faulty_estimate(p_input);
@@ -2158,12 +2130,6 @@ void UTF16_to_UCS2_faulty_unsafe(std::u16string_view p_input, char16_t p_placeHo
 	{
 		*p_output = __convert_UTF16_UCS2_failforward(pos, end, p_placeHolder);
 	}
-}
-
-
-[[nodiscard]] uintptr_t UCS4_to_UCS2_faulty_estimate(std::u32string_view p_input)
-{
-	return p_input.size();
 }
 
 void UCS4_to_UCS2_faulty_unsafe(std::u32string_view p_input, char16_t p_placeHolder, char16_t* p_output)
