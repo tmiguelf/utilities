@@ -215,8 +215,8 @@ void console_out::put(char8_t p_out) const
 
 void console_out::put(char16_t p_out) const
 {
-	std::array<char8_t, 7> buff;
-	uint8_t size = encode_UTF8(static_cast<char32_t>(p_out), std::span<char8_t, 7>{buff});
+	std::array<char8_t, 4> buff;
+	uint8_t size = encode_UTF8(static_cast<char32_t>(p_out), buff);
 
 	if(size)
 	{
@@ -230,8 +230,8 @@ void console_out::put(char16_t p_out) const
 
 void console_out::put(char32_t p_out) const
 {
-	std::array<char8_t, 7> buff;
-	uint8_t size = encode_UTF8(p_out, std::span<char8_t, 7>{buff});
+	std::array<char8_t, 4> buff;
+	uint8_t size = encode_UTF8(p_out, buff);
 
 	if(size)
 	{
