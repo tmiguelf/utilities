@@ -485,9 +485,11 @@ using DecTypes = ::testing::Types<
 	std::pair<int16_t		, char8_t >,
 	std::pair<int32_t		, char8_t >,
 	std::pair<int64_t		, char8_t >,
+#if defined(_MSC_BUILD)
 	std::pair<float			, char8_t >,
 	std::pair<double		, char8_t >,
 	std::pair<long double	, char8_t >,
+#endif
 	std::pair<uint8_t		, char16_t>,
 	std::pair<uint16_t		, char16_t>,
 	std::pair<uint32_t		, char16_t>,
@@ -496,9 +498,11 @@ using DecTypes = ::testing::Types<
 	std::pair<int16_t		, char16_t>,
 	std::pair<int32_t		, char16_t>,
 	std::pair<int64_t		, char16_t>,
+#if defined(_MSC_BUILD)
 	std::pair<float			, char16_t>,
 	std::pair<double		, char16_t>,
 	std::pair<long double	, char16_t>,
+#endif
 	std::pair<uint8_t		, char32_t>,
 	std::pair<uint16_t		, char32_t>,
 	std::pair<uint32_t		, char32_t>,
@@ -506,10 +510,12 @@ using DecTypes = ::testing::Types<
 	std::pair<int8_t		, char32_t>,
 	std::pair<int16_t		, char32_t>,
 	std::pair<int32_t		, char32_t>,
-	std::pair<int64_t		, char32_t>,
-	std::pair<float			, char32_t>,
+	std::pair<int64_t		, char32_t>
+#if defined(_MSC_BUILD)
+	, std::pair<float			, char32_t>,
 	std::pair<double		, char32_t>,
 	std::pair<long double	, char32_t>
+#endif
 >;
 TYPED_TEST_SUITE(charconv_Decimal_T, DecTypes);
 
