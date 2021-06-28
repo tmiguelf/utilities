@@ -699,7 +699,7 @@ using namespace core::literals;
 		}
 
 		template <char_conv_dec_supported_c num_T>
-		[[nodiscard]] uintptr_t to_chars_dec_estimate(num_T p_val)
+		[[nodiscard]] uintptr_t to_chars_estimate(num_T p_val)
 		{
 			return help_char_conv<num_T>::estimate(p_val);
 		}
@@ -824,19 +824,19 @@ using namespace core::literals;
 		template from_chars_result<uint64_t> from_chars_hex<uint64_t, char32_t>(std::basic_string_view<char32_t>);
 
 
-		template uintptr_t to_chars_dec_estimate(uint8_t    );
-		template uintptr_t to_chars_dec_estimate(uint16_t   );
-		template uintptr_t to_chars_dec_estimate(uint32_t   );
-		template uintptr_t to_chars_dec_estimate(uint64_t   );
-		template uintptr_t to_chars_dec_estimate(int8_t     );
-		template uintptr_t to_chars_dec_estimate(int16_t    );
-		template uintptr_t to_chars_dec_estimate(int32_t    );
-		template uintptr_t to_chars_dec_estimate(int64_t    );
+		template uintptr_t to_chars_estimate(uint8_t    );
+		template uintptr_t to_chars_estimate(uint16_t   );
+		template uintptr_t to_chars_estimate(uint32_t   );
+		template uintptr_t to_chars_estimate(uint64_t   );
+		template uintptr_t to_chars_estimate(int8_t     );
+		template uintptr_t to_chars_estimate(int16_t    );
+		template uintptr_t to_chars_estimate(int32_t    );
+		template uintptr_t to_chars_estimate(int64_t    );
 
 #if defined(_MSC_BUILD)
-		template uintptr_t to_chars_dec_estimate(float      );
-		template uintptr_t to_chars_dec_estimate(double     );
-		template uintptr_t to_chars_dec_estimate(long double);
+		template uintptr_t to_chars_estimate(float      );
+		template uintptr_t to_chars_estimate(double     );
+		template uintptr_t to_chars_estimate(long double);
 #endif
 
 		template uintptr_t to_chars(uint8_t    , std::span<char8_t, to_chars_dec_max_digits_v<uint8_t    >>);

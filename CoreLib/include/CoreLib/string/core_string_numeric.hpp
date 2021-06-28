@@ -153,10 +153,10 @@ namespace core
 	namespace _p
 	{
 		template <char_conv_dec_supported_c num_T>
-		[[nodiscard]] uintptr_t to_chars_dec_estimate(num_T p_val);
+		[[nodiscard]] uintptr_t to_chars_estimate(num_T p_val);
 
 		template <_p::is_internal_charconv_c char_T, char_conv_dec_supported_c num_T>
-		void to_chars_dec_unsafe(num_T p_val, char_T* p_out);
+		void to_chars_unsafe(num_T p_val, char_T* p_out);
 
 		template <char_conv_hex_supported_c num_T>
 		[[nodiscard]] uintptr_t to_chars_hex_estimate(num_T p_val);
