@@ -69,12 +69,9 @@ namespace core
 	template <> struct char_conv_dec_supported<int32_t>		: public std::true_type {};
 	template <> struct char_conv_dec_supported<uint64_t>	: public std::true_type {};
 	template <> struct char_conv_dec_supported<int64_t>		: public std::true_type {};
-
-#if defined(_MSC_BUILD)
 	template <> struct char_conv_dec_supported<float>		: public std::true_type {};
 	template <> struct char_conv_dec_supported<double>		: public std::true_type {};
 	template <> struct char_conv_dec_supported<long double>	: public std::true_type {};
-#endif
 
 	template <typename T>
 	concept char_conv_dec_supported_c = char_conv_dec_supported<T>::value;

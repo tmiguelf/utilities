@@ -771,12 +771,9 @@ using namespace core::literals;
 		template from_chars_result<int16_t    > from_chars<int16_t    , char8_t>(std::basic_string_view<char8_t>);
 		template from_chars_result<int32_t    > from_chars<int32_t    , char8_t>(std::basic_string_view<char8_t>);
 		template from_chars_result<int64_t    > from_chars<int64_t    , char8_t>(std::basic_string_view<char8_t>);
-
-#if defined(_MSC_BUILD)
 		template from_chars_result<float      > from_chars<float      , char8_t>(std::basic_string_view<char8_t>);
 		template from_chars_result<double     > from_chars<double     , char8_t>(std::basic_string_view<char8_t>);
 		template from_chars_result<long double> from_chars<long double, char8_t>(std::basic_string_view<char8_t>);
-#endif
 
 		template from_chars_result<uint8_t    > from_chars<uint8_t    , char16_t>(std::basic_string_view<char16_t>);
 		template from_chars_result<uint16_t   > from_chars<uint16_t   , char16_t>(std::basic_string_view<char16_t>);
@@ -786,12 +783,9 @@ using namespace core::literals;
 		template from_chars_result<int16_t    > from_chars<int16_t    , char16_t>(std::basic_string_view<char16_t>);
 		template from_chars_result<int32_t    > from_chars<int32_t    , char16_t>(std::basic_string_view<char16_t>);
 		template from_chars_result<int64_t    > from_chars<int64_t    , char16_t>(std::basic_string_view<char16_t>);
-
-#if defined(_MSC_BUILD)
 		template from_chars_result<float      > from_chars<float      , char16_t>(std::basic_string_view<char16_t>);
 		template from_chars_result<double     > from_chars<double     , char16_t>(std::basic_string_view<char16_t>);
 		template from_chars_result<long double> from_chars<long double, char16_t>(std::basic_string_view<char16_t>);
-#endif
 
 		template from_chars_result<uint8_t    > from_chars<uint8_t    , char32_t>(std::basic_string_view<char32_t>);
 		template from_chars_result<uint16_t   > from_chars<uint16_t   , char32_t>(std::basic_string_view<char32_t>);
@@ -801,12 +795,9 @@ using namespace core::literals;
 		template from_chars_result<int16_t    > from_chars<int16_t    , char32_t>(std::basic_string_view<char32_t>);
 		template from_chars_result<int32_t    > from_chars<int32_t    , char32_t>(std::basic_string_view<char32_t>);
 		template from_chars_result<int64_t    > from_chars<int64_t    , char32_t>(std::basic_string_view<char32_t>);
-
-#if defined(_MSC_BUILD)
 		template from_chars_result<float      > from_chars<float      , char32_t>(std::basic_string_view<char32_t>);
 		template from_chars_result<double     > from_chars<double     , char32_t>(std::basic_string_view<char32_t>);
 		template from_chars_result<long double> from_chars<long double, char32_t>(std::basic_string_view<char32_t>);
-#endif
 
 		template from_chars_result<uint8_t > from_chars_hex<uint8_t , char8_t>(std::basic_string_view<char8_t>);
 		template from_chars_result<uint16_t> from_chars_hex<uint16_t, char8_t>(std::basic_string_view<char8_t>);
@@ -832,12 +823,9 @@ using namespace core::literals;
 		template uintptr_t to_chars_estimate(int16_t    );
 		template uintptr_t to_chars_estimate(int32_t    );
 		template uintptr_t to_chars_estimate(int64_t    );
-
-#if defined(_MSC_BUILD)
 		template uintptr_t to_chars_estimate(float      );
 		template uintptr_t to_chars_estimate(double     );
 		template uintptr_t to_chars_estimate(long double);
-#endif
 
 		template uintptr_t to_chars(uint8_t    , std::span<char8_t, to_chars_dec_max_digits_v<uint8_t    >>);
 		template uintptr_t to_chars(uint16_t   , std::span<char8_t, to_chars_dec_max_digits_v<uint16_t   >>);
@@ -847,11 +835,9 @@ using namespace core::literals;
 		template uintptr_t to_chars(int16_t    , std::span<char8_t, to_chars_dec_max_digits_v<int16_t    >>);
 		template uintptr_t to_chars(int32_t    , std::span<char8_t, to_chars_dec_max_digits_v<int32_t    >>);
 		template uintptr_t to_chars(int64_t    , std::span<char8_t, to_chars_dec_max_digits_v<int64_t    >>);
-#if defined(_MSC_BUILD)
 		template uintptr_t to_chars(float      , std::span<char8_t, to_chars_dec_max_digits_v<float      >>);
 		template uintptr_t to_chars(double     , std::span<char8_t, to_chars_dec_max_digits_v<double     >>);
 		template uintptr_t to_chars(long double, std::span<char8_t, to_chars_dec_max_digits_v<long double>>);
-#endif
 
 		template uintptr_t to_chars(uint8_t    , std::span<char16_t, to_chars_dec_max_digits_v<uint8_t    >>);
 		template uintptr_t to_chars(uint16_t   , std::span<char16_t, to_chars_dec_max_digits_v<uint16_t   >>);
@@ -861,11 +847,9 @@ using namespace core::literals;
 		template uintptr_t to_chars(int16_t    , std::span<char16_t, to_chars_dec_max_digits_v<int16_t    >>);
 		template uintptr_t to_chars(int32_t    , std::span<char16_t, to_chars_dec_max_digits_v<int32_t    >>);
 		template uintptr_t to_chars(int64_t    , std::span<char16_t, to_chars_dec_max_digits_v<int64_t    >>);
-#if defined(_MSC_BUILD)
 		template uintptr_t to_chars(float      , std::span<char16_t, to_chars_dec_max_digits_v<float      >>);
 		template uintptr_t to_chars(double     , std::span<char16_t, to_chars_dec_max_digits_v<double     >>);
 		template uintptr_t to_chars(long double, std::span<char16_t, to_chars_dec_max_digits_v<long double>>);
-#endif
 
 		template uintptr_t to_chars(uint8_t    , std::span<char32_t, to_chars_dec_max_digits_v<uint8_t    >>);
 		template uintptr_t to_chars(uint16_t   , std::span<char32_t, to_chars_dec_max_digits_v<uint16_t   >>);
@@ -875,11 +859,9 @@ using namespace core::literals;
 		template uintptr_t to_chars(int16_t    , std::span<char32_t, to_chars_dec_max_digits_v<int16_t    >>);
 		template uintptr_t to_chars(int32_t    , std::span<char32_t, to_chars_dec_max_digits_v<int32_t    >>);
 		template uintptr_t to_chars(int64_t    , std::span<char32_t, to_chars_dec_max_digits_v<int64_t    >>);
-#if defined(_MSC_BUILD)
 		template uintptr_t to_chars(float      , std::span<char32_t, to_chars_dec_max_digits_v<float      >>);
 		template uintptr_t to_chars(double     , std::span<char32_t, to_chars_dec_max_digits_v<double     >>);
 		template uintptr_t to_chars(long double, std::span<char32_t, to_chars_dec_max_digits_v<long double>>);
-#endif
 
 		template void to_chars_unsafe(uint8_t    , char8_t*);
 		template void to_chars_unsafe(uint16_t   , char8_t*);
@@ -889,11 +871,9 @@ using namespace core::literals;
 		template void to_chars_unsafe(int16_t    , char8_t*);
 		template void to_chars_unsafe(int32_t    , char8_t*);
 		template void to_chars_unsafe(int64_t    , char8_t*);
-#if defined(_MSC_BUILD)
 		template void to_chars_unsafe(float      , char8_t*);
 		template void to_chars_unsafe(double     , char8_t*);
 		template void to_chars_unsafe(long double, char8_t*);
-#endif
 
 		template void to_chars_unsafe(uint8_t    , char16_t*);
 		template void to_chars_unsafe(uint16_t   , char16_t*);
@@ -903,11 +883,9 @@ using namespace core::literals;
 		template void to_chars_unsafe(int16_t    , char16_t*);
 		template void to_chars_unsafe(int32_t    , char16_t*);
 		template void to_chars_unsafe(int64_t    , char16_t*);
-#if defined(_MSC_BUILD)
 		template void to_chars_unsafe(float      , char16_t*);
 		template void to_chars_unsafe(double     , char16_t*);
 		template void to_chars_unsafe(long double, char16_t*);
-#endif
 
 		template void to_chars_unsafe(uint8_t    , char32_t*);
 		template void to_chars_unsafe(uint16_t   , char32_t*);
@@ -917,11 +895,9 @@ using namespace core::literals;
 		template void to_chars_unsafe(int16_t    , char32_t*);
 		template void to_chars_unsafe(int32_t    , char32_t*);
 		template void to_chars_unsafe(int64_t    , char32_t*);
-#if defined(_MSC_BUILD)
 		template void to_chars_unsafe(float      , char32_t*);
 		template void to_chars_unsafe(double     , char32_t*);
 		template void to_chars_unsafe(long double, char32_t*);
-#endif
 
 
 		template uintptr_t to_chars_hex_estimate(uint8_t );
@@ -991,9 +967,6 @@ using namespace core::literals;
 		template void to_chars_hex_fix_unsafe(uint16_t, char32_t*);
 		template void to_chars_hex_fix_unsafe(uint32_t, char32_t*);
 		template void to_chars_hex_fix_unsafe(uint64_t, char32_t*);
-
-
-
 
 	} //namespace
 
