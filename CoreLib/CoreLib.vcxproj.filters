@@ -18,6 +18,9 @@
     <Filter Include="Source Files\string">
       <UniqueIdentifier>{fe8fc368-1042-4701-950d-f6ab80a01935}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\toPrint">
+      <UniqueIdentifier>{9da9c3c6-b2a7-4b29-b62a-74e291ee806f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="CoreLib.include.props">
@@ -81,6 +84,30 @@
     </ClInclude>
     <ClInclude Include="include\CoreLib\string\core_wchar_alias.hpp">
       <Filter>Header Files\string</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\toPrint\toPrint.hpp">
+      <Filter>Header Files\toPrint</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\toPrint\toPrint_base.hpp">
+      <Filter>Header Files\toPrint</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\toPrint\toPrint_encoders.hpp">
+      <Filter>Header Files\toPrint</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\toPrint\toPrint_filesystem.hpp">
+      <Filter>Header Files\toPrint</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\toPrint\toPrint_net.hpp">
+      <Filter>Header Files\toPrint</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\toPrint\toPrint_sink.hpp">
+      <Filter>Header Files\toPrint</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\toPrint\toPrint_std_ostream.hpp">
+      <Filter>Header Files\toPrint</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\toPrint\toPrint_tuple.hpp">
+      <Filter>Header Files\toPrint</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
