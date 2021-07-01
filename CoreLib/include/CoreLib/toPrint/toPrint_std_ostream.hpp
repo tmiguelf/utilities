@@ -28,7 +28,67 @@
 
 #pragma once
 
+#include <ostream>
+#include <vector>
+
+#include "toPrint_sink.hpp"
+#include "toPrint_base.hpp"
+
+#include <CoreLib/Core_Alloca.hpp>
+
 namespace core
 {
 
+template<>
+class toPrint_sink<std::ostream>
+{
+public:
+	toPrint_sink(std::ostream& p_stream): m_stream(p_stream){}
+
+	void write(std::u8string_view p_message)
+	{
+		m_stream.write(reinterpret_cast<const char*>(p_message.data()), p_message.size());
+	}
+
+private:
+	std::ostream& m_stream;
+};
+
+namespace _p
+{
+	template<core::_p::c_toPrint T>
+	void push_ostream_toPrint(std::ostream& p_sink, const T& p_data, char8_t* p_buff, uintptr_t p_size)
+	{
+		p_data.get(p_buff);
+		p_sink.write(reinterpret_cast<const char*>(p_buff), p_size);
+	}
+} //namespace _p
+
 } //namespace core
+
+template<core::_p::c_toPrint T>
+#if defined(_MSC_BUILD)
+__declspec(noinline)
+#else
+__attribute__((noinline))
+#endif
+std::ostream& operator << (std::ostream& p_stream, const T& p_data)
+{
+	const uintptr_t size = p_data.size();
+	if(size)
+	{
+		constexpr uintptr_t alloca_treshold = 0x10000;
+		if(size > alloca_treshold)
+		{
+			std::vector<char8_t> buff;
+			buff.resize(size);
+			core::_p::push_ostream_toPrint(p_stream, p_data, buff, size);
+		}
+		else
+		{
+			char8_t* buff = reinterpret_cast<char8_t*>(core_alloca(size));
+			core::_p::push_ostream_toPrint(p_stream, p_data, buff, size);
+		}
+	}
+	return p_stream;
+}

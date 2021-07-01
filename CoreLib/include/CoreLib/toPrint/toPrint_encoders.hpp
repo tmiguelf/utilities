@@ -81,7 +81,7 @@ public:
 	{
 		*(p_out++) = u8'0';
 		*(p_out++) = u8'x';
-		core::to_chars_hex_fix(reinterpret_cast<uintptr_t>(p_data),
+		core::to_chars_hex_fix(reinterpret_cast<uintptr_t>(m_data),
 			std::span<char8_t, aux_size>{p_out, aux_size});
 	}
 

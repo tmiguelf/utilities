@@ -77,18 +77,18 @@ namespace literals
 } //namespace core
 
 #define CORE_MAKE_ENUM_FLAG(TYPE) \
-inline constexpr TYPE  operator |  (TYPE  p_1, TYPE p_2){ using u_t = <std::underlying_type_t<TYPE>; return static_cast<TYPE>(static_cast<u_t>(p_1) | static_cast<u_t>(p_2)); } \
-inline constexpr TYPE  operator &  (TYPE  p_1, TYPE p_2){ using u_t = <std::underlying_type_t<TYPE>; return static_cast<TYPE>(static_cast<u_t>(p_1) & static_cast<u_t>(p_2)); } \
-inline constexpr TYPE  operator ^  (TYPE  p_1, TYPE p_2){ using u_t = <std::underlying_type_t<TYPE>; return static_cast<TYPE>(static_cast<u_t>(p_1) ^ static_cast<u_t>(p_2)); } \
-inline constexpr TYPE& operator |= (TYPE& p_1, TYPE p_2){ using u_t = <std::underlying_type_t<TYPE>; return p_1 = static_cast<TYPE>(static_cast<u_t>(p_1) | static_cast<u_t>(p_2)); } \
-inline constexpr TYPE& operator &= (TYPE& p_1, TYPE p_2){ using u_t = <std::underlying_type_t<TYPE>; return p_1 = static_cast<TYPE>(static_cast<u_t>(p_1) & static_cast<u_t>(p_2)); } \
-inline constexpr TYPE& operator ^= (TYPE& p_1, TYPE p_2){ using u_t = <std::underlying_type_t<TYPE>; return p_1 = static_cast<TYPE>(static_cast<u_t>(p_1) ^ static_cast<u_t>(p_2)); } \
-inline constexpr TYPE  operator ~  (TYPE  p_1)          { using u_t = <std::underlying_type_t<TYPE>; return static_cast<TYPE>(~static_cast<u_t>(p_1)); }
+inline constexpr TYPE  operator |  (TYPE  p_1, TYPE p_2){ using u_t = std::underlying_type_t<TYPE>; return static_cast<TYPE>(static_cast<u_t>(p_1) | static_cast<u_t>(p_2)); } \
+inline constexpr TYPE  operator &  (TYPE  p_1, TYPE p_2){ using u_t = std::underlying_type_t<TYPE>; return static_cast<TYPE>(static_cast<u_t>(p_1) & static_cast<u_t>(p_2)); } \
+inline constexpr TYPE  operator ^  (TYPE  p_1, TYPE p_2){ using u_t = std::underlying_type_t<TYPE>; return static_cast<TYPE>(static_cast<u_t>(p_1) ^ static_cast<u_t>(p_2)); } \
+inline constexpr TYPE& operator |= (TYPE& p_1, TYPE p_2){ using u_t = std::underlying_type_t<TYPE>; return p_1 = static_cast<TYPE>(static_cast<u_t>(p_1) | static_cast<u_t>(p_2)); } \
+inline constexpr TYPE& operator &= (TYPE& p_1, TYPE p_2){ using u_t = std::underlying_type_t<TYPE>; return p_1 = static_cast<TYPE>(static_cast<u_t>(p_1) & static_cast<u_t>(p_2)); } \
+inline constexpr TYPE& operator ^= (TYPE& p_1, TYPE p_2){ using u_t = std::underlying_type_t<TYPE>; return p_1 = static_cast<TYPE>(static_cast<u_t>(p_1) ^ static_cast<u_t>(p_2)); } \
+inline constexpr TYPE  operator ~  (TYPE  p_1)          { using u_t = std::underlying_type_t<TYPE>; return static_cast<TYPE>(~static_cast<u_t>(p_1)); }
 
 #define CORE_MAKE_ENUM_ORDERABLE(TYPE) \
-inline constexpr bool operator <  (TYPE p_1, TYPE p_2){ using u_t = <std::underlying_type_t<TYPE>; return static_cast<u_t>(p_1) <  static_cast<u_t>(p_2); } \
-inline constexpr bool operator >  (TYPE p_1, TYPE p_2){ using u_t = <std::underlying_type_t<TYPE>; return static_cast<u_t>(p_1) >  static_cast<u_t>(p_2); } \
-inline constexpr bool operator <= (TYPE p_1, TYPE p_2){ using u_t = <std::underlying_type_t<TYPE>; return static_cast<u_t>(p_1) <= static_cast<u_t>(p_2); } \
-inline constexpr bool operator >= (TYPE p_1, TYPE p_2){ using u_t = <std::underlying_type_t<TYPE>; return static_cast<u_t>(p_1) >= static_cast<u_t>(p_2); } \
-inline constexpr bool operator == (TYPE p_1, TYPE p_2){ using u_t = <std::underlying_type_t<TYPE>; return static_cast<u_t>(p_1) == static_cast<u_t>(p_2); } \
-inline constexpr bool operator != (TYPE p_1, TYPE p_2){ using u_t = <std::underlying_type_t<TYPE>; return static_cast<u_t>(p_1) != static_cast<u_t>(p_2); }
+inline constexpr bool operator <  (TYPE p_1, TYPE p_2){ using u_t = std::underlying_type_t<TYPE>; return static_cast<u_t>(p_1) <  static_cast<u_t>(p_2); } \
+inline constexpr bool operator >  (TYPE p_1, TYPE p_2){ using u_t = std::underlying_type_t<TYPE>; return static_cast<u_t>(p_1) >  static_cast<u_t>(p_2); } \
+inline constexpr bool operator <= (TYPE p_1, TYPE p_2){ using u_t = std::underlying_type_t<TYPE>; return static_cast<u_t>(p_1) <= static_cast<u_t>(p_2); } \
+inline constexpr bool operator >= (TYPE p_1, TYPE p_2){ using u_t = std::underlying_type_t<TYPE>; return static_cast<u_t>(p_1) >= static_cast<u_t>(p_2); } \
+inline constexpr bool operator == (TYPE p_1, TYPE p_2){ using u_t = std::underlying_type_t<TYPE>; return static_cast<u_t>(p_1) == static_cast<u_t>(p_2); } \
+inline constexpr bool operator != (TYPE p_1, TYPE p_2){ using u_t = std::underlying_type_t<TYPE>; return static_cast<u_t>(p_1) != static_cast<u_t>(p_2); }

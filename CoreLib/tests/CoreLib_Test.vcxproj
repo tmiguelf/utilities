@@ -59,6 +59,7 @@
     <ClCompile Include="src\string_encoding_test.cpp" />
     <ClCompile Include="src\string_misc_test.cpp" />
     <ClCompile Include="src\string_numeric_test.cpp" />
+    <ClCompile Include="src\toPrint_test.cpp" />
   </ItemGroup>
   <Import Project="$(quickMSBuildPath)default.cpp.targets" />
 </Project>
