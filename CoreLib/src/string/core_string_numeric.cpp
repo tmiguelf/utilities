@@ -372,7 +372,7 @@ using namespace core::literals;
 		{
 			const uintptr_t size = uint2dec_estimate(p_val);
 			char_T* pivot = p_str.data() + size;
-			while(p_val > 10)
+			while(p_val > 9)
 			{
 				*(--pivot) = static_cast<char8_t>('0' + p_val % 10);
 				p_val /= 10;
@@ -386,7 +386,7 @@ using namespace core::literals;
 		{
 			const uintptr_t size = uint2dec_estimate(p_val);
 			char_T* pivot = p_str + size;
-			while(p_val > 10)
+			while(p_val > 9)
 			{
 				*(--pivot) = static_cast<char8_t>('0' + p_val % 10);
 				p_val /= 10;
