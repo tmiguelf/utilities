@@ -25,7 +25,100 @@
 
 #include <utility>
 #include <type_traits>
-
-#include <CoreLib/toPrint/toPrint.hpp>
+#include <vector>
 #include <gtest/gtest.h>
 
+#include <CoreLib/toPrint/toPrint.hpp>
+#include <CoreLib/toPrint/toPrint_filesystem.hpp>
+#include <CoreLib/toPrint/toPrint_net.hpp>
+
+using namespace core::literals;
+using namespace std::literals;
+
+class test_sink: public core::sink_toPrint_base
+{
+public:
+	void write(std::u8string_view p_message)
+	{
+		m_print_cache.push_back(std::u8string{p_message});
+	}
+public:
+
+	std::vector<std::u8string> m_print_cache;
+};
+
+
+class TestStr
+{
+public:
+	uint64_t data = 0;
+};
+
+template<>
+class core::toPrint<TestStr>: public core::toPrint_base
+{
+public:
+	toPrint(const TestStr&)
+	{
+		m_size = preamble.size();
+	}
+
+	constexpr uintptr_t size() const { return m_size; }
+
+	void getPrint(char8_t* p_out) const //final
+	{
+		memcpy(p_out, preamble.data(), preamble.size());
+	}
+
+private:
+	static constexpr std::u8string_view preamble = u8"TestStr"sv;
+	uintptr_t m_size = 0;
+};
+
+
+
+TEST(toPrint, toPrint_interface)
+{
+	{
+		test_sink tsink;
+
+		TestStr test;
+#ifdef _WIN32
+		std::wstring_view help{__FILEW__};
+
+		core::os_string_view fileName =std::wstring_view{__FILEW__};
+#else
+		core::os_string_view fileName = std::string_view{__FILE__};
+#endif
+
+		core_ToPrint(tsink, test);
+		core_ToPrint(tsink, 32);
+		core_ToPrint(tsink, &test);
+		core_ToPrint(tsink, "string_view"sv);
+		core_ToPrint(tsink, u8"u8string_view"sv);
+		core_ToPrint(tsink, 'A');
+		core_ToPrint(tsink, u8'A');
+		core_ToPrint(tsink, uint8_t{5});
+		core_ToPrint(tsink, int8_t{-5});
+		core_ToPrint(tsink);
+		core_ToPrint(tsink, "Combination "sv, 32, ' ', test);
+
+		ASSERT_EQ(tsink.m_print_cache.size(), 11);
+		ASSERT_EQ(tsink.m_print_cache[0], std::u8string_view{u8"TestStr"});
+		ASSERT_EQ(tsink.m_print_cache[1], std::u8string_view{u8"32"});
+		{
+			std::u8string_view log_message_2 = tsink.m_print_cache[2];
+			ASSERT_EQ(log_message_2.size(), sizeof(void*) * 2 + 2);
+			ASSERT_EQ(log_message_2.substr(0, 2), std::u8string_view{u8"0x"});
+			ASSERT_TRUE(core::is_hex(log_message_2.substr(2)));
+		}
+		ASSERT_EQ(tsink.m_print_cache[3], std::u8string_view{u8"string_view"});
+		ASSERT_EQ(tsink.m_print_cache[4], std::u8string_view{u8"u8string_view"});
+		ASSERT_EQ(tsink.m_print_cache[5], std::u8string_view{u8"A"});
+		ASSERT_EQ(tsink.m_print_cache[6], std::u8string_view{u8"A"});
+		ASSERT_EQ(tsink.m_print_cache[7], std::u8string_view{u8"5"});
+		ASSERT_EQ(tsink.m_print_cache[8], std::u8string_view{u8"-5"});
+		ASSERT_EQ(tsink.m_print_cache[9], std::u8string_view{u8""});
+		ASSERT_EQ(tsink.m_print_cache[10], std::u8string_view{u8"Combination 32 TestStr"});
+	}
+}
