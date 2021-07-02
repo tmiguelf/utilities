@@ -47,7 +47,7 @@ namespace core::_p
 	private:
 		using evaluated_t = std::remove_cvref_t<T>;
 	public:
-		using type = std::conditional_t<is_toPrint_sink_v<evaluated_t>, const T&, ::core::toPrint_sink<evaluated_t>>;
+		using type = std::conditional_t<is_sink_toPrint_v<evaluated_t>, const T&, ::core::sink_toPrint<evaluated_t>>;
 	};
 	
 	template <c_tuple Tuple>
@@ -74,7 +74,6 @@ namespace core::_p
 		using type = transform<0>::type;
 	};
 	
-	
 	template <c_tuple Tuple>
 	struct is_all_toPrint
 	{
@@ -97,11 +96,8 @@ namespace core::_p
 	
 	template<typename> struct is_tuple_toPrint: public std::false_type{};
 	template<c_tuple T> struct is_tuple_toPrint<T>: public is_all_toPrint<T>{};
-	
-	template<typename T>
-	concept c_tuple_toPrint = is_tuple_toPrint<T>::value;
-	
-	
+	template<typename T> constexpr bool is_tuple_toPrint_v = is_tuple_toPrint<T>::value;
+
 	template <c_tuple Tuple>
 	struct tuple_toPrint_or_string_view { using type = tuple_toPrint<Tuple>::type; };
 	
@@ -118,25 +114,26 @@ namespace core::_p
 	struct tuple_toPrint_or_string_view<std::tuple<std::string>> { using type = std::string_view; };
 
 
-	template<typename Tuple, uintptr_t Pos = 0>
+	template<typename Tuple, uintptr_t Pos = 0> requires is_tuple_toPrint_v<Tuple>
 	inline uintptr_t count_toPrint(const Tuple& p_tuple)
 	{
 		const auto& res = std::get<Pos>(p_tuple);
+		const uintptr_t size = res.size();
 		if constexpr (Pos + 1 < std::tuple_size_v<Tuple>)
 		{
-			return res.size() + count_toPrint<Tuple, Pos + 1>(p_tuple);
+			return size + count_toPrint<Tuple, Pos + 1>(p_tuple);
 		}
 		else
 		{
-			return res.size();
+			return size;
 		}
 	}
 
-	template <typename Tuple, uintptr_t Pos = 0>
+	template <typename Tuple, uintptr_t Pos = 0> requires is_tuple_toPrint_v<Tuple>
 	inline void fill_toPrint(const Tuple& p_tuple, char8_t* p_buff)
 	{
 		const auto& res = std::get<Pos>(p_tuple);
-		res.get(p_buff);
+		res.getPrint(p_buff);
 
 		if constexpr (Pos + 1 < std::tuple_size_v<Tuple>)
 		{
@@ -144,31 +141,31 @@ namespace core::_p
 		}
 	}
 
-	template<c_toPrint_sink Sink>
+	template<typename Sink> requires is_valid_sink_toPrint_v<Sink>
 	inline void push_toPrint(const Sink& p_sink, const std::u8string_view& p_message)
 	{
 		p_sink.write(p_message);
 	};
 
-	template<c_toPrint_sink Sink>
+	template<typename Sink> requires is_valid_sink_toPrint_v<Sink>
 	inline void push_toPrint(const Sink& p_sink, const std::string_view& p_message)
 	{
 		p_sink.write(std::u8string_view{reinterpret_cast<const char8_t*>(p_message.data()), p_message.size()});
 	};
 
-	template<c_toPrint_sink Sink>
+	template<typename Sink> requires is_valid_sink_toPrint_v<Sink>
 	inline void push_toPrint(const Sink& p_sink)
 	{
 		p_sink.write(std::u8string_view{nullptr, 0});
 	};
 
-	template<c_toPrint_sink Sink>
+	template<typename Sink> requires is_valid_sink_toPrint_v<Sink>
 	inline void push_toPrint(const Sink& p_sink, const std::tuple<>&)
 	{
 		p_sink.write(std::u8string_view{nullptr, 0});
 	};
 
-	template<c_toPrint_sink Sink, c_tuple_toPrint Tuple>
+	template<typename Sink, typename Tuple> requires (is_valid_sink_toPrint_v<Sink> && is_tuple_toPrint_v<Tuple>)
 	void finish_toPrint(const Sink& p_sink, const Tuple& p_data, char8_t* p_buff, uintptr_t p_size)
 	{
 		constexpr uintptr_t tuple_size = std::tuple_size_v<Tuple>;
@@ -176,7 +173,7 @@ namespace core::_p
 		p_sink.write(std::u8string_view{p_buff, p_size});
 	}
 
-	template<c_toPrint_sink Sink, c_tuple_toPrint Tuple> requires (std::tuple_size_v<Tuple> > 0)
+	template<typename Sink, typename Tuple> requires (is_valid_sink_toPrint_v<Sink> && is_tuple_toPrint_v<Tuple> && std::tuple_size_v<Tuple> > 0)
 #if defined(_MSC_BUILD)
 	__declspec(noinline)
 #else
@@ -213,5 +210,5 @@ namespace core::_p
 
 #define core_ToPrint(Sink, ...) \
 	::core::_p::push_toPrint( \
-			::core::_p::transform_toPrint_sink<decltype(Sink)>::type{Sink}, \
+			::core::_p::transform_toPrint_sink<decltype(Sink)>::type(Sink), \
 			::core::_p::tuple_toPrint_or_string_view<decltype(::std::make_tuple(__VA_ARGS__))>::type(__VA_ARGS__));

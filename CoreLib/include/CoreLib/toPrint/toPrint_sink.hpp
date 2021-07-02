@@ -34,24 +34,27 @@
 
 namespace core
 {
-class toPrint_sink_base {};
+class sink_toPrint_base {};
 
 template<typename>
-class toPrint_sink;
-template<typename T> toPrint_sink(T) -> toPrint_sink<std::remove_cvref_t<T>>;
+class sink_toPrint;
+template<typename T> sink_toPrint(T) -> sink_toPrint<std::remove_cvref_t<T>>;
 
 namespace _p
 {
 	template<typename, typename = void>
 	struct toPrint_has_write : public std::false_type{};
-	template<typename Type> requires std::is_same_v<void, decltype(std::declval<Type>().write(std::declval<std::u8string_view>()))>
+	template<typename Type> requires std::is_same_v<void, decltype(std::declval<Type>().write(std::declval<std::basic_string_view<char8_t>>()))>
 	struct toPrint_has_write<Type, void>: public std::true_type{};
 
 	template<typename T>
-	constexpr bool is_toPrint_sink_v = is_derived_v<T, ::core::toPrint_sink_base> && toPrint_has_write<T>::value;
+	constexpr bool is_sink_toPrint_v = is_derived_v<T, ::core::sink_toPrint_base>;
 
 	template<typename T>
-	concept c_toPrint_sink = is_toPrint_sink_v<T>;
+	constexpr bool is_valid_sink_toPrint_v = is_sink_toPrint_v<T> && toPrint_has_write<T>::value;
+
+	//template<typename T>
+	//concept c_sink_toPrint = is_valid_sink_toPrint_v<T>;
 } //namespace _p
 
 

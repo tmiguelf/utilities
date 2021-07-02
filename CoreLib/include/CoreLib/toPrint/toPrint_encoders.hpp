@@ -77,7 +77,7 @@ public:
 	toPrint(const T p_data): m_data(reinterpret_cast<uintptr_t>(p_data)) {}
 	static inline constexpr uintptr_t size() { return aux_size + 2; }
 
-	void get(char8_t* p_out) const
+	void getPrint(char8_t* p_out) const
 	{
 		*(p_out++) = u8'0';
 		*(p_out++) = u8'x';
@@ -100,7 +100,7 @@ class toPrint<char8_t>: public toPrint_base
 public:
 	constexpr toPrint(char8_t p_data): m_data(p_data) {}
 
-	void get(char8_t* p_out) const
+	void getPrint(char8_t* p_out) const
 	{
 		*p_out = m_data;
 	}
@@ -131,7 +131,7 @@ public:
 
 	inline constexpr uintptr_t size() const { return m_size; }
 
-	void get(char8_t* p_out) const
+	void getPrint(char8_t* p_out) const
 	{
 		memcpy(p_out, m_preCalc.data(), m_size);
 	}
@@ -162,7 +162,7 @@ public:
 
 	inline constexpr uintptr_t size() const { return m_size; }
 
-	void get(char8_t* p_out) const
+	void getPrint(char8_t* p_out) const
 	{
 		memcpy(p_out, m_preCalc.data(), m_size);
 	}
@@ -199,7 +199,7 @@ public:
 
 	inline constexpr uintptr_t size() const { return m_data.size(); }
 
-	void get(char8_t* p_out) const
+	void getPrint(char8_t* p_out) const
 	{
 		memcpy(p_out, m_data.data(), m_data.size());
 	}
@@ -219,7 +219,7 @@ public:
 	
 	inline constexpr uintptr_t size() const { return m_size; }
 
-	void get(char8_t* p_out) const
+	void getPrint(char8_t* p_out) const
 	{
 		core::_p::UTF16_to_UTF8_faulty_unsafe(m_data, '?', p_out);
 	}
@@ -241,7 +241,7 @@ public:
 
 	inline constexpr uintptr_t size() const { return m_size; }
 
-	void get(char8_t* p_out) const
+	void getPrint(char8_t* p_out) const
 	{
 		core::_p::UCS4_to_UTF8_faulty_unsafe(m_data, '?', p_out);
 	}
@@ -318,7 +318,7 @@ public:
 
 	inline constexpr uintptr_t size() const { return m_size; }
 
-	void get(char8_t* p_out) const
+	void getPrint(char8_t* p_out) const
 	{
 		memcpy(p_out, m_preCalc.data(), m_size);
 	}
@@ -340,7 +340,7 @@ public:
 
 	inline constexpr uintptr_t size() const { return m_size; }
 
-	void get(char8_t* p_out) const
+	void getPrint(char8_t* p_out) const
 	{
 		core::_p::to_chars_unsafe(m_data, p_out);
 	}
@@ -379,7 +379,7 @@ public:
 
 	inline constexpr uintptr_t size() const { return m_size; }
 
-	void get(char8_t* p_out) const
+	void getPrint(char8_t* p_out) const
 	{
 		core::_p::to_chars_hex_unsafe(m_data, p_out);
 	}
@@ -415,7 +415,7 @@ public:
 
 	static inline constexpr uintptr_t size() { return core::to_chars_hex_max_digits_v<Num_T>; }
 
-	void get(char8_t* p_out) const
+	void getPrint(char8_t* p_out) const
 	{
 		core::_p::to_chars_hex_fix_unsafe(m_data, p_out);
 	}

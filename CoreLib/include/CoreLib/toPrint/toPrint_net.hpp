@@ -50,7 +50,7 @@ public:
 
 	inline constexpr uintptr_t size() const { return m_size; }
 
-	void get(char8_t* p_out) const
+	void getPrint(char8_t* p_out) const
 	{
 		memcpy(p_out, m_preCalc.data(), m_size);
 	}
@@ -74,7 +74,7 @@ public:
 
 	inline constexpr uintptr_t size() const { return m_size; }
 
-	void get(char8_t* p_out) const
+	void getPrint(char8_t* p_out) const
 	{
 		memcpy(p_out, m_preCalc.data(), m_size);
 	}
@@ -98,7 +98,7 @@ public:
 
 	inline constexpr uintptr_t size() const { return m_size; }
 
-	void get(char8_t* p_out) const
+	void getPrint(char8_t* p_out) const
 	{
 		memcpy(p_out, m_preCalc.data(), m_size);
 	}
@@ -130,7 +130,7 @@ public:
 
 	inline constexpr uintptr_t size() const { return m_size; }
 
-	void get(char8_t* p_out) const
+	void getPrint(char8_t* p_out) const
 	{
 		memcpy(p_out, m_preCalc.data(), m_size);
 	}
@@ -157,7 +157,7 @@ public:
 
 	inline constexpr uintptr_t size() const { return m_size; }
 
-	void get(char8_t* p_out) const
+	void getPrint(char8_t* p_out) const
 	{
 		memcpy(p_out, m_preCalc.data(), m_size);
 	}
@@ -184,7 +184,7 @@ public:
 
 	inline constexpr uintptr_t size() const { return m_size; }
 
-	void get(char8_t* p_out) const
+	void getPrint(char8_t* p_out) const
 	{
 		memcpy(p_out, m_preCalc.data(), m_size);
 	}

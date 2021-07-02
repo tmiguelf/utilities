@@ -30,7 +30,7 @@
 namespace core
 {
 
-class console_out: public toPrint_sink_base
+class console_out: public sink_toPrint_base
 {
 public:
 #if defined(_WIN32)

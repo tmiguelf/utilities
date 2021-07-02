@@ -40,10 +40,10 @@ namespace core
 {
 
 template<>
-class toPrint_sink<std::ostream>
+class sink_toPrint<std::ostream>: public sink_toPrint_base
 {
 public:
-	toPrint_sink(std::ostream& p_stream): m_stream(p_stream){}
+	sink_toPrint(std::ostream& p_stream): m_stream(p_stream){}
 
 	void write(std::u8string_view p_message)
 	{
@@ -59,7 +59,7 @@ namespace _p
 	template<core::_p::c_toPrint T>
 	void push_ostream_toPrint(std::ostream& p_sink, const T& p_data, char8_t* p_buff, uintptr_t p_size)
 	{
-		p_data.get(p_buff);
+		p_data.getPrint(p_buff);
 		p_sink.write(reinterpret_cast<const char*>(p_buff), p_size);
 	}
 } //namespace _p

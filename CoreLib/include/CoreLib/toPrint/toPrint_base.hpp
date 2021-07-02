@@ -48,7 +48,7 @@ namespace _p
 
 	template<typename, typename = void>
 	struct toPrint_has_get : public std::false_type{};
-	template<typename Type> requires std::is_same_v<void, decltype(std::declval<const Type>().get(std::declval<char8_t*>()))>
+	template<typename Type> requires std::is_same_v<void, decltype(std::declval<const Type>().getPrint(std::declval<char8_t*>()))>
 	struct toPrint_has_get<Type, void>: public std::true_type{};
 
 
@@ -58,8 +58,8 @@ namespace _p
 	template<typename T>
 	constexpr bool is_valid_toPrint_v = is_toPrint_v<T> && toPrint_has_size<T>::value && toPrint_has_get<T>::value;
 
-	template<typename T>
-	concept c_toPrint = is_valid_toPrint_v<T>;
+	//template<typename T>
+	//concept c_toPrint = is_valid_toPrint_v<T>;
 } //namespace _p
 
 } //namespace core
