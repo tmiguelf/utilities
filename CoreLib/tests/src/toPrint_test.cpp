@@ -42,6 +42,7 @@ public:
 	{
 		m_print_cache.push_back(std::u8string{p_message});
 	}
+
 public:
 
 	std::vector<std::u8string> m_print_cache;
@@ -63,7 +64,7 @@ public:
 		m_size = preamble.size();
 	}
 
-	constexpr uintptr_t size() const { return m_size; }
+	constexpr uintptr_t size(char8_t) const { return m_size; }
 
 	void getPrint(char8_t* p_out) const //final
 	{
@@ -91,17 +92,17 @@ TEST(toPrint, toPrint_interface)
 		core::os_string_view fileName = std::string_view{__FILE__};
 #endif
 
-		core_ToPrint(tsink, test);
-		core_ToPrint(tsink, 32);
-		core_ToPrint(tsink, &test);
-		core_ToPrint(tsink, "string_view"sv);
-		core_ToPrint(tsink, u8"u8string_view"sv);
-		core_ToPrint(tsink, 'A');
-		core_ToPrint(tsink, u8'A');
-		core_ToPrint(tsink, uint8_t{5});
-		core_ToPrint(tsink, int8_t{-5});
-		core_ToPrint(tsink);
-		core_ToPrint(tsink, "Combination "sv, 32, ' ', test);
+		core_ToPrint(char8_t, tsink, test);
+		core_ToPrint(char8_t, tsink, 32);
+		core_ToPrint(char8_t, tsink, &test);
+		core_ToPrint(char8_t, tsink, "string_view"sv);
+		core_ToPrint(char8_t, tsink, u8"u8string_view"sv);
+		core_ToPrint(char8_t, tsink, 'A');
+		core_ToPrint(char8_t, tsink, u8'A');
+		core_ToPrint(char8_t, tsink, uint8_t{5});
+		core_ToPrint(char8_t, tsink, int8_t{-5});
+		core_ToPrint(char8_t, tsink);
+		core_ToPrint(char8_t, tsink, "Combination "sv, 32, ' ', test);
 
 		ASSERT_EQ(tsink.m_print_cache.size(), 11);
 		ASSERT_EQ(tsink.m_print_cache[0], std::u8string_view{u8"TestStr"});

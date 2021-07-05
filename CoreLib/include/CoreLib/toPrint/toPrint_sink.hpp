@@ -32,6 +32,8 @@
 
 #include <CoreLib/Core_Type.hpp>
 
+#include "toPrint_support.hpp"
+
 namespace core
 {
 class sink_toPrint_base {};
@@ -42,20 +44,18 @@ template<typename T> sink_toPrint(T) -> sink_toPrint<std::remove_cvref_t<T>>;
 
 namespace _p
 {
-	template<typename, typename = void>
+	template<c_toPrint_char, typename, typename = void>
 	struct toPrint_has_write : public std::false_type{};
-	template<typename Type> requires std::is_same_v<void, decltype(std::declval<Type>().write(std::declval<std::basic_string_view<char8_t>>()))>
-	struct toPrint_has_write<Type, void>: public std::true_type{};
+
+	template<c_toPrint_char Char_t, typename Type> requires std::is_same_v<void, decltype(std::declval<Type>().write(std::declval<std::basic_string_view<Char_t>>()))>
+	struct toPrint_has_write<Char_t, Type, void>: public std::true_type{};
 
 	template<typename T>
 	constexpr bool is_sink_toPrint_v = is_derived_v<T, ::core::sink_toPrint_base>;
 
-	template<typename T>
-	constexpr bool is_valid_sink_toPrint_v = is_sink_toPrint_v<T> && toPrint_has_write<T>::value;
+	template<c_toPrint_char Char_t, typename T>
+	constexpr bool is_valid_sink_toPrint_v = is_sink_toPrint_v<T> && toPrint_has_write<Char_t, T>::value;
 
-	//template<typename T>
-	//concept c_sink_toPrint = is_valid_sink_toPrint_v<T>;
 } //namespace _p
-
 
 } //namespace core

@@ -48,7 +48,7 @@ public:
 		m_size = p_data.to_string(m_preCalc);
 	}
 
-	inline constexpr uintptr_t size() const { return m_size; }
+	inline constexpr uintptr_t size(char8_t) const { return m_size; }
 
 	void getPrint(char8_t* p_out) const
 	{
@@ -72,7 +72,7 @@ public:
 		m_size = p_data.to_string(m_preCalc);
 	}
 
-	inline constexpr uintptr_t size() const { return m_size; }
+	inline constexpr uintptr_t size(char8_t) const { return m_size; }
 
 	void getPrint(char8_t* p_out) const
 	{
@@ -96,7 +96,7 @@ public:
 		m_size = p_data.to_string(m_preCalc);
 	}
 
-	inline constexpr uintptr_t size() const { return m_size; }
+	inline constexpr uintptr_t size(char8_t) const { return m_size; }
 
 	void getPrint(char8_t* p_out) const
 	{
@@ -128,7 +128,7 @@ public:
 		m_size = size1 + 1 + core::to_chars(p_port, std::span<char8_t, max_port_size>{m_preCalc.data() + size1 + 1, max_port_size});
 	}
 
-	inline constexpr uintptr_t size() const { return m_size; }
+	inline constexpr uintptr_t size(char8_t) const { return m_size; }
 
 	void getPrint(char8_t* p_out) const
 	{
@@ -155,7 +155,7 @@ public:
 		m_size = size1 + 1 + core::to_chars(p_port, std::span<char8_t, max_port_size>{m_preCalc.data() + size1 + 1, max_port_size});
 	}
 
-	inline constexpr uintptr_t size() const { return m_size; }
+	inline constexpr uintptr_t size(char8_t) const { return m_size; }
 
 	void getPrint(char8_t* p_out) const
 	{
@@ -182,7 +182,7 @@ public:
 		m_size = size1 + 1 + core::to_chars(p_port, std::span<char8_t, max_port_size>{m_preCalc.data() + size1 + 1, max_port_size});
 	}
 
-	inline constexpr uintptr_t size() const { return m_size; }
+	inline constexpr uintptr_t size(char8_t) const { return m_size; }
 
 	void getPrint(char8_t* p_out) const
 	{

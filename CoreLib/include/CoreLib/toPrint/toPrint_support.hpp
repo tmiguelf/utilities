@@ -28,67 +28,15 @@
 
 #pragma once
 
-#include <ostream>
-#include <vector>
+#include <type_traits>
 
-#include "toPrint_sink.hpp"
-#include "toPrint_base.hpp"
-
-#include <CoreLib/Core_Alloca.hpp>
-
-namespace core
+namespace core::_p
 {
+template<typename> struct toPrint_supported_char          : public std::false_type{};
+template<>         struct toPrint_supported_char<char8_t >: public std::true_type {};
+template<>         struct toPrint_supported_char<char16_t>: public std::true_type {};
+template<>         struct toPrint_supported_char<char32_t>: public std::true_type {};
 
-template<>
-class sink_toPrint<std::ostream>: public sink_toPrint_base
-{
-public:
-	sink_toPrint(std::ostream& p_stream): m_stream(p_stream){}
-
-	void write(std::u8string_view p_message)
-	{
-		m_stream.write(reinterpret_cast<const char*>(p_message.data()), p_message.size());
-	}
-
-private:
-	std::ostream& m_stream;
-};
-
-namespace _p
-{
-	template<typename T> requires is_valid_toPrint_v<char8_t, T>
-	void push_ostream_toPrint(std::ostream& p_sink, const T& p_data, char8_t* p_buff, uintptr_t p_size)
-	{
-		p_data.getPrint(p_buff);
-		p_sink.write(reinterpret_cast<const char*>(p_buff), p_size);
-	}
-} //namespace _p
-
-} //namespace core
-
-template<typename T> requires core::_p::is_valid_toPrint_v<char8_t, T>
-#if defined(_MSC_BUILD)
-__declspec(noinline)
-#else
-__attribute__((noinline))
-#endif
-std::ostream& operator << (std::ostream& p_stream, const T& p_data)
-{
-	const uintptr_t size = p_data.size();
-	if(size)
-	{
-		constexpr uintptr_t alloca_treshold = 0x10000;
-		if(size > alloca_treshold)
-		{
-			std::vector<char8_t> buff;
-			buff.resize(size);
-			core::_p::push_ostream_toPrint(p_stream, p_data, buff, size);
-		}
-		else
-		{
-			char8_t* buff = reinterpret_cast<char8_t*>(core_alloca(size));
-			core::_p::push_ostream_toPrint(p_stream, p_data, buff, size);
-		}
-	}
-	return p_stream;
+template<typename T>
+concept c_toPrint_char = toPrint_supported_char<T>::value;
 }

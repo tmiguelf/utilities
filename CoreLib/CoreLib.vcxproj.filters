@@ -106,6 +106,9 @@
     <ClInclude Include="include\CoreLib\toPrint\toPrint_std_ostream.hpp">
       <Filter>Header Files\toPrint</Filter>
     </ClInclude>
+    <ClInclude Include="include\CoreLib\toPrint\toPrint_support.hpp">
+      <Filter>Header Files\toPrint</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\string\core_string_misc.cpp">

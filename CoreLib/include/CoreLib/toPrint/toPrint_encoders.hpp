@@ -75,7 +75,7 @@ private:
 	static constexpr uintptr_t aux_size = core::to_chars_hex_max_digits_v<uintptr_t>;
 public:
 	toPrint(const T p_data): m_data(reinterpret_cast<uintptr_t>(p_data)) {}
-	static inline constexpr uintptr_t size() { return aux_size + 2; }
+	static inline constexpr uintptr_t size(char8_t) { return aux_size + 2; }
 
 	void getPrint(char8_t* p_out) const
 	{
@@ -100,12 +100,12 @@ class toPrint<char8_t>: public toPrint_base
 public:
 	constexpr toPrint(char8_t p_data): m_data(p_data) {}
 
+	static inline constexpr uintptr_t size(char8_t) { return 1; }
 	void getPrint(char8_t* p_out) const
 	{
 		*p_out = m_data;
 	}
 
-	static inline constexpr uintptr_t size() { return 1; }
 private:
 	const char8_t m_data;
 };
@@ -129,7 +129,7 @@ public:
 		}
 	}
 
-	inline constexpr uintptr_t size() const { return m_size; }
+	inline constexpr uintptr_t size(char8_t) const { return m_size; }
 
 	void getPrint(char8_t* p_out) const
 	{
@@ -160,7 +160,7 @@ public:
 		}
 	}
 
-	inline constexpr uintptr_t size() const { return m_size; }
+	inline constexpr uintptr_t size(char8_t) const { return m_size; }
 
 	void getPrint(char8_t* p_out) const
 	{
@@ -197,7 +197,7 @@ class toPrint<std::u8string_view>: public toPrint_base
 public:
 	toPrint(std::u8string_view p_data): m_data(p_data){}
 
-	inline constexpr uintptr_t size() const { return m_data.size(); }
+	inline constexpr uintptr_t size(char8_t) const { return m_data.size(); }
 
 	void getPrint(char8_t* p_out) const
 	{
@@ -217,7 +217,7 @@ public:
 		, m_size(core::_p::UTF16_to_UTF8_faulty_estimate(p_data, '?'))
 	{}
 	
-	inline constexpr uintptr_t size() const { return m_size; }
+	inline constexpr uintptr_t size(char8_t) const { return m_size; }
 
 	void getPrint(char8_t* p_out) const
 	{
@@ -239,7 +239,7 @@ public:
 
 	{}
 
-	inline constexpr uintptr_t size() const { return m_size; }
+	inline constexpr uintptr_t size(char8_t) const { return m_size; }
 
 	void getPrint(char8_t* p_out) const
 	{
@@ -316,7 +316,7 @@ public:
 		m_size = core::to_chars(p_data, m_preCalc);
 	}
 
-	inline constexpr uintptr_t size() const { return m_size; }
+	inline constexpr uintptr_t size(char8_t) const { return m_size; }
 
 	void getPrint(char8_t* p_out) const
 	{
@@ -338,7 +338,7 @@ public:
 	{
 	}
 
-	inline constexpr uintptr_t size() const { return m_size; }
+	inline constexpr uintptr_t size(char8_t) const { return m_size; }
 
 	void getPrint(char8_t* p_out) const
 	{
@@ -377,7 +377,7 @@ public:
 	{
 	}
 
-	inline constexpr uintptr_t size() const { return m_size; }
+	inline constexpr uintptr_t size(char8_t) const { return m_size; }
 
 	void getPrint(char8_t* p_out) const
 	{
@@ -413,7 +413,7 @@ private:
 public:
 	constexpr toPrint_hex_fix(Num_T p_data): m_data{p_data} {}
 
-	static inline constexpr uintptr_t size() { return core::to_chars_hex_max_digits_v<Num_T>; }
+	static inline constexpr uintptr_t size(char8_t) { return core::to_chars_hex_max_digits_v<Num_T>; }
 
 	void getPrint(char8_t* p_out) const
 	{
