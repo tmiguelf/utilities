@@ -214,10 +214,9 @@ class toPrint<std::u16string_view>: public toPrint_base
 public:
 	toPrint(std::u16string_view p_data)
 		: m_data(p_data)
-		, m_size(core::_p::UTF16_to_UTF8_faulty_estimate(p_data, '?'))
 	{}
 	
-	inline constexpr uintptr_t size(char8_t) const { return m_size; }
+	inline uintptr_t size(char8_t) const { return core::_p::UTF16_to_UTF8_faulty_estimate(m_data, '?'); }
 
 	void getPrint(char8_t* p_out) const
 	{
@@ -226,7 +225,6 @@ public:
 
 private:
 	const std::u16string_view m_data;
-	const uintptr_t m_size;
 };
 
 template<>
@@ -235,11 +233,10 @@ class toPrint<std::u32string_view>: public toPrint_base
 public:
 	toPrint(std::u32string_view p_data)
 		: m_data(p_data)
-		, m_size(core::_p::UCS4_to_UTF8_faulty_estimate(p_data, '?'))
 
 	{}
 
-	inline constexpr uintptr_t size(char8_t) const { return m_size; }
+	inline uintptr_t size(char8_t) const { return core::_p::UCS4_to_UTF8_faulty_estimate(m_data, '?'); }
 
 	void getPrint(char8_t* p_out) const
 	{
@@ -248,7 +245,6 @@ public:
 
 private:
 	const std::u32string_view m_data;
-	const uintptr_t m_size;
 };
 
 
@@ -334,11 +330,10 @@ class toPrint<Num_T>: public toPrint_base
 public:
 	toPrint(Num_T p_data)
 		: m_data{p_data}
-		, m_size(core::_p::to_chars_estimate(p_data))
 	{
 	}
 
-	inline constexpr uintptr_t size(char8_t) const { return m_size; }
+	inline uintptr_t size(char8_t) const { return core::_p::to_chars_estimate(m_data); }
 
 	void getPrint(char8_t* p_out) const
 	{
@@ -347,7 +342,6 @@ public:
 
 private:
 	const Num_T m_data;
-	const uintptr_t m_size;
 };
 
 template<typename Num_T> requires (std::integral<Num_T> && !core::char_conv_dec_supported<Num_T>::value)
@@ -373,11 +367,10 @@ private:
 public:
 	toPrint_hex(Num_T p_data)
 		: m_data(p_data)
-		, m_size(core::_p::to_chars_hex_estimate(p_data))
 	{
 	}
 
-	inline constexpr uintptr_t size(char8_t) const { return m_size; }
+	inline uintptr_t size(char8_t) const { return core::_p::to_chars_hex_estimate(m_data); }
 
 	void getPrint(char8_t* p_out) const
 	{
@@ -386,7 +379,6 @@ public:
 
 private:
 	const Num_T m_data;
-	const uintptr_t m_size;
 };
 
 template<typename Num_T> requires (std::integral<Num_T> && !core::char_conv_hex_supported<Num_T>::value)
@@ -413,7 +405,7 @@ private:
 public:
 	constexpr toPrint_hex_fix(Num_T p_data): m_data{p_data} {}
 
-	static inline constexpr uintptr_t size(char8_t) { return core::to_chars_hex_max_digits_v<Num_T>; }
+	static inline constexpr uintptr_t size(char8_t) { return array_size; }
 
 	void getPrint(char8_t* p_out) const
 	{

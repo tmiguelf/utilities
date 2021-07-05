@@ -43,22 +43,21 @@ template<typename T> toPrint(T) -> toPrint<std::remove_cvref_t<T>>;
 
 namespace _p
 {
-	template<c_toPrint_char, typename, typename = void>
-	struct toPrint_has_size : public std::false_type{};
-	template<c_toPrint_char Char_t, typename Type> requires std::is_same_v<uintptr_t, decltype(std::declval<const Type>().size(std::declval<Char_t>()))>
-	struct toPrint_has_size<Char_t, Type, void>: public std::true_type{};
-
-	template<c_toPrint_char, typename, typename = void>
-	struct toPrint_has_get : public std::false_type{};
-	template<c_toPrint_char Char_t, typename Type> requires std::is_same_v<void, decltype(std::declval<const Type>().getPrint(std::declval<Char_t*>()))>
-	struct toPrint_has_get<Char_t, Type, void>: public std::true_type{};
-
+	//template<c_toPrint_char, typename, typename = void>
+	//struct toPrint_has_size : public std::false_type{};
+	//template<c_toPrint_char Char_t, typename Type> requires std::is_same_v<uintptr_t, decltype(std::declval<const Type>().size(std::declval<Char_t>()))>
+	//struct toPrint_has_size<Char_t, Type, void>: public std::true_type{};
+	//
+	//template<c_toPrint_char, typename, typename = void>
+	//struct toPrint_has_get : public std::false_type{};
+	//template<c_toPrint_char Char_t, typename Type> requires std::is_same_v<void, decltype(std::declval<const Type>().getPrint(std::declval<Char_t*>()))>
+	//struct toPrint_has_get<Char_t, Type, void>: public std::true_type{};
 
 	template<typename T>
 	constexpr bool is_toPrint_v = is_derived_v<T, ::core::toPrint_base>;
 
-	template<c_toPrint_char Char_t, typename T>
-	constexpr bool is_valid_toPrint_v = is_toPrint_v<T> && toPrint_has_size<Char_t, T>::value && toPrint_has_get<Char_t, T>::value;
+	//template<c_toPrint_char Char_t, typename T>
+	//constexpr bool is_valid_toPrint_v = is_toPrint_v<T> && toPrint_has_size<Char_t, T>::value && toPrint_has_get<Char_t, T>::value;
 
 	//template<typename T>
 	//concept c_toPrint = is_valid_toPrint_v<T>;
