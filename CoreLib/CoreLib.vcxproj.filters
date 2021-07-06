@@ -21,6 +21,12 @@
     <Filter Include="Header Files\toPrint">
       <UniqueIdentifier>{9da9c3c6-b2a7-4b29-b62a-74e291ee806f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\net">
+      <UniqueIdentifier>{15e7dc04-e56b-49e5-8ff2-c79780c58600}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\net">
+      <UniqueIdentifier>{015a61ef-c3a7-4720-9828-de298ddc40fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="CoreLib.include.props">
@@ -36,9 +42,6 @@
     </ClInclude>
     <ClInclude Include="include\CoreLib\string\core_string_numeric.hpp">
       <Filter>Header Files\string</Filter>
-    </ClInclude>
-    <ClInclude Include="include\CoreLib\Core_String.hpp">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\CoreLib\Core_Alloca.hpp">
       <Filter>Header Files</Filter>
@@ -109,6 +112,9 @@
     <ClInclude Include="include\CoreLib\toPrint\toPrint_support.hpp">
       <Filter>Header Files\toPrint</Filter>
     </ClInclude>
+    <ClInclude Include="include\CoreLib\net\core_net_address.hpp">
+      <Filter>Header Files\net</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\string\core_string_misc.cpp">
@@ -146,6 +152,9 @@
     </ClCompile>
     <ClCompile Include="src\Core_Console.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\net\core_net_address.cpp">
+      <Filter>Source Files\net</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -23,14 +23,9 @@
 ///		OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ///		SOFTWARE.
 ///
-///	\todo	Provide a comprehensive and consistent set of error codes, to give
-///			extra information regarding he nature of the failure
-///
 ///	\todo Socket RAW
-///	\todo Multi-cast support
 ///	\todo Native socket options
 ///	\todo Auto memory management assist
-///	\todo Split of IPv4 and IPv6 protocols
 //======== ======== ======== ======== ======== ======== ======== ========
 
 #pragma once
@@ -1459,39 +1454,6 @@ namespace core_p
 	inline constexpr void Net_End	() {}
 #endif
 
-	//======== ======== ======== inline optimization ======== ======== ========
-
-	//======== ======== IPv4_netAddr ======== ========
-	inline IPv4_netAddr::IPv4_netAddr()								: ui32Type(0) {}
-	inline IPv4_netAddr::IPv4_netAddr(uint32_t p_init)				: ui32Type(p_init){}
-	inline IPv4_netAddr::IPv4_netAddr(std::span<const uint8_t, 4> p_init) { memcpy(byteField, p_init.data(), 4); }
-	inline IPv4_netAddr::IPv4_netAddr(const IPv4_netAddr& p_other)	: ui32Type(p_other.ui32Type) { }
-
-
-	inline void IPv4_netAddr::set_any() { ui32Type = 0; }
-	inline void IPv4_netAddr::swap(IPv4_netAddr& p_other) { std::swap(ui32Type, p_other.ui32Type); }
-	inline bool IPv4_netAddr::is_null() const {return ui32Type == 0;}
-
-	inline IPv4_netAddr& IPv4_netAddr::operator = (const IPv4_netAddr& p_other) { ui32Type = p_other.ui32Type; return *this; }
-	inline IPv4_netAddr& IPv4_netAddr::operator |= (const IPv4_netAddr& p_other) { ui32Type |= p_other.ui32Type; return *this; }
-	inline IPv4_netAddr& IPv4_netAddr::operator &= (const IPv4_netAddr& p_other) { ui32Type &= p_other.ui32Type; return *this; }
-	inline IPv4_netAddr& IPv4_netAddr::operator ^= (const IPv4_netAddr& p_other) { ui32Type ^= p_other.ui32Type; return *this; }
-	inline IPv4_netAddr IPv4_netAddr::operator | (const IPv4_netAddr& p_other) const { return IPv4_netAddr(ui32Type | p_other.ui32Type); }
-	inline IPv4_netAddr IPv4_netAddr::operator & (const IPv4_netAddr& p_other) const { return IPv4_netAddr(ui32Type & p_other.ui32Type); }
-	inline IPv4_netAddr IPv4_netAddr::operator ^ (const IPv4_netAddr& p_other) const { return IPv4_netAddr(ui32Type ^ p_other.ui32Type); }
-	inline IPv4_netAddr IPv4_netAddr::operator ~ () const { return IPv4_netAddr(~ui32Type); }
-
-	inline bool IPv4_netAddr::operator == (const IPv4_netAddr& p_other) const { return ui32Type == p_other.ui32Type; }
-	inline bool IPv4_netAddr::operator != (const IPv4_netAddr& p_other) const { return ui32Type != p_other.ui32Type; }
-	inline bool IPv4_netAddr::operator <  (const IPv4_netAddr& p_other) const { return ui32Type < p_other.ui32Type; }
-
-	//======== ======== IPv6_netAddr ======== ========
-	inline bool IPv6_netAddr::is_null() const {return ui64Type[0] == 0 && ui64Type[1] == 0;}
-
-	//======== ======== IP_netAddr ======== ========
-	inline IP_netAddr::IPv IP_netAddr::version() const { return m_ipv; }
-	inline void IP_netAddr::clear() { m_ipv = IPv::None; }
-	inline void IP_netAddr::swap(IP_netAddr& p_other) { std::swap(*this, p_other); }
 
 	//======== ======== core_p::Net_Socket ======== ========
 	inline void core_p::Net_Socket::swap(Net_Socket& p_other) { std::swap(m_sock, p_other.m_sock); }
