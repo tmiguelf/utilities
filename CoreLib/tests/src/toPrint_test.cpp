@@ -64,7 +64,7 @@ public:
 		m_size = preamble.size();
 	}
 
-	constexpr uintptr_t size(char8_t) const { return m_size; }
+	constexpr uintptr_t size(const char8_t&) const { return m_size; }
 
 	void getPrint(char8_t* p_out) const //final
 	{
@@ -87,7 +87,7 @@ TEST(toPrint, toPrint_interface)
 #ifdef _WIN32
 		std::wstring_view help{__FILEW__};
 
-		core::os_string_view fileName =std::wstring_view{__FILEW__};
+		core::os_string_view fileName = std::wstring_view{__FILEW__};
 #else
 		core::os_string_view fileName = std::string_view{__FILE__};
 #endif
