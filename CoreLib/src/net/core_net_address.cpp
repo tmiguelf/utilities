@@ -36,7 +36,8 @@ namespace core
 //========		IP String Conversions			========
 //========	========	========	========	========
 
-static inline bool from_string_IPv4(std::u8string_view p_address, void* p_raw)
+template<typename CharT>
+static inline bool from_string_IPv4(std::basic_string_view<CharT> p_address, void* p_raw)
 {
 	size_t		i, pos1, pos2 = 0;
 	uint8_t		t_byteField[4];
@@ -49,7 +50,7 @@ static inline bool from_string_IPv4(std::u8string_view p_address, void* p_raw)
 
 	for(i = 0; i < 3; ++i)
 	{
-		pos1 = p_address.find('.', pos2);
+		pos1 = p_address.find(CharT{'.'}, pos2);
 		if(pos1 - pos2 > 3 || pos1 == pos2) return false;
 
 		from_chars_result<uint8_t> auxRet = from_chars<uint8_t>(p_address.substr(pos2, pos1 - pos2));
@@ -71,7 +72,8 @@ static inline bool from_string_IPv4(std::u8string_view p_address, void* p_raw)
 	return true;
 }
 
-static inline bool from_string_IPv6(std::u8string_view p_address, uint16_t* p_raw)
+template<typename CharT>
+static inline bool from_string_IPv6(std::basic_string_view<CharT> p_address, uint16_t* p_raw)
 {
 	size_t pos1 = 0; // initialized because otherwise generates warning 4701
 	size_t pos2, size;
@@ -104,7 +106,7 @@ static inline bool from_string_IPv6(std::u8string_view p_address, uint16_t* p_ra
 	for(; count < 8; ++count)
 	{
 		pos1 = p_address.find(':', pos2);
-		if(pos1 == std::u8string_view::npos)
+		if(pos1 == std::basic_string_view<CharT>::npos)
 		{
 			if(size == pos2) break;
 			if(size - pos2 > 4) return false;
@@ -117,7 +119,7 @@ static inline bool from_string_IPv6(std::u8string_view p_address, uint16_t* p_ra
 			auxI = core::endian_host2big(auxRet.value());
 
 			if(b_hasEliad)	postEliad.push_back(auxI);
-			else			preEliad.push_back(auxI);
+			else			preEliad .push_back(auxI);
 			break;
 		}
 
@@ -145,7 +147,7 @@ static inline bool from_string_IPv6(std::u8string_view p_address, uint16_t* p_ra
 		if(pos2 >= size) return false;
 	}
 
-	if(pos1 != std::u8string_view::npos) return false;
+	if(pos1 != std::basic_string_view<CharT>::npos) return false;
 
 	if(b_hasEliad)
 	{
@@ -182,25 +184,26 @@ static inline bool from_string_IPv6(std::u8string_view p_address, uint16_t* p_ra
 	return true;
 }
 
-
-static inline uintptr_t to_string_IPv4(std::span<const uint8_t, 4> p_raw, std::span<char8_t, 15> p_output)
+template<typename CharT>
+static inline uintptr_t to_string_IPv4(std::span<const uint8_t, 4> p_raw, std::span<CharT, 15> p_output)
 {
 	char8_t* pivot = p_output.data();
-	pivot += core::to_chars(p_raw[0], std::span<char8_t, 3>{pivot, 3});
+	pivot += core::to_chars(p_raw[0], std::span<CharT, 3>{pivot, 3});
 	*pivot = '.';
 	++pivot;
-	pivot += core::to_chars(p_raw[1], std::span<char8_t, 3>{pivot, 3});
+	pivot += core::to_chars(p_raw[1], std::span<CharT, 3>{pivot, 3});
 	*pivot = '.';
 	++pivot;
-	pivot += core::to_chars(p_raw[2], std::span<char8_t, 3>{pivot, 3});
+	pivot += core::to_chars(p_raw[2], std::span<CharT, 3>{pivot, 3});
 	*pivot = '.';
 	++pivot;
-	pivot += core::to_chars(p_raw[3], std::span<char8_t, 3>{pivot, 3});
+	pivot += core::to_chars(p_raw[3], std::span<CharT, 3>{pivot, 3});
 
 	return static_cast<uintptr_t>(pivot - p_output.data());
 }
 
-static inline uintptr_t to_string_IPv6(std::span<const uint16_t, 8> p_raw, std::span<char8_t, 39> p_output)
+template<typename CharT>
+static inline uintptr_t to_string_IPv6(std::span<const uint16_t, 8> p_raw, std::span<CharT, 39> p_output)
 {
 	uint8_t cEliad = 0, posEliad = 0;	// initialized because otherwise generates warning 4701
 	uint8_t sizeEliad, cSize;
@@ -237,7 +240,7 @@ static inline uintptr_t to_string_IPv6(std::span<const uint16_t, 8> p_raw, std::
 		posEliad = cEliad;
 	}
 
-	char8_t* pivot = p_output.data();
+	CharT* pivot = p_output.data();
 
 	if(sizeEliad > 1)
 	{
@@ -250,7 +253,7 @@ static inline uintptr_t to_string_IPv6(std::span<const uint16_t, 8> p_raw, std::
 		{
 			for(it = 0; it < posEliad; ++it)
 			{
-				pivot += core::to_chars_hex(core::endian_big2host(p_raw[it]), std::span<char8_t, 4>{pivot, 4});
+				pivot += core::to_chars_hex(core::endian_big2host(p_raw[it]), std::span<CharT, 4>{pivot, 4});
 				*pivot = ':';
 				++pivot;
 			}
@@ -263,22 +266,22 @@ static inline uintptr_t to_string_IPv6(std::span<const uint16_t, 8> p_raw, std::
 		{
 			for(; it < 7; ++it)
 			{
-				pivot += core::to_chars_hex(core::endian_big2host(p_raw[it]), std::span<char8_t, 4>{pivot, 4});
+				pivot += core::to_chars_hex(core::endian_big2host(p_raw[it]), std::span<CharT, 4>{pivot, 4});
 				*pivot = ':';
 				++pivot;
 			}
-			pivot += core::to_chars_hex(core::endian_big2host(p_raw[7]), std::span<char8_t, 4>{pivot, 4});
+			pivot += core::to_chars_hex(core::endian_big2host(p_raw[7]), std::span<CharT, 4>{pivot, 4});
 		}
 	}
 	else
 	{
 		for(it = 0; it < 7; ++it)
 		{
-			pivot += core::to_chars_hex(core::endian_big2host(p_raw[it]), std::span<char8_t, 4>{pivot, 4});
+			pivot += core::to_chars_hex(core::endian_big2host(p_raw[it]), std::span<CharT, 4>{pivot, 4});
 			*pivot = ':';
 			++pivot;
 		}
-		pivot += core::to_chars_hex(core::endian_big2host(p_raw[7]), std::span<char8_t, 4>{pivot, 4});
+		pivot += core::to_chars_hex(core::endian_big2host(p_raw[7]), std::span<CharT, 4>{pivot, 4});
 	}
 	return static_cast<uintptr_t> (pivot - p_output.data());
 }

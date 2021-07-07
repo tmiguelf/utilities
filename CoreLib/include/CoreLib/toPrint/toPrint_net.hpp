@@ -31,19 +31,19 @@
 #include "toPrint_base.hpp"
 #include <array>
 
-#include <CoreLib/Core_Net.hpp>
+#include <CoreLib/net/core_net_address.hpp>
 #include <CoreLib/string/core_string_numeric.hpp>
 namespace core
 {
 
 template<>
-class toPrint<core::IPv4_netAddr>: public toPrint_base
+class toPrint<core::IPv4_address>: public toPrint_base
 {
 private:
 	static constexpr uintptr_t max_ip_size = 15;
 	using array_t = std::array<char8_t, max_ip_size>;
 public:
-	toPrint(const core::IPv4_netAddr& p_data)
+	toPrint(const core::IPv4_address& p_data)
 	{
 		m_size = p_data.to_string(m_preCalc);
 	}
@@ -61,13 +61,13 @@ private:
 };
 
 template<>
-class toPrint<core::IPv6_netAddr>: public toPrint_base
+class toPrint<core::IPv6_address>: public toPrint_base
 {
 private:
 	static constexpr uintptr_t max_ip_size = 39;
 	using array_t = std::array<char8_t, max_ip_size>;
 public:
-	toPrint(const core::IPv6_netAddr& p_data)
+	toPrint(const core::IPv6_address& p_data)
 	{
 		m_size = p_data.to_string(m_preCalc);
 	}
@@ -85,13 +85,13 @@ private:
 };
 
 template<>
-class toPrint<core::IP_netAddr>: public toPrint_base
+class toPrint<core::IP_address>: public toPrint_base
 {
 private:
 	static constexpr uintptr_t max_ip_size = 39;
 	using array_t = std::array<char8_t, max_ip_size>;
 public:
-	toPrint(const core::IP_netAddr& p_data)
+	toPrint(const core::IP_address& p_data)
 	{
 		m_size = p_data.to_string(m_preCalc);
 	}
@@ -114,14 +114,14 @@ class toPrint_net;
 template <typename T> toPrint_net(T, uint16_t) -> toPrint_net<std::remove_cvref_t<T>>;
 
 template<>
-class toPrint_net<core::IPv4_netAddr>: public toPrint_base
+class toPrint_net<core::IPv4_address>: public toPrint_base
 {
 private:
 	static constexpr uintptr_t max_ip_size = 15;
 	static constexpr uintptr_t max_port_size = core::to_chars_dec_max_digits_v<uint16_t>;
 	using array_t = std::array<char8_t, max_ip_size + max_port_size + 1>;
 public:
-	toPrint_net(const core::IPv4_netAddr& p_ip, uint16_t p_port)
+	toPrint_net(const core::IPv4_address& p_ip, uint16_t p_port)
 	{
 		const uintptr_t size1 = p_ip.to_string(std::span<char8_t, max_ip_size>{m_preCalc.data(), max_ip_size});
 		m_preCalc[size1] = u8'@';
@@ -141,14 +141,14 @@ private:
 };
 
 template<>
-class toPrint_net<core::IPv6_netAddr>: public toPrint_base
+class toPrint_net<core::IPv6_address>: public toPrint_base
 {
 private:
 	static constexpr uintptr_t max_ip_size = 39;
 	static constexpr uintptr_t max_port_size = core::to_chars_dec_max_digits_v<uint16_t>;
 	using array_t = std::array<char8_t, max_ip_size + max_port_size + 1>;
 public:
-	toPrint_net(const core::IPv6_netAddr& p_ip, uint16_t p_port)
+	toPrint_net(const core::IPv6_address& p_ip, uint16_t p_port)
 	{
 		const uintptr_t size1 = p_ip.to_string(std::span<char8_t, max_ip_size>{m_preCalc.data(), max_ip_size});
 		m_preCalc[size1] = u8'@';
@@ -168,14 +168,14 @@ private:
 };
 
 template<>
-class toPrint_net<core::IP_netAddr>: public toPrint_base
+class toPrint_net<core::IP_address>: public toPrint_base
 {
 private:
 	static constexpr uintptr_t max_ip_size = 39;
 	static constexpr uintptr_t max_port_size = core::to_chars_dec_max_digits_v<uint16_t>;
 	using array_t = std::array<char8_t, max_ip_size + max_port_size + 1>;
 public:
-	toPrint_net(const core::IP_netAddr& p_ip, uint16_t p_port)
+	toPrint_net(const core::IP_address& p_ip, uint16_t p_port)
 	{
 		const uintptr_t size1 = p_ip.to_string(std::span<char8_t, max_ip_size>{m_preCalc.data(), max_ip_size});
 		m_preCalc[size1] = u8'@';
