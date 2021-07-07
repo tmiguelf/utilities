@@ -361,7 +361,7 @@ bool IP_address::from_string_v4(std::u8string_view p_address)
 bool IP_address::from_string_v6(std::u8string_view p_address)
 {
 	m_ipv = IPv::None;
-	if(from_string_IPv6(p_address, v6.wordField))
+	if(from_string_IPv6(p_address, v6.doubletField))
 	{
 		m_ipv = IPv::IPv_6;
 		return true;
@@ -384,7 +384,7 @@ uintptr_t IP_address::to_string(std::span<char8_t, 39> p_output) const
 	}
 	else if(m_ipv == IPv::IPv_6)
 	{
-		return to_string_IPv6(v6.wordField, p_output);
+		return to_string_IPv6(v6.doubletField, p_output);
 	}
 	return 0;
 }
@@ -588,12 +588,12 @@ IPv6_address::IPv6_address(std::u8string_view p_address)
 
 bool IPv6_address::from_string(std::u8string_view p_address)
 {
-	return from_string_IPv6(p_address, wordField);
+	return from_string_IPv6(p_address, doubletField);
 }
 
 uintptr_t IPv6_address::to_string(std::span<char8_t, 39> p_output) const
 {
-	return to_string_IPv6(wordField, p_output);
+	return to_string_IPv6(doubletField, p_output);
 }
 
 std::u8string IPv6_address::to_string() const

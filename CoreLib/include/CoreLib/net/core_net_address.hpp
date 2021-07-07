@@ -48,9 +48,9 @@ struct IP_address
 
 		union
 		{
-			uint64_t	ui64Type	[2];
-			uint16_t	wordField	[8];
-			uint8_t		byteField	[16];
+			uint64_t	ui64Type		[2];
+			uint16_t	doubletField	[8];
+			uint8_t		byteField		[16];
 		} v6;	//!< Data of the object if IPv6 is used
 	};
 
@@ -191,9 +191,9 @@ struct IPv6_address
 {
 	union
 	{
-		uint64_t	ui64Type	[2];
-		uint16_t	wordField	[8];
-		uint8_t		byteField	[16];
+		uint64_t	ui64Type		[2];
+		uint16_t	doubletField	[8];
+		uint8_t		byteField		[16];
 	};
 
 	IPv6_address();
@@ -236,28 +236,18 @@ struct IPv6_address
 	bool			operator <	(const IPv6_address& p_other) const;
 };
 
-
-
-
-
-
 //======== ======== ======== inline optimization ======== ======== ========
-
 
 //======== ======== IP_address ======== ========
 inline IP_address::IPv IP_address::version() const { return m_ipv; }
 inline void IP_address::clear() { m_ipv = IPv::None; }
 inline void IP_address::swap(IP_address& p_other) { std::swap(*this, p_other); }
 
-
-
-
 //======== ======== IPv4_address ======== ========
 inline IPv4_address::IPv4_address()								: ui32Type(0) {}
 inline IPv4_address::IPv4_address(uint32_t p_init)				: ui32Type(p_init){}
 inline IPv4_address::IPv4_address(std::span<const uint8_t, 4> p_init) { memcpy(byteField, p_init.data(), 4); }
 inline IPv4_address::IPv4_address(const IPv4_address& p_other)	: ui32Type(p_other.ui32Type) { }
-
 
 inline void IPv4_address::set_any() { ui32Type = 0; }
 inline void IPv4_address::swap(IPv4_address& p_other) { std::swap(ui32Type, p_other.ui32Type); }
@@ -278,15 +268,5 @@ inline bool IPv4_address::operator <  (const IPv4_address& p_other) const { retu
 
 //======== ======== IPv6_address ======== ========
 inline bool IPv6_address::is_null() const {return ui64Type[0] == 0 && ui64Type[1] == 0;}
-
-
-
-
-
-
-
-
-
-
 
 } //namespace core
