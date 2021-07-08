@@ -31,10 +31,47 @@
 #include <string_view>
 #include <span>
 #include <utility>
-
+#include <type_traits>
 /// \n
 namespace core
 {
+
+	namespace _p
+	{
+		template <typename>
+		struct is_supported_IPconv_c: public std::false_type {};
+		template <> struct is_supported_IPconv_c<char8_t >: public std::true_type {};
+		template <> struct is_supported_IPconv_c<char16_t>: public std::true_type {};
+		template <> struct is_supported_IPconv_c<char32_t>: public std::true_type {};
+
+		template<typename T>
+		concept c_ipconv_char = is_supported_IPconv_c<T>::value;
+
+		[[nodiscard]] uintptr_t to_chars_IPv4_estimate(std::span<const uint8_t, 4> p_raw);
+
+		template<c_ipconv_char CharT>
+		void to_chars_IPv4_unsafe(std::span<const uint8_t, 4> p_raw, CharT* p_out);
+
+		template<c_ipconv_char CharT>
+		uintptr_t to_chars_IPv4(std::span<const uint8_t, 4> p_raw, std::span<CharT, 15> p_output);
+
+
+		[[nodiscard]] uintptr_t to_chars_IPv6_estimate(std::span<const uint16_t, 8> p_raw);
+
+		template<c_ipconv_char CharT>
+		void to_chars_IPv6_unsafe(std::span<const uint16_t, 8> p_raw, CharT* p_out);
+
+		template<c_ipconv_char CharT>
+		uintptr_t to_chars_IPv6(std::span<const uint16_t, 8> p_raw, std::span<CharT, 39> p_out);
+
+
+		template<c_ipconv_char CharT>
+		bool from_chars_IPv4(std::basic_string_view<CharT> p_address, std::span<uint8_t, 4> p_out);
+
+		template<c_ipconv_char CharT>
+		bool from_chars_IPv6(std::basic_string_view<CharT> p_address, std::span<uint16_t, 8> p_out);
+	} //namespace _p
+
 /// \brief provides a wrapper for a IP v4 and v6 addresses
 struct IP_address
 {
@@ -63,31 +100,42 @@ struct IP_address
 	} m_ipv = IPv::None;
 
 	IP_address();
-	IP_address(IPv p_version, std::span<const uint8_t> p_init);
-	IP_address(std::u8string_view p_address);
+	IP_address(std::span<const uint8_t, 4> p_init);
+	IP_address(std::span<const uint16_t, 8> p_init);
+	IP_address(std::u8string_view  p_address);
+	IP_address(std::u16string_view p_address);
+	IP_address(std::u32string_view p_address);
 
-	IP_address(const IP_address& p_other)	= default;
-	IP_address(IP_address&& p_other)		= default;
+	constexpr IP_address(const IP_address& p_other)	= default;
+	constexpr IP_address(IP_address&& p_other)		= default;
 
 	///	\brief Tries to initialize an IPv4 address from string
 	///	\param[in] p_address - String in dot-decimal
 	///	\return true if string contains valid IPv4 in dot-decimal
 	bool from_string_v4(std::u8string_view p_address);
+	bool from_string_v4(std::u16string_view p_address);
+	bool from_string_v4(std::u32string_view p_address);
 
 	///	\brief Tries to initialize an IPv6 address from string
 	///	\param[in] p_address - String in RFC 5952
 	///	\return true if string contains valid IPv6 in RFC5952
-	bool from_string_v6(std::u8string_view p_address);
+	bool from_string_v6(std::u8string_view  p_address);
+	bool from_string_v6(std::u16string_view p_address);
+	bool from_string_v6(std::u32string_view p_address);
 
 	///	\brief Tries to initialize the address from string
 	///	\param[in] p_address - String in dot-decimal or RFC 5952
 	///	\return true if string contains valid IPv4 in dot-decimal or IPv6 in RFC5952
-	bool from_string(std::u8string_view p_address);
+	bool from_string(std::u8string_view  p_address);
+	bool from_string(std::u16string_view p_address);
+	bool from_string(std::u32string_view p_address);
 
 	///	\brief Outputs current IP into a string
 	///	\param[out] p_address - Non-null-terminated string in dot-decimal for IPv4 address, in RFC5952 for IPv6, or empty if neither. Buffer size must be at least 39 Bytes
 	///	\return Number of output bytes used
-	uintptr_t to_string(std::span<char8_t, 39> p_output) const;
+	uintptr_t to_string(std::span<char8_t , 39> p_output) const;
+	uintptr_t to_string(std::span<char16_t, 39> p_output) const;
+	uintptr_t to_string(std::span<char32_t, 39> p_output) const;
 
 	///	\brief Inline version of IPv6_netAddr::to_string(std::span<char8_t, 39>)
 	std::u8string to_string() const;
@@ -148,17 +196,24 @@ struct IPv4_address
 	IPv4_address(uint32_t						p_init);
 	IPv4_address(std::span<const uint8_t, 4>	p_init);
 	IPv4_address(const IPv4_address&			p_other);
-	IPv4_address(std::u8string_view				p_address);
+	IPv4_address(std::u8string_view  p_address);
+	IPv4_address(std::u16string_view p_address);
+	IPv4_address(std::u32string_view p_address);
 
 	///	\brief Tries to initialize address from string
 	///	\param[in] p_address - String in dot-decimal notation
 	///	\return true if string contains valid IP in dot-decimal notation
-	bool from_string(std::u8string_view	p_address);
+	///			if false IP will contain null address
+	bool from_string(std::u8string_view  p_address);
+	bool from_string(std::u16string_view p_address);
+	bool from_string(std::u32string_view p_address);
 
 	///	\brief Outputs current IP into a string
 	///	\param[out] p_address - Non-null-terminated string in dot-decimal notation. Buffer size must be at least 15 Bytes
 	///	\return Number of output bytes used
 	uintptr_t to_string(std::span<char8_t, 15> p_output) const;
+	uintptr_t to_string(std::span<char16_t, 15> p_output) const;
+	uintptr_t to_string(std::span<char32_t, 15> p_output) const;
 
 	///	\brief Inline version of IPv4_netAddr::to_string(std::span<char8_t, 15>)
 	std::u8string to_string() const;
@@ -197,19 +252,26 @@ struct IPv6_address
 	};
 
 	IPv6_address();
-	IPv6_address(std::span<const uint8_t, 16>	p_init);
-	IPv6_address(const IPv6_address&	p_other);
-	IPv6_address(std::u8string_view		p_address);
+	IPv6_address(std::span<const uint16_t, 8> p_init);
+	IPv6_address(const IPv6_address& p_other);
+	IPv6_address(std::u8string_view  p_address);
+	IPv6_address(std::u16string_view p_address);
+	IPv6_address(std::u32string_view p_address);
 
 	///	\brief Tries to initialize the address from string
 	///	\param[in] p_address - String in RFC 5952 standard
 	///	\return true if string contains valid IP in RFC5952 standard
-	bool from_string(std::u8string_view	p_address);
+	///			if false IP will contain null address
+	bool from_string(std::u8string_view  p_address);
+	bool from_string(std::u16string_view p_address);
+	bool from_string(std::u32string_view p_address);
 
 	///	\brief Outputs current IP into a string
 	///	\param[out] p_address - Non-null-terminated string in RFC5952 standard notation. Buffer size must be at least 39 Bytes
 	///	\return Number of output bytes used
-	uintptr_t to_string(std::span<char8_t, 39> p_output) const;
+	uintptr_t to_string(std::span<char8_t , 39> p_output) const;
+	uintptr_t to_string(std::span<char16_t, 39> p_output) const;
+	uintptr_t to_string(std::span<char32_t, 39> p_output) const;
 
 	///	\brief Inline version of IPv6_netAddr::to_string(std::span<char8_t, 39>)
 	std::u8string to_string() const;
@@ -239,6 +301,12 @@ struct IPv6_address
 //======== ======== ======== inline optimization ======== ======== ========
 
 //======== ======== IP_address ======== ========
+inline IP_address::IP_address(std::u8string_view  p_address){ from_string(p_address); }
+inline IP_address::IP_address(std::u16string_view p_address){ from_string(p_address); }
+inline IP_address::IP_address(std::u32string_view p_address){ from_string(p_address); }
+
+
+
 inline IP_address::IPv IP_address::version() const { return m_ipv; }
 inline void IP_address::clear() { m_ipv = IPv::None; }
 inline void IP_address::swap(IP_address& p_other) { std::swap(*this, p_other); }
@@ -248,6 +316,14 @@ inline IPv4_address::IPv4_address()								: ui32Type(0) {}
 inline IPv4_address::IPv4_address(uint32_t p_init)				: ui32Type(p_init){}
 inline IPv4_address::IPv4_address(std::span<const uint8_t, 4> p_init) { memcpy(byteField, p_init.data(), 4); }
 inline IPv4_address::IPv4_address(const IPv4_address& p_other)	: ui32Type(p_other.ui32Type) { }
+
+inline IPv4_address::IPv4_address(std::u8string_view  p_address){ from_string(p_address); }
+inline IPv4_address::IPv4_address(std::u16string_view p_address){ from_string(p_address); }
+inline IPv4_address::IPv4_address(std::u32string_view p_address){ from_string(p_address); }
+
+inline uintptr_t IPv4_address::to_string(std::span<char8_t , 15> p_output) const { return _p::to_chars_IPv4(byteField, p_output); }
+inline uintptr_t IPv4_address::to_string(std::span<char16_t, 15> p_output) const { return _p::to_chars_IPv4(byteField, p_output); }
+inline uintptr_t IPv4_address::to_string(std::span<char32_t, 15> p_output) const { return _p::to_chars_IPv4(byteField, p_output); }
 
 inline void IPv4_address::set_any() { ui32Type = 0; }
 inline void IPv4_address::swap(IPv4_address& p_other) { std::swap(ui32Type, p_other.ui32Type); }
@@ -267,6 +343,16 @@ inline bool IPv4_address::operator != (const IPv4_address& p_other) const { retu
 inline bool IPv4_address::operator <  (const IPv4_address& p_other) const { return ui32Type < p_other.ui32Type; }
 
 //======== ======== IPv6_address ======== ========
-inline bool IPv6_address::is_null() const {return ui64Type[0] == 0 && ui64Type[1] == 0;}
 
+inline IPv6_address::IPv6_address() { ui64Type[0] = 0; ui64Type[1] = 0; }
+inline IPv6_address::IPv6_address(const IPv6_address& p_other) { ui64Type[0] = p_other.ui64Type[0]; ui64Type[1] = p_other.ui64Type[1]; }
+inline IPv6_address::IPv6_address(std::u8string_view  p_address){ from_string(p_address); }
+inline IPv6_address::IPv6_address(std::u16string_view p_address){ from_string(p_address); }
+inline IPv6_address::IPv6_address(std::u32string_view p_address){ from_string(p_address); }
+inline bool IPv6_address::is_null() const { return ui64Type[0] == 0 && ui64Type[1] == 0; }
+inline void IPv6_address::set_any() { ui64Type[0] = 0; ui64Type[1] = 0; }
+
+inline uintptr_t IPv6_address::to_string(std::span<char8_t , 39> p_output) const { return _p::to_chars_IPv6(doubletField, p_output); }
+inline uintptr_t IPv6_address::to_string(std::span<char16_t, 39> p_output) const { return _p::to_chars_IPv6(doubletField, p_output); }
+inline uintptr_t IPv6_address::to_string(std::span<char32_t, 39> p_output) const { return _p::to_chars_IPv6(doubletField, p_output); }
 } //namespace core
