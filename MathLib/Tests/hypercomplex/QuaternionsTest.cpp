@@ -31,7 +31,7 @@
 #include <vector>
 #include <limits>
 
-#include <CoreLib/Core_String.hpp>
+#include <CoreLib/string/core_string_numeric.hpp>
 
 #include <MathLib/HyperComplex/quaternions.hpp>
 

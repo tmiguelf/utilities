@@ -58,25 +58,33 @@ consteval std::pair<T, T> getTestCase_const()
 template<typename T> requires (sizeof(T) == sizeof(uint8_t))
 std::pair<T, T> getTestCase()
 {
-	return {core::rvalue_reinterpret_cast<const T>(uint8_t{0x01}), core::rvalue_reinterpret_cast<const T>(uint8_t{0x01})};
+	const uint8_t var1{0x01};
+	const uint8_t var2{0x01};
+	return { reinterpret_cast<const T&>(var1), reinterpret_cast<const T&>(var2)};
 }
 
 template<typename T> requires (sizeof(T) == sizeof(uint16_t))
 std::pair<T, T> getTestCase()
 {
-	return {core::rvalue_reinterpret_cast<const T>(uint16_t{0x0123}), core::rvalue_reinterpret_cast<const T>(uint16_t{0x2301})};
+	const uint16_t var1{0x0123};
+	const uint16_t var2{0x2301};
+	return { reinterpret_cast<const T&>(var1), reinterpret_cast<const T&>(var2)};
 }
 
 template<typename T> requires (sizeof(T) == sizeof(uint32_t))
 std::pair<T, T> getTestCase()
 {
-	return {core::rvalue_reinterpret_cast<const T>(uint32_t{0x01234567}), core::rvalue_reinterpret_cast<const T>(uint32_t{0x67452301})};
+	const uint32_t var1{0x01234567};
+	const uint32_t var2{0x67452301};
+	return { reinterpret_cast<const T&>(var1), reinterpret_cast<const T&>(var2)};
 }
 
 template<typename T> requires (sizeof(T) == sizeof(uint64_t))
 std::pair<T, T> getTestCase()
 {
-	return {core::rvalue_reinterpret_cast<const T>(0x0123456789ABCDEF), core::rvalue_reinterpret_cast<const T>(0xEFCDAB8967452301)};
+	const uint64_t var1{0x0123456789ABCDEF};
+	const uint64_t var2{0xEFCDAB8967452301};
+	return { reinterpret_cast<const T&>(var1), reinterpret_cast<const T&>(var2)};
 }
 
 enum class enumu8 : uint8_t {};

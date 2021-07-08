@@ -43,21 +43,19 @@ private:
 	static constexpr uintptr_t max_ip_size = 15;
 	using array_t = std::array<char8_t, max_ip_size>;
 public:
-	toPrint(const core::IPv4_address& p_data)
-	{
-		m_size = p_data.to_string(m_preCalc);
-	}
+	toPrint(const core::IPv4_address& p_data): m_data(p_data) {}
 
-	inline constexpr uintptr_t size(const char8_t&) const { return m_size; }
+	inline uintptr_t size() const { return _p::to_chars_IPv4_estimate(m_data.byteField); }
+	inline uintptr_t size(const char8_t &) const { return size(); }
+	inline uintptr_t size(const char16_t&) const { return size(); }
+	inline uintptr_t size(const char32_t&) const { return size(); }
 
-	void getPrint(char8_t* p_out) const
-	{
-		memcpy(p_out, m_preCalc.data(), m_size);
-	}
+	void getPrint(char8_t * p_out) const { _p::to_chars_IPv4_unsafe(m_data.byteField, p_out); }
+	void getPrint(char16_t* p_out) const { _p::to_chars_IPv4_unsafe(m_data.byteField, p_out); }
+	void getPrint(char32_t* p_out) const { _p::to_chars_IPv4_unsafe(m_data.byteField, p_out); }
 
 private:
-	array_t m_preCalc;
-	uintptr_t m_size;
+	const core::IPv4_address m_data;
 };
 
 template<>
@@ -67,21 +65,19 @@ private:
 	static constexpr uintptr_t max_ip_size = 39;
 	using array_t = std::array<char8_t, max_ip_size>;
 public:
-	toPrint(const core::IPv6_address& p_data)
-	{
-		m_size = p_data.to_string(m_preCalc);
-	}
+	toPrint(const core::IPv6_address& p_data): m_data(p_data) {}
 
-	inline constexpr uintptr_t size(const char8_t&) const { return m_size; }
+	inline uintptr_t size() const { return _p::to_chars_IPv6_estimate(m_data.doubletField); }
+	inline uintptr_t size(const char8_t &) const { return size(); }
+	inline uintptr_t size(const char16_t&) const { return size(); }
+	inline uintptr_t size(const char32_t&) const { return size(); }
 
-	void getPrint(char8_t* p_out) const
-	{
-		memcpy(p_out, m_preCalc.data(), m_size);
-	}
+	void getPrint(char8_t * p_out) const { _p::to_chars_IPv6_unsafe(m_data.doubletField, p_out); }
+	void getPrint(char16_t* p_out) const { _p::to_chars_IPv6_unsafe(m_data.doubletField, p_out); }
+	void getPrint(char32_t* p_out) const { _p::to_chars_IPv6_unsafe(m_data.doubletField, p_out); }
 
 private:
-	array_t m_preCalc;
-	uintptr_t m_size;
+	const core::IPv6_address m_data;
 };
 
 template<>
@@ -91,21 +87,63 @@ private:
 	static constexpr uintptr_t max_ip_size = 39;
 	using array_t = std::array<char8_t, max_ip_size>;
 public:
-	toPrint(const core::IP_address& p_data)
+	toPrint(const core::IP_address& p_data): m_data(p_data) {}
+
+	uintptr_t size() const
 	{
-		m_size = p_data.to_string(m_preCalc);
+		if(m_data.m_ipv == core::IP_address::IPv::IPv_4)
+		{
+			return _p::to_chars_IPv4_estimate(m_data.v4.byteField);
+		}
+		else if(m_data.m_ipv == core::IP_address::IPv::IPv_6)
+		{
+			return _p::to_chars_IPv6_estimate(m_data.v6.doubletField);
+		}
+		return 0;
 	}
 
-	inline constexpr uintptr_t size(const char8_t&) const { return m_size; }
+	inline uintptr_t size(const char8_t &) const { return size(); }
+	inline uintptr_t size(const char16_t&) const { return size(); }
+	inline uintptr_t size(const char32_t&) const { return size(); }
 
 	void getPrint(char8_t* p_out) const
 	{
-		memcpy(p_out, m_preCalc.data(), m_size);
+		if(m_data.m_ipv == core::IP_address::IPv::IPv_4)
+		{
+			_p::to_chars_IPv4_unsafe(m_data.v4.byteField, p_out);
+		}
+		else if(m_data.m_ipv == core::IP_address::IPv::IPv_6)
+		{
+			_p::to_chars_IPv6_unsafe(m_data.v6.doubletField, p_out);
+		}
+	}
+
+	void getPrint(char16_t* p_out) const
+	{
+		if(m_data.m_ipv == core::IP_address::IPv::IPv_4)
+		{
+			_p::to_chars_IPv4_unsafe(m_data.v4.byteField, p_out);
+		}
+		else if(m_data.m_ipv == core::IP_address::IPv::IPv_6)
+		{
+			_p::to_chars_IPv6_unsafe(m_data.v6.doubletField, p_out);
+		}
+	}
+
+	void getPrint(char32_t* p_out) const
+	{
+		if(m_data.m_ipv == core::IP_address::IPv::IPv_4)
+		{
+			_p::to_chars_IPv4_unsafe(m_data.v4.byteField, p_out);
+		}
+		else if(m_data.m_ipv == core::IP_address::IPv::IPv_6)
+		{
+			_p::to_chars_IPv6_unsafe(m_data.v6.doubletField, p_out);
+		}
 	}
 
 private:
-	array_t m_preCalc;
-	uintptr_t m_size;
+	const core::IP_address& m_data;
 };
 
 
@@ -116,82 +154,173 @@ template <typename T> toPrint_net(T, uint16_t) -> toPrint_net<std::remove_cvref_
 template<>
 class toPrint_net<core::IPv4_address>: public toPrint_base
 {
-private:
-	static constexpr uintptr_t max_ip_size = 15;
-	static constexpr uintptr_t max_port_size = core::to_chars_dec_max_digits_v<uint16_t>;
-	using array_t = std::array<char8_t, max_ip_size + max_port_size + 1>;
 public:
 	toPrint_net(const core::IPv4_address& p_ip, uint16_t p_port)
+		: m_ip  (p_ip)
+		, m_port(p_port)
+	{}
+
+	inline uintptr_t size() const
 	{
-		const uintptr_t size1 = p_ip.to_string(std::span<char8_t, max_ip_size>{m_preCalc.data(), max_ip_size});
-		m_preCalc[size1] = u8'@';
-		m_size = size1 + 1 + core::to_chars(p_port, std::span<char8_t, max_port_size>{m_preCalc.data() + size1 + 1, max_port_size});
+		return
+			_p::to_chars_IPv4_estimate(m_ip.byteField) +
+			_p::to_chars_estimate(m_port) + 1;
 	}
 
-	inline constexpr uintptr_t size(const char8_t&) const { return m_size; }
+	inline uintptr_t size(const char8_t &) const { return size(); }
+	inline uintptr_t size(const char16_t&) const { return size(); }
+	inline uintptr_t size(const char32_t&) const { return size(); }
 
 	void getPrint(char8_t* p_out) const
 	{
-		memcpy(p_out, m_preCalc.data(), m_size);
+		p_out += _p::to_chars_IPv4(m_ip.byteField, std::span<char8_t, 15>{p_out, 15});
+		*(p_out++) = u8'@';
+		_p::to_chars_unsafe(m_port, p_out);
+	}
+
+	void getPrint(char16_t* p_out) const
+	{
+		p_out += _p::to_chars_IPv4(m_ip.byteField, std::span<char16_t, 15>{p_out, 15});
+		*(p_out++) = u'@';
+		_p::to_chars_unsafe(m_port, p_out);
+	}
+
+	void getPrint(char32_t* p_out) const
+	{
+		p_out += _p::to_chars_IPv4(m_ip.byteField, std::span<char32_t, 15>{p_out, 15});
+		*(p_out++) = U'@';
+		_p::to_chars_unsafe(m_port, p_out);
 	}
 
 private:
-	array_t m_preCalc;
-	uintptr_t m_size;
+	const core::IPv4_address m_ip;
+	const uint16_t m_port;
 };
 
 template<>
 class toPrint_net<core::IPv6_address>: public toPrint_base
 {
-private:
-	static constexpr uintptr_t max_ip_size = 39;
-	static constexpr uintptr_t max_port_size = core::to_chars_dec_max_digits_v<uint16_t>;
-	using array_t = std::array<char8_t, max_ip_size + max_port_size + 1>;
 public:
 	toPrint_net(const core::IPv6_address& p_ip, uint16_t p_port)
+		: m_ip  (p_ip)
+		, m_port(p_port)
+	{}
+
+	inline uintptr_t size() const
 	{
-		const uintptr_t size1 = p_ip.to_string(std::span<char8_t, max_ip_size>{m_preCalc.data(), max_ip_size});
-		m_preCalc[size1] = u8'@';
-		m_size = size1 + 1 + core::to_chars(p_port, std::span<char8_t, max_port_size>{m_preCalc.data() + size1 + 1, max_port_size});
+		return
+			_p::to_chars_IPv6_estimate(m_ip.doubletField) +
+			_p::to_chars_estimate(m_port) + 1;
 	}
 
-	inline constexpr uintptr_t size(const char8_t&) const { return m_size; }
+	inline uintptr_t size(const char8_t &) const { return size(); }
+	inline uintptr_t size(const char16_t&) const { return size(); }
+	inline uintptr_t size(const char32_t&) const { return size(); }
+
 
 	void getPrint(char8_t* p_out) const
 	{
-		memcpy(p_out, m_preCalc.data(), m_size);
+		p_out += _p::to_chars_IPv6(m_ip.doubletField, std::span<char8_t, 39>{p_out, 39});
+		*(p_out++) = u8'@';
+		_p::to_chars_unsafe(m_port, p_out);
+	}
+
+	void getPrint(char16_t* p_out) const
+	{
+		p_out += _p::to_chars_IPv6(m_ip.doubletField, std::span<char16_t, 39>{p_out, 39});
+		*(p_out++) = u'@';
+		_p::to_chars_unsafe(m_port, p_out);
+	}
+
+	void getPrint(char32_t* p_out) const
+	{
+		p_out += _p::to_chars_IPv6(m_ip.doubletField, std::span<char32_t, 39>{p_out, 39});
+		*(p_out++) = U'@';
+		_p::to_chars_unsafe(m_port, p_out);
 	}
 
 private:
-	array_t m_preCalc;
-	uintptr_t m_size;
+	const core::IPv6_address m_ip;
+	const uint16_t m_port;
 };
 
 template<>
 class toPrint_net<core::IP_address>: public toPrint_base
 {
 private:
-	static constexpr uintptr_t max_ip_size = 39;
-	static constexpr uintptr_t max_port_size = core::to_chars_dec_max_digits_v<uint16_t>;
-	using array_t = std::array<char8_t, max_ip_size + max_port_size + 1>;
-public:
-	toPrint_net(const core::IP_address& p_ip, uint16_t p_port)
+	uintptr_t ip_size() const
 	{
-		const uintptr_t size1 = p_ip.to_string(std::span<char8_t, max_ip_size>{m_preCalc.data(), max_ip_size});
-		m_preCalc[size1] = u8'@';
-		m_size = size1 + 1 + core::to_chars(p_port, std::span<char8_t, max_port_size>{m_preCalc.data() + size1 + 1, max_port_size});
+		if(m_ip.m_ipv == core::IP_address::IPv::IPv_4)
+		{
+			return _p::to_chars_IPv4_estimate(m_ip.v4.byteField);
+		}
+		else if(m_ip.m_ipv == core::IP_address::IPv::IPv_6)
+		{
+			return _p::to_chars_IPv6_estimate(m_ip.v6.doubletField);
+		}
+		return 0;
 	}
 
-	inline constexpr uintptr_t size(const char8_t&) const { return m_size; }
+public:
+	toPrint_net(const core::IP_address& p_ip, uint16_t p_port)
+		: m_ip  (p_ip)
+		, m_port(p_port)
+	{}
+
+	inline uintptr_t size() const
+	{
+		return ip_size() + _p::to_chars_estimate(m_port) + 1;
+	}
+
+	inline uintptr_t size(const char8_t &) const { return size(); }
+	inline uintptr_t size(const char16_t&) const { return size(); }
+	inline uintptr_t size(const char32_t&) const { return size(); }
 
 	void getPrint(char8_t* p_out) const
 	{
-		memcpy(p_out, m_preCalc.data(), m_size);
+		if(m_ip.m_ipv == core::IP_address::IPv::IPv_4)
+		{
+			p_out += _p::to_chars_IPv4(m_ip.v4.byteField, std::span<char8_t, 15>{p_out, 15});
+		}
+		else if(m_ip.m_ipv == core::IP_address::IPv::IPv_6)
+		{
+			p_out += _p::to_chars_IPv6(m_ip.v6.doubletField, std::span<char8_t, 39>{p_out, 39});
+		}
+		*(p_out++) = u8'@';
+		_p::to_chars_unsafe(m_port, p_out);
+	}
+
+	void getPrint(char16_t* p_out) const
+	{
+		if(m_ip.m_ipv == core::IP_address::IPv::IPv_4)
+		{
+			p_out += _p::to_chars_IPv4(m_ip.v4.byteField, std::span<char16_t, 15>{p_out, 15});
+		}
+		else if(m_ip.m_ipv == core::IP_address::IPv::IPv_6)
+		{
+			p_out += _p::to_chars_IPv6(m_ip.v6.doubletField, std::span<char16_t, 39>{p_out, 39});
+		}
+		*(p_out++) = u'@';
+		_p::to_chars_unsafe(m_port, p_out);
+	}
+
+	void getPrint(char32_t* p_out) const
+	{
+		if(m_ip.m_ipv == core::IP_address::IPv::IPv_4)
+		{
+			p_out += _p::to_chars_IPv4(m_ip.v4.byteField, std::span<char32_t, 15>{p_out, 15});
+		}
+		else if(m_ip.m_ipv == core::IP_address::IPv::IPv_6)
+		{
+			p_out += _p::to_chars_IPv6(m_ip.v6.doubletField, std::span<char32_t, 39>{p_out, 39});
+		}
+		*(p_out++) = U'@';
+		_p::to_chars_unsafe(m_port, p_out);
 	}
 
 private:
-	array_t m_preCalc;
-	uintptr_t m_size;
+	const core::IP_address& m_ip;
+	const uint16_t m_port;
 };
 
 } //namespace core

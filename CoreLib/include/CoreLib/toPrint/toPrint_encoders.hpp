@@ -121,7 +121,7 @@ template<>
 class toPrint<char16_t>: public toPrint_base
 {
 public:
-	toPrint(char16_t p_data): m_data(p_data) {}
+	constexpr toPrint(char16_t p_data): m_data(p_data) {}
 
 	inline constexpr uintptr_t size(const char8_t&) const
 	{
@@ -152,7 +152,7 @@ template<>
 class toPrint<char32_t>: public toPrint_base
 {
 public:
-	toPrint(char32_t p_data): m_data(p_data) {}
+	constexpr toPrint(char32_t p_data): m_data(p_data) {}
 
 	inline constexpr uintptr_t size(const char8_t&) const
 	{
@@ -220,7 +220,7 @@ template<>
 class toPrint<wchar_t>: public toPrint<core::wchar_alias>
 {
 public:
-	toPrint(wchar_t p_data): toPrint<core::wchar_alias>(static_cast<core::wchar_alias>(p_data))
+	constexpr toPrint(wchar_t p_data): toPrint<core::wchar_alias>(static_cast<core::wchar_alias>(p_data))
 	{}
 };
 
@@ -231,7 +231,7 @@ template<>
 class toPrint<std::u8string_view>: public toPrint_base
 {
 public:
-	toPrint(std::u8string_view p_data): m_data(p_data){}
+	constexpr toPrint(std::u8string_view p_data): m_data(p_data){}
 
 	inline constexpr uintptr_t size(const char8_t& ) const { return m_data.size(); }
 	inline uintptr_t size(const char16_t&) const
@@ -267,7 +267,7 @@ template<>
 class toPrint<std::u16string_view>: public toPrint_base
 {
 public:
-	toPrint(std::u16string_view p_data)
+	constexpr toPrint(std::u16string_view p_data)
 		: m_data(p_data)
 	{}
 	
@@ -306,7 +306,7 @@ template<>
 class toPrint<std::u32string_view>: public toPrint_base
 {
 public:
-	toPrint(std::u32string_view p_data)
+	constexpr toPrint(std::u32string_view p_data)
 		: m_data(p_data)
 
 	{}
@@ -405,7 +405,7 @@ class toPrint<Num_T>: public toPrint_base
 private:
 	using array_t = std::array<char8_t, core::to_chars_dec_max_digits_v<Num_T>>;
 public:
-	toPrint(Num_T p_data)
+	constexpr toPrint(Num_T p_data)
 	{
 		m_size = core::to_chars(p_data, m_preCalc);
 	}
@@ -433,7 +433,7 @@ template<typename Num_T> requires (core::char_conv_dec_supported<Num_T>::value &
 class toPrint<Num_T>: public toPrint_base
 {
 public:
-	toPrint(Num_T p_data)
+	constexpr toPrint(Num_T p_data)
 		: m_data{p_data}
 	{
 	}
@@ -461,7 +461,7 @@ class toPrint<Num_T>: public toPrint<_p::toPrint_int_aliased_t<Num_T>>
 {
 	using alias_t = _p::toPrint_int_aliased_t<Num_T>;
 public:
-	toPrint(Num_T p_data): toPrint<alias_t>(static_cast<alias_t>(p_data)) {}
+	constexpr toPrint(Num_T p_data): toPrint<alias_t>(static_cast<alias_t>(p_data)) {}
 };
 
 
@@ -477,7 +477,7 @@ private:
 	using array_t = std::array<char8_t, core::to_chars_hex_max_digits_v<Num_T>>;
 
 public:
-	toPrint_hex(Num_T p_data)
+	constexpr toPrint_hex(Num_T p_data)
 		: m_data(p_data)
 	{
 	}
@@ -502,7 +502,7 @@ class toPrint_hex<Num_T>: public toPrint_hex<_p::toPrint_int_aliased_t<Num_T>>
 {
 	using alias_t = _p::toPrint_int_aliased_t<Num_T>;
 public:
-	toPrint_hex(Num_T p_data): toPrint_hex<alias_t>(static_cast<alias_t>(p_data)) {}
+	constexpr toPrint_hex(Num_T p_data): toPrint_hex<alias_t>(static_cast<alias_t>(p_data)) {}
 };
 
 

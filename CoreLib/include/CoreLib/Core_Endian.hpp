@@ -204,7 +204,8 @@ template<_p::endian_supported_type_c T>
 template<_p::is_endian_runtime_exclusive_c T>
 [[nodiscard]] inline T byte_swap(const T& p_value)
 {
-	return rvalue_reinterpret_cast<const T>(byte_swap(reinterpret_cast<const _p::endianess_uint_align_t<T>&>(p_value)));
+	const _p::endianess_uint_align_t<T> temp = byte_swap(reinterpret_cast<const _p::endianess_uint_align_t<T>&>(p_value));
+	return reinterpret_cast<const T&>(temp);
 }
 
 template <_p::endian_supported_type_c T>

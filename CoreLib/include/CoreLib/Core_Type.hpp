@@ -42,20 +42,6 @@ concept c_tuple = is_tuple<T>::value;
 template<typename Derived, typename Base>
 constexpr bool is_derived_v = std::is_base_of_v<Base, Derived> && std::is_convertible_v<const volatile Derived*, const volatile Base*>;
 
-
-template <typename T_out, typename T> requires
-	std::is_trivially_move_constructible_v<T_out> &&
-	std::is_trivially_destructible_v<T_out> &&
-	std::is_trivially_move_constructible_v<T> &&
-	std::is_trivially_destructible_v<T> &&
-	(sizeof(T) == sizeof(T_out)) &&
-	(alignof(T) == alignof(T))
-[[nodiscard]] inline T_out&& rvalue_reinterpret_cast(T&& p_in)
-{
-	return reinterpret_cast<T_out&&>(p_in);
-}
-
-
 namespace literals
 {
 	constexpr uint8_t   operator "" _ui8 (unsigned long long int p_var) { return static_cast<uint8_t  >(p_var); }

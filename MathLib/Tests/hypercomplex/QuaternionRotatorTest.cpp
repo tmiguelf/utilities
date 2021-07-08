@@ -32,7 +32,7 @@
 #include <string_view>
 #include <string>
 
-#include <CoreLib/Core_String.hpp>
+#include <CoreLib/string/core_string_numeric.hpp>
 
 #include <MathLib/LinearAlgebra/Vector.hpp>
 #include <MathLib/constants.hpp>
