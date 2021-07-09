@@ -35,6 +35,7 @@
 #include "toPrint_base.hpp"
 
 #include <CoreLib/Core_Alloca.hpp>
+#include <CoreLib/string/core_wchar_alias.hpp>
 
 namespace core
 {
@@ -56,39 +57,140 @@ private:
 
 namespace _p
 {
+	template<typename C, typename T> requires is_toPrint_v<T>
+	void push_ostream_toPrint(std::basic_ostream<C>& p_sink, const T& p_data, C* p_buff, uintptr_t p_size)
+	{
+		p_data.getPrint(p_buff);
+		p_sink.write(p_buff, p_size);
+	}
+
+	template<typename C, typename T> requires is_toPrint_v<T>
+#if defined(_MSC_BUILD)
+	__declspec(noinline)
+#else
+	__attribute__((noinline))
+#endif
+	void handle_ostream_toPrint(std::basic_ostream<C>& p_stream, const T& p_data)
+	{
+		const uintptr_t size = p_data.size(C{0});
+		if(size)
+		{
+			constexpr uintptr_t alloca_treshold = 0x10000 / sizeof(C);
+			if(size > alloca_treshold)
+			{
+				std::vector<C> buff;
+				buff.resize(size);
+				push_ostream_toPrint(p_stream, p_data, buff.data(), size);
+			}
+			else
+			{
+				C* buff = reinterpret_cast<C*>(core_alloca(size * sizeof(C)));
+				push_ostream_toPrint(p_stream, p_data, buff, size);
+			}
+		}
+	}
+
 	template<typename T> requires is_toPrint_v<T>
-	void push_ostream_toPrint(std::ostream& p_sink, const T& p_data, char8_t* p_buff, uintptr_t p_size)
+	void push_ostream_toPrint_alias(std::basic_ostream<char>& p_sink, const T& p_data, char8_t* p_buff, uintptr_t p_size)
 	{
 		p_data.getPrint(p_buff);
 		p_sink.write(reinterpret_cast<const char*>(p_buff), p_size);
+	}
+
+	template<typename T> requires is_toPrint_v<T>
+#if defined(_MSC_BUILD)
+	__declspec(noinline)
+#else
+	__attribute__((noinline))
+#endif
+	void handle_ostream_toPrint_alias(std::basic_ostream<char>& p_stream, const T& p_data)
+	{
+		const uintptr_t size = p_data.size(char8_t{0});
+		if(size)
+		{
+			constexpr uintptr_t alloca_treshold = 0x10000;
+			if(size > alloca_treshold)
+			{
+				std::vector<char8_t> buff;
+				buff.resize(size);
+				push_ostream_toPrint_alias(p_stream, p_data, buff.data(), size);
+			}
+			else
+			{
+				char8_t* buff = reinterpret_cast<char8_t*>(core_alloca(size));
+				push_ostream_toPrint_alias(p_stream, p_data, buff, size);
+			}
+		}
+	}
+
+	template<typename T> requires is_toPrint_v<T>
+	void push_ostream_toPrint_alias(std::basic_ostream<wchar_t>& p_sink, const T& p_data, wchar_alias* p_buff, uintptr_t p_size)
+	{
+		p_data.getPrint(p_buff);
+		p_sink.write(reinterpret_cast<const wchar_t*>(p_buff), p_size);
+	}
+
+	template<typename T> requires is_toPrint_v<T>
+#if defined(_MSC_BUILD)
+	__declspec(noinline)
+#else
+	__attribute__((noinline))
+#endif
+	void handle_ostream_toPrint_alias(std::basic_ostream<wchar_t>& p_stream, const T& p_data)
+	{
+		const uintptr_t size = p_data.size(wchar_alias{0});
+		if(size)
+		{
+			constexpr uintptr_t alloca_treshold = 0x10000 / sizeof(wchar_alias);
+			if(size > alloca_treshold)
+			{
+				std::vector<wchar_alias> buff;
+				buff.resize(size);
+				push_ostream_toPrint_alias(p_stream, p_data, buff.data(), size);
+			}
+			else
+			{
+				wchar_alias* buff = reinterpret_cast<wchar_alias*>(core_alloca(size * sizeof(wchar_alias)));
+				push_ostream_toPrint_alias(p_stream, p_data, buff, size);
+			}
+		}
 	}
 } //namespace _p
 
 } //namespace core
 
+
 template<typename T> requires core::_p::is_toPrint_v<T>
-#if defined(_MSC_BUILD)
-__declspec(noinline)
-#else
-__attribute__((noinline))
-#endif
-std::ostream& operator << (std::ostream& p_stream, const T& p_data)
+std::basic_ostream<char8_t>& operator << (std::basic_ostream<char8_t>& p_stream, const T& p_data)
 {
-	const uintptr_t size = p_data.size(char8_t{0});
-	if(size)
-	{
-		constexpr uintptr_t alloca_treshold = 0x10000;
-		if(size > alloca_treshold)
-		{
-			std::vector<char8_t> buff;
-			buff.resize(size);
-			core::_p::push_ostream_toPrint(p_stream, p_data, buff.data(), size);
-		}
-		else
-		{
-			char8_t* buff = reinterpret_cast<char8_t*>(core_alloca(size));
-			core::_p::push_ostream_toPrint(p_stream, p_data, buff, size);
-		}
-	}
+	core::_p::handle_ostream_toPrint(p_stream, p_data);
+	return p_stream;
+}
+
+template<typename T> requires core::_p::is_toPrint_v<T>
+std::basic_ostream<char16_t>& operator << (std::basic_ostream<char16_t>& p_stream, const T& p_data)
+{
+	core::_p::handle_ostream_toPrint(p_stream, p_data);
+	return p_stream;
+}
+
+template<typename T> requires core::_p::is_toPrint_v<T>
+std::basic_ostream<char32_t>& operator << (std::basic_ostream<char32_t>& p_stream, const T& p_data)
+{
+	core::_p::handle_ostream_toPrint(p_stream, p_data);
+	return p_stream;
+}
+
+template<typename T> requires core::_p::is_toPrint_v<T>
+std::basic_ostream<char>& operator << (std::basic_ostream<char>& p_stream, const T& p_data)
+{
+	core::_p::handle_ostream_toPrint_alias(p_stream, p_data);
+	return p_stream;
+}
+
+template<typename T> requires core::_p::is_toPrint_v<T>
+std::basic_ostream<wchar_t>& operator << (std::basic_ostream<wchar_t>& p_stream, const T& p_data)
+{
+	core::_p::handle_ostream_toPrint_alias(p_stream, p_data);
 	return p_stream;
 }

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30608.117
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31423.177
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CoreLib", "CoreLib\CoreLib.vcxproj", "{EA04E8E6-B05B-416E-B0A3-218406672173}"
 EndProject
@@ -20,8 +20,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MathLib", "MathLib\MathLib.vcxproj", "{77943016-2D04-4451-96CB-9FDCBB6B9C8C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MathLibTest", "MathLib\Tests\MathLibTest.vcxproj", "{F0920B5D-5D5E-4F37-B9DA-45B73E241C09}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestUtils", "TestUtils\TestUtils.vcxproj", "{D7501BDA-93C2-4903-A0DB-B23BEABA88A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -107,16 +105,6 @@ Global
 		{F0920B5D-5D5E-4F37-B9DA-45B73E241C09}.WSL_Release|x64.ActiveCfg = WSL_Release|x64
 		{F0920B5D-5D5E-4F37-B9DA-45B73E241C09}.WSL_Release|x64.Build.0 = WSL_Release|x64
 		{F0920B5D-5D5E-4F37-B9DA-45B73E241C09}.WSL_Release|x64.Deploy.0 = WSL_Release|x64
-		{D7501BDA-93C2-4903-A0DB-B23BEABA88A2}.Debug|x64.ActiveCfg = Debug|x64
-		{D7501BDA-93C2-4903-A0DB-B23BEABA88A2}.Debug|x64.Build.0 = Debug|x64
-		{D7501BDA-93C2-4903-A0DB-B23BEABA88A2}.Release|x64.ActiveCfg = Release|x64
-		{D7501BDA-93C2-4903-A0DB-B23BEABA88A2}.Release|x64.Build.0 = Release|x64
-		{D7501BDA-93C2-4903-A0DB-B23BEABA88A2}.WSL_Debug|x64.ActiveCfg = WSL_Debug|x64
-		{D7501BDA-93C2-4903-A0DB-B23BEABA88A2}.WSL_Debug|x64.Build.0 = WSL_Debug|x64
-		{D7501BDA-93C2-4903-A0DB-B23BEABA88A2}.WSL_Debug|x64.Deploy.0 = WSL_Debug|x64
-		{D7501BDA-93C2-4903-A0DB-B23BEABA88A2}.WSL_Release|x64.ActiveCfg = WSL_Release|x64
-		{D7501BDA-93C2-4903-A0DB-B23BEABA88A2}.WSL_Release|x64.Build.0 = WSL_Release|x64
-		{D7501BDA-93C2-4903-A0DB-B23BEABA88A2}.WSL_Release|x64.Deploy.0 = WSL_Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
