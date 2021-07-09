@@ -26,9 +26,9 @@
 //======== ======== ======== ======== Header ======== ======== ======== ========
 //======== ======== ======== Include ======== ======== ========
 //---- User Libraries ----
-#include "CoreLib/Core_Thread.hpp"
-#include <algorithm>
+#include <CoreLib/Core_Thread.hpp>
 
+#include <algorithm>
 
 #ifdef _WIN32
 #	include <windows.h>

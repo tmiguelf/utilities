@@ -23,7 +23,7 @@
 ///		SOFTWARE.
 //======== ======== ======== ======== ======== ======== ======== ========
 
-#include "CoreLib/Core_Sync.hpp"
+#include <CoreLib/Core_Sync.hpp>
 
 #ifdef _WIN32
 #	include <Windows.h>

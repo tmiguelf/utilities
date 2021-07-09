@@ -64,7 +64,9 @@ bool register_crash_trace(const std::filesystem::path& p_output_file);
 struct ModuleAddr
 {
 	uintptr_t	m_addr;	//!< Base address of the loaded module
-	//uint64_t	m_size;	//todo
+#ifdef _WIN32
+	uintptr_t	m_size;
+#endif
 	os_string	m_name;	//!< Module name
 };
 

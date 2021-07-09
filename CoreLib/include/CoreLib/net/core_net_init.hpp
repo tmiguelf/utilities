@@ -25,33 +25,33 @@
 
 #pragma once
 
-#include <cstdint>
-#include <filesystem>
-#include <optional>
-
-#include "string/core_os_string.hpp"
-
+/// \n
 namespace core
 {
+#ifdef _WIN32
+///	\brief Initializes the network subsystem for windows. On linux this has no effect.
+///		see https://docs.microsoft.com/en-us/windows/desktop/api/winsock/nf-winsock-wsastartup
+///
+///	\return true if the subsystem was initialized successfully, false on error. On linux always returns true.
+/// \sa Net_End
+bool Net_Init();
 
-bool env_exists	(const core::os_string& p_key);
-bool set_env	(const core::os_string& p_key, const core::os_string& p_value);
-bool delete_env	(const core::os_string& p_key);
-std::optional<core::os_string>	get_env		(const core::os_string& p_key);
-std::optional<core::os_string>	machine_name();
+///	\brief Releases the network subsystem on windows. On linux it has no effect.
+///		see https://docs.microsoft.com/en-us/windows/desktop/api/winsock/nf-winsock-wsacleanup
+/// \sa Net_Init
+void Net_End();
+#else
 
-std::filesystem::path application_path();
+///	\brief Initializes the network subsystem for windows. On linux this has no effect.
+///		see https://docs.microsoft.com/en-us/windows/desktop/api/winsock/nf-winsock-wsastartup
+///
+///	\return true if the subsystem was initialized successfully, false on error. On linux always returns true.
+/// \sa Net_End
+inline constexpr bool Net_Init() { return true; }
 
-inline std::filesystem::path to_absolute_lexical(const std::filesystem::path& p_path, const std::filesystem::path& p_base)
-{
-	if(p_path.is_absolute())
-	{
-		return p_path.lexically_normal();
-	}
-	else
-	{
-		return (p_base / p_path).lexically_normal();
-	}
-}
-
+///	\brief Releases the network subsystem on windows. On linux it has no effect.
+///		see https://docs.microsoft.com/en-us/windows/desktop/api/winsock/nf-winsock-wsacleanup
+/// \sa Net_Init
+inline constexpr void Net_End	() {}
+#endif
 } //namespace core

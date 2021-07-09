@@ -29,7 +29,7 @@
 #include <cmath>
 
 #include "quaternions.hpp"
-#include "MathLib/LinearAlgebra/3D.hpp"
+#include <MathLib/LinearAlgebra/3D.hpp>
 #include <MathLib/_p/mathlib_type_help.hpp>
 
 namespace mathlib

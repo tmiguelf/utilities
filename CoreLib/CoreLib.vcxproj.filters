@@ -18,6 +18,15 @@
     <Filter Include="Source Files\string">
       <UniqueIdentifier>{fe8fc368-1042-4701-950d-f6ab80a01935}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\toPrint">
+      <UniqueIdentifier>{9da9c3c6-b2a7-4b29-b62a-74e291ee806f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\net">
+      <UniqueIdentifier>{15e7dc04-e56b-49e5-8ff2-c79780c58600}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\net">
+      <UniqueIdentifier>{015a61ef-c3a7-4720-9828-de298ddc40fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="CoreLib.include.props">
@@ -33,9 +42,6 @@
     </ClInclude>
     <ClInclude Include="include\CoreLib\string\core_string_numeric.hpp">
       <Filter>Header Files\string</Filter>
-    </ClInclude>
-    <ClInclude Include="include\CoreLib\Core_String.hpp">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\CoreLib\Core_Alloca.hpp">
       <Filter>Header Files</Filter>
@@ -61,9 +67,6 @@
     <ClInclude Include="include\CoreLib\string\core_os_string.hpp">
       <Filter>Header Files\string</Filter>
     </ClInclude>
-    <ClInclude Include="include\CoreLib\Core_Net.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\CoreLib\Core_OS.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -73,17 +76,53 @@
     <ClInclude Include="include\CoreLib\Core_StackTrace.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\CoreLib\string\core_string_tostream.hpp">
-      <Filter>Header Files\string</Filter>
-    </ClInclude>
-    <ClInclude Include="include\CoreLib\string\core_string_streamers.hpp">
-      <Filter>Header Files\string</Filter>
-    </ClInclude>
     <ClInclude Include="include\CoreLib\string\core_string_encoding.hpp">
       <Filter>Header Files\string</Filter>
     </ClInclude>
     <ClInclude Include="include\CoreLib\Core_Console.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\string\core_wchar_alias.hpp">
+      <Filter>Header Files\string</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\toPrint\toPrint.hpp">
+      <Filter>Header Files\toPrint</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\toPrint\toPrint_base.hpp">
+      <Filter>Header Files\toPrint</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\toPrint\toPrint_encoders.hpp">
+      <Filter>Header Files\toPrint</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\toPrint\toPrint_filesystem.hpp">
+      <Filter>Header Files\toPrint</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\toPrint\toPrint_net.hpp">
+      <Filter>Header Files\toPrint</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\toPrint\toPrint_sink.hpp">
+      <Filter>Header Files\toPrint</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\toPrint\toPrint_std_ostream.hpp">
+      <Filter>Header Files\toPrint</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\toPrint\toPrint_support.hpp">
+      <Filter>Header Files\toPrint</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\net\core_net_address.hpp">
+      <Filter>Header Files\net</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\net\core_net_init.hpp">
+      <Filter>Header Files\net</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\net\core_net_socket.hpp">
+      <Filter>Header Files\net</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\net\core_net_TCP.hpp">
+      <Filter>Header Files\net</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\net\core_net_UDP.hpp">
+      <Filter>Header Files\net</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -105,9 +144,6 @@
     <ClCompile Include="src\Core_Time.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core_Net.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Core_OS.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -122,6 +158,15 @@
     </ClCompile>
     <ClCompile Include="src\Core_Console.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\net\core_net_address.cpp">
+      <Filter>Source Files\net</Filter>
+    </ClCompile>
+    <ClCompile Include="src\net\core_net.cpp">
+      <Filter>Source Files\net</Filter>
+    </ClCompile>
+    <ClCompile Include="src\net\core_net_init.cpp">
+      <Filter>Source Files\net</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

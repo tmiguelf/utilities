@@ -21,37 +21,22 @@
 ///		LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 ///		OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ///		SOFTWARE.
+///
+///	\todo	Provide a comprehensive and consistent set of error codes, to give
+///			extra information regarding he nature of the failure
 //======== ======== ======== ======== ======== ======== ======== ========
 
 #pragma once
 
-#include <cstdint>
-#include <filesystem>
-#include <optional>
+#include <type_traits>
 
-#include "string/core_os_string.hpp"
-
-namespace core
+namespace core::_p
 {
+template<typename> struct toPrint_supported_char          : public std::false_type{};
+template<>         struct toPrint_supported_char<char8_t >: public std::true_type {};
+template<>         struct toPrint_supported_char<char16_t>: public std::true_type {};
+template<>         struct toPrint_supported_char<char32_t>: public std::true_type {};
 
-bool env_exists	(const core::os_string& p_key);
-bool set_env	(const core::os_string& p_key, const core::os_string& p_value);
-bool delete_env	(const core::os_string& p_key);
-std::optional<core::os_string>	get_env		(const core::os_string& p_key);
-std::optional<core::os_string>	machine_name();
-
-std::filesystem::path application_path();
-
-inline std::filesystem::path to_absolute_lexical(const std::filesystem::path& p_path, const std::filesystem::path& p_base)
-{
-	if(p_path.is_absolute())
-	{
-		return p_path.lexically_normal();
-	}
-	else
-	{
-		return (p_base / p_path).lexically_normal();
-	}
+template<typename T>
+concept c_toPrint_char = toPrint_supported_char<T>::value;
 }
-
-} //namespace core

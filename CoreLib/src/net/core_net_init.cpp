@@ -23,35 +23,26 @@
 ///		SOFTWARE.
 //======== ======== ======== ======== ======== ======== ======== ========
 
-#pragma once
+#include <CoreLib/net/core_net_init.hpp>
 
-#include <cstdint>
-#include <filesystem>
-#include <optional>
+#ifdef _WIN32
+#	include <Winsock2.h>
 
-#include "string/core_os_string.hpp"
-
+/// \n
 namespace core
 {
-
-bool env_exists	(const core::os_string& p_key);
-bool set_env	(const core::os_string& p_key, const core::os_string& p_value);
-bool delete_env	(const core::os_string& p_key);
-std::optional<core::os_string>	get_env		(const core::os_string& p_key);
-std::optional<core::os_string>	machine_name();
-
-std::filesystem::path application_path();
-
-inline std::filesystem::path to_absolute_lexical(const std::filesystem::path& p_path, const std::filesystem::path& p_base)
+bool Net_Init()
 {
-	if(p_path.is_absolute())
-	{
-		return p_path.lexically_normal();
-	}
-	else
-	{
-		return (p_base / p_path).lexically_normal();
-	}
+	WSADATA wsaData;
+	// initiates use of WS2_32.DLL by a process (only Win32 platform)
+	return WSAStartup(MAKEWORD(2,2), &wsaData) == 0;
+}
+
+void Net_End()
+{
+	WSACleanup();
 }
 
 } //namespace core
+
+#endif

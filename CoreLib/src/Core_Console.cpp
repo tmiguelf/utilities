@@ -23,10 +23,11 @@
 ///		SOFTWARE.
 //======== ======== ======== ======== ======== ======== ======== ========
 
-#include "CoreLib/Core_Console.hpp"
-#include "CoreLib/string/core_string_encoding.hpp"
+#include <CoreLib/Core_Console.hpp>
 
+#include <cstdint>
 #include <array>
+#include <vector>
 #include <span>
 
 #if defined(_WIN32)
@@ -36,9 +37,17 @@
 #include <unistd.h>
 #endif
 
+#include <CoreLib/string/core_string_encoding.hpp>
+#include <CoreLib/Core_Alloca.hpp>
+#include <CoreLib/string/core_wchar_alias.hpp>
+
+
 namespace core
 {
 #if defined(_WIN32)
+
+static constexpr uintptr_t alloca_treshold = 0x8000;
+
 void console_out::write(std::string_view p_out) const
 {
 	write(std::u8string_view{reinterpret_cast<const char8_t*>(p_out.data()), p_out.size()});
@@ -52,7 +61,21 @@ void console_out::write(std::wstring_view p_out) const
 
 void console_out::write(std::u8string_view p_out) const
 {
-	write(core::UTF8_to_UTF16_faulty(p_out, '?'));
+	const uintptr_t buff_size = core::_p::UTF8_to_UTF16_faulty_estimate(p_out, '?');
+
+	if(buff_size > alloca_treshold)
+	{
+		std::vector<char16_t> buff;
+		buff.resize(buff_size);
+		core::_p::UTF8_to_UTF16_faulty_unsafe(p_out, '?', buff.data());
+		write(std::u16string_view{buff.data(), buff_size});
+	}
+	else
+	{
+		char16_t* buff = reinterpret_cast<char16_t*>(core_alloca(buff_size * sizeof(char16_t)));
+		core::_p::UTF8_to_UTF16_faulty_unsafe(p_out, '?', buff);
+		write(std::u16string_view{buff, buff_size});
+	}
 }
 
 void console_out::write(std::u16string_view p_out) const
@@ -63,7 +86,21 @@ void console_out::write(std::u16string_view p_out) const
 
 void console_out::write(std::u32string_view p_out) const
 {
-	write(core::UCS4_to_UTF16_faulty(p_out, '?'));
+	const uintptr_t buff_size = core::_p::UCS4_to_UTF16_faulty_estimate(p_out, '?');
+
+	if(buff_size > alloca_treshold)
+	{
+		std::vector<char16_t> buff;
+		buff.resize(buff_size);
+		core::_p::UCS4_to_UTF16_faulty_unsafe(p_out, '?', buff.data());
+		write(std::u16string_view{buff.data(), buff_size});
+	}
+	else
+	{
+		char16_t* buff = reinterpret_cast<char16_t*>(core_alloca(buff_size * sizeof(char16_t)));
+		core::_p::UCS4_to_UTF16_faulty_unsafe(p_out, '?', buff);
+		write(std::u16string_view{buff, buff_size});
+	}
 }
 
 void console_out::put(char p_out) const
@@ -106,6 +143,8 @@ const console_out cerr{GetStdHandle(STD_ERROR_HANDLE )};
 
 #elif defined(__unix__)
 
+static constexpr uintptr_t alloca_treshold = 0x10000;
+
 void console_out::write(std::string_view p_out) const
 {
 	[[maybe_unused]] ssize_t ret = ::write(m_handle, p_out.data(), p_out.size());
@@ -113,16 +152,7 @@ void console_out::write(std::string_view p_out) const
 
 void console_out::write(std::wstring_view p_out) const
 {
-	if constexpr (sizeof(wchar_t) == sizeof(char16_t))
-	{
-		write(std::u16string_view{reinterpret_cast<const char16_t*>(p_out.data()), p_out.size()});
-	}
-	else if constexpr (sizeof(wchar_t) == sizeof(char32_t))
-	{
-		write(std::u32string_view{reinterpret_cast<const char32_t*>(p_out.data()), p_out.size()});
-	}
-
-	static_assert(sizeof(wchar_t) == sizeof(char16_t) || sizeof(wchar_t) == sizeof(char32_t), "Unsuported wchar_t size");
+	write(std::basic_string_view<wchar_alias>{reinterpret_cast<const wchar_alias*>(p_out.data()), p_out.size()});
 }
 
 void console_out::write(std::u8string_view p_out) const
@@ -132,12 +162,40 @@ void console_out::write(std::u8string_view p_out) const
 
 void console_out::write(std::u16string_view p_out) const
 {
-	write(UTF16_to_UTF8_faulty(p_out, '?'));
+	const uintptr_t buff_size = core::_p::UTF16_to_UTF8_faulty_estimate(p_out, '?');
+
+	if(buff_size > alloca_treshold)
+	{
+		std::vector<char8_t> buff;
+		buff.resize(buff_size);
+		core::_p::UTF16_to_UTF8_faulty_unsafe(p_out, '?', buff.data());
+		write(std::u8string_view{buff.data(), buff_size});
+	}
+	else
+	{
+		char8_t* buff = reinterpret_cast<char8_t*>(core_alloca(buff_size));
+		core::_p::UTF16_to_UTF8_faulty_unsafe(p_out, '?', buff);
+		write(std::u8string_view{buff, buff_size});
+	}
 }
 
 void console_out::write(std::u32string_view p_out) const
 {
-	write(UCS4_to_UTF8(p_out));
+	const uintptr_t buff_size = core::_p::UCS4_to_UTF8_faulty_estimate(p_out, '?');
+
+	if(buff_size > alloca_treshold)
+	{
+		std::vector<char8_t> buff;
+		buff.resize(buff_size);
+		core::_p::UCS4_to_UTF8_faulty_unsafe(p_out, '?', buff.data());
+		write(std::u8string_view{buff.data(), buff_size});
+	}
+	else
+	{
+		char8_t* buff = reinterpret_cast<char8_t*>(core_alloca(buff_size));
+		core::_p::UCS4_to_UTF8_faulty_unsafe(p_out, '?', buff);
+		write(std::u8string_view{buff, buff_size});
+	}
 }
 
 void console_out::put(char p_out) const
@@ -147,16 +205,7 @@ void console_out::put(char p_out) const
 
 void console_out::put(wchar_t p_out) const
 {
-	if constexpr (sizeof(wchar_t) == sizeof(char16_t))
-	{
-		put(static_cast<char16_t>(p_out));
-	}
-	else if constexpr (sizeof(wchar_t) == sizeof(char32_t))
-	{
-		put(static_cast<char32_t>(p_out));
-	}
-	
-	static_assert(sizeof(wchar_t) == sizeof(char16_t) || sizeof(wchar_t) == sizeof(char32_t), "Unsuported wchar_t size");
+	put(static_cast<wchar_alias>(p_out));
 }
 
 void console_out::put(char8_t p_out) const
@@ -166,8 +215,8 @@ void console_out::put(char8_t p_out) const
 
 void console_out::put(char16_t p_out) const
 {
-	std::array<char8_t, 7> buff;
-	uint8_t size = encode_UTF8(static_cast<char32_t>(p_out), std::span<char8_t, 7>{buff});
+	std::array<char8_t, 4> buff;
+	uint8_t size = encode_UTF8(static_cast<char32_t>(p_out), buff);
 
 	if(size)
 	{
@@ -181,8 +230,8 @@ void console_out::put(char16_t p_out) const
 
 void console_out::put(char32_t p_out) const
 {
-	std::array<char8_t, 7> buff;
-	uint8_t size = encode_UTF8(p_out, std::span<char8_t, 7>{buff});
+	std::array<char8_t, 4> buff;
+	uint8_t size = encode_UTF8(p_out, buff);
 
 	if(size)
 	{

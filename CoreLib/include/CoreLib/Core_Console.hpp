@@ -25,11 +25,12 @@
 
 #pragma once
 #include <string_view>
+#include "toPrint/toPrint_sink.hpp"
 
 namespace core
 {
 
-class console_out
+class console_out: public sink_toPrint_base
 {
 public:
 #if defined(_WIN32)

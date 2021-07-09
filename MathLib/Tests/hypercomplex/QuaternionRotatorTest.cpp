@@ -32,23 +32,27 @@
 #include <string_view>
 #include <string>
 
-#include <CoreLib/Core_String.hpp>
+#include <CoreLib/string/core_string_numeric.hpp>
 
 #include <MathLib/LinearAlgebra/Vector.hpp>
 #include <MathLib/constants.hpp>
 
 #include <MathLib/HyperComplex/quaternionRotator.hpp>
 
-using core::toStream;
+#include <CoreLib/toPrint/toPrint_encoders.hpp>
+#include <CoreLib/toPrint/toPrint_std_ostream.hpp>
+#include <CoreLib/toPrint/toPrint_base.hpp>
+
+using core::toPrint;
 
 template<typename T>
 static std::ostream& operator << (std::ostream& p_stream, const mathlib::Vector3<T>& p_data)
 {
 	p_stream
 		<< "["
-		<< toStream{p_data[0]} << "; "
-		<< toStream{p_data[1]} << "; "
-		<< toStream{p_data[2]} << "]";
+		<< toPrint{p_data[0]} << "; "
+		<< toPrint{p_data[1]} << "; "
+		<< toPrint{p_data[2]} << "]";
 	return p_stream;
 }
 
@@ -107,11 +111,6 @@ TYPED_TEST(QuaternionRotator_T, Rotator)
 		real_t				rotationValue;
 		std::vector<testVect> tests;
 
-		static void stream(std::ostream& p_stream, const TestCase& p_case)
-		{
-			p_stream << "R: " << p_case.rotationAxis << " A: " << toStream{p_case.rotationValue};
-		}
-
 		void permutate()
 		{
 			vect_permutate(rotationAxis);
@@ -126,6 +125,48 @@ TYPED_TEST(QuaternionRotator_T, Rotator)
 			rotationAxis = -rotationAxis;
 			rotationValue = -rotationValue;
 		}
+	};
+
+	struct case_toPrint: public core::toPrint_base
+	{
+		case_toPrint(const TestCase& p_data): m_data{p_data} {}
+
+		uintptr_t size(const char8_t&) const
+		{
+			constexpr std::string_view filler = "R: [; ; ] A: ";
+
+			return
+				filler.size() +
+				core::_p::to_chars_estimate(m_data.rotationAxis[0]) +
+				core::_p::to_chars_estimate(m_data.rotationAxis[1]) +
+				core::_p::to_chars_estimate(m_data.rotationAxis[2]) +
+				core::_p::to_chars_estimate(m_data.rotationValue);
+		}
+
+		void getPrint(char8_t* p_out) const
+		{
+			constexpr uintptr_t max_size = core::to_chars_dec_max_digits_v<real_t>;
+
+			*(p_out++) = u8'R';
+			*(p_out++) = u8':';
+			*(p_out++) = u8' ';
+			*(p_out++) = u8'[';
+			p_out += core::_p::to_chars(m_data.rotationAxis[0], std::span<char8_t, max_size>{p_out, max_size});
+			*(p_out++) = u8';';
+			*(p_out++) = u8' ';
+			p_out += core::_p::to_chars(m_data.rotationAxis[1], std::span<char8_t, max_size>{p_out, max_size});
+			*(p_out++) = u8';';
+			*(p_out++) = u8' ';
+			p_out += core::_p::to_chars(m_data.rotationAxis[2], std::span<char8_t, max_size>{p_out, max_size});
+			*(p_out++) = u8']';
+			*(p_out++) = u8' ';
+			*(p_out++) = u8'A';
+			*(p_out++) = u8':';
+			*(p_out++) = u8' ';
+			core::_p::to_chars_unsafe(m_data.rotationValue, p_out);
+		}
+
+		const TestCase& m_data;
 	};
 
 
@@ -189,9 +230,9 @@ TYPED_TEST(QuaternionRotator_T, Rotator)
 				{
 					Vector3<real_t> res = rotator.rotate(vect.vect);
 
-					HELP_NEAR(res[0], vect.result[0], epsilon * 10) << toStream{tcase, TestCase::stream} << " & " << vect.vect;
-					HELP_NEAR(res[1], vect.result[1], epsilon * 10) << toStream{tcase, TestCase::stream} << " & " << vect.vect;
-					HELP_NEAR(res[2], vect.result[2], epsilon * 10) << toStream{tcase, TestCase::stream} << " & " << vect.vect;
+					HELP_NEAR(res[0], vect.result[0], epsilon * 10) << case_toPrint{tcase} << " & " << vect.vect;
+					HELP_NEAR(res[1], vect.result[1], epsilon * 10) << case_toPrint{tcase} << " & " << vect.vect;
+					HELP_NEAR(res[2], vect.result[2], epsilon * 10) << case_toPrint{tcase} << " & " << vect.vect;
 				}
 				tcase.flip();
 			}

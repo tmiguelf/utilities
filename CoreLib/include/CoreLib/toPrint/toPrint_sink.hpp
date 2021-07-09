@@ -1,7 +1,5 @@
 //======== ======== ======== ======== ======== ======== ======== ========
 ///	\file
-///		Provides string conversion functions to be able to handle UNICODE,
-///		as well as other string utilities.
 ///
 ///	\copyright
 ///		Copyright (c) 2020 Tiago Miguel Oliveira Freire
@@ -30,7 +28,34 @@
 
 #pragma once
 
-#include "string/core_string_encoding.hpp"
-#include "string/core_string_numeric.hpp"
-#include "string/core_string_misc.hpp"
-#include "string/core_string_streamers.hpp"
+#include <string_view>
+
+#include <CoreLib/Core_Type.hpp>
+
+#include "toPrint_support.hpp"
+
+namespace core
+{
+class sink_toPrint_base {};
+
+template<typename>
+class sink_toPrint;
+template<typename T> sink_toPrint(T) -> sink_toPrint<std::remove_cvref_t<T>>;
+
+namespace _p
+{
+	//template<c_toPrint_char, typename, typename = void>
+	//struct toPrint_has_write : public std::false_type{};
+	//
+	//template<c_toPrint_char Char_t, typename Type> requires std::is_same_v<void, decltype(std::declval<Type>().write(std::declval<std::basic_string_view<Char_t>>()))>
+	//struct toPrint_has_write<Char_t, Type, void>: public std::true_type{};
+
+	template<typename T>
+	constexpr bool is_sink_toPrint_v = is_derived_v<T, ::core::sink_toPrint_base>;
+
+	//template<c_toPrint_char Char_t, typename T>
+	//constexpr bool is_valid_sink_toPrint_v = is_sink_toPrint_v<T> && toPrint_has_write<Char_t, T>::value;
+
+} //namespace _p
+
+} //namespace core

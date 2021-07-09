@@ -28,45 +28,19 @@
 
 #pragma once
 
-#include <ostream>
-#include <type_traits>
+#include "toPrint_encoders.hpp"
+#include <filesystem>
+
+#include <CoreLib/string/core_os_string.hpp>
 
 namespace core
 {
 
-enum class toStreamForwardMethod:uint8_t {};
-
-template<typename, typename = void>
-class toStream;
-
-//CTAD deduction guide
-template <typename T> toStream(T) -> toStream<std::remove_cvref_t<T>>;
-template <typename T> toStream(T, void(*)(std::ostream&, const std::remove_cvref_t<T>&)) -> toStream<std::remove_cvref_t<T>, toStreamForwardMethod>;
-
-template<typename T>
-class toStream<T, toStreamForwardMethod>
+template<>
+class toPrint<std::filesystem::path>: public toPrint<std::basic_string_view<core::os_char>>
 {
 public:
-	using method_t = void (*)(std::ostream&, const T&);
-
-public:
-	toStream(T p_data, method_t p_method): m_data{p_data}, m_method{p_method}{}
-	inline void stream(std::ostream& p_stream) const
-	{
-		m_method(p_stream, m_data);
-	}
-
-private:
-	const T m_data;
-	method_t m_method;
+	toPrint(const std::filesystem::path& p_data): toPrint<std::basic_string_view<core::os_char>>(p_data.native()){}
 };
 
 } //namespace core
-
-template<typename T1, typename T2>
-inline std::ostream& operator << (std::ostream& p_stream, const core::toStream<T1, T2>& p_data)
-{
-	p_data.stream(p_stream);
-	return p_stream;
-}
-

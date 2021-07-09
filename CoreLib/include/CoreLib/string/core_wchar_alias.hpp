@@ -25,33 +25,13 @@
 
 #pragma once
 
-#include <cstdint>
-#include <filesystem>
-#include <optional>
-
-#include "string/core_os_string.hpp"
+#include <type_traits>
 
 namespace core
 {
+using wchar_alias = std::conditional_t<sizeof(wchar_t) == sizeof(char16_t), char16_t, char32_t>;
 
-bool env_exists	(const core::os_string& p_key);
-bool set_env	(const core::os_string& p_key, const core::os_string& p_value);
-bool delete_env	(const core::os_string& p_key);
-std::optional<core::os_string>	get_env		(const core::os_string& p_key);
-std::optional<core::os_string>	machine_name();
-
-std::filesystem::path application_path();
-
-inline std::filesystem::path to_absolute_lexical(const std::filesystem::path& p_path, const std::filesystem::path& p_base)
-{
-	if(p_path.is_absolute())
-	{
-		return p_path.lexically_normal();
-	}
-	else
-	{
-		return (p_base / p_path).lexically_normal();
-	}
-}
-
-} //namespace core
+static_assert(
+	((sizeof(wchar_t) == sizeof(char32_t)) && (alignof(wchar_t) == alignof(char32_t))) || 
+	((sizeof(wchar_t) == sizeof(char16_t)) && (alignof(wchar_t) == alignof(char16_t))));
+} // namespace core

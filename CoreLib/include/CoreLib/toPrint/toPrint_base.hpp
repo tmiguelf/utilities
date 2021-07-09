@@ -21,37 +21,46 @@
 ///		LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 ///		OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ///		SOFTWARE.
+///
+///	\todo	Provide a comprehensive and consistent set of error codes, to give
+///			extra information regarding he nature of the failure
 //======== ======== ======== ======== ======== ======== ======== ========
 
 #pragma once
 
-#include <cstdint>
-#include <filesystem>
-#include <optional>
+#include <CoreLib/Core_Type.hpp>
 
-#include "string/core_os_string.hpp"
+#include "toPrint_support.hpp"
 
 namespace core
 {
 
-bool env_exists	(const core::os_string& p_key);
-bool set_env	(const core::os_string& p_key, const core::os_string& p_value);
-bool delete_env	(const core::os_string& p_key);
-std::optional<core::os_string>	get_env		(const core::os_string& p_key);
-std::optional<core::os_string>	machine_name();
+class toPrint_base {};
 
-std::filesystem::path application_path();
+template<typename>
+class toPrint;
+template<typename T> toPrint(T) -> toPrint<std::remove_cvref_t<T>>;
 
-inline std::filesystem::path to_absolute_lexical(const std::filesystem::path& p_path, const std::filesystem::path& p_base)
+namespace _p
 {
-	if(p_path.is_absolute())
-	{
-		return p_path.lexically_normal();
-	}
-	else
-	{
-		return (p_base / p_path).lexically_normal();
-	}
-}
+	//template<c_toPrint_char, typename, typename = void>
+	//struct toPrint_has_size : public std::false_type{};
+	//template<c_toPrint_char Char_t, typename Type> requires std::is_same_v<uintptr_t, decltype(std::declval<const Type>().size(std::declval<Char_t>()))>
+	//struct toPrint_has_size<Char_t, Type, void>: public std::true_type{};
+	//
+	//template<c_toPrint_char, typename, typename = void>
+	//struct toPrint_has_get : public std::false_type{};
+	//template<c_toPrint_char Char_t, typename Type> requires std::is_same_v<void, decltype(std::declval<const Type>().getPrint(std::declval<Char_t*>()))>
+	//struct toPrint_has_get<Char_t, Type, void>: public std::true_type{};
+
+	template<typename T>
+	constexpr bool is_toPrint_v = is_derived_v<T, ::core::toPrint_base>;
+
+	//template<c_toPrint_char Char_t, typename T>
+	//constexpr bool is_valid_toPrint_v = is_toPrint_v<T> && toPrint_has_size<Char_t, T>::value && toPrint_has_get<Char_t, T>::value;
+
+	//template<typename T>
+	//concept c_toPrint = is_valid_toPrint_v<T>;
+} //namespace _p
 
 } //namespace core

@@ -29,14 +29,13 @@
 #include <ostream>
 #include <string>
 
-#include <CoreLib/string/core_string_streamers.hpp>
+#include <CoreLib/string/core_string_misc.hpp>
+#include <CoreLib/toPrint/toPrint_std_ostream.hpp>
+#include <CoreLib/toPrint/toPrint_encoders.hpp>
 
-using core::toStream;
+using core::toPrint;
 
 #include <gtest/gtest.h>
-#include <CoreLib/string/core_string_misc.hpp>
-
-
 
 namespace text_misc
 {
@@ -51,7 +50,7 @@ TEST(string_misc, toLowerCaseX)
 	for(const std::pair<std::u8string, std::u8string>& tcase : testCases)
 	{
 		std::u8string result = core::toLowerCaseX(tcase.first);
-		ASSERT_EQ(result, tcase.second) << "Case \"" << toStream{tcase.second} << '\"';
+		ASSERT_EQ(result, tcase.second) << "Case \"" << toPrint{tcase.second} << '\"';
 	}
 }
 
@@ -66,7 +65,7 @@ TEST(string_misc, toUpperCaseX)
 	for(const std::pair<std::u8string, std::u8string>& tcase : testCases)
 	{
 		std::u8string result = core::toUpperCaseX(tcase.first);
-		ASSERT_EQ(result, tcase.second) << "Case \"" << toStream{tcase.second} << '\"';
+		ASSERT_EQ(result, tcase.second) << "Case \"" << toPrint{tcase.second} << '\"';
 	}
 }
 
@@ -125,7 +124,7 @@ TEST(string_misc, string_star_match)
 	{
 		for(const std::u8string& tcase : pattern.second)
 		{
-			ASSERT_TRUE(core::string_star_match(tcase, pattern.first)) << "Case \"" << toStream{pattern.first} << "\" and \"" << toStream{tcase} << "\"";
+			ASSERT_TRUE(core::string_star_match(tcase, pattern.first)) << "Case \"" << toPrint{pattern.first} << "\" and \"" << toPrint{tcase} << "\"";
 		}
 	}
 
@@ -133,7 +132,7 @@ TEST(string_misc, string_star_match)
 	{
 		for(const std::u8string& tcase : pattern.second)
 		{
-			ASSERT_FALSE(core::string_star_match(tcase, pattern.first)) << "Case \"" << toStream{pattern.first} << "\" and \"" << toStream{tcase} << "\"";
+			ASSERT_FALSE(core::string_star_match(tcase, pattern.first)) << "Case \"" << toPrint{pattern.first} << "\" and \"" << toPrint{tcase} << "\"";
 		}
 	}
 }
