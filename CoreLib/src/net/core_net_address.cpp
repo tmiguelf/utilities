@@ -387,7 +387,6 @@ namespace core
 
 			if(b_has_elide)
 			{
-				std::array<uint16_t, 8> t_wordField = {0, 0, 0, 0, 0, 0, 0, 0};
 				const uintptr_t post_elid_start = 8 - post_elide_size;
 
 				uint16_t* pivot = p_out.data();

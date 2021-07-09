@@ -32,6 +32,8 @@
 
 #include <CoreLib/Core_Endian.hpp>
 
+#include <limits>
+
 #ifdef _WIN32
 #	include <Winsock2.h>
 #	include <Ws2tcpip.h>

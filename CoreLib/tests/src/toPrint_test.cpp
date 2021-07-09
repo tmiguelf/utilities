@@ -84,13 +84,6 @@ TEST(toPrint, toPrint_interface)
 		test_sink tsink;
 
 		TestStr test;
-#ifdef _WIN32
-		std::wstring_view help{__FILEW__};
-
-		core::os_string_view fileName = std::wstring_view{__FILEW__};
-#else
-		core::os_string_view fileName = std::string_view{__FILE__};
-#endif
 
 		core_ToPrint(char8_t, tsink, test);
 		core_ToPrint(char8_t, tsink, 32);
@@ -104,7 +97,7 @@ TEST(toPrint, toPrint_interface)
 		core_ToPrint(char8_t, tsink);
 		core_ToPrint(char8_t, tsink, "Combination "sv, 32, ' ', test);
 
-		ASSERT_EQ(tsink.m_print_cache.size(), 11);
+		ASSERT_EQ(tsink.m_print_cache.size(), uintptr_t{11});
 		ASSERT_EQ(tsink.m_print_cache[0], std::u8string_view{u8"TestStr"});
 		ASSERT_EQ(tsink.m_print_cache[1], std::u8string_view{u8"32"});
 		{

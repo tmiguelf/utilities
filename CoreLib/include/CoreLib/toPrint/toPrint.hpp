@@ -62,20 +62,20 @@ namespace core::_p
 	private:
 		static constexpr uintptr_t tuple_size = std::tuple_size_v<Tuple>;
 	
-		template<uintptr_t Pos>
+		template<uintptr_t Pos, uintptr_t TSize = tuple_size>
 		struct transform
 		{
-			using evaluated_t = std::remove_cvref_t<decltype(std::get<Pos>(std::declval<Tuple>()))>;
-			using current_t = std::conditional_t<is_toPrint_v<evaluated_t>, const evaluated_t&, ::core::toPrint<evaluated_t>>;
-			using type = decltype(std::tuple_cat(std::declval<std::tuple<current_t>>(), std::declval<transform<Pos + 1>::type>()));
+			using evaluated_t = std::remove_cvref_t<std::tuple_element_t<Pos, Tuple>>;
+			using current_t   = std::conditional_t<is_toPrint_v<evaluated_t>, const evaluated_t&, ::core::toPrint<evaluated_t>>;
+			using type = decltype(std::tuple_cat(std::declval<std::tuple<current_t>>(), std::declval<typename transform<Pos + 1>::type>()));
 		};
-	
-		template<>
-		struct transform<tuple_size>
+
+		template<uintptr_t Pos>
+		struct transform<Pos, Pos>
 		{
 			using type = std::tuple<>;
 		};
-	
+
 	public:
 		using type = transform<0>::type;
 	};
@@ -86,18 +86,18 @@ namespace core::_p
 	private:
 		static constexpr uintptr_t tuple_size = std::tuple_size_v<Tuple>;
 	
-		template<uintptr_t Pos>
-		struct count
+		template<uintptr_t Pos, uintptr_t TSize = tuple_size>
+		struct check
 		{
-			using evaluated_t = std::remove_cvref_t<decltype(std::get<Pos>(std::declval<Tuple>()))>;
-			static constexpr bool value = is_toPrint_v<evaluated_t> && count<Pos + 1>::value;
+			using evaluated_t = std::remove_cvref_t<std::tuple_element_t<Pos, Tuple>>;
+			static constexpr bool value = is_toPrint_v<evaluated_t> && check<Pos + 1>::value;
 		};
-	
-		template<>
-		struct count<tuple_size>: public std::true_type{};
-	
+
+		template<uintptr_t Pos>
+		struct check<Pos, Pos>: public std::true_type{};
+
 	public:
-		static constexpr bool value = count<0>::value;
+		static constexpr bool value = check<0>::value;
 	};
 	
 	template<typename> struct is_tuple_toPrint: public std::false_type{};
@@ -176,7 +176,6 @@ namespace core::_p
 			CharT* p_buff,
 			uintptr_t p_size)
 		{
-			constexpr uintptr_t tuple_size = std::tuple_size_v<Tuple>;
 			toPrint_fill_assist<CharT>::fill_toPrint(p_data, p_sizeTable, p_buff);
 			p_sink.write(std::basic_string_view<CharT>{p_buff, p_size});
 		}
@@ -189,7 +188,6 @@ namespace core::_p
 			CharT* p_buff,
 			uintptr_t p_size)
 		{
-			constexpr uintptr_t tuple_size = std::tuple_size_v<Tuple>;
 			toPrint_fill_assist<CharT>::fill_toPrint(p_data, p_sizeTable, p_buff);
 			p_sink.write(std::basic_string_view<CharT>{p_buff, p_size});
 		}

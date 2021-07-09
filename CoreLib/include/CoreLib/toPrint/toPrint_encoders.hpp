@@ -31,6 +31,7 @@
 #include <cstdint>
 #include <string_view>
 #include <string>
+#include <cstring>
 #include <array>
 #include <concepts>
 #include <type_traits>
