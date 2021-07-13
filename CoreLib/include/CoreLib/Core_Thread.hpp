@@ -106,7 +106,7 @@ public:
 		Timeout			= 0xFF	//!< A timed operation was requested on the thread, but the time-out was reached before the action could be completed
 	};
 
-	static const uint32_t Infinite = 0xFFFFFFFF;
+	static constexpr uint32_t Infinite = 0xFFFFFFFF;
 private:
 	Thread& operator = (const Thread&)	= delete;
 	Thread& operator = (Thread&&)		= delete;
@@ -153,9 +153,6 @@ public:
 	///	\return		\ref Error::None if the thread has been sucessfully joined or the object was in the "free" state.
 	///				\ref Error::Timeout if the specified timeout period is reached before the thread was successfully joined.
 	///				Other \ref Error code on failure.
-	///
-	///	\remarks
-	///			You should not attempt to join a thread that has been detached
 	Error join(uint32_t p_time = Infinite);
 
 	/// \brief Detaches the thread.

@@ -264,7 +264,7 @@ Thread::Error Thread::create(void (*p_function)(void *), void* p_param)
 
 Thread::Error Thread::join(uint32_t p_time)
 {
-	if(m_hasThread) return Error::None;
+	if(!m_hasThread) return Error::None;
 	
 	void* result;
 	if(p_time == 0)
