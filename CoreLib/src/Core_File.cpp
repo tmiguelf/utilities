@@ -239,7 +239,7 @@ namespace core
 		}
 #else
 		constexpr int fixed_flags = O_CLOEXEC;
-
+		constexpr mode_t fixed_mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
 		static inline void* os_open_read(const std::filesystem::path& p_path)
 		{
 			int fd0 = open64(p_path.native().c_str(), O_RDONLY | fixed_flags);
@@ -262,13 +262,13 @@ namespace core
 			switch(p_mode)
 			{
 			case _p::file_base::open_mode::create:
-				fd0 = open64(p_path.native().c_str(), O_WRONLY | O_CREAT | O_TRUNC | fixed_flags);
+				fd0 = open64(p_path.native().c_str(), O_WRONLY | O_CREAT | O_TRUNC | fixed_flags, fixed_mode);
 				break;
 			case _p::file_base::open_mode::crete_if_new:
-				fd0 = open64(p_path.native().c_str(), O_WRONLY | O_CREAT | O_EXCL | fixed_flags);
+				fd0 = open64(p_path.native().c_str(), O_WRONLY | O_CREAT | O_EXCL | fixed_flags, fixed_mode);
 				break;
 			case _p::file_base::open_mode::open_or_create:
-				fd0 = open64(p_path.native().c_str(), O_WRONLY | O_CREAT | fixed_flags);
+				fd0 = open64(p_path.native().c_str(), O_WRONLY | O_CREAT | fixed_flags, fixed_mode);
 				break;
 			case _p::file_base::open_mode::open_existing:
 				fd0 = open64(p_path.native().c_str(), O_WRONLY | fixed_flags);
@@ -295,13 +295,13 @@ namespace core
 			switch(p_mode)
 			{
 			case _p::file_base::open_mode::create:
-				fd0 = open64(p_path.native().c_str(), O_RDWR | O_CREAT | O_TRUNC | fixed_flags);
+				fd0 = open64(p_path.native().c_str(), O_RDWR | O_CREAT | O_TRUNC | fixed_flags, fixed_mode);
 				break;
 			case _p::file_base::open_mode::crete_if_new:
-				fd0 = open64(p_path.native().c_str(), O_RDWR | O_CREAT | O_EXCL | fixed_flags);
+				fd0 = open64(p_path.native().c_str(), O_RDWR | O_CREAT | O_EXCL | fixed_flags, fixed_mode);
 				break;
 			case _p::file_base::open_mode::open_or_create:
-				fd0 = open64(p_path.native().c_str(), O_RDWR | O_CREAT | fixed_flags);
+				fd0 = open64(p_path.native().c_str(), O_RDWR | O_CREAT | fixed_flags, fixed_mode);
 				break;
 			case _p::file_base::open_mode::open_existing:
 				fd0 = open64(p_path.native().c_str(), O_RDWR | fixed_flags);
