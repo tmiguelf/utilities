@@ -124,6 +124,9 @@
     <ClInclude Include="include\CoreLib\net\core_net_UDP.hpp">
       <Filter>Header Files\net</Filter>
     </ClInclude>
+    <ClInclude Include="include\CoreLib\Core_File.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\string\core_string_misc.cpp">
@@ -167,6 +170,9 @@
     </ClCompile>
     <ClCompile Include="src\net\core_net_init.cpp">
       <Filter>Source Files\net</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core_File.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
