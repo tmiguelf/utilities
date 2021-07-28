@@ -49,7 +49,6 @@ namespace core
 		{
 			_unlock_file(reinterpret_cast<FILE*>(p_handle));
 		}
-
 #else
 		static inline void os_lock_file(void* const p_handle)
 		{
@@ -172,14 +171,14 @@ namespace core
 			return _ftelli64_nolock(reinterpret_cast<FILE*>(p_handle));
 		}
 
-		static inline bool os_seek(void* const p_handle, int64_t p_pos, int p_mode)
+		static inline std::errc os_seek(void* const p_handle, int64_t p_pos, int p_mode)
 		{
-			return _fseeki64(reinterpret_cast<FILE*>(p_handle), p_pos, p_mode) == 0;
+			return std::errc{_fseeki64(reinterpret_cast<FILE*>(p_handle), p_pos, p_mode) ? errno : 0};
 		}
 
-		static inline bool os_seek_unlocked(void* const p_handle, int64_t p_pos, int p_mode)
+		static inline std::errc os_seek_unlocked(void* const p_handle, int64_t p_pos, int p_mode)
 		{
-			return _fseeki64_nolock(reinterpret_cast<FILE*>(p_handle), p_pos, p_mode) == 0;
+			return std::errc{_fseeki64_nolock(reinterpret_cast<FILE*>(p_handle), p_pos, p_mode) ? errno : 0};
 		}
 
 		static inline bool os_eof(void* const p_handle)
@@ -194,8 +193,7 @@ namespace core
 
 		static inline void os_clear_error(void* const p_handle)
 		{
-			clearerr(reinterpret_cast<FILE*>(p_handle));
-			//clearerr_s
+			clearerr_s(reinterpret_cast<FILE*>(p_handle));
 		}
 
 		static inline int64_t os_file_lenght(void* const p_handle)
@@ -203,9 +201,9 @@ namespace core
 			return _filelengthi64(_fileno(reinterpret_cast<FILE*>(p_handle)));
 		}
 
-		static inline bool os_file_resize(void* const p_handle, int64_t p_size)
+		static inline std::errc os_file_resize(void* const p_handle, int64_t p_size)
 		{
-			return _chsize_s(_fileno(reinterpret_cast<FILE*>(p_handle)), p_size) ? false : true;
+			return std::errc{_chsize_s(_fileno(reinterpret_cast<FILE*>(p_handle)), p_size) ? errno : 0};
 		}
 
 		static inline uintptr_t os_read(void* const p_handle, void* p_buff, uintptr_t p_size)
@@ -332,9 +330,9 @@ namespace core
 			return ftello64(reinterpret_cast<FILE*>(p_handle));
 		}
 
-		static inline bool os_seek(void* const p_handle, int64_t p_pos, int p_mode)
+		static inline std::errc os_seek(void* const p_handle, int64_t p_pos, int p_mode)
 		{
-			return fseeko64(reinterpret_cast<FILE*>(p_handle), p_pos, p_mode) == 0;
+			return std::errc{fseeko64(reinterpret_cast<FILE*>(p_handle), p_pos, p_mode) ? errno : 0};
 		}
 
 		static inline bool os_eof(void* const p_handle)
@@ -355,13 +353,16 @@ namespace core
 		static inline int64_t os_file_lenght(void* const p_handle)
 		{
 			struct stat64 stat_value;
-			fstat64(fileno(reinterpret_cast<FILE*>(p_handle)), &stat_value);
+			if(fstat64(fileno(reinterpret_cast<FILE*>(p_handle)), &stat_value))
+			{
+				return -1;
+			}
 			return stat_value.st_size;
 		}
 
-		static inline bool os_file_resize(void* const p_handle, int64_t p_size)
+		static inline std::errc os_file_resize(void* const p_handle, int64_t p_size)
 		{
-			return ftruncate64(fileno(reinterpret_cast<FILE*>(p_handle)), p_size) ? false : true;
+			return std::errc{ftruncate64(fileno(reinterpret_cast<FILE*>(p_handle)), p_size) ? errno : 0};
 		}
 
 		static inline uintptr_t os_read(void* const p_handle, void* p_buff, uintptr_t p_size)
@@ -434,17 +435,17 @@ namespace core
 			return os_tell(m_handle);
 		}
 
-		bool file_base::seek(int64_t p_pos)
+		std::errc file_base::seek(int64_t p_pos)
 		{
 			return os_seek(m_handle, p_pos, SEEK_SET);
 		}
 
-		bool file_base::seek_current(int64_t p_pos)
+		std::errc file_base::seek_current(int64_t p_pos)
 		{
 			return os_seek(m_handle, p_pos, SEEK_CUR);
 		}
 
-		bool file_base::seek_end(int64_t p_pos)
+		std::errc file_base::seek_end(int64_t p_pos)
 		{
 			return os_seek(m_handle, p_pos, SEEK_END);
 		}
@@ -499,17 +500,17 @@ namespace core
 			return os_tell_unlocked(m_handle);
 		}
 
-		bool file_base::seek_unlocked(int64_t p_pos)
+		std::errc file_base::seek_unlocked(int64_t p_pos)
 		{
 			return os_seek_unlocked(m_handle, p_pos, SEEK_SET);
 		}
 
-		bool file_base::seek_current_unlocked(int64_t p_pos)
+		std::errc file_base::seek_current_unlocked(int64_t p_pos)
 		{
 			return os_seek_unlocked(m_handle, p_pos, SEEK_CUR);
 		}
 
-		bool file_base::seek_end_unlocked(int64_t p_pos)
+		std::errc file_base::seek_end_unlocked(int64_t p_pos)
 		{
 			return os_seek_unlocked(m_handle, p_pos, SEEK_END);
 		}
@@ -524,12 +525,12 @@ namespace core
 
 
 	//
-	bool file_read::open(std::filesystem::path& p_path)
+	std::errc file_read::open(const std::filesystem::path& p_path)
 	{
 		close();
 		void* const handle = os_open_read(p_path);
 		m_handle = handle;
-		return handle ? true : false;
+		return std::errc{handle ? 0 : errno};
 	}
 
 	uintptr_t file_read::read(void* p_buff, uintptr_t p_size)
@@ -550,12 +551,12 @@ namespace core
 #endif
 
 
-	bool file_write::open(std::filesystem::path& p_path, open_mode p_mode)
+	std::errc file_write::open(const std::filesystem::path& p_path, open_mode p_mode)
 	{
 		close();
 		void* const handle = os_open_write(p_path, p_mode);
 		m_handle = handle;
-		return handle ? true : false;
+		return std::errc{handle ? 0 : errno};
 	}
 
 	uintptr_t file_write::write(void* p_buff, uintptr_t p_size)
@@ -568,7 +569,7 @@ namespace core
 		os_flush(m_handle);
 	}
 
-	bool file_write::resize(int64_t p_size)
+	std::errc file_write::resize(int64_t p_size)
 	{
 		return os_file_resize(m_handle, p_size);
 	}
@@ -590,12 +591,12 @@ namespace core
 	}
 #endif
 
-	bool file_duplex::open(std::filesystem::path& p_path, open_mode p_mode)
+	std::errc file_duplex::open(const std::filesystem::path& p_path, open_mode p_mode)
 	{
 		close();
 		void* const handle = os_open_duplex(p_path, p_mode);
 		m_handle = handle;
-		return handle ? true : false;
+		return std::errc{handle ? 0 : errno};
 	}
 
 	uintptr_t file_duplex::read(void* p_buff, uintptr_t p_size)
@@ -613,7 +614,7 @@ namespace core
 		os_flush(m_handle);
 	}
 
-	bool file_duplex::resize(int64_t p_size)
+	std::errc file_duplex::resize(int64_t p_size)
 	{
 		return os_file_resize(m_handle, p_size);
 	}

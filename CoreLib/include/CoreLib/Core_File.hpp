@@ -27,6 +27,7 @@
 
 #include <cstdint>
 #include <filesystem>
+#include <system_error>
 
 namespace core
 {
@@ -52,9 +53,9 @@ namespace core
 			
 			int64_t pos() const;
 
-			bool seek(int64_t p_pos);
-			bool seek_current(int64_t p_pos);
-			bool seek_end(int64_t p_pos);
+			std::errc seek(int64_t p_pos);
+			std::errc seek_current(int64_t p_pos);
+			std::errc seek_end(int64_t p_pos);
 
 			bool eof  () const;
 			bool error() const;
@@ -70,9 +71,9 @@ namespace core
 			void close_unlocked();
 			int64_t pos_unlocked() const;
 
-			bool seek_unlocked(int64_t p_pos);
-			bool seek_current_unlocked(int64_t p_pos);
-			bool seek_end_unlocked(int64_t p_pos);
+			std::errc seek_unlocked(int64_t p_pos);
+			std::errc seek_current_unlocked(int64_t p_pos);
+			std::errc seek_end_unlocked(int64_t p_pos);
 #else
 			bool try_lock();
 #endif // _WIN32
@@ -92,7 +93,7 @@ namespace core
 	class file_read: public _p::file_base
 	{
 	public:
-		bool open(std::filesystem::path& p_path);
+		std::errc open(const std::filesystem::path& p_path);
 		uintptr_t read(void* p_buff, uintptr_t p_size);
 		uintptr_t read_unlocked(void* p_buff, uintptr_t p_size);
 
@@ -104,10 +105,10 @@ namespace core
 	class file_write: public _p::file_base
 	{
 	public:
-		bool open(std::filesystem::path& p_path, open_mode p_mode);
+		std::errc open(const std::filesystem::path& p_path, open_mode p_mode);
 		uintptr_t write(void* p_buff, uintptr_t p_size);
 		void flush();
-		bool resize(int64_t p_size);
+		std::errc resize(int64_t p_size);
 
 		uintptr_t write_unlocked(void* p_buff, uintptr_t p_size);
 		void flush_unlocked();
@@ -120,12 +121,12 @@ namespace core
 	class file_duplex: public _p::file_base
 	{
 	public:
-		bool open(std::filesystem::path& p_path, open_mode p_mode);
+		std::errc open(const std::filesystem::path& p_path, open_mode p_mode);
 
 		uintptr_t read (void* p_buff, uintptr_t p_size);
 		uintptr_t write(void* p_buff, uintptr_t p_size);
 		void flush();
-		bool resize(int64_t p_size);
+		std::errc resize(int64_t p_size);
 
 		uintptr_t read_unlocked(void* p_buff, uintptr_t p_size);
 		uintptr_t write_unlocked(void* p_buff, uintptr_t p_size);
