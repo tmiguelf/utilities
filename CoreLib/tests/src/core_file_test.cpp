@@ -23,40 +23,24 @@
 ///		SOFTWARE.
 //======== ======== ======== ======== ======== ======== ======== ========
 
-#pragma once
+#include <gtest/gtest.h>
 
-#include <cstdint>
-#include <filesystem>
-#include <optional>
+#include <CoreLib/Core_File.hpp>
 
-#include "string/core_os_string.hpp"
+#include <fstream>
+#include <io.h>
+#include <cstdio>
 
-namespace core
+namespace text_formating
 {
-
-bool env_exists	(const core::os_string& p_key);
-bool set_env	(const core::os_string& p_key, const core::os_string& p_value);
-bool delete_env	(const core::os_string& p_key);
-std::optional<core::os_string>	get_env		(const core::os_string& p_key);
-std::optional<core::os_string>	machine_name();
-
-std::filesystem::path application_path();
-
-inline std::filesystem::path to_absolute_lexical(const std::filesystem::path& p_path, const std::filesystem::path& p_base)
-{
-	if(p_path.is_absolute())
+	TEST(core_file, safe_op)
 	{
-		return p_path.lexically_normal();
+		core::file_read file;
+		EXPECT_TRUE(file.eof());
+		EXPECT_TRUE(file.error());
+		EXPECT_FALSE(file.good());
+		ASSERT_FALSE(file.is_open());
+		file.close();
 	}
-	else
-	{
-		return (p_base / p_path).lexically_normal();
-	}
+
 }
-
-
-#ifdef _WIN32
-void disable_critical_invalid_c_param();
-#endif
-
-} //namespace core

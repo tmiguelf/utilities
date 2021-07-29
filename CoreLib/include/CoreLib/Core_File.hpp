@@ -36,7 +36,7 @@ namespace core
 		class file_base
 		{
 		public:
-			enum open_mode: uint8_t
+			enum class open_mode: uint8_t
 			{
 				create = 0,
 				crete_if_new,
@@ -49,35 +49,41 @@ namespace core
 			~file_base();
 
 			void close();
-			inline bool is_open() const { return m_handle ? true : false; }
+			[[nodiscard]] inline bool is_open() const { return m_handle ? true : false; }
 			
-			int64_t pos() const;
+			[[nodiscard]] int64_t pos() const;
 
 			std::errc seek(int64_t p_pos);
 			std::errc seek_current(int64_t p_pos);
 			std::errc seek_end(int64_t p_pos);
 
-			bool eof  () const;
-			bool error() const;
-			bool good () const;
+			[[nodiscard]] bool eof  () const;
+			[[nodiscard]] bool error() const;
+			[[nodiscard]] bool good () const;
 
 			void clear_error();
 
-			int64_t size() const;
+			[[nodiscard]] int64_t size() const;
 
 			void lock();
 			void unlock();
 #ifdef _WIN32
 			void close_unlocked();
-			int64_t pos_unlocked() const;
+			[[nodiscard]] int64_t pos_unlocked() const;
 
-			std::errc seek_unlocked(int64_t p_pos);
-			std::errc seek_current_unlocked(int64_t p_pos);
-			std::errc seek_end_unlocked(int64_t p_pos);
+			[[nodiscard]] std::errc seek_unlocked(int64_t p_pos);
+			[[nodiscard]] std::errc seek_current_unlocked(int64_t p_pos);
+			[[nodiscard]] std::errc seek_end_unlocked(int64_t p_pos);
 #else
-			bool try_lock();
+			[[nodiscard]] bool eof_unlocked  () const;
+			[[nodiscard]] bool error_unlocked() const;
+			[[nodiscard]] bool good_unlocked () const;
+			void clear_error_unlocked();
+
+			[[nodiscard]] bool try_lock();
 #endif // _WIN32
 
+			inline void*& handle() { return m_handle; }
 
 		protected:
 			void* m_handle = nullptr;
@@ -88,6 +94,7 @@ namespace core
 			file_base& operator = (const file_base&) = delete;
 			file_base& operator = (file_base&&) = delete;
 		};
+
 	} //namespace _p
 
 	class file_read: public _p::file_base
@@ -105,38 +112,37 @@ namespace core
 	class file_write: public _p::file_base
 	{
 	public:
-		std::errc open(const std::filesystem::path& p_path, open_mode p_mode);
-		uintptr_t write(void* p_buff, uintptr_t p_size);
+		std::errc open(const std::filesystem::path& p_path, open_mode p_mode, bool p_create_directories = true);
+		uintptr_t write(const void* p_buff, uintptr_t p_size);
 		void flush();
 		std::errc resize(int64_t p_size);
 
-		uintptr_t write_unlocked(void* p_buff, uintptr_t p_size);
+		uintptr_t write_unlocked(const void* p_buff, uintptr_t p_size);
 		void flush_unlocked();
 
 #ifndef _WIN32
-		uintptr_t write_offset(void* p_buff, uintptr_t p_size, int64_t p_offset);
+		uintptr_t write_offset(const void* p_buff, uintptr_t p_size, int64_t p_offset);
 #endif
 	};
 
 	class file_duplex: public _p::file_base
 	{
 	public:
-		std::errc open(const std::filesystem::path& p_path, open_mode p_mode);
+		std::errc open(const std::filesystem::path& p_path, open_mode p_mode, bool p_create_directories = true);
 
 		uintptr_t read (void* p_buff, uintptr_t p_size);
-		uintptr_t write(void* p_buff, uintptr_t p_size);
+		uintptr_t write(const void* p_buff, uintptr_t p_size);
 		void flush();
 		std::errc resize(int64_t p_size);
 
 		uintptr_t read_unlocked(void* p_buff, uintptr_t p_size);
-		uintptr_t write_unlocked(void* p_buff, uintptr_t p_size);
+		uintptr_t write_unlocked(const void* p_buff, uintptr_t p_size);
 		void flush_unlocked();
 
 #ifndef _WIN32
 		uintptr_t read_offset(void* p_buff, uintptr_t p_size, int64_t p_offset);
-		uintptr_t write_offset(void* p_buff, uintptr_t p_size, int64_t p_offset);
+		uintptr_t write_offset(const void* p_buff, uintptr_t p_size, int64_t p_offset);
 #endif
 	};
-
 
 } //namespace core
