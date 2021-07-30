@@ -115,6 +115,12 @@ std::filesystem::path application_path()
 	return {};
 }
 
+static void __cdecl noop_invalid_parameter_handler(wchar_t const*, wchar_t const*, wchar_t const*, unsigned int, uintptr_t){}
+void disable_critical_invalid_c_param()
+{
+	_set_invalid_parameter_handler(noop_invalid_parameter_handler);
+}
+
 #else
 bool env_exists(const core::os_string& p_key)
 {

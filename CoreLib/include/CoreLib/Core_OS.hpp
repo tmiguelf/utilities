@@ -54,4 +54,9 @@ inline std::filesystem::path to_absolute_lexical(const std::filesystem::path& p_
 	}
 }
 
+
+#ifdef _WIN32
+void disable_critical_invalid_c_param();
+#endif
+
 } //namespace core

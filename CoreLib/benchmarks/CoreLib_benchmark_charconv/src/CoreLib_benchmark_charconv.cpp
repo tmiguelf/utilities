@@ -1,6 +1,5 @@
 //======== ======== ======== ======== ======== ======== ======== ========
 ///	\file
-///		Provides string conversion functions to be able to handle UNICODE
 ///
 ///	\copyright
 ///		Copyright (c) 2020 Tiago Miguel Oliveira Freire
