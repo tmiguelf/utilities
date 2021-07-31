@@ -78,6 +78,7 @@
     <ClInclude Include="include\CoreLib\Core_Console.hpp" />
     <ClInclude Include="include\CoreLib\Core_DLL.hpp" />
     <ClInclude Include="include\CoreLib\Core_Endian.hpp" />
+    <ClInclude Include="include\CoreLib\Core_extra_compiler.hpp" />
     <ClInclude Include="include\CoreLib\Core_File.hpp" />
     <ClInclude Include="include\CoreLib\Core_OS.hpp" />
     <ClInclude Include="include\CoreLib\Core_StackTrace.hpp" />
@@ -98,6 +99,7 @@
     <ClInclude Include="include\CoreLib\toPrint\toPrint.hpp" />
     <ClInclude Include="include\CoreLib\toPrint\toPrint_base.hpp" />
     <ClInclude Include="include\CoreLib\toPrint\toPrint_encoders.hpp" />
+    <ClInclude Include="include\CoreLib\toPrint\toPrint_file.hpp" />
     <ClInclude Include="include\CoreLib\toPrint\toPrint_filesystem.hpp" />
     <ClInclude Include="include\CoreLib\toPrint\toPrint_net.hpp" />
     <ClInclude Include="include\CoreLib\toPrint\toPrint_sink.hpp" />

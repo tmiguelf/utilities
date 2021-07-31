@@ -25,6 +25,8 @@
 
 #include <CoreLib/Core_Console.hpp>
 
+#include <CoreLib/Core_extra_compiler.hpp>
+
 #include <cstdint>
 #include <array>
 #include <vector>
@@ -59,7 +61,7 @@ void console_out::write(std::wstring_view p_out) const
 	WriteConsoleW(m_handle, p_out.data(), static_cast<DWORD>(p_out.size()), &trash, nullptr);
 }
 
-void console_out::write(std::u8string_view p_out) const
+NO_INLINE void console_out::write(std::u8string_view p_out) const
 {
 	const uintptr_t buff_size = core::_p::UTF8_to_UTF16_faulty_estimate(p_out, '?');
 
@@ -84,7 +86,7 @@ void console_out::write(std::u16string_view p_out) const
 	WriteConsoleW(m_handle, p_out.data(), static_cast<DWORD>(p_out.size()), &trash, nullptr);
 }
 
-void console_out::write(std::u32string_view p_out) const
+NO_INLINE void console_out::write(std::u32string_view p_out) const
 {
 	const uintptr_t buff_size = core::_p::UCS4_to_UTF16_faulty_estimate(p_out, '?');
 
@@ -160,7 +162,7 @@ void console_out::write(std::u8string_view p_out) const
 	[[maybe_unused]] ssize_t ret = ::write(m_handle, p_out.data(), p_out.size());
 }
 
-void console_out::write(std::u16string_view p_out) const
+NO_INLINE void console_out::write(std::u16string_view p_out) const
 {
 	const uintptr_t buff_size = core::_p::UTF16_to_UTF8_faulty_estimate(p_out, '?');
 
@@ -179,7 +181,7 @@ void console_out::write(std::u16string_view p_out) const
 	}
 }
 
-void console_out::write(std::u32string_view p_out) const
+NO_INLINE void console_out::write(std::u32string_view p_out) const
 {
 	const uintptr_t buff_size = core::_p::UCS4_to_UTF8_faulty_estimate(p_out, '?');
 
