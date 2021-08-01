@@ -21,40 +21,11 @@
 ///		LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 ///		OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ///		SOFTWARE.
-///
-///	\todo	Provide a comprehensive and consistent set of error codes, to give
-///			extra information regarding he nature of the failure
 //======== ======== ======== ======== ======== ======== ======== ========
 
 #pragma once
-
-#include <string_view>
-#include <type_traits>
-
-#include "toPrint_support.hpp"
-
-namespace core
-{
-class sink_toPrint_base {};
-
-template<typename>
-class sink_toPrint;
-template<typename T> sink_toPrint(T) -> sink_toPrint<std::remove_cvref_t<T>>;
-
-namespace _p
-{
-	//template<c_toPrint_char, typename, typename = void>
-	//struct toPrint_has_write : public std::false_type{};
-	//
-	//template<c_toPrint_char Char_t, typename Type> requires std::is_same_v<void, decltype(std::declval<Type>().write(std::declval<std::basic_string_view<Char_t>>()))>
-	//struct toPrint_has_write<Char_t, Type, void>: public std::true_type{};
-
-	template<typename T>
-	constexpr bool is_sink_toPrint_v = is_derived_v<T, ::core::sink_toPrint_base>;
-
-	//template<c_toPrint_char Char_t, typename T>
-	//constexpr bool is_valid_sink_toPrint_v = is_sink_toPrint_v<T> && toPrint_has_write<Char_t, T>::value;
-
-} //namespace _p
-
-} //namespace core
+#if defined(_MSC_BUILD)
+#define NO_INLINE __declspec(noinline)
+#else
+#define NO_INLINE __attribute__((noinline))
+#endif

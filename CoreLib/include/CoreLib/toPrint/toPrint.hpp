@@ -33,6 +33,7 @@
 #include <tuple>
 #include <vector>
 
+#include <CoreLib/Core_extra_compiler.hpp>
 #include <CoreLib/Core_Type.hpp>
 #include <CoreLib/Core_Alloca.hpp>
 #include <CoreLib/string/core_wchar_alias.hpp>
@@ -214,12 +215,7 @@ namespace core::_p
 		};
 
 		template<c_tuple_toPrint Tuple>
-	#if defined(_MSC_BUILD)
-		__declspec(noinline)
-	#else
-		__attribute__((noinline))
-	#endif
-		static void push_toPrint(Sink& p_sink, const Tuple& p_data)
+		NO_INLINE static void push_toPrint(Sink& p_sink, const Tuple& p_data)
 		{
 			constexpr uintptr_t tuple_size = std::tuple_size_v<Tuple>;
 			if constexpr (tuple_size > 0)
@@ -270,12 +266,7 @@ namespace core::_p
 		};
 
 		template<c_tuple_toPrint Tuple>
-#if defined(_MSC_BUILD)
-		__declspec(noinline)
-#else
-		__attribute__((noinline))
-#endif
-		static void push_toPrint(const Sink& p_sink, const Tuple& p_data)
+		NO_INLINE static void push_toPrint(const Sink& p_sink, const Tuple& p_data)
 		{
 			constexpr uintptr_t tuple_size = std::tuple_size_v<Tuple>;
 			if constexpr (tuple_size > 0)
