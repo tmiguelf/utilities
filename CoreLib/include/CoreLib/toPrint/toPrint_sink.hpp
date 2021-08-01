@@ -31,6 +31,8 @@
 #include <string_view>
 #include <type_traits>
 
+#include <CoreLib/Core_Type.hpp>
+
 #include "toPrint_support.hpp"
 
 namespace core
