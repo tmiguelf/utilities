@@ -139,15 +139,15 @@ public:
 [[nodiscard]] uint64_t clock_stamp();
 
 /// \brief	gets the current local date and time based on internal clock
-[[nodiscard]] DateTime date_time_local();
+void date_time_local(DateTime& p_out);
 
 /// \brief	gets the current local date and time based on internal clock
-DateTime date_time_local(DateTime_extra& p_extra);
+void date_time_local(DateTime& p_out, DateTime_extra& p_extra);
 
 /// \brief	gets the current UTC date and time based on internal clock
-[[nodiscard]] DateTime date_time_UTC();
+void date_time_UTC(DateTime& p_out);
 
 /// \brief	gets the current UTC date and time based on internal clock
-DateTime date_time_UTC(uint8_t& p_weekDay);
+void date_time_UTC(DateTime& p_out, uint8_t& p_weekDay);
 
 } //namespace core

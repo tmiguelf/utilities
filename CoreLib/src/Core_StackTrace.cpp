@@ -404,8 +404,9 @@ namespace
 	{
 		if(!g_straceOpt.m_output_file.empty())
 		{
-			std::ofstream o_file;				// file to be output
-			DateTime t_time = date_time_local();	//current date
+			std::ofstream o_file;		// file to be output
+			DateTime t_time;
+			date_time_local(t_time);	//current date
 
 			{
 				std::error_code ec;
@@ -881,7 +882,8 @@ namespace
 			if(!g_straceOpt.m_output_file.empty())
 			{
 				std::ofstream	o_file;						// file to be output
-				DateTime		t_time = date_time_local();	//current date
+				DateTime		t_time;
+				date_time_local(t_time);	//current date
 
 				{
 					std::error_code ec;
