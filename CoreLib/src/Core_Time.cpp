@@ -225,7 +225,6 @@ DateTime date_time_local()
 	output.time.msecond	= (uint16_t) timeptr.millitm;
 	output.date.year	= static_cast<uint16_t>(timeinfo.tm_year)	+ uint16_t{1900};
 	output.date.month	= static_cast<uint8_t> (timeinfo.tm_mon)	+ uint8_t{1};
-	output.extra.dst	= timeptr.dstflag > 0 ? true : false;
 #else
 	timeval curTime;
 	gettimeofday(&curTime, nullptr);
@@ -233,19 +232,48 @@ DateTime date_time_local()
 	output.time.msecond		= static_cast<uint16_t>(curTime.tv_usec / 1000);
 	output.date.year		= static_cast<uint16_t>(static_cast<uint16_t>(timeinfo.tm_year)	+ uint16_t{1900});
 	output.date.month		= static_cast<uint8_t> (static_cast<uint8_t> (timeinfo.tm_mon)	+ uint8_t{1});
-	output.extra.dst		= timeinfo.tm_isdst > 0 ? true : false;
 #endif
 
 	output.date.day			= static_cast<uint8_t> (timeinfo.tm_mday);
 	output.time.hour		= static_cast<uint8_t> (timeinfo.tm_hour);
 	output.time.minute		= static_cast<uint8_t> (timeinfo.tm_min);
 	output.time.second		= static_cast<uint8_t> (timeinfo.tm_sec);
-	output.extra.week_day	= static_cast<uint8_t> (timeinfo.tm_wday);
 	return output;
 }
 
+DateTime date_time_local(DateTime_extra& p_extra)
+{
+	DateTime output;
+	struct tm timeinfo;
+
+#ifdef _WIN32
+	struct __timeb64 timeptr;
+	_ftime64_s(&timeptr);
+	_localtime64_s(&timeinfo, &timeptr.time);
+	output.time.msecond	= (uint16_t) timeptr.millitm;
+	output.date.year	= static_cast<uint16_t>(timeinfo.tm_year)	+ uint16_t{1900};
+	output.date.month	= static_cast<uint8_t> (timeinfo.tm_mon)	+ uint8_t{1};
+	p_extra.dst	= timeptr.dstflag > 0 ? true : false;
+#else
+	timeval curTime;
+	gettimeofday(&curTime, nullptr);
+	localtime_r(&curTime.tv_sec, &timeinfo);
+	output.time.msecond		= static_cast<uint16_t>(curTime.tv_usec / 1000);
+	output.date.year		= static_cast<uint16_t>(static_cast<uint16_t>(timeinfo.tm_year)	+ uint16_t{1900});
+	output.date.month		= static_cast<uint8_t> (static_cast<uint8_t> (timeinfo.tm_mon)	+ uint8_t{1});
+	p_extra.dst		= timeinfo.tm_isdst > 0 ? true : false;
+#endif
+
+	output.date.day			= static_cast<uint8_t> (timeinfo.tm_mday);
+	output.time.hour		= static_cast<uint8_t> (timeinfo.tm_hour);
+	output.time.minute		= static_cast<uint8_t> (timeinfo.tm_min);
+	output.time.second		= static_cast<uint8_t> (timeinfo.tm_sec);
+	p_extra.week_day	= static_cast<uint8_t> (timeinfo.tm_wday);
+	return output;
+}
+
+
 /// \todo Accuracy has not been extensively tested
-//
 DateTime date_time_UTC()
 {
 	DateTime output;
@@ -259,8 +287,6 @@ DateTime date_time_UTC()
 	output.time.minute		= static_cast<uint8_t> (timeinfo.wMinute);
 	output.time.second		= static_cast<uint8_t> (timeinfo.wSecond);
 	output.time.msecond		= static_cast<uint16_t>(timeinfo.wMilliseconds);
-	output.extra.week_day	= static_cast<uint8_t> (timeinfo.wDayOfWeek);
-	output.extra.dst		= false;
 #else
 	struct tm timeinfo;
 	struct timezone tz;
@@ -276,8 +302,41 @@ DateTime date_time_UTC()
 	output.time.minute		= static_cast<uint8_t> (timeinfo.tm_min);
 	output.time.second		= static_cast<uint8_t> (timeinfo.tm_sec);
 	output.time.msecond		= static_cast<uint16_t>(curTime.tv_usec / 1000);
-	output.extra.week_day	= static_cast<uint8_t> (timeinfo.tm_wday);
-	output.extra.dst		= false;
+#endif
+	return output;
+}
+
+/// \todo Accuracy has not been extensively tested
+DateTime date_time_UTC(uint8_t& p_weekDay)
+{
+	DateTime output;
+#ifdef _WIN32
+	SYSTEMTIME timeinfo;
+	GetSystemTime(&timeinfo);
+	output.date.year		= static_cast<uint16_t>(timeinfo.wYear);
+	output.date.month		= static_cast<uint8_t> (timeinfo.wMonth);
+	output.date.day			= static_cast<uint8_t> (timeinfo.wDay);
+	output.time.hour		= static_cast<uint8_t> (timeinfo.wHour);
+	output.time.minute		= static_cast<uint8_t> (timeinfo.wMinute);
+	output.time.second		= static_cast<uint8_t> (timeinfo.wSecond);
+	output.time.msecond		= static_cast<uint16_t>(timeinfo.wMilliseconds);
+	p_weekDay				= static_cast<uint8_t> (timeinfo.wDayOfWeek);
+#else
+	struct tm timeinfo;
+	struct timezone tz;
+	timeval curTime;
+	gettimeofday(&curTime, &tz);
+	curTime.tv_sec -= tz.tz_minuteswest * 60; //check
+	gmtime_r(&curTime.tv_sec, &timeinfo);
+
+	output.date.year		= static_cast<uint16_t>(static_cast<uint16_t>(timeinfo.tm_year)	+ uint16_t{1900});
+	output.date.month		= static_cast<uint8_t> (static_cast<uint8_t> (timeinfo.tm_mon)	+ uint8_t{1});
+	output.date.day			= static_cast<uint8_t> (timeinfo.tm_mday);
+	output.time.hour		= static_cast<uint8_t> (timeinfo.tm_hour);
+	output.time.minute		= static_cast<uint8_t> (timeinfo.tm_min);
+	output.time.second		= static_cast<uint8_t> (timeinfo.tm_sec);
+	output.time.msecond		= static_cast<uint16_t>(curTime.tv_usec / 1000);
+	p_weekDay				= static_cast<uint8_t> (timeinfo.tm_wday);
 #endif
 	return output;
 }
