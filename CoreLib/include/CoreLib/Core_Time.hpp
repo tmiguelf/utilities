@@ -49,12 +49,13 @@ struct DateTime
 		uint8_t		second;
 		uint16_t	msecond;	//!< milliseconds
 	} time;
+};
 
-	struct
-	{
-		uint8_t		week_day;	//!< 0 = Sunday
-		bool		dst;		//!< True if Daylight savings is active
-	} extra;
+
+struct DateTime_extra
+{
+	uint8_t week_day;	//!< 0 = Sunday
+	bool    dst;		//!< True if Daylight savings is active
 };
 
 /// \brief	The Chrono is an high precision real time chronometer.
@@ -138,9 +139,15 @@ public:
 [[nodiscard]] uint64_t clock_stamp();
 
 /// \brief	gets the current local date and time based on internal clock
-[[nodiscard]] DateTime date_time_local();
+void date_time_local(DateTime& p_out);
+
+/// \brief	gets the current local date and time based on internal clock
+void date_time_local(DateTime& p_out, DateTime_extra& p_extra);
 
 /// \brief	gets the current UTC date and time based on internal clock
-[[nodiscard]] DateTime date_time_UTC();
+void date_time_UTC(DateTime& p_out);
+
+/// \brief	gets the current UTC date and time based on internal clock
+void date_time_UTC(DateTime& p_out, uint8_t& p_weekDay);
 
 } //namespace core
