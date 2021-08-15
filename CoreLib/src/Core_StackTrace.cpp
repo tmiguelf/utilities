@@ -25,8 +25,6 @@
 
 #include <CoreLib/Core_StackTrace.hpp>
 
-#include <fstream>
-#include <iomanip>
 #include <utility>
 
 #ifdef _WIN32
@@ -38,87 +36,92 @@
 #	include <ucontext.h>
 #	include <unistd.h>
 #	include <link.h>
+#	include <cstring>
+#	include <CoreLib/Core_extra_compiler.hpp>
 #endif
 
 #include <CoreLib/Core_OS.hpp>
 #include <CoreLib/Core_Time.hpp>
+#include <CoreLib/Core_File.hpp>
 
-#include "CoreLib/string/core_string_encoding.hpp"
-#include "CoreLib/string/core_string_numeric.hpp"
+
+#include <CoreLib/toPrint/toPrint.hpp>
+#include <CoreLib/toPrint/toPrint_filesystem.hpp>
+#include <CoreLib/toPrint/toPrint_file.hpp>
+
+#include <CoreLib/string/core_string_encoding.hpp>
+#include <CoreLib/string/core_string_numeric.hpp>
+
+
 
 namespace core
 {
+	using namespace std::literals;
+
+#define OUTPUT(Sink, ...)  core_ToPrint(char8_t, sink_file_UTF8_unlocked(Sink), __VA_ARGS__)
 
 namespace
 {
-template <typename T>
-static inline void push_hex_fix(std::ofstream& p_out, T p_num)
-{
-	std::array<char, to_chars_hex_max_digits_v<T>> buff;
-	uintptr_t size = to_chars_hex(p_num, buff);
-	p_out.write(buff.data(), size);
-}
+	class toPrint_fix_2: public toPrint_base
+	{
+	public:
+		toPrint_fix_2(const uint8_t p_data): m_data(p_data) {}
 
-template <typename T>
-static inline void push_dec(std::ofstream& p_out, T p_num)
-{
-	std::array<char, to_chars_dec_max_digits_v<T>> buff;
-	uintptr_t size = to_chars(p_num, buff);
-	p_out.write(buff.data(), size);
-}
+		static inline constexpr uintptr_t size(const char8_t&) { return 2; }
 
-static inline void push_time(std::ofstream& p_out, const DateTime& p_time)
-{
-	char8_t buff[16];
-	uintptr_t reSize;
+		void getPrint(char8_t* p_out) const
+		{
+			if(m_data < 9)
+			{
+				*(p_out++) = u8'0';
+				*(p_out) = u8'0' + m_data;
+			}
+			else
+			{
+				*(p_out++) = u8'0' + m_data / 10;
+				*(p_out) = u8'0' + m_data % 10;
+			}
+		}
 
-	reSize = to_chars(p_time.date.year, std::span<char8_t, 5>(buff, 5));
-	p_out.write(reinterpret_cast<const char*>(buff), reSize);
-	p_out.put('/');
+	private:
+		const uint8_t m_data;
+	};
 
-	reSize = to_chars(p_time.date.month, std::span<char8_t, 3>(buff, 3));
-	if(reSize < 2) p_out.put('0');
-	p_out.write(reinterpret_cast<const char*>(buff), reSize);
-	p_out.put('/');
+	class toPrint_fix_3: public toPrint_base
+	{
+	public:
+		toPrint_fix_3(const uint16_t p_data): m_data(p_data) {}
 
-	reSize = to_chars(p_time.date.day, std::span<char8_t, 3>(buff, 3));
-	if(reSize < 2) p_out.put('0');
-	p_out.write(reinterpret_cast<const char*>(buff), reSize);
-	p_out.put(' ');
+		static inline constexpr uintptr_t size(const char8_t&) { return 3; }
 
-	reSize = to_chars(p_time.time.hour, std::span<char8_t, 3>(buff, 3));
-	if(reSize < 2) p_out.put('0');
-	p_out.write(reinterpret_cast<const char*>(buff), reSize);
-	p_out.put(':');
+		void getPrint(char8_t* p_out) const
+		{
+			if(m_data < 100)
+			{
+				*(p_out++) = u8'0';
+				if(m_data < 10)
+				{
+					*(p_out++) = u8'0';
+					*(p_out) = static_cast<char8_t>(u8'0' + m_data);
+				}
+				else
+				{
+					*(p_out++) = static_cast<char8_t>(u8'0' + m_data / 10);
+					*(p_out) = static_cast<char8_t>(u8'0' + m_data % 10);
+				}
+			}
+			else
+			{
+				*(p_out++) = static_cast<char8_t>(u8'0' + m_data / 100);
+				const char8_t rem = static_cast<char8_t>(m_data % 100);
+				*(p_out++) = u8'0' + rem / 10;
+				*(p_out) = u8'0' + rem % 10;
+			}
+		}
 
-	reSize = to_chars(p_time.time.minute, std::span<char8_t, 3>(buff, 3));
-	if(reSize < 2) p_out.put('0');
-	p_out.write(reinterpret_cast<const char*>(buff), reSize);
-	p_out.put(':');
-
-	reSize = to_chars(p_time.time.second, std::span<char8_t, 3>(buff, 3));
-	if(reSize < 2) p_out.put('0');
-	p_out.write(reinterpret_cast<const char*>(buff), reSize);
-	p_out.put('.');
-
-	reSize = to_chars(p_time.time.msecond, std::span<char8_t, 5>(buff, 5));
-	if(reSize < 3) p_out.put('0');
-	if(reSize < 2) p_out.put('0');
-	p_out.write(reinterpret_cast<const char*>(buff), reSize);
-	p_out.put('\n');
-}
-
-static inline void push_data(std::ofstream& p_out, os_string_view p_string)
-{
-#ifdef _WIN32
-	const std::u8string& res = UTF16_to_UTF8_faulty(std::u16string_view{reinterpret_cast<const char16_t*>(p_string.data()), p_string.size()}, u'?');
-	p_out.write(reinterpret_cast<const char*>(res.data()), res.size());
-#else
-	p_out.write(p_string.data(), p_string.size());
-#endif
-}
-
-
+	private:
+		const uint16_t m_data;
+	};
 
 } //namespace
 } //namespace core
@@ -151,8 +154,8 @@ namespace
 	///	\brief Used to pass the process handle and the file we are outputting to to the module enumeration call back.
 	struct enumerate2file_context
 	{
-		std::ofstream*	m_file;	//!< Output file
-		HANDLE			m_proc;	//!< Process handle
+		file_write*	m_file;	//!< Output file
+		HANDLE		m_proc;	//!< Process handle
 	};
 
 	///	\brief Used to pass the process handle and the list we are outputting to to the module enumeration call back.
@@ -223,7 +226,7 @@ namespace
 	}
 
 	/// \brief Auxiliary function used to print environment variables
-	static void PrintEnv(std::ofstream& p_file)
+	static void PrintEnv(file_write& p_file)
 	{
 		wchar_t* const t_base = GetEnvironmentStringsW();
 		const wchar_t* t_pivot = t_base;
@@ -232,8 +235,7 @@ namespace
 			while(*t_pivot)
 			{
 				core::os_string_view data{t_pivot};
-				push_data(p_file, data);
-				p_file.put('\n');
+				OUTPUT(p_file, data, '\n');
 				t_pivot += data.size() + 1;
 			}
 			FreeEnvironmentStringsW(t_base);
@@ -243,15 +245,9 @@ namespace
 	/// \brief Auxiliary function used to enumerate modules and print onto file
 	static BOOL CALLBACK EnumerateModules2File(PCWSTR ModuleName, DWORD64 BaseOfDll, ULONG ModuleSize, PVOID UserContext)
 	{
-		enumerate2file_context* t_context = reinterpret_cast<enumerate2file_context*>(UserContext);
-		std::ofstream& tfile = *(t_context->m_file);
-
-		push_hex_fix(tfile, BaseOfDll);
-		tfile.put(' ');
-		push_hex_fix(tfile, BaseOfDll + ModuleSize);
-		tfile.write(" \"", 2);
-		push_data(tfile, os_string_view{ModuleName});
-		tfile.write("\"\n", 2);
+		OUTPUT(*(reinterpret_cast<enumerate2file_context*>(UserContext)->m_file),
+			"0x"sv, toPrint_hex_fix{BaseOfDll}, " 0x"sv, toPrint_hex_fix{BaseOfDll + ModuleSize},
+			" \""sv, os_string_view{ModuleName}, "\"\n"sv);
 		return TRUE;
 	}
 
@@ -276,7 +272,7 @@ namespace
 	///	\warning Function names may not necessarily be correct. \n
 	///		Name is determined based on last know name prior to current address, which is not necessarily the same function as the one the address belongs to.
 	///		Use .map files to confirm names.
-	static void print_function_addr(HANDLE p_proc, DWORD64 p_address, std::ofstream& p_file)
+	static void print_function_addr(HANDLE p_proc, DWORD64 p_address, file_write& p_file)
 	{
 		core_symb t_symb;
 		DWORD64 displacement = 0;
@@ -294,14 +290,12 @@ namespace
 		if(base && (base <= p_address))
 		{
 			//Prints the module address + offset inside the module example: 0x0000123400+567
-			push_hex_fix(p_file, static_cast<uintptr_t>(base));
-			p_file.put('+');
-			push_hex_fix(p_file, static_cast<uintptr_t>(p_address - base));
+			OUTPUT(p_file, "0x"sv, toPrint_hex_fix{base}, '+', toPrint_hex{p_address - base});
 		}
 		else
 		{	//in theory this should never be the case, this is just in case SymGetModuleBase64 fails, or it produces
 			//data that makes no sense, you may not be able to accurately correlated it to the module, but at least you have something
-			push_hex_fix(p_file, static_cast<uintptr_t>(p_address));
+			OUTPUT(p_file, "0x"sv, toPrint_hex_fix{base});
 		}
 
 		//======== IMPORTANT ======== 
@@ -312,12 +306,12 @@ namespace
 		{
 			if(t_symb.Name[0] !='\0')
 			{
-				p_file << ' ' << t_symb.Name;
+				OUTPUT(p_file, ' ', std::string_view{t_symb.Name});
 			}
 		}
 		//======== END ======== 
 		
-		p_file << '\n';
+		OUTPUT(p_file, '\n');
 	}
 
 	///	\brief This function pushes onto a list 1 stack addresses and associated function name, plus the base address of the corresponding module.
@@ -404,35 +398,38 @@ namespace
 	{
 		if(!g_straceOpt.m_output_file.empty())
 		{
-			std::ofstream o_file;		// file to be output
 			DateTime t_time;
 			date_time_local(t_time);	//current date
 
+			file_write o_file;		// file to be output
 			{
 				std::error_code ec;
 				create_directories(g_straceOpt.m_output_file.parent_path(), ec);
-				o_file.open(g_straceOpt.m_output_file);
+				o_file.open(g_straceOpt.m_output_file, file_write::open_mode::create);
 			}
 			if(o_file.is_open())
 			{
-				std::string_view section_seperator = "-------- -------- -------- --------\n";
-				o_file	<< section_seperator;
-				push_time(o_file, t_time);
+				constexpr std::array UTF8_BOM = {char8_t{0xEF}, char8_t{0xBB}, char8_t{0xBF}};
+				o_file.write_unlocked(UTF8_BOM.data(), UTF8_BOM.size());
+
+				constexpr std::string_view section_seperator = "-------- -------- -------- --------\n";
+				OUTPUT(o_file, section_seperator);
+				OUTPUT(o_file
+					, t_time.date.year, '/', toPrint_fix_2{t_time.date.month}, '/', toPrint_fix_2{t_time.date.day}
+					, ' ', toPrint_fix_2{t_time.time.hour}, ':', toPrint_fix_2{t_time.time.minute}, ':'
+					, toPrint_fix_2{t_time.time.second}, '.', toPrint_fix_3{t_time.time.msecond}, '\n');
+
 
 				//---- The reason of the crash see: https://msdn.microsoft.com/en-us/library/cc704588.aspx
-				o_file << "Exception:\t0x";
-				push_hex_fix(o_file, static_cast<uint32_t>(ExceptionInfo->ExceptionRecord->ExceptionCode));
-				o_file << "\nAddress:\t0x";
-				push_hex_fix(o_file, reinterpret_cast<uint64_t>(ExceptionInfo->ExceptionRecord->ExceptionAddress));
-				o_file.put('\n');
 
+				OUTPUT(o_file, "Exception:\t0x"sv, toPrint_hex_fix{static_cast<uint32_t>(ExceptionInfo->ExceptionRecord->ExceptionCode)});
+				OUTPUT(o_file, "\nAddress:\t"sv, ExceptionInfo->ExceptionRecord->ExceptionAddress, '\n');
 				//commits current known data to file
 				//prevents from getting nothing if anything further causes a fatal terminate
-				o_file << std::flush;
+				o_file.flush_unlocked();
 
 				//---- Moduie list
-				o_file	<< section_seperator
-						<< "Modules:\n";
+				OUTPUT(o_file, section_seperator, "Modules:\n"sv);
 
 				//ids are different from handles, handles can be used to collect data inside the application, but they are meaningless externally
 				//ids don't have much use inside the application, but can be used externally to correlate data
@@ -441,18 +438,19 @@ namespace
 				DWORD proc_ID	= GetCurrentProcessId	();	// id of process
 				DWORD thread_ID	= GetCurrentThreadId	();	// id of current thread
 
-				enumerate2file_context	t_enum_context;	// used to tell the callback function what file to write too, and also give them the process handle
-				t_enum_context.m_file = &o_file;
-				t_enum_context.m_proc = t_proc;
-				
-				//This function will call the function (Core_EnumerateModules2File) for each module (dll + application) that is loaded
-				//this will allow us to list all modules, and also help us make sense of all those address
-				//see EnumerateLoadedModules64 on msdn: https://msdn.microsoft.com/en-us/library/windows/desktop/ms679316(v=vs.85).aspx
-				//Note: This is useful to correlate the addresses 
-				EnumerateLoadedModulesW64(t_proc, EnumerateModules2File, &t_enum_context);
-				
-				o_file	<< section_seperator
-						<< "Stack:\n";
+				{
+					enumerate2file_context	t_enum_context;	// used to tell the callback function what file to write too, and also give them the process handle
+					t_enum_context.m_file = &o_file;
+					t_enum_context.m_proc = t_proc;
+
+					//This function will call the function (Core_EnumerateModules2File) for each module (dll + application) that is loaded
+					//this will allow us to list all modules, and also help us make sense of all those address
+					//see EnumerateLoadedModules64 on msdn: https://msdn.microsoft.com/en-us/library/windows/desktop/ms679316(v=vs.85).aspx
+					//Note: This is useful to correlate the addresses 
+					EnumerateLoadedModulesW64(t_proc, EnumerateModules2File, &t_enum_context);
+				}
+
+				OUTPUT(o_file, section_seperator, "Stack:\n"sv);
 
 				SymSetOptions(SYMBOL_OPTIONS);
 				//======== IMPORTANT ========
@@ -503,31 +501,24 @@ namespace
 				//======== END ========
 				//commits current known data to file
 				//prevents from getting nothing if anything further causes a fatal terminate
-				o_file << std::flush;
+				o_file.flush_unlocked();
 				
 				//---- Extra information
-				o_file << section_seperator;
-				o_file << "Proc:\t\t";
-				push_dec(o_file, static_cast<uint32_t>(proc_ID));
-				o_file << "\nThread:\t\t";
-				push_dec(o_file, static_cast<uint32_t>(thread_ID));
-				o_file << "\nProcDir:\t\"";;
-				push_data(o_file, application_path().native());
+				OUTPUT(o_file, section_seperator,
+					"Proc:\t\t"sv, proc_ID,
+					"\nThread:\t\t"sv, thread_ID,
+					"\nProcDir:\t\""sv, application_path());
 				
 				{
 					std::error_code ec;
-					o_file << "\nWorkDir:\t\"";
-					push_data(o_file, std::filesystem::current_path(ec).native());
-					o_file.write("\"\n", 2);
+					OUTPUT(o_file, "\nWorkDir:\t\""sv, std::filesystem::current_path(ec), "\"\n"sv);
 				}
 
 				{
 					const std::optional<core::os_string>& res = machine_name();
 					if(res.has_value())
 					{
-						o_file	<< "Machine:\t\"";
-						push_data(o_file, res.value());
-						o_file.write("\"\n", 2);
+						OUTPUT(o_file, "Machine:\t\""sv, res.value(), "\"\n"sv);
 					}
 				}
 
@@ -535,9 +526,7 @@ namespace
 					LPWSTR temp_str = GetCommandLineW();
 					if(temp_str)
 					{
-						o_file << "CommandLine: ";
-						push_data(o_file, os_string_view{temp_str});
-						o_file.put('\n');
+						OUTPUT(o_file, "CommandLine: "sv, os_string_view{temp_str}, '\n');
 					}
 				}
 
@@ -546,17 +535,14 @@ namespace
 					if(GetProcessHandleCount(GetCurrentProcess(), &hcount) == TRUE)
 					{
 						//Number of open handles (can be open files, network ports, etc.)
-						o_file << "Handles:\t";
-						push_dec(o_file, static_cast<uint32_t>(hcount));
-						o_file.put('\n');
+						OUTPUT(o_file, "Handles:\t"sv, hcount, '\n');
 					}
 				}
 
-				o_file	<< section_seperator;
-				o_file	<< "Env:\n";
+				OUTPUT(o_file, section_seperator, "Env:\n"sv);
 				PrintEnv(o_file);			//Prints the environment variables at this moment
 
-				o_file	<< section_seperator;
+				OUTPUT(o_file, section_seperator);
 				o_file.close();
 			}
 		}
@@ -726,56 +712,62 @@ namespace
 
 	static Stack_Trace_Options g_straceOpt;
 
+	static std::filesystem::path g_app_path = application_path();
 
-	static uint8_t Except_stack[SIGSTKSZ];	//!< Used a stack for the exception handling
+	static std::array<uint8_t, 0x40000> Except_stack;	//!< Used a stack for the exception handling
 
 	/// \brief Helper function to print environment variables
-	static void PrintEnv(std::ofstream& p_file)
+	static void PrintEnv(file_write& p_file)
 	{
 		char** current;
 		for(current = environ; *current; ++current)
 		{
-			p_file << *current << '\n';
+			OUTPUT(p_file, std::string_view{*current}, '\n');
 		}
 	}
 
 	/// \brief Helper function to print the command line arguments
-	static void PrintCMD(std::ofstream& p_file)
+	static void PrintCMD(file_write& p_file)
 	{
-		std::ifstream p_in;
-		char c;
-		bool b_first = true;
-		uint32_t count = 0;
-		p_in.open("/proc/self/cmdline", std::ifstream::in | std::ifstream::binary);
-
+		file_read p_in;
+		p_in.open("/proc/self/cmdline");
 		if(p_in.is_open())
 		{
-			p_file << "Arguments:" << '\n';
-			c = static_cast<char>(p_in.get());
-
-			while(p_in.good())
+			std::u8string res;
 			{
-				if(c == '\0')
+				char8_t c;
+				p_in.read_unlocked(&c, 1);
+				while(p_in.good())
 				{
-					p_file << '\n';
-					b_first = true;
+					res.push_back(c);
+					p_in.read_unlocked(&c, 1);
+				}
+			}
+
+			OUTPUT(p_file, "Arguments:\n"sv);
+			const char8_t* pivot = res.data();
+			const char8_t* const last = pivot + res.size();
+			uint32_t count = 0;
+			while(pivot != last)
+			{
+				const char8_t* pos = reinterpret_cast<const char8_t*>(memchr(pivot, 0, last - pivot));
+				if(pos)
+				{
+					OUTPUT(p_file, count, ": "sv, std::u8string_view{pivot, static_cast<uintptr_t>(pos - pivot)}, '\n');
+					pivot = pos + 1;
 				}
 				else
 				{
-					if(b_first)
-					{
-						b_first = false;
-						p_file << '\t' << count++ << ": ";
-					}
-					p_file << c;
+					OUTPUT(p_file, count, ": "sv, std::u8string_view{pivot, static_cast<uintptr_t>(last - pivot)}, '\n');
+					break;
 				}
-				c = static_cast<char>(p_in.get());
-			}
-			if(!b_first)
-			{
-				p_file << '\n';
+				++count;
 			}
 			p_in.close();
+		}
+		else
+		{
+			OUTPUT(p_file, "Arguments: Unable to fetch!\n"sv);
 		}
 	}
 
@@ -806,13 +798,9 @@ namespace
 	///		however I'm not sure, this is not documented, take this information with a grain of salt.
 	static int EnumerateModules2File(struct dl_phdr_info *p_info, size_t /*p_size*/, void *p_context)
 	{
-		std::ofstream& tfile = *reinterpret_cast<std::ofstream*>(p_context);
-		push_hex_fix(tfile, reinterpret_cast<uintptr_t>(p_info->dlpi_addr));
-		//tfile.put(' ');
-		//push_hex_fix(tfile, BaseOfDll + ModuleSize);
-		tfile.write(" \"", 2);
-		push_data(tfile, os_string_view{p_info->dlpi_name});
-		tfile.write("\"\n", 2);
+		//missing BaseOfDll + ModuleSize);
+		OUTPUT(*reinterpret_cast<file_write*>(p_context),
+			reinterpret_cast<void*>(p_info->dlpi_addr), " \""sv, os_string_view{p_info->dlpi_name}, "\"\n"sv);
 		return 0;
 	}
 
@@ -822,7 +810,7 @@ namespace
 	///	\warning Function names may not necessarily be correct. \n
 	///		Name is determined based on last know name prior to current address, which is not necessarily the same function as the one the address belongs to.
 	///		Use .map files to confirm names.
-	static void print_function_addr(void* p_address, char* p_name, std::ofstream& p_file)
+	static void print_function_addr(void* p_address, char* p_name, file_write& p_file)
 	{
 		Dl_info t_info;
 		//this function gets additional information about the address
@@ -833,21 +821,19 @@ namespace
 		{
 			//prints it in the form of base address + offset ex: 0x0000123400+567
 			uintptr_t diff = reinterpret_cast<uintptr_t>(p_address) - reinterpret_cast<uintptr_t>(t_info.dli_fbase);
-			push_hex_fix(p_file, reinterpret_cast<uintptr_t>(t_info.dli_fbase));
-			p_file.put('+');
-			push_hex_fix(p_file, diff);
+			OUTPUT(p_file, t_info.dli_fbase, '+', toPrint_hex{diff});
 		}
 		else
 		{
-			push_hex_fix(p_file, reinterpret_cast<uintptr_t>(p_address));
+			OUTPUT(p_file, p_address);
 		}
 		
 		//do not forget to print the symbol name, if there is one
 		if(p_name)
 		{
-			p_file << ' ' << p_name;
+			OUTPUT(p_file, ' ', std::string_view{p_name});
 		}
-		p_file << '\n';
+		OUTPUT(p_file, '\n');
 	}
 
 	///	\brief	This function performs all tasks related to printing the stack trace information.
@@ -881,22 +867,25 @@ namespace
 
 			if(!g_straceOpt.m_output_file.empty())
 			{
-				std::ofstream	o_file;						// file to be output
+				file_write		o_file;						// file to be output
 				DateTime		t_time;
 				date_time_local(t_time);	//current date
 
 				{
 					std::error_code ec;
 					create_directories(g_straceOpt.m_output_file.parent_path(), ec);
-					o_file.open(g_straceOpt.m_output_file);
+					o_file.open(g_straceOpt.m_output_file, file_write::open_mode::create);
 				}
 
 				if(o_file.is_open())
 				{
 					std::string_view section_seperator = "-------- -------- -------- --------\n";
 
-					o_file << section_seperator;
-					push_time(o_file, t_time);
+					OUTPUT(o_file, section_seperator);
+					OUTPUT(o_file
+						, t_time.date.year, '/', toPrint_fix_2{t_time.date.month}, '/', toPrint_fix_2{t_time.date.day}
+						, ' ', toPrint_fix_2{t_time.time.hour}, ':', toPrint_fix_2{t_time.time.minute}, ':'
+						, toPrint_fix_2{t_time.time.second}, '.', toPrint_fix_3{t_time.time.msecond}, '\n');
 
 					ucontext_t* t_context = (ucontext_t*) context;
 					void* t_criticalAddr;	// the address were the crash occurred
@@ -918,35 +907,31 @@ namespace
 						t_criticalAddr = nullptr;
 					}
 
-					o_file	<< "Sig:\t\t0x";
-					push_hex_fix(o_file, static_cast<uint32_t>(sig)); //the signal that caused the crash
-					o_file	<< "\nCode:\t\t0x";
-					push_hex_fix(o_file, static_cast<uint32_t>(siginfo->si_code));	//the additional code associated with the signal
-					o_file.put('\n');
+					OUTPUT(o_file,
+						"Sig:\t\t0x"sv, toPrint_hex_fix{static_cast<uint32_t>(sig)}, //the signal that caused the crash
+						"\nCode:\t\t0x"sv, toPrint_hex_fix{static_cast<uint32_t>(siginfo->si_code)},	//the additional code associated with the signal
+						'\n');
 																					//for example the type of floating point error
 					//see: http://linux.die.net/man/2/sigaction
 
 					//print the address where the problem occurred, if there is one
 					if(t_criticalAddr)
 					{
-						o_file	<< "Address:\t0x";
-						push_hex_fix(o_file, reinterpret_cast<uintptr_t>(t_criticalAddr));
-						o_file.put('\n');
+						OUTPUT(o_file, "Address:\t"sv, t_criticalAddr, '\n');
 					}
 
 					//commits current known data to file
 					//prevents from getting nothing if anything further causes a fatal terminate
-					o_file << std::flush;
+					o_file.flush_unlocked();
 
-					o_file	<< section_seperator
-							<< "Modules:" << '\n';
+					//---- Moduie list
+					OUTPUT(o_file, section_seperator, "Modules:\n"sv);
 					
 					//lists all loaded modules, calls Core_EnumerateModules2File per loaded module, and then some
 					//see: http://linux.die.net/man/3/dl_iterate_phdr
 					dl_iterate_phdr(EnumerateModules2File, &o_file);
 
-					o_file	<< section_seperator
-							<< "Stack:" << '\n';
+					OUTPUT(o_file, section_seperator, "Stack:\n"sv);
 
 
 					void*	trace[64];	// holds the stack trace before it is processed for output
@@ -1007,42 +992,30 @@ namespace
 
 					//commits current known data to file
 					//prevents from getting nothing if anything further causes a fatal terminate
-					o_file << std::flush;
-
+					o_file.flush_unlocked();
+					
 					uint32_t	proc_ID		= getpid();
 					pthread_t	thread_ID	= pthread_self();
 
-					o_file << section_seperator;
-					o_file << "Proc:\t\t";
-					push_dec(o_file, static_cast<uint32_t>(proc_ID));
-					o_file << "\nThread:\t\t";
-					push_dec(o_file, static_cast<uint32_t>(thread_ID));
+					//---- Extra information
 
-
-					{
-						std::array<char, 1024> buff;
-						ssize_t ret_size = readlink("/proc/self/exe", buff.data(), buff.size());
-						if(ret_size > 0)
-						{
-							o_file << "\nProcDir:\t\"" << std::string_view{buff.data(), static_cast<size_t>(ret_size)} << '\"';
-						}
-						//else too large
-					}
+					//Note: for some reason when handling the signal caused by an access violation, creating a path causes an access violation
+					//so we store the path in a global
+					OUTPUT(o_file, section_seperator,
+						"Proc:\t\t"sv, proc_ID,
+						"\nThread:\t\t"sv, thread_ID,
+						"\nProcDir:\t\""sv, g_app_path);
 
 					{
 						std::error_code ec;
-						o_file << "\nWorkDir:\t\"";
-						push_data(o_file, std::filesystem::current_path(ec).native());
-						o_file.write("\"\n", 2);
+						OUTPUT(o_file, "\nWorkDir:\t\""sv, std::filesystem::current_path(ec), "\"\n"sv);
 					}
 
 					{
 						const std::optional<core::os_string>& res = machine_name();
 						if(res.has_value())
 						{
-							o_file	<< "Machine:\t\"";
-							push_data(o_file, res.value());
-							o_file.write("\"\n", 2);
+							OUTPUT(o_file, "Machine:\t\""sv, res.value(), "\"\n"sv);
 						}
 					}
 
@@ -1052,12 +1025,11 @@ namespace
 
 					PrintCMD(o_file);	//Prints the commands that were passed to the application
 
-					o_file	<< section_seperator;
-					o_file	<< "Env:" << '\n';
+					OUTPUT(o_file, section_seperator, "Env:\n"sv);
 
 					PrintEnv(o_file);	//Prints the environment variables at this moment
 
-					o_file	<< section_seperator;
+					OUTPUT(o_file, section_seperator);
 					o_file.close();
 				}
 			}
@@ -1078,14 +1050,14 @@ bool register_crash_trace(const std::filesystem::path& p_output_file)
 	}
 	else
 	{
-		g_straceOpt.m_output_file = (core::application_path().parent_path() / p_output_file).lexically_normal();
+		g_straceOpt.m_output_file = (application_path().parent_path() / p_output_file).lexically_normal();
 	}
 
 	//======== IMPORTANT ========
 	//this sets up an alternative stack to run on when we are doing our stack trace
 	//see article:https://spin.atomicobject.com/2013/01/13/exceptions-stack-traces-c/
 	stack_t ss;
-	ss.ss_sp	= (void*) Except_stack;
+	ss.ss_sp	= reinterpret_cast<void*>(Except_stack.data());
 	ss.ss_size	= SIGSTKSZ;
 	ss.ss_flags	= 0;
 	if (sigaltstack(&ss, nullptr)) return false;
