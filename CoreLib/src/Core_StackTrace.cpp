@@ -37,6 +37,7 @@
 #	include <unistd.h>
 #	include <link.h>
 #	include <cstring>
+#	include <sys/utsname.h>
 #	include <CoreLib/Core_extra_compiler.hpp>
 #endif
 
@@ -51,7 +52,6 @@
 
 #include <CoreLib/string/core_string_encoding.hpp>
 #include <CoreLib/string/core_string_numeric.hpp>
-
 
 
 namespace core
@@ -223,6 +223,28 @@ namespace
 		}
 		
 		return t_flags;
+	}
+
+	/// \brief Auxiliary function used to print operating system version
+	static void PrintOS(file_write& p_file)
+	{
+
+		OSVERSIONINFOEXW info;
+		info.dwOSVersionInfoSize = sizeof(decltype(info));
+		if(GetVersionExW(reinterpret_cast<OSVERSIONINFOW*>(&info)))
+		{
+			OUTPUT(p_file, "OS:          Windows "sv,
+				info.dwMajorVersion, '.', info.dwMinorVersion, " ("sv, info.wProductType, '/', toPrint_hex_fix(info.wSuiteMask), ") build "sv, info.dwBuildNumber);
+			if(*info.szCSDVersion)
+			{
+				OUTPUT(p_file, ' ', std::wstring_view{info.szCSDVersion});
+			}
+			OUTPUT(p_file, '\n');
+		}
+		else
+		{
+			OUTPUT(p_file, "OS:          Windows\n"sv);
+		}
 	}
 
 	/// \brief Auxiliary function used to print environment variables
@@ -422,8 +444,8 @@ namespace
 
 				//---- The reason of the crash see: https://msdn.microsoft.com/en-us/library/cc704588.aspx
 
-				OUTPUT(o_file, "Exception:\t0x"sv, toPrint_hex_fix{static_cast<uint32_t>(ExceptionInfo->ExceptionRecord->ExceptionCode)});
-				OUTPUT(o_file, "\nAddress:\t"sv, ExceptionInfo->ExceptionRecord->ExceptionAddress, '\n');
+				OUTPUT(o_file, "Exception: 0x"sv, toPrint_hex_fix{static_cast<uint32_t>(ExceptionInfo->ExceptionRecord->ExceptionCode)});
+				OUTPUT(o_file, "\nAddress:   "sv, ExceptionInfo->ExceptionRecord->ExceptionAddress, '\n');
 				//commits current known data to file
 				//prevents from getting nothing if anything further causes a fatal terminate
 				o_file.flush_unlocked();
@@ -505,21 +527,13 @@ namespace
 				
 				//---- Extra information
 				OUTPUT(o_file, section_seperator,
-					"Proc:\t\t"sv, proc_ID,
-					"\nThread:\t\t"sv, thread_ID,
-					"\nProcDir:\t\""sv, application_path());
+					"Proc:        "sv, proc_ID,
+					"\nThread:      "sv, thread_ID,
+					"\nProcDir:     \""sv, application_path(), '\n');
 				
 				{
 					std::error_code ec;
-					OUTPUT(o_file, "\nWorkDir:\t\""sv, std::filesystem::current_path(ec), "\"\n"sv);
-				}
-
-				{
-					const std::optional<core::os_string>& res = machine_name();
-					if(res.has_value())
-					{
-						OUTPUT(o_file, "Machine:\t\""sv, res.value(), "\"\n"sv);
-					}
+					OUTPUT(o_file, "WorkDir:     \""sv, std::filesystem::current_path(ec), "\"\n"sv);
 				}
 
 				{
@@ -530,12 +544,21 @@ namespace
 					}
 				}
 
+				PrintOS(o_file);
+
+				{
+					const std::optional<core::os_string>& res = machine_name();
+					if(res.has_value())
+					{
+						OUTPUT(o_file, "Machine:     \""sv, res.value(), "\"\n"sv);
+					}
+				}
 				{
 					DWORD hcount;
 					if(GetProcessHandleCount(GetCurrentProcess(), &hcount) == TRUE)
 					{
 						//Number of open handles (can be open files, network ports, etc.)
-						OUTPUT(o_file, "Handles:\t"sv, hcount, '\n');
+						OUTPUT(o_file, "Handles:     "sv, hcount, '\n');
 					}
 				}
 
@@ -716,6 +739,24 @@ namespace
 
 	static std::array<uint8_t, 0x40000> Except_stack;	//!< Used a stack for the exception handling
 
+	/// \brief Auxiliary function used to print operating system version
+	static void PrintOS(file_write& p_file)
+	{
+		struct utsname temp;
+		if(uname(&temp))
+		{
+			OUTPUT(p_file, "OS:      Linux\n"sv);
+		}
+		else
+		{
+			OUTPUT(p_file,
+				"OS:      "sv, std::string_view{temp.sysname},
+				' ', std::string_view{temp.machine},
+				" - "sv, std::string_view{temp.release},
+				" - "sv, std::string_view{temp.version}, '\n');
+		}
+	}
+
 	/// \brief Helper function to print environment variables
 	static void PrintEnv(file_write& p_file)
 	{
@@ -753,12 +794,12 @@ namespace
 				const char8_t* pos = reinterpret_cast<const char8_t*>(memchr(pivot, 0, last - pivot));
 				if(pos)
 				{
-					OUTPUT(p_file, count, ": "sv, std::u8string_view{pivot, static_cast<uintptr_t>(pos - pivot)}, '\n');
+					OUTPUT(p_file, '\t', count, ": "sv, std::u8string_view{pivot, static_cast<uintptr_t>(pos - pivot)}, '\n');
 					pivot = pos + 1;
 				}
 				else
 				{
-					OUTPUT(p_file, count, ": "sv, std::u8string_view{pivot, static_cast<uintptr_t>(last - pivot)}, '\n');
+					OUTPUT(p_file, '\t', count, ": "sv, std::u8string_view{pivot, static_cast<uintptr_t>(last - pivot)}, '\n');
 					break;
 				}
 				++count;
@@ -908,8 +949,8 @@ namespace
 					}
 
 					OUTPUT(o_file,
-						"Sig:\t\t0x"sv, toPrint_hex_fix{static_cast<uint32_t>(sig)}, //the signal that caused the crash
-						"\nCode:\t\t0x"sv, toPrint_hex_fix{static_cast<uint32_t>(siginfo->si_code)},	//the additional code associated with the signal
+						"Sig:     0x"sv, toPrint_hex_fix{static_cast<uint32_t>(sig)}, //the signal that caused the crash
+						"\nCode:    0x"sv, toPrint_hex_fix{static_cast<uint32_t>(siginfo->si_code)},	//the additional code associated with the signal
 						'\n');
 																					//for example the type of floating point error
 					//see: http://linux.die.net/man/2/sigaction
@@ -917,7 +958,7 @@ namespace
 					//print the address where the problem occurred, if there is one
 					if(t_criticalAddr)
 					{
-						OUTPUT(o_file, "Address:\t"sv, t_criticalAddr, '\n');
+						OUTPUT(o_file, "Address: "sv, t_criticalAddr, '\n');
 					}
 
 					//commits current known data to file
@@ -1002,28 +1043,28 @@ namespace
 					//Note: for some reason when handling the signal caused by an access violation, creating a path causes an access violation
 					//so we store the path in a global
 					OUTPUT(o_file, section_seperator,
-						"Proc:\t\t"sv, proc_ID,
-						"\nThread:\t\t"sv, thread_ID,
-						"\nProcDir:\t\""sv, g_app_path);
+						"Proc:    "sv, proc_ID,
+						"\nThread:  "sv, thread_ID,
+						"\nProcDir: \""sv, g_app_path, '\n');
 
 					{
 						std::error_code ec;
-						OUTPUT(o_file, "\nWorkDir:\t\""sv, std::filesystem::current_path(ec), "\"\n"sv);
+						OUTPUT(o_file, "WorkDir: \""sv, std::filesystem::current_path(ec), "\"\n"sv);
 					}
 
+					PrintCMD(o_file);	//Prints the commands that were passed to the application
+					PrintOS(o_file);
 					{
 						const std::optional<core::os_string>& res = machine_name();
 						if(res.has_value())
 						{
-							OUTPUT(o_file, "Machine:\t\""sv, res.value(), "\"\n"sv);
+							OUTPUT(o_file, "Machine: \""sv, res.value(), "\"\n"sv);
 						}
 					}
 
 					/*
 						TODO: put file descriptor count here
 					*/
-
-					PrintCMD(o_file);	//Prints the commands that were passed to the application
 
 					OUTPUT(o_file, section_seperator, "Env:\n"sv);
 
