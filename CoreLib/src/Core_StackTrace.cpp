@@ -920,6 +920,9 @@ namespace
 
 				if(o_file.is_open())
 				{
+					constexpr std::array UTF8_BOM = {char8_t{0xEF}, char8_t{0xBB}, char8_t{0xBF}};
+					o_file.write_unlocked(UTF8_BOM.data(), UTF8_BOM.size());
+
 					std::string_view section_seperator = "-------- -------- -------- --------\n";
 
 					OUTPUT(o_file, section_seperator);
