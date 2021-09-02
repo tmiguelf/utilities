@@ -66,6 +66,8 @@ public:
 
 	~DLL();
 
+	inline constexpr bool is_loaded() const { return handle != nullptr; }
+
 	///	\brief	loads a library,if this object was use previously to load a library
 	///			it unloads the previous library first
 	///

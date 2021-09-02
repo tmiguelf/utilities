@@ -32,7 +32,7 @@
 
 namespace core
 {
-using namespace core::literals;
+	using namespace ::core::literals;
 
 	//======== Private implementation ========
 
