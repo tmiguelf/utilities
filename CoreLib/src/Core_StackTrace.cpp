@@ -56,7 +56,6 @@
 
 namespace core
 {
-	using namespace std::literals;
 
 #define OUTPUT(Sink, ...)  core_ToPrint(char8_t, sink_file_UTF8_unlocked(Sink), __VA_ARGS__)
 

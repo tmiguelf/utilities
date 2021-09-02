@@ -33,7 +33,6 @@
 #include <CoreLib/toPrint/toPrint_net.hpp>
 
 using namespace core::literals;
-using namespace std::literals;
 
 class test_sink: public core::sink_toPrint_base
 {

@@ -42,7 +42,7 @@
 #include <CoreLib/string/core_string_encoding.hpp>
 #include <CoreLib/string/core_wchar_alias.hpp>
 
-using std::literals::operator ""sv;
+using namespace std::literals::string_view_literals;
 
 namespace core
 {
@@ -62,7 +62,7 @@ namespace _p
 		(std::is_pointer_v<T> && toPrint_is_one_of_chars_v<std::remove_cvref_t<std::remove_pointer_t<T>>>);
 } //namespace _p
 
-template<typename T> requires  _p::toPrint_explicitly_disalowed_v<T>
+template<typename T> requires _p::toPrint_explicitly_disalowed_v<T>
 class toPrint<T>: public toPrint_base
 {
 public:
