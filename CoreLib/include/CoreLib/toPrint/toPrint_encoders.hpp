@@ -42,6 +42,8 @@
 #include <CoreLib/string/core_string_encoding.hpp>
 #include <CoreLib/string/core_wchar_alias.hpp>
 
+using std::literals::operator ""sv;
+
 namespace core
 {
 namespace _p
@@ -383,7 +385,7 @@ public:
 //======== ======== Numeric ======== ========
 namespace _p
 {
-	template<size_t TSIZE, size_t TALIGNED, bool TSIGNED>
+	template<size_t TSIZE, size_t TALIGN, bool TSIGNED>
 	struct toPrint_int_aliased_type;
 
 	template<> struct toPrint_int_aliased_type<sizeof(uint8_t ), alignof(uint8_t ), false> { using type = uint8_t ; };
@@ -397,6 +399,19 @@ namespace _p
 
 	template<typename T>
 	using toPrint_int_aliased_t = toPrint_int_aliased_type<sizeof(T), alignof(T), std::is_signed_v<T>>::type;
+
+
+	template<size_t TSIZE, size_t TALIGN>
+	struct toPrint_uint_clobber_type;
+
+	template<> struct toPrint_uint_clobber_type<sizeof(uint8_t ), alignof(uint8_t )> { using type = uint8_t ; };
+	template<> struct toPrint_uint_clobber_type<sizeof(uint16_t), alignof(uint16_t)> { using type = uint16_t; };
+	template<> struct toPrint_uint_clobber_type<sizeof(uint32_t), alignof(uint32_t)> { using type = uint32_t; };
+	template<> struct toPrint_uint_clobber_type<sizeof(uint64_t), alignof(uint64_t)> { using type = uint64_t; };
+
+	template<typename T>
+	using toPrint_uint_clobber_t = toPrint_uint_clobber_type<sizeof(T), alignof(T)>::type;
+
 }
 //-------- Decimal -------- 
 
@@ -499,13 +514,12 @@ private:
 };
 
 template<typename Num_T> requires (std::integral<Num_T> && !core::char_conv_hex_supported<Num_T>::value)
-class toPrint_hex<Num_T>: public toPrint_hex<_p::toPrint_int_aliased_t<Num_T>>
+class toPrint_hex<Num_T>: public toPrint_hex<_p::toPrint_uint_clobber_t<Num_T>>
 {
-	using alias_t = _p::toPrint_int_aliased_t<Num_T>;
+	using alias_t = _p::toPrint_uint_clobber_t<Num_T>;
 public:
 	constexpr toPrint_hex(Num_T p_data): toPrint_hex<alias_t>(static_cast<alias_t>(p_data)) {}
 };
-
 
 //-------- Hexadecimal fixed size -------- 
 
@@ -535,14 +549,12 @@ private:
 	const Num_T m_data;
 };
 
-template<typename Num_T> requires (std::unsigned_integral<Num_T> && !core::char_conv_hex_supported<Num_T>::value)
-class toPrint_hex_fix<Num_T>: public toPrint_hex_fix<_p::toPrint_int_aliased_t<Num_T>>
+template<typename Num_T> requires (std::integral<Num_T> && !core::char_conv_hex_supported<Num_T>::value)
+class toPrint_hex_fix<Num_T>: public toPrint_hex_fix<_p::toPrint_uint_clobber_t<Num_T>>
 {
-	using alias_t = _p::toPrint_int_aliased_t<Num_T>;
+	using alias_t = _p::toPrint_uint_clobber_t<Num_T>;
 public:
 	constexpr toPrint_hex_fix(Num_T p_data): toPrint_hex_fix<alias_t>(static_cast<alias_t>(p_data)) {}
 };
-
-
 
 } //namespace core
