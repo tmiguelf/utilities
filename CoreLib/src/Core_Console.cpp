@@ -74,7 +74,7 @@ NO_INLINE void console_out::write(std::u8string_view const p_out) const
 	}
 	else
 	{
-		char16_t* buff = reinterpret_cast<char16_t*>(core_alloca(buff_size * sizeof(char16_t)));
+		char16_t* const buff = reinterpret_cast<char16_t* const>(core_alloca(buff_size * sizeof(char16_t)));
 		core::_p::UTF8_to_UTF16_faulty_unsafe(p_out, '?', buff);
 		write(std::u16string_view{buff, buff_size});
 	}
@@ -99,7 +99,7 @@ NO_INLINE void console_out::write(std::u32string_view const p_out) const
 	}
 	else
 	{
-		char16_t* buff = reinterpret_cast<char16_t*>(core_alloca(buff_size * sizeof(char16_t)));
+		char16_t* const buff = reinterpret_cast<char16_t* const>(core_alloca(buff_size * sizeof(char16_t)));
 		core::_p::UCS4_to_UTF16_faulty_unsafe(p_out, '?', buff);
 		write(std::u16string_view{buff, buff_size});
 	}
@@ -129,7 +129,7 @@ void console_out::put(const char16_t p_out) const
 void console_out::put(const char32_t p_out) const
 {
 	std::array<char16_t, 2> buff;
-	uint8_t size = encode_UTF16(p_out, buff);
+	const uint8_t size = encode_UTF16(p_out, buff);
 	if(size)
 	{
 		write(std::u16string_view{buff.data(), size});
@@ -175,7 +175,7 @@ NO_INLINE void console_out::write(std::u16string_view const p_out) const
 	}
 	else
 	{
-		char8_t* buff = reinterpret_cast<char8_t*>(core_alloca(buff_size));
+		char8_t* const buff = reinterpret_cast<char8_t* const>(core_alloca(buff_size));
 		core::_p::UTF16_to_UTF8_faulty_unsafe(p_out, '?', buff);
 		write(std::u8string_view{buff, buff_size});
 	}
@@ -194,7 +194,7 @@ NO_INLINE void console_out::write(std::u32string_view const p_out) const
 	}
 	else
 	{
-		char8_t* buff = reinterpret_cast<char8_t*>(core_alloca(buff_size));
+		char8_t* buff = reinterpret_cast<char8_t* const>(core_alloca(buff_size));
 		core::_p::UCS4_to_UTF8_faulty_unsafe(p_out, '?', buff);
 		write(std::u8string_view{buff, buff_size});
 	}
@@ -218,7 +218,7 @@ void console_out::put(const char8_t p_out) const
 void console_out::put(const char16_t p_out) const
 {
 	std::array<char8_t, 4> buff;
-	uint8_t size = encode_UTF8(static_cast<char32_t>(p_out), buff);
+	const uint8_t size = encode_UTF8(static_cast<char32_t>(p_out), buff);
 
 	if(size)
 	{
@@ -233,7 +233,7 @@ void console_out::put(const char16_t p_out) const
 void console_out::put(const char32_t p_out) const
 {
 	std::array<char8_t, 4> buff;
-	uint8_t size = encode_UTF8(p_out, buff);
+	const uint8_t size = encode_UTF8(p_out, buff);
 
 	if(size)
 	{

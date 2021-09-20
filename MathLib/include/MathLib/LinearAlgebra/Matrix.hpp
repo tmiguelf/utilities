@@ -36,7 +36,7 @@ namespace mathlib
 {
 	/// \brief Matrix with a 2D storage space
 	//
-	template <_p::is_non_const_arithmetic T, size_t T_size1, size_t T_size2>
+	template <_p::is_non_const_arithmetic T, uintptr_t T_size1, uintptr_t T_size2>
 	class Matrix
 	{
 	public:
@@ -77,51 +77,51 @@ namespace mathlib
 			return memcmp(this, &p_other, sizeof(this_t)) != 0;
 		}
 
-		void set(size_t p_pos1, size_t p_pos2, T p_newvalue)
+		void set(const uintptr_t p_pos1, const uintptr_t p_pos2, const T p_newvalue)
 		{
 			_M[p_pos1][p_pos2] = p_newvalue;
 		}
 
 		void set(const init_t& p_data)
 		{
-			for(size_t i = 0; i < T_size1; ++i)
+			for(uintptr_t i = 0; i < T_size1; ++i)
 			{
-				for(size_t j = 0; j < T_size2; ++j)
+				for(uintptr_t j = 0; j < T_size2; ++j)
 				{
 					_M[i][j] = p_data[i][j];
 				}
 			}
 		}
 
-		inline T* operator [] (size_t p_pos)
+		inline T* operator [] (const uintptr_t p_pos)
 		{
 			return _M[p_pos];
 		}
 
-		inline const T* operator [] (size_t p_pos) const
+		inline const T* operator [] (const uintptr_t p_pos) const
 		{
 			return _M[p_pos];
 		}
 
-		[[nodiscard]] inline T& get(size_t p_pos1, size_t p_pos2)
+		[[nodiscard]] inline T& get(const uintptr_t p_pos1, const uintptr_t p_pos2)
 		{
 			return _M[p_pos1][p_pos2];
 		}
 
-		[[nodiscard]] inline constexpr T get(size_t p_pos1, size_t p_pos2) const
+		[[nodiscard]] inline constexpr T get(const uintptr_t p_pos1, const uintptr_t p_pos2) const
 		{
 			return _M[p_pos1][p_pos2];
 		}
 
-		static constexpr std::pair<size_t, size_t> size() { return std::pair<size_t, size_t>(T_size1, T_size2); }
-		static constexpr size_t size1() { return T_size1; }
-		static constexpr size_t size2() { return T_size2; }
+		static constexpr std::pair<uintptr_t, uintptr_t> size() { return std::pair<uintptr_t, uintptr_t>(T_size1, T_size2); }
+		static constexpr uintptr_t size1() { return T_size1; }
+		static constexpr uintptr_t size2() { return T_size2; }
 
 		this_t& operator += (const this_t& p_other)
 		{
-			for(size_t i = 0; i < T_size1; ++i)
+			for(uintptr_t i = 0; i < T_size1; ++i)
 			{
-				for(size_t j = 0; j < T_size2; ++j)
+				for(uintptr_t j = 0; j < T_size2; ++j)
 				{
 					_M[i][j] += p_other._M[i][j];
 				}
@@ -131,9 +131,9 @@ namespace mathlib
 
 		this_t& operator -= (const this_t& p_other)
 		{
-			for(size_t i = 0; i < T_size1; ++i)
+			for(uintptr_t i = 0; i < T_size1; ++i)
 			{
-				for(size_t j = 0; j < T_size2; ++j)
+				for(uintptr_t j = 0; j < T_size2; ++j)
 				{
 					_M[i][j] -= p_other._M[i][j];
 				}
@@ -142,11 +142,11 @@ namespace mathlib
 		}
 
 		template <_p::is_arithmetic O_T>
-		constexpr this_t& operator *= (O_T p_scalar)
+		constexpr this_t& operator *= (const O_T p_scalar)
 		{
-			for(size_t i = 0; i < T_size1; ++i)
+			for(uintptr_t i = 0; i < T_size1; ++i)
 			{
-				for(size_t j = 0; j < T_size2; ++j)
+				for(uintptr_t j = 0; j < T_size2; ++j)
 				{
 					_M[i][j] *= p_scalar;
 				}
@@ -155,11 +155,11 @@ namespace mathlib
 		}
 
 		template <_p::is_arithmetic O_T>
-		constexpr this_t& operator /= (O_T p_scalar)
+		constexpr this_t& operator /= (const O_T p_scalar)
 		{
-			for(size_t i = 0; i < T_size1; ++i)
+			for(uintptr_t i = 0; i < T_size1; ++i)
 			{
-				for(size_t j = 0; j < T_size2; ++j)
+				for(uintptr_t j = 0; j < T_size2; ++j)
 				{
 					_M[i][j] /= p_scalar;
 				}
@@ -178,13 +178,13 @@ namespace mathlib
 		}
 
 		template <_p::is_arithmetic O_T>
-		[[nodiscard]] inline constexpr this_t operator * (O_T p_scalar) const
+		[[nodiscard]] inline constexpr this_t operator * (const O_T p_scalar) const
 		{
 			return this_t{*this} *= p_scalar;
 		}
 
 		template <_p::is_arithmetic O_T>
-		[[nodiscard]] inline constexpr this_t operator / (O_T p_scalar) const
+		[[nodiscard]] inline constexpr this_t operator / (const O_T p_scalar) const
 		{
 			return this_t{*this} /= p_scalar;
 		}
@@ -193,10 +193,10 @@ namespace mathlib
 		{
 			Vector<T, T_size1> p_res;
 
-			for(size_t i = 0; i < T_size1; ++i)
+			for(uintptr_t i = 0; i < T_size1; ++i)
 			{
 				T temp = 0;
-				for(size_t j = 0; j < T_size2; ++j)
+				for(uintptr_t j = 0; j < T_size2; ++j)
 				{
 					temp += _M[i][j] * p_vect[j];
 				}
@@ -207,18 +207,18 @@ namespace mathlib
 			return p_res;
 		}
 
-		template <size_t OT_size1, size_t OT_size2> requires (OT_size1 == T_size2)
+		template <uintptr_t OT_size1, uintptr_t OT_size2> requires (OT_size1 == T_size2)
 		[[nodiscard]] constexpr Matrix<T, T_size1, OT_size2> operator * (const Matrix<T, OT_size1, OT_size2>& p_mat) const
 		{
 			static_assert(OT_size1 == T_size2, "Matrix must have compatible dimmensions");
 			Matrix<T, T_size1, OT_size2> p_res;
 
-			for(size_t i = 0; i < OT_size2; ++i)
+			for(uintptr_t i = 0; i < OT_size2; ++i)
 			{
-				for(size_t j = 0; j < T_size1; ++j)
+				for(uintptr_t j = 0; j < T_size1; ++j)
 				{
 					T temp = 0;
-					for(size_t k = 0; k < T_size2; ++k)
+					for(uintptr_t k = 0; k < T_size2; ++k)
 					{
 						temp += _M[j][k] * p_mat[k][i];
 					}
@@ -232,9 +232,9 @@ namespace mathlib
 		[[nodiscard]] constexpr Matrix<T, T_size2, T_size1> transpose() const
 		{
 			Matrix<T, T_size2, T_size1> t_out;
-			for(size_t i = 0; i < T_size1; ++i)
+			for(uintptr_t i = 0; i < T_size1; ++i)
 			{
-				for(size_t j = 0; j < T_size2; ++j)
+				for(uintptr_t j = 0; j < T_size2; ++j)
 				{
 					t_out.set(j, i, _M[i][j]);
 				}
@@ -245,9 +245,9 @@ namespace mathlib
 		[[nodiscard]] constexpr this_t operator - () const
 		{
 			this_t t_out;
-			for(size_t i = 0; i < T_size1; ++i)
+			for(uintptr_t i = 0; i < T_size1; ++i)
 			{
-				for(size_t j = 0; j < T_size2; ++j)
+				for(uintptr_t j = 0; j < T_size2; ++j)
 				{
 					t_out.set(i, j, -_M[i][j]);
 				}
@@ -260,8 +260,8 @@ namespace mathlib
 	};
 
 
-	template <_p::is_arithmetic T1, _p::is_non_const_arithmetic T2, size_t T_size1, size_t T_size2>
-	[[nodiscard]]  Matrix<T2, T_size1, T_size2> operator * (T1 p_1, const Matrix<T2, T_size1, T_size2>& p_2)
+	template <_p::is_arithmetic T1, _p::is_non_const_arithmetic T2, uintptr_t T_size1, uintptr_t T_size2>
+	[[nodiscard]]  Matrix<T2, T_size1, T_size2> operator * (const T1 p_1, const Matrix<T2, T_size1, T_size2>& p_2)
 	{
 		return p_2 * p_1;
 	}
@@ -269,11 +269,11 @@ namespace mathlib
 	///	\brief calculates the trace of the matrix
 	///	\note
 	///		Trace is only defined for a square matrix
-	template <typename T, size_t T_size>
+	template <typename T, uintptr_t T_size>
 	[[nodiscard]] constexpr T trace(const Matrix<T, T_size, T_size>& p_mat)
 	{
 		T res = 0;
-		for(size_t i = 0; i < T_size; ++i)
+		for(uintptr_t i = 0; i < T_size; ++i)
 		{
 			res += p_mat[i][i];
 		}

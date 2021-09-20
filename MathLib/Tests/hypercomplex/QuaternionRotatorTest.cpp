@@ -219,10 +219,10 @@ TYPED_TEST(QuaternionRotator_T, Rotator)
 
 	for(TestCase& tcase: testData)
 	{
-		size_t perm = 0;
+		uintptr_t perm = 0;
 		do
 		{
-			size_t neg = 0;
+			uintptr_t neg = 0;
 			do
 			{
 				QuaternionRotator<real_t> rotator{tcase.rotationAxis, tcase.rotationValue};

@@ -319,7 +319,7 @@ Thread::Error Thread::set_affinity_mask(const uint64_t p_affinity)
 	{
 		uint64_t	t_bias;
 		cpu_set_t*	t_set	= CPU_ALLOC(64);
-		size_t		t_size	= CPU_ALLOC_SIZE(64);
+		uintptr_t	t_size	= CPU_ALLOC_SIZE(64);
 		if(t_set == nullptr) return Error::Fail;
 
 		CPU_ZERO_S(t_size, t_set);

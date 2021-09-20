@@ -292,7 +292,7 @@ namespace core
 				const uintptr_t pos1 = p_address.find(CharT{'.'}, pos2);
 				if(pos1 - pos2 > 3 || pos1 == pos2) return false;
 
-				from_chars_result<uint8_t> auxRet = from_chars<uint8_t>(p_address.substr(pos2, pos1 - pos2));
+				const from_chars_result<uint8_t> auxRet = from_chars<uint8_t>(p_address.substr(pos2, pos1 - pos2));
 				if(!auxRet.has_value()) return false;
 
 				p_out[i] = auxRet.value();
@@ -301,7 +301,7 @@ namespace core
 
 			if(size - pos2 > 3 || size == pos2) return false;
 
-			from_chars_result<uint8_t> auxRet = from_chars<uint8_t>(p_address.substr(pos2, size - pos2));
+			const from_chars_result<uint8_t> auxRet = from_chars<uint8_t>(p_address.substr(pos2, size - pos2));
 			if(!auxRet.has_value()) return false;
 			p_out[3] = auxRet.value();
 			return true;
@@ -310,7 +310,7 @@ namespace core
 		template<c_ipconv_char CharT>
 		bool from_chars_IPv6(std::basic_string_view<CharT> const p_address, std::span<uint16_t, 8> const p_out)
 		{
-			uintptr_t size = p_address.size();
+			const uintptr_t size = p_address.size();
 			if(size < 2 || size > 39) return false;
 
 			bool b_has_elide = false;

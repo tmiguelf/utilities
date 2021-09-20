@@ -39,7 +39,7 @@ static inline bool isLower		(const T p_char) { return (p_char >= 'a' && p_char <
 void toLowerCase(std::span<char8_t> const p_str)
 {
 	char8_t* pos = p_str.data();
-	char8_t* const end = pos + p_str.size();
+	const char8_t* const end = pos + p_str.size();
 	for(; pos < end; ++pos)
 	{
 		if(isUpper(*pos)) *pos += ('a' - 'A');
@@ -49,7 +49,7 @@ void toLowerCase(std::span<char8_t> const p_str)
 void toUpperCase(std::span<char8_t> const p_str)
 {
 	char8_t* pos = p_str.data();
-	char8_t* const end = pos + p_str.size();
+	const char8_t* const end = pos + p_str.size();
 	for(; pos < end; ++pos)
 	{
 		if(isLower(*pos)) *pos -= ('a' - 'A');
@@ -70,7 +70,7 @@ std::u8string toUpperCaseX(std::u8string_view const p_str)
 	return output;
 }
 
-bool compareNoCase(const char8_t* p_str1, const char8_t* p_str2, const size_t p_size)
+bool compareNoCase(const char8_t* p_str1, const char8_t* p_str2, const uintptr_t p_size)
 {
 	const char8_t* const end = p_str1 + p_size;
 	for(; p_str1 < end ; ++p_str1, ++p_str2)
@@ -93,9 +93,9 @@ bool compareNoCase(const char8_t* p_str1, const char8_t* p_str2, const size_t p_
 
 bool string_star_match(std::u8string_view const p_line, std::u8string_view const p_star)
 {
-	size_t pivotStar	= 0;
-	size_t pivotLine	= 0;
-	size_t pos			= 0;
+	uintptr_t pivotStar	= 0;
+	uintptr_t pivotLine	= 0;
+	uintptr_t pos		= 0;
 
 	std::u8string_view subString;
 

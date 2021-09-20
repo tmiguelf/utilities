@@ -385,7 +385,7 @@ public:
 //======== ======== Numeric ======== ========
 namespace _p
 {
-	template<size_t TSIZE, size_t TALIGN, bool TSIGNED>
+	template<uintptr_t TSIZE, uintptr_t TALIGN, bool TSIGNED>
 	struct toPrint_int_aliased_type;
 
 	template<> struct toPrint_int_aliased_type<sizeof(uint8_t ), alignof(uint8_t ), false> { using type = uint8_t ; };
@@ -401,7 +401,7 @@ namespace _p
 	using toPrint_int_aliased_t = toPrint_int_aliased_type<sizeof(T), alignof(T), std::is_signed_v<T>>::type;
 
 
-	template<size_t TSIZE, size_t TALIGN>
+	template<uintptr_t TSIZE, uintptr_t TALIGN>
 	struct toPrint_uint_clobber_type;
 
 	template<> struct toPrint_uint_clobber_type<sizeof(uint8_t ), alignof(uint8_t )> { using type = uint8_t ; };

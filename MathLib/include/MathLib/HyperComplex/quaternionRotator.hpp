@@ -71,17 +71,17 @@ public:
 		}
 	}
 
-	QuaternionRotator(const Vector3<T> p_vector, T p_rotation)
+	QuaternionRotator(const Vector3<T> p_vector, const T p_rotation)
 	{
-		T vx = p_vector[0];
-		T vy = p_vector[1];
-		T vz = p_vector[2];
-		T norm = std::hypot(vx, vy, vz);
+		const T vx = p_vector[0];
+		const T vy = p_vector[1];
+		const T vz = p_vector[2];
+		const T norm = std::hypot(vx, vy, vz);
 
 		if(norm >= 0.0)
 		{
-			T S = std::sin(p_rotation / T{2.0});
-			T C = std::cos(p_rotation / T{2.0});
+			const T S = std::sin(p_rotation / T{2.0});
+			const T C = std::cos(p_rotation / T{2.0});
 
 			m_identity = Quaternion<T>{C, (vx / norm) * S, (vy / norm) * S, (vz / norm) * S};
 		}
@@ -122,13 +122,13 @@ public:
 
 	Vector3<T> vector() const
 	{
-		T r = m_identity.r();
-		T i = m_identity.i();
-		T j = m_identity.j();
-		T k = m_identity.k();
+		const T r = m_identity.r();
+		const T i = m_identity.i();
+		const T j = m_identity.j();
+		const T k = m_identity.k();
 
-		T angle = std::acos(r) * T{2.0};
-		T norm  = std::sqrt(1 - r * r);
+		const T angle = std::acos(r) * T{2.0};
+		const T norm  = std::sqrt(1 - r * r);
 
 		if(norm == T{0.0})
 		{

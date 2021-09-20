@@ -733,7 +733,7 @@ static inline NET_Error Core_PeekSizeIPv6(const _p::SocketHandle_t p_sock, uintp
 	ioctl(p_sock, FIONREAD, &size);
 
 	p_size = size;
-	memcpy(&p_rawAddr, &addr_info6.sin6_addr, 16);
+	memcpy(p_rawAddr, &addr_info6.sin6_addr, 16);
 	p_port = core::endian_big2host(addr_info6.sin6_port);
 
 	return NET_Error::NoErr;

@@ -60,7 +60,7 @@ TEST(LinearAlgebra_Vector, MultiplicationByScalar)
 			{T1{3.0, -10.0, 4.0}, -80.0 , TR{-240.0 , 800.0, -320.0 }},
 		};
 
-	size_t testNum = 0;
+	uintptr_t testNum = 0;
 
 	for(const thisCase_t& testCase : TestCases)
 	{
@@ -87,7 +87,7 @@ TEST(LinearAlgebra_Vector, DivisionByScalar)
 			{T1{32.0, -10.0,  4.0}, -80.0 , TR{- 0.4 ,   0.125, - 0.05}},
 		};
 
-	size_t testNum = 0;
+	uintptr_t testNum = 0;
 
 	for(const thisCase_t& testCase : TestCases)
 	{
@@ -114,7 +114,7 @@ TEST(LinearAlgebra_Vector, Addition)
 			{T1{1.0, 2.0, 3.0}, T2{ 4.0,  5.0,  6.0}, TR{ 5.0,  7.0,  9.0}},
 		};
 
-	size_t testNum = 0;
+	uintptr_t testNum = 0;
 
 	for(const thisCase_t& testCase : TestCases)
 	{
@@ -141,7 +141,7 @@ TEST(LinearAlgebra_Vector, Subtraction)
 			{T1{1.0, 2.0, 3.0}, T2{-4.0, -5.0, -6.0}, TR{ 5.0,  7.0,  9.0}},
 		};
 
-	size_t testNum = 0;
+	uintptr_t testNum = 0;
 
 	for(const thisCase_t& testCase : TestCases)
 	{
@@ -168,7 +168,7 @@ TEST(LinearAlgebra_Vector, InternalProduct)
 			{T1{1.0, 3.0, 2.0}, T2{ 3.0,  2.0, -4.5},  0.0},
 		};
 
-	size_t testNum = 0;
+	uintptr_t testNum = 0;
 
 	for(const thisCase_t& testCase : TestCases)
 	{
@@ -194,7 +194,7 @@ TEST(LinearAlgebra_Vector, CrossProduct)
 			{T1{1.0, 2.0, 3.0}, T2{ 4.0,  5.0,  6.5}, TR{-2.0,  5.5, -3.0}},
 		};
 
-	size_t testNum = 0;
+	uintptr_t testNum = 0;
 
 	for(const thisCase_t& testCase : TestCases)
 	{
@@ -299,7 +299,7 @@ TEST(LinearAlgebra_Matrix, ScalarMultiplication)
 			{mat, -4.0, TR{{-4.0, -8.0, -12.0,	-16.0, -20.0, -24.0,	-28.0, -32.0, -36.0		}} },
 		};
 
-	size_t testNum = 0;
+	uintptr_t testNum = 0;
 
 	for(const thisCase_t& testCase : TestCases)
 	{
@@ -332,7 +332,7 @@ TEST(LinearAlgebra_Matrix, ScalarDivision)
 			{mat, -4.0, TR{{-0.25, -0.5, - 0.75,	- 1.0, - 1.25, - 1.5,	- 1.75, - 2.0, - 2.25	}} }
 		};
 
-	size_t testNum = 0;
+	uintptr_t testNum = 0;
 
 	for(const thisCase_t& testCase : TestCases)
 	{

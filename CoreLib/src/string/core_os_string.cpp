@@ -61,7 +61,7 @@ static uintptr_t requiredConversionSize(std::u32string_view const p_string)
 
 std::basic_string<os_char> to_os_natural_convert(std::u32string_view const p_string)
 {
-	uintptr_t reqSize = requiredConversionSize(p_string);
+	const uintptr_t reqSize = requiredConversionSize(p_string);
 	if(reqSize == 0) return {};
 
 	std::basic_string<os_char> buff;

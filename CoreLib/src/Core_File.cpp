@@ -72,10 +72,10 @@ namespace core
 
 		static inline void* os_open_read(const std::filesystem::path& p_path)
 		{
-			int fd0 = _wopen(p_path.native().c_str(), _O_RDONLY | fixed_flags);
+			const int fd0 = _wopen(p_path.native().c_str(), _O_RDONLY | fixed_flags);
 			if(fd0 >= 0)
 			{
-				FILE* fd = _wfdopen(fd0, L"rb");
+				FILE* const fd = _wfdopen(fd0, L"rb");
 				if(fd)
 				{
 					return fd;
@@ -109,7 +109,7 @@ namespace core
 
 			if(fd0 >= 0)
 			{
-				FILE* fd = _wfdopen(fd0, L"wb");
+				FILE* const fd = _wfdopen(fd0, L"wb");
 				if(fd)
 				{
 					return fd;
@@ -142,7 +142,7 @@ namespace core
 
 			if(fd0 >= 0)
 			{
-				FILE* fd = _wfdopen(fd0, L"r+b");
+				FILE* const fd = _wfdopen(fd0, L"r+b");
 				if(fd)
 				{
 					return fd;
@@ -241,10 +241,10 @@ namespace core
 		constexpr mode_t fixed_permissions = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
 		static inline void* os_open_read(const std::filesystem::path& p_path)
 		{
-			int fd0 = open64(p_path.native().c_str(), O_RDONLY | fixed_flags);
+			const int fd0 = open64(p_path.native().c_str(), O_RDONLY | fixed_flags);
 			if(fd0 >= 0)
 			{
-				FILE* fd = fdopen(fd0, "rb");
+				FILE* const fd = fdopen(fd0, "rb");
 				if(fd)
 				{
 					return fd;
@@ -278,7 +278,7 @@ namespace core
 
 			if(fd0 >= 0)
 			{
-				FILE* fd = fdopen(fd0, "wb");
+				FILE* const fd = fdopen(fd0, "wb");
 				if(fd)
 				{
 					return fd;
@@ -311,7 +311,7 @@ namespace core
 
 			if(fd0 >= 0)
 			{
-				FILE* fd = fdopen(fd0, "r+b");
+				FILE* const fd = fdopen(fd0, "r+b");
 				if(fd)
 				{
 					return fd;

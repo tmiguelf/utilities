@@ -153,15 +153,15 @@ namespace
 	///	\brief Used to pass the process handle and the file we are outputting to to the module enumeration call back.
 	struct enumerate2file_context
 	{
-		file_write*	m_file;	//!< Output file
-		HANDLE		m_proc;	//!< Process handle
+		const HANDLE	m_proc;	//!< Process handle
+		file_write*		m_file;	//!< Output file
 	};
 
 	///	\brief Used to pass the process handle and the list we are outputting to to the module enumeration call back.
 	struct enumerate2list_context
 	{
+		const HANDLE			m_proc;	//!< Process handle
 		std::list<ModuleAddr>*	m_list;	//!< output list
-		HANDLE					m_proc;	//!< Process handle
 	};
 
 	///	\brief Used to store the data for the module. The default structure is a prototype where
@@ -224,6 +224,7 @@ namespace
 		return t_flags;
 	}
 
+#if 0
 	/// \brief Auxiliary function used to print operating system version
 	static void PrintOS(file_write& p_file)
 	{
@@ -245,6 +246,7 @@ namespace
 			OUTPUT(p_file, "OS:          Windows\n"sv);
 		}
 	}
+#endif
 
 	/// \brief Auxiliary function used to print environment variables
 	static void PrintEnv(file_write& p_file)
@@ -264,7 +266,7 @@ namespace
 	}
 
 	/// \brief Auxiliary function used to enumerate modules and print onto file
-	static BOOL CALLBACK EnumerateModules2File(PCWSTR ModuleName, DWORD64 BaseOfDll, ULONG ModuleSize, PVOID UserContext)
+	static BOOL CALLBACK EnumerateModules2File(PCWSTR const ModuleName, const DWORD64 BaseOfDll, const ULONG ModuleSize, PVOID const UserContext)
 	{
 		OUTPUT(*(reinterpret_cast<enumerate2file_context*>(UserContext)->m_file),
 			"0x"sv, toPrint_hex_fix{BaseOfDll}, " 0x"sv, toPrint_hex_fix{BaseOfDll + ModuleSize},
@@ -274,10 +276,10 @@ namespace
 
 	/// \brief Auxiliary function used to enumerate modules onto list
 	//
-	static BOOL CALLBACK EnumerateModules2List(PCWSTR ModuleName, DWORD64 BaseOfDll, ULONG ModuleSize, PVOID UserContext)
+	static BOOL CALLBACK EnumerateModules2List(PCWSTR const ModuleName, const DWORD64 BaseOfDll, const ULONG ModuleSize, PVOID const UserContext)
 	{
 		ModuleAddr t_entry;
-		enumerate2list_context* t_context = reinterpret_cast<enumerate2list_context*>(UserContext);
+		enumerate2list_context* const t_context = reinterpret_cast<enumerate2list_context*>(UserContext);
 		
 		t_entry.m_addr = static_cast<uintptr_t>(BaseOfDll);
 		t_entry.m_size = static_cast<uintptr_t>(ModuleSize);
@@ -293,7 +295,7 @@ namespace
 	///	\warning Function names may not necessarily be correct. \n
 	///		Name is determined based on last know name prior to current address, which is not necessarily the same function as the one the address belongs to.
 	///		Use .map files to confirm names.
-	static void print_function_addr(HANDLE p_proc, DWORD64 p_address, file_write& p_file)
+	static void print_function_addr(HANDLE const p_proc, DWORD64 const p_address, file_write& p_file)
 	{
 		core_symb t_symb;
 		DWORD64 displacement = 0;
@@ -339,7 +341,7 @@ namespace
 	///	\warning Function names may not necessarily be correct. \n
 	///		Name is determined based on last know name prior to current address, which is not necessarily the same function as the one the address belongs to.
 	///		Use .map files to confirm names.
-	static void AppendStackAddr2List(HANDLE p_proc, uint64_t p_addr, std::list<StackBaseInfo>& p_list)
+	static void AppendStackAddr2List(HANDLE const p_proc, uint64_t const p_addr, std::list<StackBaseInfo>& p_list)
 	{
 		StackBaseInfo t_info;
 	
@@ -375,7 +377,7 @@ namespace
 	///	\warning Function names may not necessarily be correct. \n
 	///		Name is determined based on last know name prior to current address, which is not necessarily the same function as the one the address belongs to.
 	///		Use .map files to confirm names.
-	static void AppendStackAddr2List(HANDLE p_proc, uint64_t p_addr, std::list<StackInfo>& p_list)
+	static void AppendStackAddr2List(HANDLE const p_proc, const uint64_t p_addr, std::list<StackInfo>& p_list)
 	{
 		StackInfo t_info;
 	
@@ -415,7 +417,7 @@ namespace
 	///			- Number of open handles
 	///			- Environment variables
 	///	\note Windows version
-	static LONG WINAPI WIN_exception_handler(EXCEPTION_POINTERS * ExceptionInfo)
+	static LONG WINAPI WIN_exception_handler(EXCEPTION_POINTERS* const ExceptionInfo)
 	{
 		if(!g_straceOpt.m_output_file.empty())
 		{
@@ -460,9 +462,11 @@ namespace
 				DWORD thread_ID	= GetCurrentThreadId	();	// id of current thread
 
 				{
-					enumerate2file_context	t_enum_context;	// used to tell the callback function what file to write too, and also give them the process handle
-					t_enum_context.m_file = &o_file;
-					t_enum_context.m_proc = t_proc;
+					enumerate2file_context t_enum_context
+					{
+						.m_proc = t_proc,
+						.m_file = &o_file
+					};	// used to tell the callback function what file to write too, and also give them the process handle
 
 					//This function will call the function (Core_EnumerateModules2File) for each module (dll + application) that is loaded
 					//this will allow us to list all modules, and also help us make sense of all those address
@@ -542,9 +546,9 @@ namespace
 						OUTPUT(o_file, "CommandLine: "sv, os_string_view{temp_str}, '\n');
 					}
 				}
-
+#if 0
 				PrintOS(o_file);
-
+#endif
 				{
 					const std::optional<core::os_string>& res = machine_name();
 					if(res.has_value())
@@ -596,12 +600,13 @@ bool register_crash_trace(const std::filesystem::path& p_output_file)
 
 uint8_t list_modules(std::list<ModuleAddr>& p_list)
 {
-	enumerate2list_context t_enum_context;
-	HANDLE t_proc = GetCurrentProcess();
-
 	p_list.clear();
-	t_enum_context.m_proc = t_proc;
-	t_enum_context.m_list = &p_list;
+	HANDLE const t_proc = GetCurrentProcess();
+	enumerate2list_context t_enum_context
+	{
+		.m_proc = t_proc,
+		.m_list = &p_list
+	};
 	
 	return EnumerateLoadedModulesW64(t_proc, EnumerateModules2List, &t_enum_context) ? 0 : 1;
 }
@@ -609,15 +614,16 @@ uint8_t list_modules(std::list<ModuleAddr>& p_list)
 uint8_t stack_trace(StackTrace_FullInfo& p_trace)
 {
 	uint8_t ret;
-	HANDLE t_proc = GetCurrentProcess();
-	
-	enumerate2list_context t_enum_context;
+	HANDLE const t_proc = GetCurrentProcess();
 
 	p_trace.m_modules	.clear();
 	p_trace.m_stack		.clear();
 
-	t_enum_context.m_proc = t_proc;
-	t_enum_context.m_list = &p_trace.m_modules;
+	enumerate2list_context t_enum_context
+	{
+		.m_proc = t_proc,
+		.m_list = &p_trace.m_modules
+	};
 
 	ret = EnumerateLoadedModulesW64(t_proc, EnumerateModules2List, &t_enum_context) ? 0 : 1;;
 
@@ -647,7 +653,7 @@ uint8_t stack_trace(std::list<StackBaseInfo>& p_trace)
 
 	if(t_numReturned)
 	{
-		HANDLE t_proc = GetCurrentProcess();
+		HANDLE const t_proc = GetCurrentProcess();
 		SymSetOptions(SYMBOL_OPTIONS);
 		SymInitialize(t_proc, nullptr, TRUE);
 		for(USHORT i = 0; i < t_numReturned; ++i)
@@ -664,7 +670,7 @@ uint8_t stack_trace(std::list<StackInfo>& p_trace)
 {
 	void* t_trace[64];
 	p_trace.clear();
-	USHORT t_numReturned = RtlCaptureStackBackTrace(0, 64, t_trace, nullptr);
+	const USHORT t_numReturned = RtlCaptureStackBackTrace(0, 64, t_trace, nullptr);
 	if(t_numReturned)
 	{
 		HANDLE t_proc = GetCurrentProcess();
@@ -684,7 +690,7 @@ uint8_t stack_trace(std::list<uintptr_t>& p_trace)
 {
 	void* t_trace[64];
 	p_trace.clear();
-	USHORT t_numReturned = RtlCaptureStackBackTrace(0, 64, t_trace, nullptr);
+	const USHORT t_numReturned = RtlCaptureStackBackTrace(0, 64, t_trace, nullptr);
 	if(t_numReturned)
 	{
 		for(USHORT i = 0; i < t_numReturned; ++i)
@@ -698,14 +704,14 @@ uint8_t stack_trace(std::list<uintptr_t>& p_trace)
 
 uint8_t generate_minidump(const std::filesystem::path& p_file)
 {
-	HANDLE	t_proc	= GetCurrentProcess		();
-	DWORD	t_pId	= GetCurrentProcessId	();
-	HANDLE	t_file	= CreateFileW(p_file.c_str(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr,
+	HANDLE	const t_proc	= GetCurrentProcess		();
+	DWORD	const t_pId		= GetCurrentProcessId	();
+	HANDLE	const t_file	= CreateFileW(p_file.c_str(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr,
 						 CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 
 	if(t_file == INVALID_HANDLE_VALUE) return 1;
 
-	BOOL ret = MiniDumpWriteDump(t_proc, t_pId, t_file, GenerateMinidumpFlags(), nullptr, nullptr, nullptr);
+	const BOOL ret = MiniDumpWriteDump(t_proc, t_pId, t_file, GenerateMinidumpFlags(), nullptr, nullptr, nullptr);
 
 	CloseHandle(t_file);
 	return ret ? 0 : 2;
@@ -817,7 +823,7 @@ namespace
 	///			- the application address (which is different from the application base address)
 	///			- the next free address where modules can be loaded
 	///		however I'm not sure, this is not documented, take this information with a grain of salt.
-	static int EnumerateModules2List(struct dl_phdr_info *p_info, size_t /*p_size*/, void *p_context)
+	static int EnumerateModules2List(struct dl_phdr_info *const  p_info, size_t const /*p_size*/, void* const p_context)
 	{
 		ModuleAddr t_entry;
 		std::list<ModuleAddr>* t_list = reinterpret_cast<std::list<ModuleAddr>*>(p_context);
@@ -836,7 +842,7 @@ namespace
 	///			- the application address (which is different from the application base address)
 	///			- the next free address where modules can be loaded
 	///		however I'm not sure, this is not documented, take this information with a grain of salt.
-	static int EnumerateModules2File(struct dl_phdr_info *p_info, size_t /*p_size*/, void *p_context)
+	static int EnumerateModules2File(struct dl_phdr_info* const p_info, size_t const /*p_size*/, void* const p_context)
 	{
 		//missing BaseOfDll + ModuleSize);
 		OUTPUT(*reinterpret_cast<file_write*>(p_context),
@@ -850,7 +856,7 @@ namespace
 	///	\warning Function names may not necessarily be correct. \n
 	///		Name is determined based on last know name prior to current address, which is not necessarily the same function as the one the address belongs to.
 	///		Use .map files to confirm names.
-	static void print_function_addr(void* p_address, char* p_name, file_write& p_file)
+	static void print_function_addr(void* const p_address, char* const p_name, file_write& p_file)
 	{
 		Dl_info t_info;
 		//this function gets additional information about the address
@@ -889,7 +895,7 @@ namespace
 	///			- Machine name
 	///			- Environment variables
 	///	\note Linux version
-	static void Linux_exception_handler(int sig, siginfo_t *siginfo, void *context)
+	static void Linux_exception_handler(const int sig, siginfo_t* const siginfo, void* const context)
 	{
 		static bool b_has_sig = false;
 		//because of the way the signal mechanism works, for example signals can be raised while processing signals

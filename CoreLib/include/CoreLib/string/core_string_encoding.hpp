@@ -414,7 +414,7 @@ namespace core
 	///	\note		Agnostic to null termination.
 	[[nodiscard]] bool ASCII_Compliant(std::u8string_view p_str);
 
-	///	\brief	Same as \ref core::ASCII_Compliant(const char8_t*, size_t), but for char32_t.
+	///	\brief	Same as \ref core::ASCII_Compliant(const char8_t*, uintptr_t), but for char32_t.
 	[[nodiscard]] bool ASCII_Compliant(std::u32string_view p_str);
 
 }	//namespace core

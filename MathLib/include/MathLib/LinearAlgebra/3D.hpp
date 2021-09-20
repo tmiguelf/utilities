@@ -44,7 +44,7 @@ public:
 	using container_t = std::array<T, 3>;
 
 public:
-	[[nodiscard]] inline static constexpr size_t size() { return 3; }
+	[[nodiscard]] inline static constexpr uintptr_t size() { return 3; }
 
 	using container_t::operator [];
 
@@ -78,7 +78,7 @@ public:
 	}
 
 	template <_p::is_arithmetic O_T>
-	inline this_t& operator *= (O_T p_scalar)
+	inline this_t& operator *= (const O_T p_scalar)
 	{
 		(*this)[0] *= p_scalar;
 		(*this)[1] *= p_scalar;
@@ -87,7 +87,7 @@ public:
 	}
 
 	template <_p::is_arithmetic O_T>
-	inline this_t& operator /= (O_T p_scalar)
+	inline this_t& operator /= (const O_T p_scalar)
 	{
 		(*this)[0] /= p_scalar;
 		(*this)[1] /= p_scalar;
@@ -115,13 +115,13 @@ public:
 	}
 
 	template <_p::is_arithmetic O_T>
-	[[nodiscard]] inline constexpr this_t operator * (O_T p_scalar) const
+	[[nodiscard]] inline constexpr this_t operator * (const O_T p_scalar) const
 	{
 		return this_t{*this} *= p_scalar;
 	}
 
 	template <_p::is_arithmetic O_T>
-	[[nodiscard]] inline constexpr this_t operator / (O_T p_scalar) const
+	[[nodiscard]] inline constexpr this_t operator / (const O_T p_scalar) const
 	{
 		return this_t{*this} /= p_scalar;
 	}
@@ -150,7 +150,7 @@ public:
 };
 
 template <_p::is_arithmetic T1, _p::is_non_const_arithmetic T2>
-[[nodiscard]] Vector3<T2> operator * (T1 p_1, const Vector3<T2>& p_2)
+[[nodiscard]] Vector3<T2> operator * (const T1 p_1, const Vector3<T2>& p_2)
 {
 	return p_2 * p_1;
 }
@@ -197,7 +197,7 @@ public:
 		return memcmp(this, &p_other, sizeof(this_t)) != 0;
 	}
 
-	void set(size_t p_pos1, size_t p_pos2, T p_newvalue)
+	void set(const uintptr_t p_pos1, const uintptr_t p_pos2, const T p_newvalue)
 	{
 		_M[p_pos1][p_pos2] = p_newvalue;
 	}
@@ -217,29 +217,29 @@ public:
 		_M[2][2] = p_data[2][2];
 	}
 
-	inline T* operator [] (size_t p_pos)
+	inline T* operator [] (const uintptr_t p_pos)
 	{
 		return _M[p_pos];
 	}
 
-	inline const T* operator [] (size_t p_pos) const
+	inline const T* operator [] (const uintptr_t p_pos) const
 	{
 		return _M[p_pos];
 	}
 
-	[[nodiscard]] inline T& get(size_t p_pos1, size_t p_pos2)
+	[[nodiscard]] inline T& get(const uintptr_t p_pos1, const uintptr_t p_pos2)
 	{
 		return _M[p_pos1][p_pos2];
 	}
 
-	[[nodiscard]] inline constexpr T get(size_t p_pos1, size_t p_pos2) const
+	[[nodiscard]] inline constexpr T get(const uintptr_t p_pos1, const uintptr_t p_pos2) const
 	{
 		return _M[p_pos1][p_pos2];
 	}
 
-	static constexpr std::pair<size_t, size_t> size() { return std::pair<size_t, size_t>(3, 3); }
-	static constexpr size_t size1() { return 3; }
-	static constexpr size_t size2() { return 3; }
+	static constexpr std::pair<uintptr_t, uintptr_t> size() { return std::pair<uintptr_t, uintptr_t>(3, 3); }
+	static constexpr uintptr_t size1() { return 3; }
+	static constexpr uintptr_t size2() { return 3; }
 
 	this_t& operator += (const this_t& p_other)
 	{
@@ -270,7 +270,7 @@ public:
 	}
 
 	template <_p::is_arithmetic O_T>
-	constexpr this_t& operator *= (O_T p_scalar)
+	constexpr this_t& operator *= (const O_T p_scalar)
 	{
 		_M[0][0] *= p_scalar;
 		_M[0][1] *= p_scalar;
@@ -286,7 +286,7 @@ public:
 	}
 
 	template <_p::is_arithmetic O_T>
-	constexpr this_t& operator /= (O_T p_scalar)
+	constexpr this_t& operator /= (const O_T p_scalar)
 	{
 		_M[0][0] /= p_scalar;
 		_M[0][1] /= p_scalar;
@@ -311,13 +311,13 @@ public:
 	}
 
 	template <_p::is_arithmetic O_T>
-	[[nodiscard]] inline constexpr this_t operator * (O_T p_scalar) const
+	[[nodiscard]] inline constexpr this_t operator * (const O_T p_scalar) const
 	{
 		return this_t{*this} *= p_scalar;
 	}
 
 	template <_p::is_arithmetic O_T>
-	[[nodiscard]] inline constexpr this_t operator / (O_T p_scalar) const
+	[[nodiscard]] inline constexpr this_t operator / (const O_T p_scalar) const
 	{
 		return this_t{*this} /= p_scalar;
 	}
@@ -382,7 +382,7 @@ public:
 };
 
 template <_p::is_arithmetic T1, _p::is_non_const_arithmetic T2>
-[[nodiscard]] Matrix3<T2> operator * (T1 p_1, const Matrix3<T2>& p_2)
+[[nodiscard]] Matrix3<T2> operator * (const T1 p_1, const Matrix3<T2>& p_2)
 {
 	return p_2 * p_1;
 }

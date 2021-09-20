@@ -519,7 +519,7 @@ namespace core
 		static inline uintptr_t fp2dec(const Fp_t p_val, std::span<char8_t, to_chars_dec_max_digits_v<Fp_t>> const p_out)
 		{
 			char* const start = reinterpret_cast<char*>(p_out.data());
-			std::to_chars_result res = std::to_chars(start, start + p_out.size(), p_val);
+			const std::to_chars_result res = std::to_chars(start, start + p_out.size(), p_val);
 
 			if(res.ec == std::errc{})
 			{
