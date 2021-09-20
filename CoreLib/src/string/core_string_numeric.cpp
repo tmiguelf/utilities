@@ -66,7 +66,7 @@ namespace core
 	{
 		///	\brief	Converts a base 10 encoded string to unsigned integer.
 		template <typename uint_T, typename char_T>
-		[[nodiscard]] static inline from_chars_result<uint_T> dec2uint(std::basic_string_view<char_T> p_str)
+		[[nodiscard]] static inline from_chars_result<uint_T> dec2uint(std::basic_string_view<char_T> const p_str)
 		{
 			if(p_str.empty())
 			{
@@ -74,7 +74,7 @@ namespace core
 			}
 
 			uint_T r_val = 0;
-			for(char_T tchar: p_str)
+			for(const char_T tchar: p_str)
 			{
 				if(!is_digit(tchar))
 				{
@@ -98,9 +98,9 @@ namespace core
 
 		///	\brief		Converts a base 10 encoded string to signed integer.
 		template <typename int_T, typename char_T>
-		[[nodiscard]] static inline from_chars_result<int_T> dec2int(std::basic_string_view<char_T> p_str)
+		[[nodiscard]] static inline from_chars_result<int_T> dec2int(std::basic_string_view<char_T> const p_str)
 		{
-			uintptr_t size = p_str.size();
+			const uintptr_t size = p_str.size();
 			if(size == 0)
 			{
 				return std::errc::invalid_argument;
@@ -175,7 +175,7 @@ namespace core
 
 		///	\brief		Converts a base 16 encoded string to unsigned integer.
 		template <typename uint_T, typename char_T>
-		[[nodiscard]] static inline from_chars_result<uint_T> hex2uint(std::basic_string_view<char_T> p_str)
+		[[nodiscard]] static inline from_chars_result<uint_T> hex2uint(std::basic_string_view<char_T> const p_str)
 		{
 			if(p_str.empty())
 			{
@@ -214,7 +214,7 @@ namespace core
 
 
 		template<typename fp_T>
-		[[nodiscard]] static inline from_chars_result<fp_T> dec2fp(std::basic_string_view<char8_t> p_str)
+		[[nodiscard]] static inline from_chars_result<fp_T> dec2fp(std::basic_string_view<char8_t> const p_str)
 		{
 			if(p_str.empty())
 			{
@@ -241,7 +241,7 @@ namespace core
 		}
 
 		template<typename fp_T, _p::is_supported_charconv_c char_T>
-		[[nodiscard]] static from_chars_result<fp_T> dec2fp(std::basic_string_view<char_T> p_str)
+		[[nodiscard]] static from_chars_result<fp_T> dec2fp(std::basic_string_view<char_T> const p_str)
 		{
 			const uintptr_t tsize = p_str.size();
 			if(tsize > 126) return std::errc::no_buffer_space; //large enough to not make any sense
@@ -267,7 +267,7 @@ namespace core
 		[[nodiscard]] static constexpr uintptr_t uint2dec_estimate(num_T);
 
 		template <>
-		[[nodiscard]] inline constexpr uintptr_t uint2dec_estimate<uint8_t>(uint8_t p_val)
+		[[nodiscard]] inline constexpr uintptr_t uint2dec_estimate<uint8_t>(uint8_t const p_val)
 		{
 			if(p_val <  10_ui8) return 1;
 			if(p_val < 100_ui8) return 2;
@@ -275,7 +275,7 @@ namespace core
 		}
 
 		template <>
-		[[nodiscard]] inline constexpr uintptr_t uint2dec_estimate<uint16_t>(uint16_t p_val)
+		[[nodiscard]] inline constexpr uintptr_t uint2dec_estimate<uint16_t>(uint16_t const p_val)
 		{
 			if(p_val <    10_ui16) return 1;
 			if(p_val <   100_ui16) return 2;
@@ -285,7 +285,7 @@ namespace core
 		}
 
 		template <>
-		[[nodiscard]] inline constexpr uintptr_t uint2dec_estimate<uint32_t>(uint32_t p_val)
+		[[nodiscard]] inline constexpr uintptr_t uint2dec_estimate<uint32_t>(uint32_t const p_val)
 		{
 			if(p_val <         10_ui32) return 1;
 			if(p_val <        100_ui32) return 2;
@@ -300,7 +300,7 @@ namespace core
 		}
 
 		template <>
-		[[nodiscard]] inline constexpr uintptr_t uint2dec_estimate<uint64_t>(uint64_t p_val)
+		[[nodiscard]] inline constexpr uintptr_t uint2dec_estimate<uint64_t>(uint64_t const p_val)
 		{
 			if(p_val <                   10_ui64) return  1;
 			if(p_val <                  100_ui64) return  2;
@@ -325,7 +325,7 @@ namespace core
 		}
 
 		template <typename num_T>
-		[[nodiscard]] inline constexpr uintptr_t int2dec_estimate(num_T p_val)
+		[[nodiscard]] inline constexpr uintptr_t int2dec_estimate(num_T const p_val)
 		{
 			using unsigned_t = std::make_unsigned_t<num_T>;
 
@@ -337,7 +337,7 @@ namespace core
 		}
 
 		template<typename Fp_t>
-		[[nodiscard]] static inline uintptr_t fp2dec_estimate(Fp_t p_val)
+		[[nodiscard]] static inline uintptr_t fp2dec_estimate(Fp_t const p_val)
 		{
 			std::array<char, to_chars_dec_max_digits_v<Fp_t>> buff;
 			char* const start = reinterpret_cast<char*>(buff.data());
@@ -350,7 +350,7 @@ namespace core
 		}
 
 		template <typename num_T>
-		[[nodiscard]] static inline constexpr uintptr_t uint2hex_estimate(num_T p_val)
+		[[nodiscard]] static inline constexpr uintptr_t uint2hex_estimate(num_T const p_val)
 		{
 			if(p_val)
 			{
@@ -362,13 +362,13 @@ namespace core
 		}
 
 		static constexpr std::array x2NibTable = {u8'0', u8'1', u8'2', u8'3', u8'4', u8'5', u8'6', u8'7', u8'8', u8'9', u8'A', u8'B', u8'C', u8'D', u8'E', u8'F'};
-		[[nodiscard]] static inline constexpr char8_t Hex2Nible(uintptr_t p_val)
+		[[nodiscard]] static inline constexpr char8_t Hex2Nible(uintptr_t const p_val)
 		{
 			return x2NibTable[p_val & 0x0F];
 		}
 
 		template <typename char_T, typename num_T>
-		[[nodiscard]] static inline uintptr_t uint2dec(num_T p_val, std::span<char_T, to_chars_dec_max_digits_v<num_T>> p_str)
+		[[nodiscard]] static inline uintptr_t uint2dec(num_T p_val, std::span<char_T, to_chars_dec_max_digits_v<num_T>> const p_str)
 		{
 			const uintptr_t size = uint2dec_estimate(p_val);
 			char_T* pivot = p_str.data() + size;
@@ -382,7 +382,7 @@ namespace core
 		}
 
 		template <typename char_T, typename num_T>
-		static inline void uint2dec_unsafe(num_T p_val, char_T* p_str)
+		static inline void uint2dec_unsafe(num_T p_val, char_T* const p_str)
 		{
 			const uintptr_t size = uint2dec_estimate(p_val);
 			char_T* pivot = p_str + size;
@@ -395,7 +395,7 @@ namespace core
 		}
 
 		template <typename char_T, typename num_T>
-		[[nodiscard]] static inline uintptr_t int2dec(num_T p_val, std::span<char_T, to_chars_dec_max_digits_v<num_T>> p_str)
+		[[nodiscard]] static inline uintptr_t int2dec(const num_T p_val, std::span<char_T, to_chars_dec_max_digits_v<num_T>> const p_str)
 		{
 			using unsigned_t = std::make_unsigned_t<num_T>;
 			constexpr uintptr_t usize = to_chars_dec_max_digits_v<unsigned_t>;
@@ -424,7 +424,7 @@ namespace core
 
 
 		template <typename char_T, typename num_T>
-		[[nodiscard]] static inline uintptr_t uint2hex(num_T p_val, std::span<char_T, to_chars_hex_max_digits_v<num_T>> p_str)
+		[[nodiscard]] static inline uintptr_t uint2hex(const num_T p_val, std::span<char_T, to_chars_hex_max_digits_v<num_T>> const p_str)
 		{
 			if(!p_val)
 			{
@@ -447,7 +447,7 @@ namespace core
 
 
 		template <typename char_T, typename num_T>
-		static inline void uint2hex_unsafe(num_T p_val, char_T* p_str)
+		static inline void uint2hex_unsafe(const num_T p_val, char_T* p_str)
 		{
 			uint8_t index;
 			if(p_val)
@@ -466,14 +466,14 @@ namespace core
 		}
 
 		template <typename T>
-		static inline void uint2hex_fix(uint8_t p_val, T* p_str)
+		static inline void uint2hex_fix(const uint8_t p_val, T* p_str)
 		{
 			*p_str   = _p::Hex2Nible(p_val >> 4);
 			*++p_str = _p::Hex2Nible(p_val);
 		}
 
 		template <typename T>
-		static inline void uint2hex_fix(uint16_t p_val, T* p_str)
+		static inline void uint2hex_fix(const uint16_t p_val, T* p_str)
 		{
 			*p_str   = _p::Hex2Nible(p_val >> 12);
 			*++p_str = _p::Hex2Nible(p_val >> 8);
@@ -482,7 +482,7 @@ namespace core
 		}
 
 		template <typename T>
-		static inline void uint2hex_fix(uint32_t p_val, T* p_str)
+		static inline void uint2hex_fix(const uint32_t p_val, T* p_str)
 		{
 			*p_str   = _p::Hex2Nible(p_val >> 28);
 			*++p_str = _p::Hex2Nible(p_val >> 24);
@@ -495,7 +495,7 @@ namespace core
 		}
 
 		template <typename T>
-		static inline void uint2hex_fix(uint64_t p_val, T* p_str)
+		static inline void uint2hex_fix(const uint64_t p_val, T* p_str)
 		{
 			*p_str   = _p::Hex2Nible(p_val >> 60);
 			*++p_str = _p::Hex2Nible(p_val >> 56);
@@ -516,10 +516,10 @@ namespace core
 		}
 
 		template<typename Fp_t>
-		static inline uintptr_t fp2dec(Fp_t p_val, std::span<char8_t, to_chars_dec_max_digits_v<Fp_t>> p_out)
+		static inline uintptr_t fp2dec(const Fp_t p_val, std::span<char8_t, to_chars_dec_max_digits_v<Fp_t>> const p_out)
 		{
 			char* const start = reinterpret_cast<char*>(p_out.data());
-			std::to_chars_result res = std::to_chars(start, start + p_out.size(), p_val);
+			const std::to_chars_result res = std::to_chars(start, start + p_out.size(), p_val);
 
 			if(res.ec == std::errc{})
 			{
@@ -529,7 +529,7 @@ namespace core
 		}
 
 		template<typename char_T, typename Fp_t>
-		static inline uintptr_t fp2dec(Fp_t p_val, std::span<char_T, to_chars_dec_max_digits_v<Fp_t>> p_out)
+		static inline uintptr_t fp2dec(const Fp_t p_val, std::span<char_T, to_chars_dec_max_digits_v<Fp_t>> const p_out)
 		{
 			std::array<char8_t, to_chars_dec_max_digits_v<Fp_t>> buff;
 			const uintptr_t ret = fp2dec<Fp_t>(p_val, buff);
@@ -541,7 +541,7 @@ namespace core
 		}
 
 		template<typename Fp_t>
-		static inline void fp2dec_unsafe(Fp_t p_val, char8_t* p_out)
+		static inline void fp2dec_unsafe(const Fp_t p_val, char8_t* const p_out)
 		{
 			constexpr uintptr_t size = to_chars_dec_max_digits_v<Fp_t>;
 			char* const start = reinterpret_cast<char*>(p_out);
@@ -549,7 +549,7 @@ namespace core
 		}
 
 		template<typename char_T, typename Fp_t>
-		static inline void fp2dec_unsafe(Fp_t p_val, char_T* p_out)
+		static inline void fp2dec_unsafe(const Fp_t p_val, char_T* p_out)
 		{
 			std::array<char8_t, to_chars_dec_max_digits_v<Fp_t>> buff;
 			const uintptr_t ret = fp2dec<Fp_t>(p_val, buff);
@@ -569,24 +569,24 @@ namespace core
 			struct help_char_conv<num_T>
 			{
 				template<typename char_T>
-				[[nodiscard]] static inline from_chars_result<num_T> from_chars(std::basic_string_view<char_T> p_str)
+				[[nodiscard]] static inline from_chars_result<num_T> from_chars(std::basic_string_view<char_T> const p_str)
 				{
 					return dec2fp<num_T>(p_str);
 				}
 
 				template<typename char_T>
-				static inline uintptr_t to_chars(num_T p_val, std::span<char_T, to_chars_dec_max_digits_v<num_T>> p_str)
+				static inline uintptr_t to_chars(const num_T p_val, std::span<char_T, to_chars_dec_max_digits_v<num_T>> const p_str)
 				{
 					return fp2dec(p_val, p_str);
 				}
 
-				static inline uintptr_t estimate(num_T p_val)
+				static inline uintptr_t estimate(const num_T p_val)
 				{
 					return fp2dec_estimate(p_val);
 				}
 
 				template<typename char_T>
-				static inline void to_chars_unsafe(num_T p_val, char_T* p_str)
+				static inline void to_chars_unsafe(const num_T p_val, char_T* const p_str)
 				{
 					return fp2dec_unsafe(p_val, p_str);
 				}
@@ -596,24 +596,24 @@ namespace core
 			struct help_char_conv<num_T>
 			{
 				template<typename char_T>
-				[[nodiscard]] static inline from_chars_result<num_T> from_chars(std::basic_string_view<char_T> p_str)
+				[[nodiscard]] static inline from_chars_result<num_T> from_chars(std::basic_string_view<char_T> const p_str)
 				{
 					return dec2int<num_T>(p_str);
 				}
 
 				template<typename char_T>
-				static inline uintptr_t to_chars(num_T p_val, std::span<char_T, to_chars_dec_max_digits_v<num_T>> p_str)
+				static inline uintptr_t to_chars(const num_T p_val, std::span<char_T, to_chars_dec_max_digits_v<num_T>> const p_str)
 				{
 					return int2dec(p_val, p_str);
 				}
 
-				static inline uintptr_t estimate(num_T p_val)
+				static inline uintptr_t estimate(const num_T p_val)
 				{
 					return int2dec_estimate(p_val);
 				}
 
 				template<typename char_T>
-				static inline void to_chars_unsafe(num_T p_val, char_T* p_str)
+				static inline void to_chars_unsafe(const num_T p_val, char_T* const p_str)
 				{
 					return int2dec_unsafe(p_val, p_str);
 				}
@@ -623,24 +623,24 @@ namespace core
 			struct help_char_conv<num_T>
 			{
 				template<typename char_T>
-				[[nodiscard]] static inline from_chars_result<num_T> from_chars(std::basic_string_view<char_T> p_str)
+				[[nodiscard]] static inline from_chars_result<num_T> from_chars(std::basic_string_view<char_T> const p_str)
 				{
 					return dec2uint<num_T>(p_str);
 				}
 
 				template<typename char_T>
-				static inline uintptr_t to_chars(num_T p_val, std::span<char_T, to_chars_dec_max_digits_v<num_T>> p_str)
+				static inline uintptr_t to_chars(const num_T p_val, std::span<char_T, to_chars_dec_max_digits_v<num_T>> const p_str)
 				{
 					return uint2dec(p_val, p_str);
 				}
 
-				static inline uintptr_t estimate(num_T p_val)
+				static inline uintptr_t estimate(const num_T p_val)
 				{
 					return uint2dec_estimate(p_val);
 				}
 
 				template<typename char_T>
-				static inline void to_chars_unsafe(num_T p_val, char_T* p_str)
+				static inline void to_chars_unsafe(const num_T p_val, char_T* const p_str)
 				{
 					return uint2dec_unsafe(p_val, p_str);
 				}
@@ -654,7 +654,7 @@ namespace core
 	namespace _p
 	{
 		template <_p::is_internal_charconv_c T>
-		[[nodiscard]] bool is_uint(std::basic_string_view<T> p_str)
+		[[nodiscard]] bool is_uint(std::basic_string_view<T> const p_str)
 		{
 			if(p_str.size() == 0) return false;
 			for(T tchar : p_str)
@@ -665,7 +665,7 @@ namespace core
 		}
 
 		template <_p::is_internal_charconv_c T>
-		[[nodiscard]] bool is_int(std::basic_string_view<T> p_str)
+		[[nodiscard]] bool is_int(std::basic_string_view<T> const p_str)
 		{
 			if(p_str.size() == 0) return false;
 			if((p_str[0] == '-') || (p_str[0] == '+'))
@@ -676,7 +676,7 @@ namespace core
 		}
 
 		template <_p::is_internal_charconv_c T>
-		[[nodiscard]] bool is_hex(std::basic_string_view<T> p_str)
+		[[nodiscard]] bool is_hex(std::basic_string_view<T> const p_str)
 		{
 			if(p_str.size() == 0) return false;
 			for(T tchar : p_str)
@@ -687,61 +687,61 @@ namespace core
 		}
 
 		template<char_conv_dec_supported_c num_T, _p::is_internal_charconv_c char_T>
-		[[nodiscard]] from_chars_result<num_T> from_chars(std::basic_string_view<char_T> p_str)
+		[[nodiscard]] from_chars_result<num_T> from_chars(std::basic_string_view<char_T> const p_str)
 		{
 			return _p::help_char_conv<num_T>::from_chars(p_str);
 		}
 
 		template<char_conv_hex_supported_c num_T, _p::is_internal_charconv_c char_T>
-		[[nodiscard]] from_chars_result<num_T> from_chars_hex(std::basic_string_view<char_T> p_str)
+		[[nodiscard]] from_chars_result<num_T> from_chars_hex(std::basic_string_view<char_T> const p_str)
 		{
 			return _p::hex2uint<num_T>(p_str);
 		}
 
 		template <char_conv_dec_supported_c num_T>
-		[[nodiscard]] uintptr_t to_chars_estimate(num_T p_val)
+		[[nodiscard]] uintptr_t to_chars_estimate(const num_T p_val)
 		{
 			return help_char_conv<num_T>::estimate(p_val);
 		}
 
 		template <_p::is_internal_charconv_c char_T, char_conv_dec_supported_c num_T>
-		[[nodiscard]] uintptr_t to_chars(num_T p_val, std::span<char_T, to_chars_dec_max_digits_v<num_T>> p_str)
+		[[nodiscard]] uintptr_t to_chars(const num_T p_val, std::span<char_T, to_chars_dec_max_digits_v<num_T>> const p_str)
 		{
 			return _p::help_char_conv<num_T>::to_chars(p_val, p_str);
 		}
 
 		template <_p::is_internal_charconv_c char_T, char_conv_dec_supported_c num_T>
-		void to_chars_unsafe(num_T p_val, char_T* p_str)
+		void to_chars_unsafe(const num_T p_val, char_T* const p_str)
 		{
 			return _p::help_char_conv<num_T>::to_chars_unsafe(p_val, p_str);
 		}
 
 		template <char_conv_hex_supported_c num_T>
-		[[nodiscard]] uintptr_t to_chars_hex_estimate(num_T p_val)
+		[[nodiscard]] uintptr_t to_chars_hex_estimate(const num_T p_val)
 		{
 			return _p::uint2hex_estimate(p_val);
 		}
 
 		template <_p::is_internal_charconv_c char_T, char_conv_hex_supported_c num_T>
-		[[nodiscard]] uintptr_t to_chars_hex(num_T p_val, std::span<char_T, to_chars_hex_max_digits_v<num_T>> p_str)
+		[[nodiscard]] uintptr_t to_chars_hex(const num_T p_val, std::span<char_T, to_chars_hex_max_digits_v<num_T>> const p_str)
 		{
 			return _p::uint2hex(p_val, p_str);
 		}
 
 		template <_p::is_internal_charconv_c char_T, char_conv_hex_supported_c num_T>
-		void to_chars_hex_unsafe(num_T p_val, char_T* p_str)
+		void to_chars_hex_unsafe(const num_T p_val, char_T* const p_str)
 		{
 			_p::uint2hex_unsafe(p_val, p_str);
 		}
 
 		template <_p::is_internal_charconv_c char_T, char_conv_hex_supported_c num_T>
-		void to_chars_hex_fix(num_T p_val, std::span<char_T, to_chars_hex_max_digits_v<num_T>> p_str)
+		void to_chars_hex_fix(const num_T p_val, std::span<char_T, to_chars_hex_max_digits_v<num_T>> const p_str)
 		{
 			_p::uint2hex_fix(p_val, p_str.data());
 		}
 
 		template <_p::is_internal_charconv_c char_T, char_conv_hex_supported_c num_T>
-		void to_chars_hex_fix_unsafe(num_T p_val, char_T* p_str)
+		void to_chars_hex_fix_unsafe(const num_T p_val, char_T* const p_str)
 		{
 			_p::uint2hex_fix(p_val, p_str);
 		}

@@ -33,7 +33,7 @@ namespace core
 
 	namespace _p
 	{
-		[[nodiscard]] uintptr_t to_chars_IPv4_estimate(std::span<const uint8_t, 4> p_raw)
+		[[nodiscard]] uintptr_t to_chars_IPv4_estimate(std::span<const uint8_t, 4> const p_raw)
 		{
 			return
 				to_chars_estimate(p_raw[0]) +
@@ -43,7 +43,7 @@ namespace core
 		}
 
 		template<c_ipconv_char CharT>
-		void to_chars_IPv4_unsafe(std::span<const uint8_t, 4> p_raw, CharT* p_out)
+		void to_chars_IPv4_unsafe(std::span<const uint8_t, 4> const p_raw, CharT* p_out)
 		{
 			p_out += core::to_chars(p_raw[0], std::span<CharT, 3>{p_out, 3});
 			*(p_out++) = '.';
@@ -55,7 +55,7 @@ namespace core
 		}
 
 		template<c_ipconv_char CharT>
-		uintptr_t to_chars_IPv4(std::span<const uint8_t, 4> p_raw, std::span<CharT, 15> p_output)
+		uintptr_t to_chars_IPv4(std::span<const uint8_t, 4> const p_raw, std::span<CharT, 15> const p_output)
 		{
 			CharT* pivot = p_output.data();
 			pivot += core::to_chars(p_raw[0], std::span<CharT, 3>{pivot, 3});
@@ -69,7 +69,7 @@ namespace core
 		}
 
 		template<c_ipconv_char CharT>
-		uintptr_t to_chars_IPv6_estimate(std::span<const uint16_t, 8> p_raw)
+		uintptr_t to_chars_IPv6_estimate(std::span<const uint16_t, 8> const p_raw)
 		{
 			uint8_t size_elide = 0;
 			uint8_t pos_elide = 0;
@@ -140,7 +140,7 @@ namespace core
 		}
 
 		template<c_ipconv_char CharT>
-		void to_chars_IPv6_unsafe(std::span<const uint16_t, 8> p_raw, CharT* p_out)
+		void to_chars_IPv6_unsafe(std::span<const uint16_t, 8> const p_raw, CharT* p_out)
 		{
 			uint8_t size_elide = 0;
 			uint8_t pos_elide = 0;
@@ -207,7 +207,7 @@ namespace core
 		}
 
 		template<c_ipconv_char CharT>
-		uintptr_t to_chars_IPv6(std::span<const uint16_t, 8> p_raw, std::span<CharT, 39> p_out)
+		uintptr_t to_chars_IPv6(std::span<const uint16_t, 8> const p_raw, std::span<CharT, 39> const p_out)
 		{
 			uint8_t size_elide = 0;
 			uint8_t pos_elide = 0;
@@ -277,7 +277,7 @@ namespace core
 
 
 		template<c_ipconv_char CharT>
-		bool from_chars_IPv4(std::basic_string_view<CharT> p_address, std::span<uint8_t, 4> p_out)
+		bool from_chars_IPv4(std::basic_string_view<CharT> const p_address, std::span<uint8_t, 4> const p_out)
 		{
 			const uintptr_t size = p_address.size();
 
@@ -292,7 +292,7 @@ namespace core
 				const uintptr_t pos1 = p_address.find(CharT{'.'}, pos2);
 				if(pos1 - pos2 > 3 || pos1 == pos2) return false;
 
-				from_chars_result<uint8_t> auxRet = from_chars<uint8_t>(p_address.substr(pos2, pos1 - pos2));
+				const from_chars_result<uint8_t> auxRet = from_chars<uint8_t>(p_address.substr(pos2, pos1 - pos2));
 				if(!auxRet.has_value()) return false;
 
 				p_out[i] = auxRet.value();
@@ -301,16 +301,16 @@ namespace core
 
 			if(size - pos2 > 3 || size == pos2) return false;
 
-			from_chars_result<uint8_t> auxRet = from_chars<uint8_t>(p_address.substr(pos2, size - pos2));
+			const from_chars_result<uint8_t> auxRet = from_chars<uint8_t>(p_address.substr(pos2, size - pos2));
 			if(!auxRet.has_value()) return false;
 			p_out[3] = auxRet.value();
 			return true;
 		}
 
 		template<c_ipconv_char CharT>
-		bool from_chars_IPv6(std::basic_string_view<CharT> p_address, std::span<uint16_t, 8> p_out)
+		bool from_chars_IPv6(std::basic_string_view<CharT> const p_address, std::span<uint16_t, 8> const p_out)
 		{
-			uintptr_t size = p_address.size();
+			const uintptr_t size = p_address.size();
 			if(size < 2 || size > 39) return false;
 
 			bool b_has_elide = false;
@@ -439,7 +439,7 @@ IP_address::IP_address()
 {
 }
 
-IP_address::IP_address(std::span<const uint8_t, 4> p_init)
+IP_address::IP_address(std::span<const uint8_t, 4> const p_init)
 	: m_ipv(IPv::IPv_4)
 {
 	v4.byteField[0] = p_init[0];
@@ -448,7 +448,7 @@ IP_address::IP_address(std::span<const uint8_t, 4> p_init)
 	v4.byteField[3] = p_init[3];
 }
 
-IP_address::IP_address(std::span<const uint16_t, 8> p_init)
+IP_address::IP_address(std::span<const uint16_t, 8> const p_init)
 	: m_ipv(IPv::IPv_6)
 {
 	v6.doubletField[0] = p_init[0];
@@ -461,7 +461,7 @@ IP_address::IP_address(std::span<const uint16_t, 8> p_init)
 	v6.doubletField[7] = p_init[7];
 }
 
-bool IP_address::from_string_v4(std::u8string_view p_address)
+bool IP_address::from_string_v4(std::u8string_view const p_address)
 {
 	if(_p::from_chars_IPv4(p_address, v4.byteField))
 	{
@@ -472,7 +472,7 @@ bool IP_address::from_string_v4(std::u8string_view p_address)
 	return false;
 }
 
-bool IP_address::from_string_v4(std::u16string_view p_address)
+bool IP_address::from_string_v4(std::u16string_view const p_address)
 {
 	if(_p::from_chars_IPv4(p_address, v4.byteField))
 	{
@@ -483,7 +483,7 @@ bool IP_address::from_string_v4(std::u16string_view p_address)
 	return false;
 }
 
-bool IP_address::from_string_v4(std::u32string_view p_address)
+bool IP_address::from_string_v4(std::u32string_view const p_address)
 {
 	if(_p::from_chars_IPv4(p_address, v4.byteField))
 	{
@@ -494,7 +494,7 @@ bool IP_address::from_string_v4(std::u32string_view p_address)
 	return false;
 }
 
-bool IP_address::from_string_v6(std::u8string_view p_address)
+bool IP_address::from_string_v6(std::u8string_view const p_address)
 {
 	if(_p::from_chars_IPv6(p_address, v6.doubletField))
 	{
@@ -505,7 +505,7 @@ bool IP_address::from_string_v6(std::u8string_view p_address)
 	return false;
 }
 
-bool IP_address::from_string_v6(std::u16string_view p_address)
+bool IP_address::from_string_v6(std::u16string_view const p_address)
 {
 	if(_p::from_chars_IPv6(p_address, v6.doubletField))
 	{
@@ -516,7 +516,7 @@ bool IP_address::from_string_v6(std::u16string_view p_address)
 	return false;
 }
 
-bool IP_address::from_string_v6(std::u32string_view p_address)
+bool IP_address::from_string_v6(std::u32string_view const p_address)
 {
 	if(_p::from_chars_IPv6(p_address, v6.doubletField))
 	{
@@ -527,23 +527,7 @@ bool IP_address::from_string_v6(std::u32string_view p_address)
 	return false;
 }
 
-bool IP_address::from_string(std::u8string_view p_address)
-{
-	if(_p::from_chars_IPv4(p_address, v4.byteField))
-	{
-		m_ipv = IPv::IPv_4;
-		return true;
-	}
-	if(_p::from_chars_IPv6(p_address, v6.doubletField))
-	{
-		m_ipv = IPv::IPv_6;
-		return true;
-	}
-	m_ipv = IPv::None;
-	return false;
-}
-
-bool IP_address::from_string(std::u16string_view p_address)
+bool IP_address::from_string(std::u8string_view const p_address)
 {
 	if(_p::from_chars_IPv4(p_address, v4.byteField))
 	{
@@ -559,7 +543,7 @@ bool IP_address::from_string(std::u16string_view p_address)
 	return false;
 }
 
-bool IP_address::from_string(std::u32string_view p_address)
+bool IP_address::from_string(std::u16string_view const p_address)
 {
 	if(_p::from_chars_IPv4(p_address, v4.byteField))
 	{
@@ -575,7 +559,23 @@ bool IP_address::from_string(std::u32string_view p_address)
 	return false;
 }
 
-uintptr_t IP_address::to_string(std::span<char8_t, 39> p_output) const
+bool IP_address::from_string(std::u32string_view const p_address)
+{
+	if(_p::from_chars_IPv4(p_address, v4.byteField))
+	{
+		m_ipv = IPv::IPv_4;
+		return true;
+	}
+	if(_p::from_chars_IPv6(p_address, v6.doubletField))
+	{
+		m_ipv = IPv::IPv_6;
+		return true;
+	}
+	m_ipv = IPv::None;
+	return false;
+}
+
+uintptr_t IP_address::to_string(std::span<char8_t, 39> const p_output) const
 {
 	if(m_ipv == IPv::IPv_4)
 	{
@@ -588,7 +588,7 @@ uintptr_t IP_address::to_string(std::span<char8_t, 39> p_output) const
 	return 0;
 }
 
-uintptr_t IP_address::to_string(std::span<char16_t, 39> p_output) const
+uintptr_t IP_address::to_string(std::span<char16_t, 39> const p_output) const
 {
 	if(m_ipv == IPv::IPv_4)
 	{
@@ -601,7 +601,7 @@ uintptr_t IP_address::to_string(std::span<char16_t, 39> p_output) const
 	return 0;
 }
 
-uintptr_t IP_address::to_string(std::span<char32_t, 39> p_output) const
+uintptr_t IP_address::to_string(std::span<char32_t, 39> const p_output) const
 {
 	if(m_ipv == IPv::IPv_4)
 	{
@@ -758,7 +758,7 @@ bool IP_address::operator < (const IP_address& p_other) const
 
 //========= ======== ======== IPv4_address ========= ======== ========
 
-bool IPv4_address::from_string(std::u8string_view  p_address)
+bool IPv4_address::from_string(std::u8string_view const p_address)
 {
 	if(_p::from_chars_IPv4(p_address, byteField))
 	{
@@ -768,7 +768,7 @@ bool IPv4_address::from_string(std::u8string_view  p_address)
 	return false;
 }
 
-bool IPv4_address::from_string(std::u16string_view p_address)
+bool IPv4_address::from_string(std::u16string_view const p_address)
 { 
 	if(_p::from_chars_IPv4(p_address, byteField))
 	{
@@ -778,7 +778,7 @@ bool IPv4_address::from_string(std::u16string_view p_address)
 	return false;
 }
 
-bool IPv4_address::from_string(std::u32string_view p_address)
+bool IPv4_address::from_string(std::u32string_view const p_address)
 {
 	if(_p::from_chars_IPv4(p_address, byteField))
 	{
@@ -797,12 +797,12 @@ std::u8string IPv4_address::to_string() const
 
 //========= ======== ======== IPv6_address ========= ======== ========
 
-IPv6_address::IPv6_address(std::span<const uint16_t, 8> p_init)
+IPv6_address::IPv6_address(std::span<const uint16_t, 8> const p_init)
 {
 	memcpy(doubletField, p_init.data(), 16);
 }
 
-bool IPv6_address::from_string(std::u8string_view  p_address)
+bool IPv6_address::from_string(std::u8string_view const p_address)
 {
 	if(_p::from_chars_IPv6(p_address, doubletField))
 	{
@@ -813,7 +813,7 @@ bool IPv6_address::from_string(std::u8string_view  p_address)
 	return false;
 }
 
-bool IPv6_address::from_string(std::u16string_view p_address)
+bool IPv6_address::from_string(std::u16string_view const p_address)
 {
 	if(_p::from_chars_IPv6(p_address, doubletField))
 	{
@@ -824,7 +824,7 @@ bool IPv6_address::from_string(std::u16string_view p_address)
 	return false;
 }
 
-bool IPv6_address::from_string(std::u32string_view p_address)
+bool IPv6_address::from_string(std::u32string_view const p_address)
 {
 	if(_p::from_chars_IPv6(p_address, doubletField))
 	{

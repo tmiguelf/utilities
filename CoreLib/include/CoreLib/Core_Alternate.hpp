@@ -39,7 +39,7 @@ class alternate
 	static_assert(Good_v != Default_v, "Good_v and Default_v must differ");
 public:
 	inline constexpr alternate()						: m_errorCode{Default_v} {}
-	inline constexpr alternate(T_alternate p_code)		: m_errorCode{p_code} {}
+	inline constexpr alternate(T_alternate const p_code): m_errorCode{p_code} {}
 	inline constexpr alternate(const T_primary& p_val)	: m_value{p_val}, m_errorCode{Good_v} {}
 	inline constexpr alternate(T_primary&& p_val)		: m_value{std::move(p_val)}, m_errorCode{Good_v} {}
 

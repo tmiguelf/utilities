@@ -84,12 +84,12 @@ namespace core
 	///	\return		true if strings are equal except for case.
 	///	\note		Agnostic to null termination.
 	///	\warning	ASCII support only
-	[[nodiscard]] bool compareNoCase(const char8_t* p_str1, const char8_t* p_str2, size_t p_size);
+	[[nodiscard]] bool compareNoCase(const char8_t* p_str1, const char8_t* p_str2, uintptr_t p_size);
 	
 	///	\brief STL input version of \ref core::CompareNoCase, with additional size check.
-	[[nodiscard]] inline bool compareNoCase(std::u8string_view p_str1, std::u8string_view p_str2)
+	[[nodiscard]] inline bool compareNoCase(std::u8string_view const p_str1, std::u8string_view const p_str2)
 	{
-		size_t size = p_str1.size();
+		uintptr_t size = p_str1.size();
 		if(size != p_str2.size()) return false;
 		return compareNoCase(p_str1.data(), p_str2.data(), size);
 	}

@@ -127,7 +127,7 @@ public:
 		//	};
 	}
 
-	constexpr Quaternion operator * (T p_scalar) const
+	constexpr Quaternion operator * (const T p_scalar) const
 	{
 		return Quaternion
 		{
@@ -138,7 +138,7 @@ public:
 		};
 	}
 
-	constexpr Quaternion operator / (T p_scalar) const
+	constexpr Quaternion operator / (const T p_scalar) const
 	{
 		return Quaternion
 		{
@@ -214,7 +214,7 @@ public:
 		return operator = (operator * (p_other));
 	}
 
-	Quaternion& operator *= (T p_scalar)
+	Quaternion& operator *= (const T p_scalar)
 	{
 		m_data[0] *= p_scalar;
 		m_data[1] *= p_scalar;
@@ -223,7 +223,7 @@ public:
 		return *this;
 	}
 
-	Quaternion& operator /= (T p_scalar)
+	Quaternion& operator /= (const T p_scalar)
 	{
 		m_data[0] /= p_scalar;
 		m_data[1] /= p_scalar;
@@ -246,7 +246,7 @@ public:
 	}
 
 //-------- setters --------
-	void set(T p_r, T p_i, T p_j, T p_k)
+	void set(const T p_r, const T p_i, const T p_j, const T p_k)
 	{
 		m_data[0] = p_r;
 		m_data[1] = p_i;
@@ -254,10 +254,10 @@ public:
 		m_data[3] = p_k;
 	}
 
-	inline void setR(T p_val) { m_data[0] = p_val; };
-	inline void setI(T p_val) { m_data[1] = p_val; };
-	inline void setJ(T p_val) { m_data[2] = p_val; };
-	inline void setK(T p_val) { m_data[3] = p_val; };
+	inline void setR(const T p_val) { m_data[0] = p_val; };
+	inline void setI(const T p_val) { m_data[1] = p_val; };
+	inline void setJ(const T p_val) { m_data[2] = p_val; };
+	inline void setK(const T p_val) { m_data[3] = p_val; };
 
 //-------- other --------
 	bool isFinite() const
@@ -275,7 +275,7 @@ private:
 
 
 template <_p::is_arithmetic T1, _p::is_non_const_arithmetic T2>
-[[nodiscard]] Quaternion<T2> operator * (T1 p_1, const Quaternion<T2>& p_2)
+[[nodiscard]] Quaternion<T2> operator * (const T1 p_1, const Quaternion<T2>& p_2)
 {
 	return p_2 * p_1;
 }

@@ -60,7 +60,7 @@ struct FP_Func
 	void*	m_param;			//!< Parameter to pass
 };
 
-void _thread_call_object_assist(void* p_arg)
+void _thread_call_object_assist(void* const p_arg)
 {
 	static_cast<_thread_obj_redir*>(p_arg)->call();
 }
@@ -74,9 +74,9 @@ namespace _p
 {
 /// \brief Helper function used to standardize thread launches
 //
-static DWORD WINAPI launch_thread(void* p_param)
+static DWORD WINAPI launch_thread(void* const p_param)
 {
-	FP_Func* t_param = reinterpret_cast<FP_Func*>(p_param);
+	FP_Func* const t_param = reinterpret_cast<FP_Func*const >(p_param);
 	void (*t_function)(void *) = t_param->m_func;
 	void* t_arg = t_param->m_param;
 
@@ -127,7 +127,7 @@ void Thread::swap(Thread& p_other)
 	std::swap(m_id, p_other.m_id);
 }
 
-Thread::Error Thread::create(void (*p_function)(void *), void* p_param)
+Thread::Error Thread::create(void (* const p_function)(void *), void* const p_param)
 {
 	if(m_handle) return Error::AlreadyInUse;
 
@@ -175,7 +175,7 @@ void Thread::detach()
 	}
 }
 
-Thread::Error Thread::set_affinity_mask(uint64_t p_affinity)
+Thread::Error Thread::set_affinity_mask(const uint64_t p_affinity)
 {
 	DWORD_PTR t_affinity;
 #ifndef _WIN64
@@ -191,7 +191,7 @@ Thread::Error Thread::set_affinity_mask(uint64_t p_affinity)
 	return Error::Unavailable;
 }
 
-Thread::Error Thread::_setPreferedProcessor(uint8_t p_num)
+Thread::Error Thread::_setPreferedProcessor(const uint8_t p_num)
 {
 	if(p_num > MAXIMUM_PROCESSORS) return Error::Fail;
 	if(m_handle)
@@ -208,10 +208,10 @@ namespace _p
 {
 	/// \brief Helper function used to standardize thread launches
 	//
-	static void* launch_thread(void* p_param)
+	static void* launch_thread(void* const p_param)
 	{
-		FP_Func* t_param = reinterpret_cast<FP_Func*>(p_param);
-		void (*t_function)(void *) = t_param->m_func;
+		FP_Func* t_param = reinterpret_cast<FP_Func*const >(p_param);
+		void (*const t_function)(void *) = t_param->m_func;
 		void* t_arg = t_param->m_param;
 		delete t_param;
 		
@@ -241,7 +241,7 @@ void Thread::swap(Thread& p_other)
 	std::swap(m_hasThread, p_other.m_hasThread);
 }
 
-Thread::Error Thread::create(void (*p_function)(void *), void* p_param)
+Thread::Error Thread::create(void (*const p_function)(void *), void* const p_param)
 {
 	if(m_hasThread) return Error::AlreadyInUse;
 
@@ -262,7 +262,7 @@ Thread::Error Thread::create(void (*p_function)(void *), void* p_param)
 	}
 }
 
-Thread::Error Thread::join(uint32_t p_time)
+Thread::Error Thread::join(const uint32_t p_time)
 {
 	if(!m_hasThread) return Error::None;
 	
@@ -313,13 +313,13 @@ void Thread::detach()
 	}
 }
 
-Thread::Error Thread::set_affinity_mask(uint64_t p_affinity)
+Thread::Error Thread::set_affinity_mask(const uint64_t p_affinity)
 {
 	if(m_hasThread)
 	{
 		uint64_t	t_bias;
 		cpu_set_t*	t_set	= CPU_ALLOC(64);
-		size_t		t_size	= CPU_ALLOC_SIZE(64);
+		uintptr_t	t_size	= CPU_ALLOC_SIZE(64);
 		if(t_set == nullptr) return Error::Fail;
 
 		CPU_ZERO_S(t_size, t_set);

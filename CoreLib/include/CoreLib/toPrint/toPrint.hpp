@@ -133,7 +133,7 @@ namespace core::_p
 	struct toPrint_fill_assist
 	{
 		template<c_tuple_toPrint Tuple, uintptr_t Pos = 0>
-		static inline uintptr_t count_toPrint(const Tuple& p_tuple, uintptr_t* p_sizeTable)
+		static inline uintptr_t count_toPrint(const Tuple& p_tuple, uintptr_t* const p_sizeTable)
 		{
 			const auto& res = std::get<Pos>(p_tuple);
 			const uintptr_t size = res.size(CharT{0});
@@ -150,9 +150,9 @@ namespace core::_p
 
 		template<c_tuple_toPrint Tuple, uintptr_t Pos = 0>
 		static inline void fill_toPrint(
-			const Tuple& p_tuple,
-			const uintptr_t* p_sizeTable,
-			CharT* p_buff)
+			const Tuple&			p_tuple,
+			const uintptr_t* const	p_sizeTable,
+			CharT* const			p_buff)
 		{
 			const auto& res = std::get<Pos>(p_tuple);
 			res.getPrint(p_buff);
@@ -171,11 +171,11 @@ namespace core::_p
 	private:
 		template<c_tuple_toPrint Tuple>
 		static void finish_toPrint(
-			Sink& p_sink,
-			const Tuple& p_data,
-			const uintptr_t* p_sizeTable,
-			CharT* p_buff,
-			uintptr_t p_size)
+			Sink&					p_sink,
+			const Tuple&			p_data,
+			const uintptr_t* const	p_sizeTable,
+			CharT* const			p_buff,
+			uintptr_t const			p_size)
 		{
 			toPrint_fill_assist<CharT>::fill_toPrint(p_data, p_sizeTable, p_buff);
 			p_sink.write(std::basic_string_view<CharT>{p_buff, p_size});
@@ -183,28 +183,28 @@ namespace core::_p
 
 		template<c_tuple_toPrint Tuple>
 		static void finish_toPrint(
-			const Sink& p_sink,
-			const Tuple& p_data,
-			const uintptr_t* p_sizeTable,
-			CharT* p_buff,
-			uintptr_t p_size)
+			const Sink&				p_sink,
+			const Tuple&			p_data,
+			const uintptr_t* const	p_sizeTable,
+			CharT* const			p_buff,
+			uintptr_t const			p_size)
 		{
 			toPrint_fill_assist<CharT>::fill_toPrint(p_data, p_sizeTable, p_buff);
 			p_sink.write(std::basic_string_view<CharT>{p_buff, p_size});
 		}
 
 	public:
-		static inline void push_toPrint(Sink& p_sink, std::basic_string_view<CharT> p_message)
+		static inline void push_toPrint(Sink& p_sink, std::basic_string_view<CharT> const p_message)
 		{
 			p_sink.write(p_message);
 		};
 
-		static inline void push_toPrint(Sink& p_sink, std::string_view p_message)
+		static inline void push_toPrint(Sink& p_sink, std::string_view const p_message)
 		{
 			p_sink.write(std::u8string_view{reinterpret_cast<const char8_t*>(p_message.data()), p_message.size()});
 		};
 
-		static inline void push_toPrint(Sink& p_sink, std::wstring_view p_message)
+		static inline void push_toPrint(Sink& p_sink, std::wstring_view const p_message)
 		{
 			p_sink.write(std::basic_string_view<wchar_alias>{reinterpret_cast<const wchar_alias*>(p_message.data()), p_message.size()});
 		};
@@ -245,17 +245,17 @@ namespace core::_p
 
 		//---- const ----
 
-		static inline void push_toPrint(const Sink& p_sink, std::basic_string_view<CharT> p_message)
+		static inline void push_toPrint(const Sink& p_sink, std::basic_string_view<CharT> const p_message)
 		{
 			p_sink.write(p_message);
 		};
 
-		static inline void push_toPrint(const Sink& p_sink, std::string_view p_message)
+		static inline void push_toPrint(const Sink& p_sink, std::string_view const p_message)
 		{
 			p_sink.write(std::u8string_view{reinterpret_cast<const char8_t*>(p_message.data()), p_message.size()});
 		};
 
-		static inline void push_toPrint(const Sink& p_sink, std::wstring_view p_message)
+		static inline void push_toPrint(const Sink& p_sink, std::wstring_view const p_message)
 		{
 			p_sink.write(std::basic_string_view<wchar_alias>{reinterpret_cast<const wchar_alias*>(p_message.data()), p_message.size()});
 		};

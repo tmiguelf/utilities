@@ -42,7 +42,7 @@ namespace core
 namespace _p
 {
 	///	\brief Swaps the byte order of a 2Byte variable
-	[[nodiscard]] inline constexpr uint16_t byte_swap_16(uint16_t p_in)
+	[[nodiscard]] inline constexpr uint16_t byte_swap_16(uint16_t const p_in)
 	{
 	#ifdef _WIN32
 		if(std::is_constant_evaluated())
@@ -59,7 +59,7 @@ namespace _p
 	}
 
 	///	\brief Reverses the byte order of a 4Byte variable
-	[[nodiscard]] inline constexpr uint32_t byte_swap_32(uint32_t p_in)
+	[[nodiscard]] inline constexpr uint32_t byte_swap_32(uint32_t const p_in)
 	{
 	#ifdef _WIN32
 		if(std::is_constant_evaluated())
@@ -81,7 +81,7 @@ namespace _p
 
 
 	///	\brief Reverses the byte order of a 8Byte variable
-	[[nodiscard]] inline constexpr uint64_t byte_swap_64(uint64_t p_in)
+	[[nodiscard]] inline constexpr uint64_t byte_swap_64(uint64_t const p_in)
 	{
 	#ifdef _WIN32
 		if(std::is_constant_evaluated())
@@ -209,7 +209,7 @@ template<_p::is_endian_runtime_exclusive_c T>
 }
 
 template <_p::endian_supported_type_c T>
-[[nodiscard]] inline constexpr T endian_host2little(T p_in)
+[[nodiscard]] inline constexpr T endian_host2little(T const p_in)
 {
 	if constexpr(std::endian::native == std::endian::little)
 	{
@@ -228,14 +228,14 @@ template <_p::endian_supported_type_c T>
 }
 
 template <_p::endian_supported_type_c T>
-[[nodiscard]] inline constexpr T endian_little2host(T p_in)
+[[nodiscard]] inline constexpr T endian_little2host(T const p_in)
 {
 	return endian_host2little(p_in);
 }
 
 
 template <_p::endian_supported_type_c T>
-[[nodiscard]] inline constexpr T endian_host2big(T p_in)
+[[nodiscard]] inline constexpr T endian_host2big(T const p_in)
 {
 	if constexpr(std::endian::native == std::endian::little)
 	{
@@ -254,13 +254,13 @@ template <_p::endian_supported_type_c T>
 }
 
 template <_p::endian_supported_type_c T>
-[[nodiscard]] inline constexpr T endian_big2host(T p_in)
+[[nodiscard]] inline constexpr T endian_big2host(T const p_in)
 {
 	return endian_host2big(p_in);
 }
 
 template <_p::is_endian_runtime_exclusive_c T>
-[[nodiscard]] inline T endian_host2little(T p_in)
+[[nodiscard]] inline T endian_host2little(T const p_in)
 {
 	if constexpr(std::endian::native == std::endian::little)
 	{
@@ -279,13 +279,13 @@ template <_p::is_endian_runtime_exclusive_c T>
 }
 
 template <_p::is_endian_runtime_exclusive_c T>
-[[nodiscard]] inline T endian_little2host(T p_in)
+[[nodiscard]] inline T endian_little2host(T const p_in)
 {
 	return endian_host2little(p_in);
 }
 
 template <_p::is_endian_runtime_exclusive_c T>
-[[nodiscard]] inline T endian_host2big(T p_in)
+[[nodiscard]] inline T endian_host2big(T const p_in)
 {
 	if constexpr(std::endian::native == std::endian::little)
 	{
@@ -306,7 +306,7 @@ template <_p::is_endian_runtime_exclusive_c T>
 }
 
 template <_p::is_endian_runtime_exclusive_c T>
-[[nodiscard]] inline T endian_big2host(T p_in)
+[[nodiscard]] inline T endian_big2host(T const p_in)
 {
 	return endian_host2big(p_in);
 }

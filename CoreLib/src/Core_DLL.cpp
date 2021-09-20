@@ -45,7 +45,7 @@ DLL::~DLL()
 	}
 }
 
-DLL::Error DLL::load(const std::filesystem::path& p_path, DLL::Native_attr* p_attr)
+DLL::Error DLL::load(const std::filesystem::path& p_path, DLL::Native_attr* const p_attr)
 {
 	unload();
 
@@ -73,7 +73,7 @@ void DLL::unload()
 	}
 }
 
-void* DLL::resolve(std::u8string_view p_name) const
+void* DLL::resolve(std::u8string_view const p_name) const
 {
 	if(handle && !p_name.empty())
 	{
@@ -81,8 +81,8 @@ void* DLL::resolve(std::u8string_view p_name) const
 		//null terminated string are bad, but this function requires one
 		//hopefully symbol names are small enough to fit on the stack
 		//if they are not, then sorry my friend, you have bigger problems
-		uintptr_t size = p_name.size();
-		char* buff = reinterpret_cast<char*>(core_alloca(size + 1));
+		const uintptr_t size = p_name.size();
+		char* const buff = reinterpret_cast<char*>(core_alloca(size + 1));
 		memcpy(buff, p_name.data(), size);
 		buff[size] = 0;
 		return (void*) GetProcAddress(reinterpret_cast<HMODULE>(handle), buff);
@@ -99,7 +99,7 @@ DLL::~DLL()
 	}
 }
 
-DLL::Error DLL::load(const std::filesystem::path& p_path, DLL::Native_attr* p_attr)
+DLL::Error DLL::load(const std::filesystem::path& p_path, DLL::Native_attr* const p_attr)
 {
 	unload();
 
@@ -144,7 +144,7 @@ void DLL::unload()
 	}
 }
 
-void* DLL::resolve(std::u8string_view p_name) const
+void* DLL::resolve(std::u8string_view const p_name) const
 {
 	if(handle)
 	{
@@ -152,8 +152,8 @@ void* DLL::resolve(std::u8string_view p_name) const
 		//null terminated string are bad, but this function requires one
 		//hopefully symbol names are small enough to fit on the stack
 		//if they are not, then sorry my friend, you have bigger problems
-		uintptr_t size = p_name.size();
-		char* buff = reinterpret_cast<char*>(core_alloca(size + 1));
+		const uintptr_t size = p_name.size();
+		char* const buff = reinterpret_cast<char*>(core_alloca(size + 1));
 		memcpy(buff, p_name.data(), size);
 		buff[size] = 0;
 		return dlsym(handle, buff);

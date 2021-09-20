@@ -365,12 +365,12 @@ TYPED_TEST(Quaternion_T, Comparison)
 		};
 #undef TESTCASE
 
-	const size_t caseSize = testData.size();
+	const uintptr_t caseSize = testData.size();
 
-	for(size_t i = 0; i < caseSize; ++i)
+	for(uintptr_t i = 0; i < caseSize; ++i)
 	{
 		//before case
-		for(size_t j = 0; j < i; ++j)
+		for(uintptr_t j = 0; j < i; ++j)
 		{
 			ASSERT_FALSE(testData[i] == testData[j]) << "Case " << toPrint{testData[i]} << " == " << toPrint{testData[j]};
 			ASSERT_TRUE (testData[i] != testData[j]) << "Case " << toPrint{testData[i]} << " != " << toPrint{testData[j]};
@@ -379,7 +379,7 @@ TYPED_TEST(Quaternion_T, Comparison)
 		ASSERT_TRUE (testData[i] == testData[i]) << "Case " << toPrint{testData[i]} << " == self";
 		ASSERT_FALSE(testData[i] != testData[i]) << "Case " << toPrint{testData[i]} << " != self";
 
-		for(size_t j = i + 1; j < caseSize; ++j)
+		for(uintptr_t j = i + 1; j < caseSize; ++j)
 		{
 			ASSERT_FALSE(testData[i] == testData[j]) << "Case " << toPrint{testData[i]} << " == " << toPrint{testData[j]};
 			ASSERT_TRUE (testData[i] != testData[j]) << "Case " << toPrint{testData[i]} << " != " << toPrint{testData[j]};

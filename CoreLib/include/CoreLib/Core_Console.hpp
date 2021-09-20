@@ -34,9 +34,9 @@ class console_out: public sink_toPrint_base
 {
 public:
 #if defined(_WIN32)
-	inline console_out(void* p_handle): m_handle(p_handle){}
+	inline console_out(void* const p_handle): m_handle(p_handle){}
 #elif defined(__unix__)
-	inline console_out(int p_handle): m_handle(p_handle){}
+	inline console_out(int const p_handle): m_handle(p_handle){}
 #endif
 
 	void write(std::string_view    p_out) const;

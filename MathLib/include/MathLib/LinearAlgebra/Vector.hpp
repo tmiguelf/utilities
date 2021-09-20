@@ -38,7 +38,7 @@ namespace mathlib
 
 	/// \brief Algebraic vector
 	//
-	template <_p::is_non_const_arithmetic T, size_t T_size> requires (T_size > 0)
+	template <_p::is_non_const_arithmetic T, uintptr_t T_size> requires (T_size > 0)
 	class Vector: public std::array<T, T_size>
 	{
 	public:
@@ -46,7 +46,7 @@ namespace mathlib
 		using container_t = std::array<T, T_size>;
 
 	public:
-		[[nodiscard]] inline static constexpr size_t size() { return T_size; }
+		[[nodiscard]] inline static constexpr uintptr_t size() { return T_size; }
 
 		using container_t::operator [];
 
@@ -65,7 +65,7 @@ namespace mathlib
 
 		inline this_t& operator += (const this_t& p_other)
 		{
-			for(size_t i = 0; i < T_size; ++i)
+			for(uintptr_t i = 0; i < T_size; ++i)
 			{
 				(*this)[i] += p_other[i];
 			}
@@ -74,7 +74,7 @@ namespace mathlib
 
 		inline this_t& operator -= (const this_t& p_other)
 		{
-			for(size_t i = 0; i < T_size; ++i)
+			for(uintptr_t i = 0; i < T_size; ++i)
 			{
 				(*this)[i] -= p_other[i];
 			}
@@ -82,7 +82,7 @@ namespace mathlib
 		}
 
 		template <_p::is_arithmetic O_T>
-		inline this_t& operator *= (O_T p_scalar)
+		inline this_t& operator *= (const O_T p_scalar)
 		{
 			for(T& obj: *this)
 			{
@@ -92,7 +92,7 @@ namespace mathlib
 		}
 
 		template <_p::is_arithmetic O_T>
-		inline this_t& operator /= (O_T p_scalar)
+		inline this_t& operator /= (const O_T p_scalar)
 		{
 			for(T& obj: *this)
 			{
@@ -122,13 +122,13 @@ namespace mathlib
 		}
 
 		template <_p::is_arithmetic O_T>
-		[[nodiscard]] inline constexpr this_t operator * (O_T p_scalar) const
+		[[nodiscard]] inline constexpr this_t operator * (const O_T p_scalar) const
 		{
 			return this_t{*this} *= p_scalar;
 		}
 
 		template <_p::is_arithmetic O_T>
-		[[nodiscard]] inline constexpr this_t operator / (O_T p_scalar) const
+		[[nodiscard]] inline constexpr this_t operator / (const O_T p_scalar) const
 		{
 			return this_t{*this} /= p_scalar;
 		}
@@ -136,7 +136,7 @@ namespace mathlib
 		[[nodiscard]] inline constexpr T internalProduct (const this_t& p_other) const
 		{
 			T res = 0;
-			for(size_t i = 0; i < T_size; ++i)
+			for(uintptr_t i = 0; i < T_size; ++i)
 			{
 				res += (*this)[i] * p_other[i];
 			}
@@ -226,14 +226,14 @@ namespace mathlib
 	};
 
 
-	template <_p::is_arithmetic T1, _p::is_non_const_arithmetic T2, size_t T_size>
-	[[nodiscard]] Vector<T2, T_size> operator * (T1 p_1, const Vector<T2, T_size>& p_2)
+	template <_p::is_arithmetic T1, _p::is_non_const_arithmetic T2, uintptr_t T_size>
+	[[nodiscard]] Vector<T2, T_size> operator * (const T1 p_1, const Vector<T2, T_size>& p_2)
 	{
 		return p_2 * p_1;
 	}
 
 
-	template<typename T, size_t T_size> requires (T_size > 1 && T_size < 4)
+	template<typename T, uintptr_t T_size> requires (T_size > 1 && T_size < 4)
 	[[nodiscard]] inline auto hypot(const Vector<T, T_size>& p_vect)
 	{
 		if constexpr(T_size == 2)

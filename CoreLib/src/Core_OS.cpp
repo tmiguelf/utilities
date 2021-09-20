@@ -51,8 +51,7 @@ bool set_env(const core::os_string& p_key, const core::os_string& p_value)
 
 std::optional<core::os_string> get_env(const core::os_string& p_key)
 {
-	DWORD size;
-	size = GetEnvironmentVariableW(p_key.c_str(), nullptr, 0);
+	const DWORD size = GetEnvironmentVariableW(p_key.c_str(), nullptr, 0);
 	if(size == 0)
 	{
 		return {};
@@ -86,32 +85,16 @@ std::optional<core::os_string> machine_name()
 
 std::filesystem::path application_path()
 {
-	// TODO: There's got to be a better algorithm to do this
-	constexpr DWORD max_pathSize = 32767 + 1; //https://docs.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation
-	DWORD pathSize = 256;
-	std::wstring buff;
-	do
-	{
-		buff.resize(pathSize);
-		DWORD res = GetModuleFileNameW(nullptr, buff.data(), pathSize);
-		if(res == 0) return {};
-		if(res < pathSize)
-		{
-			buff.resize(res);
-			return {buff};
-		}
-		pathSize *= 2;
-	}
-	while(pathSize < max_pathSize);
-
-	buff.resize(max_pathSize);
+	constexpr DWORD max_pathSize = 32767 + 255 + 1; //https://docs.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation
+	std::array<wchar_t, max_pathSize> buff;
 	DWORD res = GetModuleFileNameW(nullptr, buff.data(), max_pathSize);
 	if(res == 0) return {};
+
 	if(res < max_pathSize)
 	{
-		buff.resize(res);
-		return buff;
+		return std::wstring{buff.data(), res};
 	}
+
 	return {};
 }
 
@@ -167,7 +150,7 @@ std::filesystem::path application_path()
 
 	if(ret_size > 0)
 	{
-		return std::string{buff.data(), static_cast<size_t>(ret_size)};
+		return std::string{buff.data(), static_cast<uintptr_t>(ret_size)};
 	}
 
 	return {};

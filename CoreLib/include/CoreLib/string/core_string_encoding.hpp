@@ -369,15 +369,15 @@ namespace core
 	///	\brief	Checks if character can be encoded as a valid Unicode code point.
 	///	\param[in]	p_char - Character to check
 	///	\return true if input is a valid Unicode code point, false if otherwise.
-	[[nodiscard]] inline constexpr bool UNICODE_Compliant(char32_t p_char) { return !((p_char > 0xD7FF && p_char < 0xE000) || p_char > 0x10FFFF); }
+	[[nodiscard]] inline constexpr bool UNICODE_Compliant(char32_t const p_char) { return !((p_char > 0xD7FF && p_char < 0xE000) || p_char > 0x10FFFF); }
 
 	///	\brief	Checks if a given character is a valid ASCII character (i.e. Only first 7bits are used).
 	///	\param[in] p_char - Character to check
 	///	\return true if character is ASCII compliant, false if otherwise.
-	[[nodiscard]] inline constexpr bool ASCII_Compliant(char32_t p_char) { return p_char < 0x80; }
+	[[nodiscard]] inline constexpr bool ASCII_Compliant(char32_t const p_char) { return p_char < 0x80; }
 
 	///	\brief	Same as \ref core::ASCII_Compliant(char32_t).
-	[[nodiscard]] inline constexpr bool ASCII_Compliant(char8_t p_char) { return p_char < 0x80; }
+	[[nodiscard]] inline constexpr bool ASCII_Compliant(char8_t const p_char) { return p_char < 0x80; }
 
 	///	\brief	Checks if string has a valid UTF8 and Unicode encoding.
 	///	\param[in]	p_str - String to check
@@ -414,7 +414,7 @@ namespace core
 	///	\note		Agnostic to null termination.
 	[[nodiscard]] bool ASCII_Compliant(std::u8string_view p_str);
 
-	///	\brief	Same as \ref core::ASCII_Compliant(const char8_t*, size_t), but for char32_t.
+	///	\brief	Same as \ref core::ASCII_Compliant(const char8_t*, uintptr_t), but for char32_t.
 	[[nodiscard]] bool ASCII_Compliant(std::u32string_view p_str);
 
 }	//namespace core
