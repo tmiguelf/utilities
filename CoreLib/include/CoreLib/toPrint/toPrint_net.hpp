@@ -50,9 +50,9 @@ public:
 	inline uintptr_t size(const char16_t&) const { return size(); }
 	inline uintptr_t size(const char32_t&) const { return size(); }
 
-	void getPrint(char8_t * p_out) const { _p::to_chars_IPv4_unsafe(m_data.byteField, p_out); }
-	void getPrint(char16_t* p_out) const { _p::to_chars_IPv4_unsafe(m_data.byteField, p_out); }
-	void getPrint(char32_t* p_out) const { _p::to_chars_IPv4_unsafe(m_data.byteField, p_out); }
+	void getPrint(char8_t * const p_out) const { _p::to_chars_IPv4_unsafe(m_data.byteField, p_out); }
+	void getPrint(char16_t* const p_out) const { _p::to_chars_IPv4_unsafe(m_data.byteField, p_out); }
+	void getPrint(char32_t* const p_out) const { _p::to_chars_IPv4_unsafe(m_data.byteField, p_out); }
 
 private:
 	const core::IPv4_address m_data;
@@ -72,9 +72,9 @@ public:
 	inline uintptr_t size(const char16_t&) const { return size(); }
 	inline uintptr_t size(const char32_t&) const { return size(); }
 
-	void getPrint(char8_t * p_out) const { _p::to_chars_IPv6_unsafe(m_data.doubletField, p_out); }
-	void getPrint(char16_t* p_out) const { _p::to_chars_IPv6_unsafe(m_data.doubletField, p_out); }
-	void getPrint(char32_t* p_out) const { _p::to_chars_IPv6_unsafe(m_data.doubletField, p_out); }
+	void getPrint(char8_t * const p_out) const { _p::to_chars_IPv6_unsafe(m_data.doubletField, p_out); }
+	void getPrint(char16_t* const p_out) const { _p::to_chars_IPv6_unsafe(m_data.doubletField, p_out); }
+	void getPrint(char32_t* const p_out) const { _p::to_chars_IPv6_unsafe(m_data.doubletField, p_out); }
 
 private:
 	const core::IPv6_address m_data;
@@ -106,7 +106,7 @@ public:
 	inline uintptr_t size(const char16_t&) const { return size(); }
 	inline uintptr_t size(const char32_t&) const { return size(); }
 
-	void getPrint(char8_t* p_out) const
+	void getPrint(char8_t* const p_out) const
 	{
 		if(m_data.m_ipv == core::IP_address::IPv::IPv_4)
 		{
@@ -118,7 +118,7 @@ public:
 		}
 	}
 
-	void getPrint(char16_t* p_out) const
+	void getPrint(char16_t* const p_out) const
 	{
 		if(m_data.m_ipv == core::IP_address::IPv::IPv_4)
 		{
@@ -130,7 +130,7 @@ public:
 		}
 	}
 
-	void getPrint(char32_t* p_out) const
+	void getPrint(char32_t* const p_out) const
 	{
 		if(m_data.m_ipv == core::IP_address::IPv::IPv_4)
 		{
@@ -155,7 +155,7 @@ template<>
 class toPrint_net<core::IPv4_address>: public toPrint_base
 {
 public:
-	toPrint_net(const core::IPv4_address& p_ip, uint16_t p_port)
+	toPrint_net(const core::IPv4_address& p_ip, uint16_t const p_port)
 		: m_ip  (p_ip)
 		, m_port(p_port)
 	{}
@@ -201,7 +201,7 @@ template<>
 class toPrint_net<core::IPv6_address>: public toPrint_base
 {
 public:
-	toPrint_net(const core::IPv6_address& p_ip, uint16_t p_port)
+	toPrint_net(const core::IPv6_address& p_ip, uint16_t const p_port)
 		: m_ip  (p_ip)
 		, m_port(p_port)
 	{}
@@ -262,7 +262,7 @@ private:
 	}
 
 public:
-	toPrint_net(const core::IP_address& p_ip, uint16_t p_port)
+	toPrint_net(const core::IP_address& p_ip, uint16_t const p_port)
 		: m_ip  (p_ip)
 		, m_port(p_port)
 	{}

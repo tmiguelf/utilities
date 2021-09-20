@@ -87,7 +87,7 @@ namespace core
 	[[nodiscard]] bool compareNoCase(const char8_t* p_str1, const char8_t* p_str2, size_t p_size);
 	
 	///	\brief STL input version of \ref core::CompareNoCase, with additional size check.
-	[[nodiscard]] inline bool compareNoCase(std::u8string_view p_str1, std::u8string_view p_str2)
+	[[nodiscard]] inline bool compareNoCase(std::u8string_view const p_str1, std::u8string_view const p_str2)
 	{
 		size_t size = p_str1.size();
 		if(size != p_str2.size()) return false;

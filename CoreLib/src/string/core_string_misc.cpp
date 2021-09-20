@@ -31,12 +31,12 @@ namespace core
 //======== ======== Private ======== ========
 
 template <typename T = char32_t>
-static inline bool isUpper		(T p_char) { return (p_char >= 'A' && p_char <= 'Z'); }
+static inline bool isUpper		(const T p_char) { return (p_char >= 'A' && p_char <= 'Z'); }
 
 template <typename T = char32_t>
-static inline bool isLower		(T p_char) { return (p_char >= 'a' && p_char <= 'z'); }
+static inline bool isLower		(const T p_char) { return (p_char >= 'a' && p_char <= 'z'); }
 
-void toLowerCase(std::span<char8_t> p_str)
+void toLowerCase(std::span<char8_t> const p_str)
 {
 	char8_t* pos = p_str.data();
 	char8_t* const end = pos + p_str.size();
@@ -46,7 +46,7 @@ void toLowerCase(std::span<char8_t> p_str)
 	}
 }
 
-void toUpperCase(std::span<char8_t> p_str)
+void toUpperCase(std::span<char8_t> const p_str)
 {
 	char8_t* pos = p_str.data();
 	char8_t* const end = pos + p_str.size();
@@ -56,21 +56,21 @@ void toUpperCase(std::span<char8_t> p_str)
 	}
 }
 
-std::u8string toLowerCaseX(std::u8string_view p_str)
+std::u8string toLowerCaseX(std::u8string_view const p_str)
 {
 	std::u8string output(p_str);
 	toLowerCase(std::span<char8_t>{output});
 	return output;
 }
 
-std::u8string toUpperCaseX(std::u8string_view p_str)
+std::u8string toUpperCaseX(std::u8string_view const p_str)
 {
 	std::u8string output(p_str);
 	toUpperCase(std::span<char8_t>{output});
 	return output;
 }
 
-bool compareNoCase(const char8_t* p_str1, const char8_t* p_str2, size_t p_size)
+bool compareNoCase(const char8_t* p_str1, const char8_t* p_str2, const size_t p_size)
 {
 	const char8_t* const end = p_str1 + p_size;
 	for(; p_str1 < end ; ++p_str1, ++p_str2)
@@ -91,7 +91,7 @@ bool compareNoCase(const char8_t* p_str1, const char8_t* p_str2, size_t p_size)
 	return true;
 }
 
-bool string_star_match(std::u8string_view p_line, std::u8string_view p_star)
+bool string_star_match(std::u8string_view const p_line, std::u8string_view const p_star)
 {
 	size_t pivotStar	= 0;
 	size_t pivotLine	= 0;

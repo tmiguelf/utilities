@@ -45,7 +45,7 @@ DLL::~DLL()
 	}
 }
 
-DLL::Error DLL::load(const std::filesystem::path& p_path, DLL::Native_attr* p_attr)
+DLL::Error DLL::load(const std::filesystem::path& p_path, DLL::Native_attr* const p_attr)
 {
 	unload();
 
@@ -73,7 +73,7 @@ void DLL::unload()
 	}
 }
 
-void* DLL::resolve(std::u8string_view p_name) const
+void* DLL::resolve(std::u8string_view const p_name) const
 {
 	if(handle && !p_name.empty())
 	{
@@ -99,7 +99,7 @@ DLL::~DLL()
 	}
 }
 
-DLL::Error DLL::load(const std::filesystem::path& p_path, DLL::Native_attr* p_attr)
+DLL::Error DLL::load(const std::filesystem::path& p_path, DLL::Native_attr* const p_attr)
 {
 	unload();
 
@@ -144,7 +144,7 @@ void DLL::unload()
 	}
 }
 
-void* DLL::resolve(std::u8string_view p_name) const
+void* DLL::resolve(std::u8string_view const p_name) const
 {
 	if(handle)
 	{

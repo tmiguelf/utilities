@@ -65,11 +65,12 @@ public:
 	using T_method_p = void	(T::*)(void*);
 
 private:
-	T*			m_object;
-	T_method_p	m_method;
-	void*		m_arg;
+	T* const			m_object;
+	T_method_p const	m_method;
+	void* const			m_arg;
+
 public:
-	thread_obj_redir(T* p_obj, T_method_p p_method, void* p_arg):
+	thread_obj_redir(T* const p_obj, T_method_p const p_method, void* const p_arg):
 		m_object(p_obj),
 		m_method(p_method),
 		m_arg	(p_arg)
@@ -77,9 +78,9 @@ public:
 
 	void call() override
 	{
-		T*			t_obj		= m_object;
-		T_method_p	t_method	= m_method;
-		void*		t_arg		= m_arg;
+		T* const			t_obj		= m_object;
+		T_method_p const	t_method	= m_method;
+		void* const			t_arg		= m_arg;
 
 		//Object needs to be destroyed before calling the user method because user might call thread_exit
 		delete this;
@@ -87,7 +88,7 @@ public:
 	}
 };
 
-void _thread_call_object_assist(void* p_arg);
+void _thread_call_object_assist(void*);
 
 }	//namespace _p
 
@@ -195,7 +196,7 @@ public:
 	///			The user he user must either use \ref join or \ref detach
 	///			the thread in order to avoid resource leaks and return this object to a "reusable" state.
 	template <class T>
-	Error create(T* p_object, void (T::*p_method)(void *), void* p_param)
+	Error create(T* const p_object, void (T::*const p_method)(void *), void* const p_param)
 	{
 		if(m_handle) return Error::AlreadyInUse;
 

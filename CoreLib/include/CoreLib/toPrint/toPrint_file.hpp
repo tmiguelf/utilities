@@ -53,7 +53,7 @@ namespace core
 		protected:
 			inline sink_file_locked(file_t& p_file): m_file(p_file){}
 
-			inline void push_out(const void* p_data, uintptr_t p_size) const
+			inline void push_out(const void* const p_data, uintptr_t const p_size) const
 			{
 				m_file.write(p_data, p_size);
 			}
@@ -68,7 +68,7 @@ namespace core
 		protected:
 			inline sink_file_unlocked(file_t& p_file): m_file(p_file){}
 
-			inline void push_out(const void* p_data, uintptr_t p_size) const
+			inline void push_out(const void* const p_data, uintptr_t const p_size) const
 			{
 				m_file.write_unlocked(p_data, p_size);
 			}
@@ -89,23 +89,24 @@ namespace core
 	public:
 		sink_file_UTF8(file_t& p_file): sink_t(p_file){}
 
-		void write(std::u8string_view p_out) const
+		void write(std::u8string_view const p_out) const
 		{
 			sink_t::push_out(p_out.data(), p_out.size());
 		}
 
-		NO_INLINE void write(std::u16string_view p_out) const
+		NO_INLINE void write(std::u16string_view const p_out) const
 		{
 			const uintptr_t count = core::_p::UTF16_to_UTF8_faulty_estimate(p_out, '?');
 			if(count > _p::file_toPrint::alloca_treshold)
 			{
 				std::vector<char8_t> buff;
+				buff.resize(count);
 				core::_p::UTF16_to_UTF8_faulty_unsafe(p_out, '?', buff.data());
 				sink_t::push_out(buff.data(), count);
 			}
 			else
 			{
-				char8_t* buff = reinterpret_cast<char8_t*>(core_alloca(count));
+				char8_t* const buff = reinterpret_cast<char8_t*>(core_alloca(count));
 				core::_p::UTF16_to_UTF8_faulty_unsafe(p_out, '?', buff);
 				sink_t::push_out(buff, count);
 			}
@@ -117,12 +118,13 @@ namespace core
 			if(count > _p::file_toPrint::alloca_treshold)
 			{
 				std::vector<char8_t> buff;
+				buff.resize(count);
 				core::_p::UCS4_to_UTF8_faulty_unsafe(p_out, '?', buff.data());
 				sink_t::push_out(buff.data(), count);
 			}
 			else
 			{
-				char8_t* buff = reinterpret_cast<char8_t*>(core_alloca(count));
+				char8_t* const buff = reinterpret_cast<char8_t*>(core_alloca(count));
 				core::_p::UCS4_to_UTF8_faulty_unsafe(p_out, '?', buff);
 				sink_t::push_out(buff, count);
 			}
@@ -150,25 +152,26 @@ namespace core
 	public:
 		sink_file_UTF16BE(file_t& p_file): sink_t(p_file){}
 
-		NO_INLINE void write(std::u8string_view  p_out) const
+		NO_INLINE void write(std::u8string_view const p_out) const
 		{
 			const uintptr_t count = core::_p::UTF8_to_UTF16_faulty_estimate(p_out, '?');
 
 			if(count > _p::file_toPrint::alloca_treshold / sizeof(char16_t))
 			{
 				std::vector<char16_t> buff;
+				buff.resize(count);
 				core::_p::UTF8_to_UTF16_faulty_unsafe(p_out, '?', buff.data());
 				commit({buff.data(), count});
 			}
 			else
 			{
-				char16_t* buff = reinterpret_cast<char16_t*>(core_alloca(count * sizeof(char16_t)));
+				char16_t* const buff = reinterpret_cast<char16_t*>(core_alloca(count * sizeof(char16_t)));
 				core::_p::UTF8_to_UTF16_faulty_unsafe(p_out, '?', buff);
 				commit({buff, count});
 			}
 		}
 
-		NO_INLINE void write(std::u16string_view p_out) const
+		NO_INLINE void write(std::u16string_view const p_out) const
 		{
 			if constexpr(std::endian::native == std::endian::little)
 			{
@@ -176,12 +179,13 @@ namespace core
 				if(count > _p::file_toPrint::alloca_treshold / sizeof(char16_t))
 				{
 					std::vector<char16_t> buff;
+					buff.resize(count);
 					memcpy(buff.data(), p_out.data(), count * sizeof(char16_t));
 					commit({buff.data(), count});
 				}
 				else
 				{
-					char16_t* buff = reinterpret_cast<char16_t*>(core_alloca(count * sizeof(char16_t)));
+					char16_t* const buff = reinterpret_cast<char16_t*>(core_alloca(count * sizeof(char16_t)));
 					memcpy(buff, p_out.data(), count * sizeof(char16_t));
 					commit({buff, count});
 				}
@@ -192,19 +196,20 @@ namespace core
 			}
 		}
 
-		NO_INLINE void write(std::u32string_view p_out) const
+		NO_INLINE void write(std::u32string_view const p_out) const
 		{
 			const uintptr_t count = core::_p::UCS4_to_UTF16_faulty_estimate(p_out, '?');
 
 			if(count > _p::file_toPrint::alloca_treshold / sizeof(char16_t))
 			{
 				std::vector<char16_t> buff;
+				buff.resize(count);
 				core::_p::UCS4_to_UTF16_faulty_unsafe(p_out, '?', buff.data());
 				commit({buff.data(), count});
 			}
 			else
 			{
-				char16_t* buff = reinterpret_cast<char16_t*>(core_alloca(count * sizeof(char16_t)));
+				char16_t* const buff = reinterpret_cast<char16_t*>(core_alloca(count * sizeof(char16_t)));
 				core::_p::UCS4_to_UTF16_faulty_unsafe(p_out, '?', buff);
 				commit({buff, count});
 			}
@@ -239,12 +244,13 @@ namespace core
 			if(count > _p::file_toPrint::alloca_treshold / sizeof(char16_t))
 			{
 				std::vector<char16_t> buff;
+				buff.resize(count);
 				core::_p::UTF8_to_UTF16_faulty_unsafe(p_out, '?', buff.data());
 				commit({buff.data(), count});
 			}
 			else
 			{
-				char16_t* buff = reinterpret_cast<char16_t*>(core_alloca(count * sizeof(char16_t)));
+				char16_t* const buff = reinterpret_cast<char16_t*>(core_alloca(count * sizeof(char16_t)));
 				core::_p::UTF8_to_UTF16_faulty_unsafe(p_out, '?', buff);
 				commit({buff, count});
 			}
@@ -258,12 +264,13 @@ namespace core
 				if(count > _p::file_toPrint::alloca_treshold / sizeof(char16_t))
 				{
 					std::vector<char16_t> buff;
+					buff.resize(count);
 					memcpy(buff.data(), p_out.data(), count * sizeof(char16_t));
 					commit({buff.data(), count});
 				}
 				else
 				{
-					char16_t* buff = reinterpret_cast<char16_t*>(core_alloca(count * sizeof(char16_t)));
+					char16_t* const buff = reinterpret_cast<char16_t*>(core_alloca(count * sizeof(char16_t)));
 					memcpy(buff, p_out.data(), count * sizeof(char16_t));
 					commit({buff, count});
 				}
@@ -281,12 +288,13 @@ namespace core
 			if(count > _p::file_toPrint::alloca_treshold / sizeof(char16_t))
 			{
 				std::vector<char16_t> buff;
+				buff.resize(count);
 				core::_p::UCS4_to_UTF16_faulty_unsafe(p_out, '?', buff.data());
 				commit({buff.data(), count});
 			}
 			else
 			{
-				char16_t* buff = reinterpret_cast<char16_t*>(core_alloca(count * sizeof(char16_t)));
+				char16_t* const buff = reinterpret_cast<char16_t*>(core_alloca(count * sizeof(char16_t)));
 				core::_p::UCS4_to_UTF16_faulty_unsafe(p_out, '?', buff);
 				commit({buff, count});
 			}
@@ -321,12 +329,13 @@ namespace core
 			if(count > _p::file_toPrint::alloca_treshold / sizeof(char32_t))
 			{
 				std::vector<char32_t> buff;
+				buff.resize(count);
 				core::_p::UTF8_to_UCS4_faulty_unsafe(p_out, '?', buff.data());
 				commit({buff.data(), count});
 			}
 			else
 			{
-				char32_t* buff = reinterpret_cast<char32_t*>(core_alloca(count * sizeof(char32_t)));
+				char32_t* const buff = reinterpret_cast<char32_t*>(core_alloca(count * sizeof(char32_t)));
 				core::_p::UTF8_to_UCS4_faulty_unsafe(p_out, '?', buff);
 				commit({buff, count});
 			}
@@ -339,12 +348,13 @@ namespace core
 			if(count > _p::file_toPrint::alloca_treshold / sizeof(char32_t))
 			{
 				std::vector<char32_t> buff;
+				buff.resize(count);
 				core::_p::UTF16_to_UCS4_faulty_unsafe(p_out, '?', buff.data());
 				commit({buff.data(), count});
 			}
 			else
 			{
-				char32_t* buff = reinterpret_cast<char32_t*>(core_alloca(count * sizeof(char32_t)));
+				char32_t* const buff = reinterpret_cast<char32_t*>(core_alloca(count * sizeof(char32_t)));
 				core::_p::UTF16_to_UCS4_faulty_unsafe(p_out, '?', buff);
 				commit({buff, count});
 			}
@@ -358,12 +368,13 @@ namespace core
 				if(count > _p::file_toPrint::alloca_treshold / sizeof(char32_t))
 				{
 					std::vector<char32_t> buff;
+					buff.resize(count);
 					memcpy(buff.data(), p_out.data(), count * sizeof(char32_t));
 					commit({buff.data(), count});
 				}
 				else
 				{
-					char32_t* buff = reinterpret_cast<char16_t*>(core_alloca(count * sizeof(char32_t)));
+					char32_t* const buff = reinterpret_cast<char16_t*>(core_alloca(count * sizeof(char32_t)));
 					memcpy(buff, p_out.data(), count * sizeof(char32_t));
 					commit({buff, count});
 				}
@@ -403,12 +414,13 @@ namespace core
 			if(count > _p::file_toPrint::alloca_treshold / sizeof(char32_t))
 			{
 				std::vector<char32_t> buff;
+				buff.resize(count);
 				core::_p::UTF8_to_UCS4_faulty_unsafe(p_out, '?', buff.data());
 				commit({buff.data(), count});
 			}
 			else
 			{
-				char32_t* buff = reinterpret_cast<char32_t*>(core_alloca(count * sizeof(char32_t)));
+				char32_t* const buff = reinterpret_cast<char32_t*>(core_alloca(count * sizeof(char32_t)));
 				core::_p::UTF8_to_UCS4_faulty_unsafe(p_out, '?', buff);
 				commit({buff, count});
 			}
@@ -421,12 +433,13 @@ namespace core
 			if(count > _p::file_toPrint::alloca_treshold / sizeof(char32_t))
 			{
 				std::vector<char32_t> buff;
+				buff.resize(count);
 				core::_p::UTF16_to_UCS4_faulty_unsafe(p_out, '?', buff.data());
 				commit({buff.data(), count});
 			}
 			else
 			{
-				char32_t* buff = reinterpret_cast<char32_t*>(core_alloca(count * sizeof(char32_t)));
+				char32_t* const buff = reinterpret_cast<char32_t*>(core_alloca(count * sizeof(char32_t)));
 				core::_p::UTF16_to_UCS4_faulty_unsafe(p_out, '?', buff);
 				commit({buff, count});
 			}
@@ -440,12 +453,13 @@ namespace core
 				if(count > _p::file_toPrint::alloca_treshold / sizeof(char32_t))
 				{
 					std::vector<char32_t> buff;
+					buff.resize(count);
 					memcpy(buff.data(), p_out.data(), count * sizeof(char32_t));
 					commit({buff.data(), count});
 				}
 				else
 				{
-					char32_t* buff = reinterpret_cast<char16_t*>(core_alloca(count * sizeof(char32_t)));
+					char32_t* const buff = reinterpret_cast<char16_t*>(core_alloca(count * sizeof(char32_t)));
 					memcpy(buff, p_out.data(), count * sizeof(char32_t));
 					commit({buff, count});
 				}
@@ -480,12 +494,13 @@ namespace core
 			if(count > _p::file_toPrint::alloca_treshold)
 			{
 				std::vector<char8_t> buff;
+				buff.resize(count);
 				core::_p::UTF16_to_UTF8_faulty_unsafe(p_out, '?', buff.data());
 				sink_t::push_out(buff.data(), count);
 			}
 			else
 			{
-				char8_t* buff = reinterpret_cast<char8_t*>(core_alloca(count));
+				char8_t* const buff = reinterpret_cast<char8_t*>(core_alloca(count));
 				core::_p::UTF16_to_UTF8_faulty_unsafe(p_out, '?', buff);
 				sink_t::push_out(buff, count);
 			}
@@ -497,12 +512,13 @@ namespace core
 			if(count > _p::file_toPrint::alloca_treshold)
 			{
 				std::vector<char8_t> buff;
+				buff.resize(count);
 				core::_p::UCS4_to_UTF8_faulty_unsafe(p_out, '?', buff.data());
 				sink_t::push_out(buff.data(), count);
 			}
 			else
 			{
-				char8_t* buff = reinterpret_cast<char8_t*>(core_alloca(count));
+				char8_t* const buff = reinterpret_cast<char8_t*>(core_alloca(count));
 				core::_p::UCS4_to_UTF8_faulty_unsafe(p_out, '?', buff);
 				sink_t::push_out(buff, count);
 			}
@@ -537,12 +553,13 @@ namespace core
 			if(count > _p::file_toPrint::alloca_treshold / sizeof(char16_t))
 			{
 				std::vector<char16_t> buff;
+				buff.resize(count);
 				core::_p::UTF8_to_UTF16_faulty_unsafe(p_out, '?', buff.data());
 				commit({buff.data(), count});
 			}
 			else
 			{
-				char16_t* buff = reinterpret_cast<char16_t*>(core_alloca(count * sizeof(char16_t)));
+				char16_t* const buff = reinterpret_cast<char16_t*>(core_alloca(count * sizeof(char16_t)));
 				core::_p::UTF8_to_UTF16_faulty_unsafe(p_out, '?', buff);
 				commit({buff, count});
 			}
@@ -556,12 +573,13 @@ namespace core
 				if(count > _p::file_toPrint::alloca_treshold / sizeof(char16_t))
 				{
 					std::vector<char16_t> buff;
+					buff.resize(count);
 					memcpy(buff.data(), p_out.data(), count * sizeof(char16_t));
 					commit({buff.data(), count});
 				}
 				else
 				{
-					char16_t* buff = reinterpret_cast<char16_t*>(core_alloca(count * sizeof(char16_t)));
+					char16_t* const buff = reinterpret_cast<char16_t*>(core_alloca(count * sizeof(char16_t)));
 					memcpy(buff, p_out.data(), count * sizeof(char16_t));
 					commit({buff, count});
 				}
@@ -579,12 +597,13 @@ namespace core
 			if(count > _p::file_toPrint::alloca_treshold / sizeof(char16_t))
 			{
 				std::vector<char16_t> buff;
+				buff.resize(count);
 				core::_p::UCS4_to_UTF16_faulty_unsafe(p_out, '?', buff.data());
 				commit({buff.data(), count});
 			}
 			else
 			{
-				char16_t* buff = reinterpret_cast<char16_t*>(core_alloca(count * sizeof(char16_t)));
+				char16_t* const buff = reinterpret_cast<char16_t*>(core_alloca(count * sizeof(char16_t)));
 				core::_p::UCS4_to_UTF16_faulty_unsafe(p_out, '?', buff);
 				commit({buff, count});
 			}
@@ -619,12 +638,13 @@ namespace core
 			if(count > _p::file_toPrint::alloca_treshold / sizeof(char16_t))
 			{
 				std::vector<char16_t> buff;
+				buff.resize(count);
 				core::_p::UTF8_to_UTF16_faulty_unsafe(p_out, '?', buff.data());
 				commit({buff.data(), count});
 			}
 			else
 			{
-				char16_t* buff = reinterpret_cast<char16_t*>(core_alloca(count * sizeof(char16_t)));
+				char16_t* const buff = reinterpret_cast<char16_t*>(core_alloca(count * sizeof(char16_t)));
 				core::_p::UTF8_to_UTF16_faulty_unsafe(p_out, '?', buff);
 				commit({buff, count});
 			}
@@ -638,12 +658,13 @@ namespace core
 				if(count > _p::file_toPrint::alloca_treshold / sizeof(char16_t))
 				{
 					std::vector<char16_t> buff;
+					buff.resize(count);
 					memcpy(buff.data(), p_out.data(), count * sizeof(char16_t));
 					commit({buff.data(), count});
 				}
 				else
 				{
-					char16_t* buff = reinterpret_cast<char16_t*>(core_alloca(count * sizeof(char16_t)));
+					char16_t* const buff = reinterpret_cast<char16_t*>(core_alloca(count * sizeof(char16_t)));
 					memcpy(buff, p_out.data(), count * sizeof(char16_t));
 					commit({buff, count});
 				}
@@ -661,12 +682,13 @@ namespace core
 			if(count > _p::file_toPrint::alloca_treshold / sizeof(char16_t))
 			{
 				std::vector<char16_t> buff;
+				buff.resize(count);
 				core::_p::UCS4_to_UTF16_faulty_unsafe(p_out, '?', buff.data());
 				commit({buff.data(), count});
 			}
 			else
 			{
-				char16_t* buff = reinterpret_cast<char16_t*>(core_alloca(count * sizeof(char16_t)));
+				char16_t* const buff = reinterpret_cast<char16_t*>(core_alloca(count * sizeof(char16_t)));
 				core::_p::UCS4_to_UTF16_faulty_unsafe(p_out, '?', buff);
 				commit({buff, count});
 			}
@@ -701,12 +723,13 @@ namespace core
 			if(count > _p::file_toPrint::alloca_treshold / sizeof(char32_t))
 			{
 				std::vector<char32_t> buff;
+				buff.resize(count);
 				core::_p::UTF8_to_UCS4_faulty_unsafe(p_out, '?', buff.data());
 				commit({buff.data(), count});
 			}
 			else
 			{
-				char32_t* buff = reinterpret_cast<char32_t*>(core_alloca(count * sizeof(char32_t)));
+				char32_t* const buff = reinterpret_cast<char32_t*>(core_alloca(count * sizeof(char32_t)));
 				core::_p::UTF8_to_UCS4_faulty_unsafe(p_out, '?', buff);
 				commit({buff, count});
 			}
@@ -719,12 +742,13 @@ namespace core
 			if(count > _p::file_toPrint::alloca_treshold / sizeof(char32_t))
 			{
 				std::vector<char32_t> buff;
+				buff.resize(count);
 				core::_p::UTF16_to_UCS4_faulty_unsafe(p_out, '?', buff.data());
 				commit({buff.data(), count});
 			}
 			else
 			{
-				char32_t* buff = reinterpret_cast<char32_t*>(core_alloca(count * sizeof(char32_t)));
+				char32_t* const buff = reinterpret_cast<char32_t*>(core_alloca(count * sizeof(char32_t)));
 				core::_p::UTF16_to_UCS4_faulty_unsafe(p_out, '?', buff);
 				commit({buff, count});
 			}
@@ -738,12 +762,13 @@ namespace core
 				if(count > _p::file_toPrint::alloca_treshold / sizeof(char32_t))
 				{
 					std::vector<char32_t> buff;
+					buff.resize(count);
 					memcpy(buff.data(), p_out.data(), count * sizeof(char32_t));
 					commit({buff.data(), count});
 				}
 				else
 				{
-					char32_t* buff = reinterpret_cast<char16_t*>(core_alloca(count * sizeof(char32_t)));
+					char32_t* const buff = reinterpret_cast<char16_t*>(core_alloca(count * sizeof(char32_t)));
 					memcpy(buff, p_out.data(), count * sizeof(char32_t));
 					commit({buff, count});
 				}
@@ -783,12 +808,13 @@ namespace core
 			if(count > _p::file_toPrint::alloca_treshold / sizeof(char32_t))
 			{
 				std::vector<char32_t> buff;
+				buff.resize(count);
 				core::_p::UTF8_to_UCS4_faulty_unsafe(p_out, '?', buff.data());
 				commit({buff.data(), count});
 			}
 			else
 			{
-				char32_t* buff = reinterpret_cast<char32_t*>(core_alloca(count * sizeof(char32_t)));
+				char32_t* const buff = reinterpret_cast<char32_t*>(core_alloca(count * sizeof(char32_t)));
 				core::_p::UTF8_to_UCS4_faulty_unsafe(p_out, '?', buff);
 				commit({buff, count});
 			}
@@ -801,12 +827,13 @@ namespace core
 			if(count > _p::file_toPrint::alloca_treshold / sizeof(char32_t))
 			{
 				std::vector<char32_t> buff;
+				buff.resize(count);
 				core::_p::UTF16_to_UCS4_faulty_unsafe(p_out, '?', buff.data());
 				commit({buff.data(), count});
 			}
 			else
 			{
-				char32_t* buff = reinterpret_cast<char32_t*>(core_alloca(count * sizeof(char32_t)));
+				char32_t* const buff = reinterpret_cast<char32_t*>(core_alloca(count * sizeof(char32_t)));
 				core::_p::UTF16_to_UCS4_faulty_unsafe(p_out, '?', buff);
 				commit({buff, count});
 			}
@@ -820,12 +847,13 @@ namespace core
 				if(count > _p::file_toPrint::alloca_treshold / sizeof(char32_t))
 				{
 					std::vector<char32_t> buff;
+					buff.resize(count);
 					memcpy(buff.data(), p_out.data(), count * sizeof(char32_t));
 					commit({buff.data(), count});
 				}
 				else
 				{
-					char32_t* buff = reinterpret_cast<char16_t*>(core_alloca(count * sizeof(char32_t)));
+					char32_t* const buff = reinterpret_cast<char16_t*>(core_alloca(count * sizeof(char32_t)));
 					memcpy(buff, p_out.data(), count * sizeof(char32_t));
 					commit({buff, count});
 				}

@@ -37,11 +37,11 @@ namespace core
 {
 
 #ifdef _WIN32
-static uintptr_t requiredConversionSize(std::u32string_view p_string)
+static uintptr_t requiredConversionSize(std::u32string_view const p_string)
 {
 	uintptr_t count = 0;
 
-	for(char32_t tchar : p_string)
+	for(const char32_t tchar : p_string)
 	{
 		if(tchar > 0xFFFF)
 		{
@@ -59,7 +59,7 @@ static uintptr_t requiredConversionSize(std::u32string_view p_string)
 	return count;
 }
 
-std::basic_string<os_char> to_os_natural_convert(std::u32string_view p_string)
+std::basic_string<os_char> to_os_natural_convert(std::u32string_view const p_string)
 {
 	uintptr_t reqSize = requiredConversionSize(p_string);
 	if(reqSize == 0) return {};
@@ -69,7 +69,7 @@ std::basic_string<os_char> to_os_natural_convert(std::u32string_view p_string)
 
 	os_char* pivot = buff.data();
 
-	for(char32_t tchar : p_string)
+	for(const char32_t tchar : p_string)
 	{
 		pivot += encode_UTF16(tchar, std::span<char16_t, 2>{reinterpret_cast<char16_t*>(pivot), 2});
 	}
@@ -95,7 +95,7 @@ static char32_t extract_code_point(const char16_t*& p_input, const char16_t* con
 	return *p_input;
 }
 
-std::u32string from_os_natural_convert(std::basic_string_view<os_char> p_string)
+std::u32string from_os_natural_convert(std::basic_string_view<os_char> const p_string)
 {
 	std::u32string buff;
 	buff.reserve(p_string.size());

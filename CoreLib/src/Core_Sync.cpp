@@ -131,7 +131,7 @@ Semaphore::~Semaphore()
 	destroy();
 }
 
-SYNC_Error Semaphore::create(std::u8string& p_name, uint32_t p_range)
+SYNC_Error Semaphore::create(std::u8string& p_name, const uint32_t p_range)
 {
 	destroy();
 #ifdef __CORE_EXTENDED_ERROR__
@@ -142,7 +142,7 @@ SYNC_Error Semaphore::create(std::u8string& p_name, uint32_t p_range)
 	return SYNC_Error::NoErr;
 }
 
-SYNC_Error Semaphore::create(std::u16string& p_name, uint32_t p_range)
+SYNC_Error Semaphore::create(std::u16string& p_name, const uint32_t p_range)
 {
 	destroy();
 #ifdef __CORE_EXTENDED_ERROR__
@@ -153,7 +153,7 @@ SYNC_Error Semaphore::create(std::u16string& p_name, uint32_t p_range)
 	return SYNC_Error::NoErr;
 }
 
-SYNC_Error Semaphore::create(uint32_t p_range)
+SYNC_Error Semaphore::create(const uint32_t p_range)
 {
 	destroy();
 #ifdef __CORE_EXTENDED_ERROR__
@@ -301,7 +301,7 @@ SYNC_Error EventTrap::wait()
 	return SYNC_Error::Fail;
 }
 
-SYNC_Error EventTrap::timed_wait(uint32_t p_miliseconds)
+SYNC_Error EventTrap::timed_wait(const uint32_t p_miliseconds)
 {
 	switch(WaitForSingleObjectEx(m_event, p_miliseconds, TRUE))
 	{
@@ -407,7 +407,7 @@ Semaphore::~Semaphore()
 	destroy();
 }
 
-SYNC_Error Semaphore::create(std::u8string& p_name, uint32_t p_range)
+SYNC_Error Semaphore::create(std::u8string& p_name, const uint32_t p_range)
 {
 	destroy();
 #ifdef __CORE_EXTENDED_ERROR__
@@ -420,7 +420,7 @@ SYNC_Error Semaphore::create(std::u8string& p_name, uint32_t p_range)
 	return SYNC_Error::Fail;
 }
 
-SYNC_Error Semaphore::create(uint32_t p_range)
+SYNC_Error Semaphore::create(const uint32_t p_range)
 {
 	destroy();
 	is_named = false;
@@ -603,7 +603,7 @@ SYNC_Error EventTrap::wait()
 	return SYNC_Error::PreEmptive;
 }
 
-SYNC_Error EventTrap::timed_wait(uint32_t p_miliseconds)
+SYNC_Error EventTrap::timed_wait(const uint32_t p_miliseconds)
 {
 	struct timespec end;
 	uint64_t counter;

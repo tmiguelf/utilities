@@ -50,18 +50,18 @@ namespace core
 
 static constexpr uintptr_t alloca_treshold = 0x8000;
 
-void console_out::write(std::string_view p_out) const
+void console_out::write(std::string_view const p_out) const
 {
 	write(std::u8string_view{reinterpret_cast<const char8_t*>(p_out.data()), p_out.size()});
 }
 
-void console_out::write(std::wstring_view p_out) const
+void console_out::write(std::wstring_view const p_out) const
 {
 	DWORD trash;
 	WriteConsoleW(m_handle, p_out.data(), static_cast<DWORD>(p_out.size()), &trash, nullptr);
 }
 
-NO_INLINE void console_out::write(std::u8string_view p_out) const
+NO_INLINE void console_out::write(std::u8string_view const p_out) const
 {
 	const uintptr_t buff_size = core::_p::UTF8_to_UTF16_faulty_estimate(p_out, '?');
 
@@ -80,13 +80,13 @@ NO_INLINE void console_out::write(std::u8string_view p_out) const
 	}
 }
 
-void console_out::write(std::u16string_view p_out) const
+void console_out::write(std::u16string_view const p_out) const
 {
 	DWORD trash;
 	WriteConsoleW(m_handle, p_out.data(), static_cast<DWORD>(p_out.size()), &trash, nullptr);
 }
 
-NO_INLINE void console_out::write(std::u32string_view p_out) const
+NO_INLINE void console_out::write(std::u32string_view const p_out) const
 {
 	const uintptr_t buff_size = core::_p::UCS4_to_UTF16_faulty_estimate(p_out, '?');
 
@@ -105,28 +105,28 @@ NO_INLINE void console_out::write(std::u32string_view p_out) const
 	}
 }
 
-void console_out::put(char p_out) const
+void console_out::put(const char p_out) const
 {
 	put(static_cast<char16_t>(p_out));
 }
 
-void console_out::put(wchar_t p_out) const
+void console_out::put(const wchar_t p_out) const
 {
 	put(static_cast<char16_t>(p_out));
 }
 
-void console_out::put(char8_t p_out) const
+void console_out::put(const char8_t p_out) const
 {
 	put(static_cast<char16_t>(p_out));
 }
 
-void console_out::put(char16_t p_out) const
+void console_out::put(const char16_t p_out) const
 {
 	DWORD trash;
 	WriteConsoleW(m_handle, &p_out, 1, &trash, nullptr);
 }
 
-void console_out::put(char32_t p_out) const
+void console_out::put(const char32_t p_out) const
 {
 	std::array<char16_t, 2> buff;
 	uint8_t size = encode_UTF16(p_out, buff);
@@ -147,22 +147,22 @@ const console_out cerr{GetStdHandle(STD_ERROR_HANDLE )};
 
 static constexpr uintptr_t alloca_treshold = 0x10000;
 
-void console_out::write(std::string_view p_out) const
+void console_out::write(std::string_view const p_out) const
 {
 	[[maybe_unused]] ssize_t ret = ::write(m_handle, p_out.data(), p_out.size());
 }
 
-void console_out::write(std::wstring_view p_out) const
+void console_out::write(std::wstring_view const p_out) const
 {
 	write(std::basic_string_view<wchar_alias>{reinterpret_cast<const wchar_alias*>(p_out.data()), p_out.size()});
 }
 
-void console_out::write(std::u8string_view p_out) const
+void console_out::write(std::u8string_view const p_out) const
 {
 	[[maybe_unused]] ssize_t ret = ::write(m_handle, p_out.data(), p_out.size());
 }
 
-NO_INLINE void console_out::write(std::u16string_view p_out) const
+NO_INLINE void console_out::write(std::u16string_view const p_out) const
 {
 	const uintptr_t buff_size = core::_p::UTF16_to_UTF8_faulty_estimate(p_out, '?');
 
@@ -181,7 +181,7 @@ NO_INLINE void console_out::write(std::u16string_view p_out) const
 	}
 }
 
-NO_INLINE void console_out::write(std::u32string_view p_out) const
+NO_INLINE void console_out::write(std::u32string_view const p_out) const
 {
 	const uintptr_t buff_size = core::_p::UCS4_to_UTF8_faulty_estimate(p_out, '?');
 
@@ -200,22 +200,22 @@ NO_INLINE void console_out::write(std::u32string_view p_out) const
 	}
 }
 
-void console_out::put(char p_out) const
+void console_out::put(const char p_out) const
 {
 	[[maybe_unused]] ssize_t ret = ::write(m_handle, &p_out, 1);
 }
 
-void console_out::put(wchar_t p_out) const
+void console_out::put(const wchar_t p_out) const
 {
 	put(static_cast<wchar_alias>(p_out));
 }
 
-void console_out::put(char8_t p_out) const
+void console_out::put(const char8_t p_out) const
 {
 	[[maybe_unused]] ssize_t ret = ::write(m_handle, &p_out, 1);
 }
 
-void console_out::put(char16_t p_out) const
+void console_out::put(const char16_t p_out) const
 {
 	std::array<char8_t, 4> buff;
 	uint8_t size = encode_UTF8(static_cast<char32_t>(p_out), buff);
@@ -230,7 +230,7 @@ void console_out::put(char16_t p_out) const
 	}
 }
 
-void console_out::put(char32_t p_out) const
+void console_out::put(const char32_t p_out) const
 {
 	std::array<char8_t, 4> buff;
 	uint8_t size = encode_UTF8(p_out, buff);

@@ -104,13 +104,13 @@ template<>
 class toPrint<char8_t>: public toPrint_base
 {
 public:
-	constexpr toPrint(char8_t p_data): m_data(p_data) {}
+	constexpr toPrint(char8_t const p_data): m_data(p_data) {}
 
 	template<_p::c_toPrint_char CharT>
 	static inline constexpr uintptr_t size(const CharT&) { return 1; }
 
 	template<_p::c_toPrint_char CharT>
-	void getPrint(CharT* p_out) const
+	void getPrint(CharT* const p_out) const
 	{
 		*p_out = static_cast<CharT>(m_data);
 	}
@@ -124,7 +124,7 @@ template<>
 class toPrint<char16_t>: public toPrint_base
 {
 public:
-	constexpr toPrint(char16_t p_data): m_data(p_data) {}
+	constexpr toPrint(char16_t const p_data): m_data(p_data) {}
 
 	inline constexpr uintptr_t size(const char8_t&) const
 	{
@@ -142,9 +142,9 @@ public:
 	inline constexpr uintptr_t size(const char16_t&) const { return 1; }
 	inline constexpr uintptr_t size(const char32_t&) const { return 1; }
 
-	void getPrint(char8_t * p_out) const { encode_UTF8(m_data, std::span<char8_t, 4>{p_out, 4}); }
-	void getPrint(char16_t* p_out) const { *p_out = m_data; }
-	void getPrint(char32_t* p_out) const { *p_out = static_cast<char32_t>(m_data); }
+	void getPrint(char8_t * const p_out) const { encode_UTF8(m_data, std::span<char8_t, 4>{p_out, 4}); }
+	void getPrint(char16_t* const p_out) const { *p_out = m_data; }
+	void getPrint(char32_t* const p_out) const { *p_out = static_cast<char32_t>(m_data); }
 
 private:
 	const char16_t m_data;
@@ -155,7 +155,7 @@ template<>
 class toPrint<char32_t>: public toPrint_base
 {
 public:
-	constexpr toPrint(char32_t p_data): m_data(p_data) {}
+	constexpr toPrint(char32_t const p_data): m_data(p_data) {}
 
 	inline constexpr uintptr_t size(const char8_t&) const
 	{
@@ -188,7 +188,7 @@ public:
 	}
 	inline constexpr uintptr_t size(const char32_t&) const { return 1; }
 
-	void getPrint(char8_t* p_out) const
+	void getPrint(char8_t* const p_out) const
 	{
 		if(!encode_UTF8(m_data, std::span<char8_t, 4>{p_out, 4}))
 		{
@@ -196,7 +196,7 @@ public:
 		}
 	}
 
-	void getPrint(char16_t* p_out) const
+	void getPrint(char16_t* const p_out) const
 	{
 		if(!encode_UTF16(m_data, std::span<char16_t, 2>{p_out, 2}))
 		{
@@ -204,7 +204,7 @@ public:
 		}
 	}
 
-	inline void getPrint(char32_t* p_out) const { *p_out = m_data; }
+	inline void getPrint(char32_t* const p_out) const { *p_out = m_data; }
 
 private:
 	const char32_t m_data;
@@ -215,7 +215,7 @@ template<>
 class toPrint<char>: public toPrint<char8_t>
 {
 public:
-	constexpr toPrint(char p_data): toPrint<char8_t>(static_cast<char8_t>(p_data))
+	constexpr toPrint(char const p_data): toPrint<char8_t>(static_cast<char8_t const>(p_data))
 	{}
 };
 
@@ -223,7 +223,7 @@ template<>
 class toPrint<wchar_t>: public toPrint<core::wchar_alias>
 {
 public:
-	constexpr toPrint(wchar_t p_data): toPrint<core::wchar_alias>(static_cast<core::wchar_alias>(p_data))
+	constexpr toPrint(wchar_t const p_data): toPrint<core::wchar_alias>(static_cast<core::wchar_alias const>(p_data))
 	{}
 };
 
@@ -234,7 +234,7 @@ template<>
 class toPrint<std::u8string_view>: public toPrint_base
 {
 public:
-	constexpr toPrint(std::u8string_view p_data): m_data(p_data){}
+	constexpr toPrint(std::u8string_view const p_data): m_data(p_data){}
 
 	inline constexpr uintptr_t size(const char8_t& ) const { return m_data.size(); }
 	inline uintptr_t size(const char16_t&) const
@@ -247,17 +247,17 @@ public:
 		return _p::UTF8_to_UCS4_faulty_estimate(m_data);
 	}
 
-	void getPrint(char8_t* p_out) const
+	void getPrint(char8_t* const p_out) const
 	{
 		memcpy(p_out, m_data.data(), m_data.size());
 	}
 
-	void getPrint(char16_t* p_out) const
+	void getPrint(char16_t* const p_out) const
 	{
 		_p::UTF8_to_UTF16_faulty_unsafe(m_data, '?', p_out);
 	}
 
-	void getPrint(char32_t* p_out) const
+	void getPrint(char32_t* const p_out) const
 	{
 		_p::UTF8_to_UCS4_faulty_unsafe(m_data, '?', p_out);
 	}
@@ -270,7 +270,7 @@ template<>
 class toPrint<std::u16string_view>: public toPrint_base
 {
 public:
-	constexpr toPrint(std::u16string_view p_data)
+	constexpr toPrint(std::u16string_view const p_data)
 		: m_data(p_data)
 	{}
 	
@@ -286,17 +286,17 @@ public:
 		return core::_p::UTF16_to_UCS4_faulty_estimate(m_data);
 	}
 
-	void getPrint(char8_t* p_out) const
+	void getPrint(char8_t* const p_out) const
 	{
 		core::_p::UTF16_to_UTF8_faulty_unsafe(m_data, '?', p_out);
 	}
 
-	void getPrint(char16_t* p_out) const
+	void getPrint(char16_t* const p_out) const
 	{
 		memcpy(p_out, m_data.data(), m_data.size() * sizeof(char16_t));
 	}
 
-	void getPrint(char32_t* p_out) const
+	void getPrint(char32_t* const p_out) const
 	{
 		core::_p::UTF16_to_UCS4_faulty_unsafe(m_data, '?', p_out);
 	}
@@ -309,7 +309,7 @@ template<>
 class toPrint<std::u32string_view>: public toPrint_base
 {
 public:
-	constexpr toPrint(std::u32string_view p_data)
+	constexpr toPrint(std::u32string_view const p_data)
 		: m_data(p_data)
 
 	{}
@@ -329,17 +329,17 @@ public:
 		return m_data.size();
 	}
 
-	void getPrint(char8_t* p_out) const
+	void getPrint(char8_t* const p_out) const
 	{
 		core::_p::UCS4_to_UTF8_faulty_unsafe(m_data, '?', p_out);
 	}
 
-	void getPrint(char16_t* p_out) const
+	void getPrint(char16_t* const p_out) const
 	{
 		core::_p::UCS4_to_UTF16_faulty_unsafe(m_data, '?', p_out);
 	}
 
-	void getPrint(char32_t* p_out) const
+	void getPrint(char32_t* const p_out) const
 	{
 		memcpy(p_out, m_data.data(), m_data.size() * sizeof(char32_t));
 	}
@@ -353,7 +353,7 @@ template<>
 class toPrint<std::string_view>: public toPrint<std::u8string_view>
 {
 public:
-	toPrint(std::string_view p_data)
+	toPrint(std::string_view const p_data)
 		: toPrint<std::u8string_view>(std::u8string_view{reinterpret_cast<const char8_t*>(p_data.data()), p_data.size()})
 	{
 	}
@@ -363,7 +363,7 @@ template<>
 class toPrint<std::wstring_view>: public toPrint<std::basic_string_view<core::wchar_alias>>
 {
 public:
-	toPrint(std::wstring_view p_data)
+	toPrint(std::wstring_view const p_data)
 		: toPrint<std::basic_string_view<core::wchar_alias>>(
 			std::basic_string_view<core::wchar_alias>{reinterpret_cast<const core::wchar_alias*>(p_data.data()), p_data.size()}
 		)
@@ -421,9 +421,10 @@ class toPrint<Num_T>: public toPrint_base
 private:
 	using array_t = std::array<char8_t, core::to_chars_dec_max_digits_v<Num_T>>;
 public:
-	constexpr toPrint(Num_T p_data)
+	toPrint(Num_T const p_data)
+		: m_size(core::to_chars(p_data, m_preCalc))
+
 	{
-		m_size = core::to_chars(p_data, m_preCalc);
 	}
 
 	template<_p::c_toPrint_char CharT>
@@ -449,7 +450,7 @@ template<typename Num_T> requires (core::char_conv_dec_supported<Num_T>::value &
 class toPrint<Num_T>: public toPrint_base
 {
 public:
-	constexpr toPrint(Num_T p_data)
+	constexpr toPrint(Num_T const p_data)
 		: m_data{p_data}
 	{
 	}
@@ -463,7 +464,7 @@ public:
 	inline uintptr_t size(const CharT&) const { return size(); }
 
 	template<_p::c_toPrint_char CharT>
-	inline void getPrint(CharT* p_out) const
+	inline void getPrint(CharT* const p_out) const
 	{
 		core::_p::to_chars_unsafe(m_data, p_out);
 	}
@@ -477,7 +478,7 @@ class toPrint<Num_T>: public toPrint<_p::toPrint_int_aliased_t<Num_T>>
 {
 	using alias_t = _p::toPrint_int_aliased_t<Num_T>;
 public:
-	constexpr toPrint(Num_T p_data): toPrint<alias_t>(static_cast<alias_t>(p_data)) {}
+	constexpr toPrint(Num_T const p_data): toPrint<alias_t>(static_cast<alias_t const>(p_data)) {}
 };
 
 
@@ -493,7 +494,7 @@ private:
 	using array_t = std::array<char8_t, core::to_chars_hex_max_digits_v<Num_T>>;
 
 public:
-	constexpr toPrint_hex(Num_T p_data)
+	constexpr toPrint_hex(Num_T const p_data)
 		: m_data(p_data)
 	{
 	}
@@ -504,7 +505,7 @@ public:
 	inline uintptr_t size(const CharT&) const { return size(); }
 
 	template<_p::c_toPrint_char CharT>
-	inline void getPrint(CharT* p_out) const
+	inline void getPrint(CharT* const p_out) const
 	{
 		core::_p::to_chars_hex_unsafe(m_data, p_out);
 	}
@@ -518,7 +519,7 @@ class toPrint_hex<Num_T>: public toPrint_hex<_p::toPrint_uint_clobber_t<Num_T>>
 {
 	using alias_t = _p::toPrint_uint_clobber_t<Num_T>;
 public:
-	constexpr toPrint_hex(Num_T p_data): toPrint_hex<alias_t>(static_cast<alias_t>(p_data)) {}
+	constexpr toPrint_hex(Num_T const p_data): toPrint_hex<alias_t>(static_cast<alias_t>(p_data)) {}
 };
 
 //-------- Hexadecimal fixed size -------- 
@@ -534,13 +535,13 @@ private:
 	static constexpr uintptr_t array_size = core::to_chars_hex_max_digits_v<Num_T>;
 
 public:
-	constexpr toPrint_hex_fix(Num_T p_data): m_data{p_data} {}
+	constexpr toPrint_hex_fix(Num_T const p_data): m_data{p_data} {}
 
 	template<_p::c_toPrint_char CharT>
 	static inline constexpr uintptr_t size(const CharT&) { return array_size; }
 
 	template<_p::c_toPrint_char CharT>
-	inline void getPrint(CharT* p_out) const
+	inline void getPrint(CharT* const p_out) const
 	{
 		core::_p::to_chars_hex_fix_unsafe(m_data, p_out);
 	}
@@ -554,7 +555,7 @@ class toPrint_hex_fix<Num_T>: public toPrint_hex_fix<_p::toPrint_uint_clobber_t<
 {
 	using alias_t = _p::toPrint_uint_clobber_t<Num_T>;
 public:
-	constexpr toPrint_hex_fix(Num_T p_data): toPrint_hex_fix<alias_t>(static_cast<alias_t>(p_data)) {}
+	constexpr toPrint_hex_fix(Num_T const p_data): toPrint_hex_fix<alias_t>(static_cast<alias_t const>(p_data)) {}
 };
 
 } //namespace core

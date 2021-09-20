@@ -301,9 +301,9 @@ struct IPv6_address
 //======== ======== ======== inline optimization ======== ======== ========
 
 //======== ======== IP_address ======== ========
-inline IP_address::IP_address(std::u8string_view  p_address){ from_string(p_address); }
-inline IP_address::IP_address(std::u16string_view p_address){ from_string(p_address); }
-inline IP_address::IP_address(std::u32string_view p_address){ from_string(p_address); }
+inline IP_address::IP_address(std::u8string_view  const p_address){ from_string(p_address); }
+inline IP_address::IP_address(std::u16string_view const p_address){ from_string(p_address); }
+inline IP_address::IP_address(std::u32string_view const p_address){ from_string(p_address); }
 
 
 
@@ -346,9 +346,9 @@ inline bool IPv4_address::operator <  (const IPv4_address& p_other) const { retu
 
 inline IPv6_address::IPv6_address() { ui64Type[0] = 0; ui64Type[1] = 0; }
 inline IPv6_address::IPv6_address(const IPv6_address& p_other) { ui64Type[0] = p_other.ui64Type[0]; ui64Type[1] = p_other.ui64Type[1]; }
-inline IPv6_address::IPv6_address(std::u8string_view  p_address){ from_string(p_address); }
-inline IPv6_address::IPv6_address(std::u16string_view p_address){ from_string(p_address); }
-inline IPv6_address::IPv6_address(std::u32string_view p_address){ from_string(p_address); }
+inline IPv6_address::IPv6_address(std::u8string_view  const p_address){ from_string(p_address); }
+inline IPv6_address::IPv6_address(std::u16string_view const p_address){ from_string(p_address); }
+inline IPv6_address::IPv6_address(std::u32string_view const p_address){ from_string(p_address); }
 inline bool IPv6_address::is_null() const { return ui64Type[0] == 0 && ui64Type[1] == 0; }
 inline void IPv6_address::set_any() { ui64Type[0] = 0; ui64Type[1] = 0; }
 

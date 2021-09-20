@@ -160,7 +160,7 @@ uint64_t TrackChrono::read() const
 
 	LARGE_INTEGER Time;
 	QueryPerformanceCounter(&Time);
-	uint64_t val = m_acumulated + Time.QuadPart - m_ref;
+	const uint64_t val = m_acumulated + Time.QuadPart - m_ref;
 	return (val / freq) * core_p::g_sec2nsec + ((val % freq) * core_p::g_sec2nsec) / freq;
 #else
 	if(m_isPaused)
@@ -203,7 +203,7 @@ uint64_t clock_stamp() //1 nanosecond resolution
 #ifdef _WIN32
 	LARGE_INTEGER Time;
 	QueryPerformanceCounter(&Time);
-	uint64_t t_val = Time.QuadPart;
+	const uint64_t t_val = Time.QuadPart;
 	const uint64_t freq = core_p::g_WinFreq.frequency();
 	return (t_val / freq) * core_p::g_sec2nsec + ((t_val % freq) * core_p::g_sec2nsec) / freq;
 #else
