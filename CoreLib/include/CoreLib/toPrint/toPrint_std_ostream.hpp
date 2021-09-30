@@ -37,6 +37,8 @@
 #include <CoreLib/Core_Alloca.hpp>
 #include <CoreLib/string/core_wchar_alias.hpp>
 
+#include <CoreLib/Core_extra_compiler.hpp>
+
 namespace core
 {
 
@@ -65,12 +67,7 @@ namespace _p
 	}
 
 	template<typename C, typename T> requires is_toPrint_v<T>
-#if defined(_MSC_BUILD)
-	__declspec(noinline)
-#else
-	__attribute__((noinline))
-#endif
-	void handle_ostream_toPrint(std::basic_ostream<C>& p_stream, const T& p_data)
+	NO_INLINE void handle_ostream_toPrint(std::basic_ostream<C>& p_stream, const T& p_data)
 	{
 		const uintptr_t size = p_data.size(C{0});
 		if(size)
@@ -98,14 +95,9 @@ namespace _p
 	}
 
 	template<typename T> requires is_toPrint_v<T>
-#if defined(_MSC_BUILD)
-	__declspec(noinline)
-#else
-	__attribute__((noinline))
-#endif
-	void handle_ostream_toPrint_alias(std::basic_ostream<char>& p_stream, const T& p_data)
+	NO_INLINE void handle_ostream_toPrint_alias(std::basic_ostream<char>& p_stream, const T& p_data)
 	{
-		const uintptr_t size = p_data.size(char8_t{0});
+		/*const*/ uintptr_t size = p_data.size(char8_t{0});
 		if(size)
 		{
 			constexpr uintptr_t alloca_treshold = 0x10000;
@@ -131,14 +123,9 @@ namespace _p
 	}
 
 	template<typename T> requires is_toPrint_v<T>
-#if defined(_MSC_BUILD)
-	__declspec(noinline)
-#else
-	__attribute__((noinline))
-#endif
-	void handle_ostream_toPrint_alias(std::basic_ostream<wchar_t>& p_stream, const T& p_data)
+	NO_INLINE void handle_ostream_toPrint_alias(std::basic_ostream<wchar_t>& p_stream, const T& p_data)
 	{
-		const uintptr_t size = p_data.size(wchar_alias{0});
+		/*const*/ uintptr_t size = p_data.size(wchar_alias{0});
 		if(size)
 		{
 			constexpr uintptr_t alloca_treshold = 0x10000 / sizeof(wchar_alias);
