@@ -53,9 +53,9 @@ namespace literals
 	constexpr int32_t   operator "" _i32 (unsigned long long int const p_var) { return static_cast<int32_t  >(p_var); }
 	constexpr int64_t   operator "" _i64 (unsigned long long int const p_var) { return static_cast<int64_t  >(p_var); }
 	constexpr float     operator "" _fp32(unsigned long long int const p_var) { return static_cast<float    >(p_var); }
-	constexpr float     operator "" _fp32(long double const p_var)            { return static_cast<float    >(p_var); }
+	constexpr float     operator "" _fp32(         long double   const p_var) { return static_cast<float    >(p_var); }
 	constexpr double    operator "" _fp64(unsigned long long int const p_var) { return static_cast<double   >(p_var); }
-	constexpr double    operator "" _fp64(long double const p_var)            { return static_cast<double   >(p_var); }
+	constexpr double    operator "" _fp64(         long double   const p_var) { return static_cast<double   >(p_var); }
 	constexpr uintptr_t operator "" _uip (unsigned long long int const p_var) { return static_cast<uintptr_t>(p_var); }
 	constexpr intptr_t  operator "" _ip	 (unsigned long long int const p_var) { return static_cast<intptr_t >(p_var); }
 } //namespace literals

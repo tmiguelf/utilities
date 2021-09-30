@@ -35,7 +35,7 @@
 
 #include <CoreLib/Core_Type.hpp>
 
-using namespace core::literals;
+using ::core::literals::operator "" _ui64;
 
 //======== ======== ======== Stream helper ======== ======== ========
 

@@ -32,7 +32,10 @@
 
 namespace core
 {
-	using namespace ::core::literals;
+	using ::core::literals::operator "" _ui8 ;
+	using ::core::literals::operator "" _ui16;
+	using ::core::literals::operator "" _ui32;
+	using ::core::literals::operator "" _ui64;
 
 	//======== Private implementation ========
 

@@ -32,7 +32,9 @@
 #include <CoreLib/toPrint/toPrint_filesystem.hpp>
 #include <CoreLib/toPrint/toPrint_net.hpp>
 
-using namespace core::literals;
+using core::literals::operator "" _ui8;
+using core::literals::operator "" _i8;
+using core::literals::operator "" _uip;
 
 class test_sink: public core::sink_toPrint_base
 {
@@ -91,27 +93,27 @@ TEST(toPrint, toPrint_interface)
 		core_ToPrint(char8_t, tsink, u8"u8string_view"sv);
 		core_ToPrint(char8_t, tsink, 'A');
 		core_ToPrint(char8_t, tsink, u8'A');
-		core_ToPrint(char8_t, tsink, uint8_t{5});
-		core_ToPrint(char8_t, tsink, int8_t{-5});
+		core_ToPrint(char8_t, tsink, 5_ui8);
+		core_ToPrint(char8_t, tsink, -5_i8);
 		core_ToPrint(char8_t, tsink);
 		core_ToPrint(char8_t, tsink, "Combination "sv, 32, ' ', test);
 
-		ASSERT_EQ(tsink.m_print_cache.size(), uintptr_t{11});
-		ASSERT_EQ(tsink.m_print_cache[0], std::u8string_view{u8"TestStr"});
-		ASSERT_EQ(tsink.m_print_cache[1], std::u8string_view{u8"32"});
+		ASSERT_EQ(tsink.m_print_cache.size(), 11_uip);
+		ASSERT_EQ(tsink.m_print_cache[0], u8"TestStr"sv);
+		ASSERT_EQ(tsink.m_print_cache[1], u8"32"sv);
 		{
 			std::u8string_view log_message_2 = tsink.m_print_cache[2];
 			ASSERT_EQ(log_message_2.size(), sizeof(void*) * 2 + 2);
-			ASSERT_EQ(log_message_2.substr(0, 2), std::u8string_view{u8"0x"});
+			ASSERT_EQ(log_message_2.substr(0, 2), u8"0x"sv);
 			ASSERT_TRUE(core::is_hex(log_message_2.substr(2)));
 		}
-		ASSERT_EQ(tsink.m_print_cache[3], std::u8string_view{u8"string_view"});
-		ASSERT_EQ(tsink.m_print_cache[4], std::u8string_view{u8"u8string_view"});
-		ASSERT_EQ(tsink.m_print_cache[5], std::u8string_view{u8"A"});
-		ASSERT_EQ(tsink.m_print_cache[6], std::u8string_view{u8"A"});
-		ASSERT_EQ(tsink.m_print_cache[7], std::u8string_view{u8"5"});
-		ASSERT_EQ(tsink.m_print_cache[8], std::u8string_view{u8"-5"});
-		ASSERT_EQ(tsink.m_print_cache[9], std::u8string_view{u8""});
-		ASSERT_EQ(tsink.m_print_cache[10], std::u8string_view{u8"Combination 32 TestStr"});
+		ASSERT_EQ(tsink.m_print_cache[ 3], u8"string_view"sv);
+		ASSERT_EQ(tsink.m_print_cache[ 4], u8"u8string_view"sv);
+		ASSERT_EQ(tsink.m_print_cache[ 5], u8"A"sv);
+		ASSERT_EQ(tsink.m_print_cache[ 6], u8"A"sv);
+		ASSERT_EQ(tsink.m_print_cache[ 7], u8"5"sv);
+		ASSERT_EQ(tsink.m_print_cache[ 8], u8"-5"sv);
+		ASSERT_EQ(tsink.m_print_cache[ 9], u8""sv);
+		ASSERT_EQ(tsink.m_print_cache[10], u8"Combination 32 TestStr"sv);
 	}
 }

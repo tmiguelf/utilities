@@ -42,7 +42,7 @@
 #include <CoreLib/string/core_string_encoding.hpp>
 #include <CoreLib/string/core_wchar_alias.hpp>
 
-using namespace std::literals::string_view_literals;
+using namespace std::literals::string_view_literals; // operator"" sv;
 
 namespace core
 {
