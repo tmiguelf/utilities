@@ -44,7 +44,7 @@
 #include <CoreLib/Core_OS.hpp>
 #include <CoreLib/Core_Time.hpp>
 #include <CoreLib/Core_File.hpp>
-
+#include <CoreLib/Core_cpu.hpp>
 
 #include <CoreLib/toPrint/toPrint.hpp>
 #include <CoreLib/toPrint/toPrint_filesystem.hpp>
@@ -121,6 +121,29 @@ namespace
 	private:
 		const uint16_t m_data;
 	};
+
+
+	static void PrintCPUinfo(file_write& p_file)
+	{
+#if defined(_M_AMD64) || defined(__amd64__)
+		OUTPUT(p_file, "CPU: AMD64\n"sv);
+		core::amd64::EX_Reg reg = core::amd64::CPU_feature_su::Fn0();
+		const uint32_t maxId = reg.eax;
+		OUTPUT(p_file, "FN0: "sv, toPrint_hex_fix{reg.eax}, ' ', toPrint_hex_fix{reg.ebx}, ' ', toPrint_hex_fix{reg.ecx}, ' ', toPrint_hex_fix{reg.edx}, '\n');
+
+		if(maxId > 0)
+		{
+			reg = core::amd64::CPU_feature_su::Fn1();
+			OUTPUT(p_file, "FN1:          "sv, toPrint_hex_fix{reg.ebx}, "          "sv, toPrint_hex_fix{reg.edx}, '\n');
+			if(maxId > 6)
+			{
+				reg = core::amd64::CPU_feature_su::Fn7();
+				OUTPUT(p_file, "FN7:          "sv, toPrint_hex_fix{reg.ebx}, ' ', toPrint_hex_fix{reg.ecx}, ' ', toPrint_hex_fix{reg.edx}, '\n');
+			}
+		}
+
+#endif // AMD64
+	}
 
 } //namespace
 } //namespace core
@@ -527,8 +550,11 @@ namespace
 				//commits current known data to file
 				//prevents from getting nothing if anything further causes a fatal terminate
 				o_file.flush_unlocked();
-				
+
 				//---- Extra information
+				OUTPUT(o_file, section_seperator);
+				PrintCPUinfo(o_file);
+
 				OUTPUT(o_file, section_seperator,
 					"Proc:        "sv, proc_ID,
 					"\nThread:      "sv, thread_ID,
@@ -1047,6 +1073,8 @@ namespace
 					pthread_t	thread_ID	= pthread_self();
 
 					//---- Extra information
+					OUTPUT(o_file, section_seperator);
+					PrintCPUinfo(o_file);
 
 					//Note: for some reason when handling the signal caused by an access violation, creating a path causes an access violation
 					//so we store the path in a global

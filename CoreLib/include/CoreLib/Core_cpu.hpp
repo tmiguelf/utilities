@@ -1,0 +1,195 @@
+#pragma once
+
+#include <array>
+#include <cstdint>
+#include <string_view>
+
+namespace core
+{
+#if defined(_M_AMD64) || defined(__amd64__)
+
+	namespace amd64
+	{
+		struct EX_Reg
+		{
+			uint32_t eax;
+			uint32_t ebx;
+			uint32_t ecx;
+			uint32_t edx;
+		};
+
+		void cpu_id   (EX_Reg& p_registers, uint32_t p_leaf);
+		void cpu_id_ex(EX_Reg& p_registers, uint32_t p_leaf, uint32_t p_subleaf);
+
+		// \brief use this for collecting a single use datapoint
+		// no caching involved, cpu_id is always called
+		// slower but safe to use in global initialization
+		struct CPU_feature_su
+		{
+			static std::array<char8_t, 16> vendor();
+			static uint8_t cpu_count();
+			static bool SSE3		();
+			static bool PCLMULQDQ	();
+			static bool MONITOR		();
+			static bool SSSE3		();
+			static bool FMA			();
+			static bool CMPXCHG16B	();
+			static bool PCID		();
+			static bool SSE41		();
+			static bool SSE42		();
+			static bool X2APIC		();
+			static bool MOVBE		();
+			static bool POPCNT		();
+			static bool AES			();
+			static bool XSAVE		();
+			static bool OSXSAVE		();
+			static bool AVX			();
+			static bool F16C		();
+			static bool RDRAND		();
+
+			static bool FPU			();
+			static bool VME			();
+			static bool DE			();
+			static bool PSE			();
+			static bool TSC			();
+			static bool MSR			();
+			static bool PAE			();
+			static bool MCE			();
+			static bool CMPXCHG8B	();
+			static bool APIC		();
+			static bool SysESysE	();
+			static bool MTRR		();
+			static bool PGE			();
+			static bool MCA			();
+			static bool CMOV		();
+			static bool PAT			();
+			static bool PSE36		();
+			static bool CLFSH		();
+			static bool MMX			();
+			static bool FXSR		();
+			static bool SSE			();
+			static bool SSE2		();
+			static bool HTT			();
+
+			static bool FSGSBASE	();
+			static bool BMI1		();
+			static bool HLE			();
+			static bool AVX2		();
+			static bool SMEP		();
+			static bool BMI2		();
+			static bool ERMS		();
+			static bool INVPCID		();
+			static bool RTM			();
+			static bool PQM			();
+			static bool PQE			();
+			static bool AVX512F		();
+			static bool RDSEED		();
+			static bool ADX			();
+			static bool SMAP		();
+			static bool AVX512PF	();
+			static bool AVX512ER	();
+			static bool AVX512CD	();
+			static bool SHA			();
+
+			static bool PREFETCHWT1	();
+			static bool PKU			();
+			static bool CET_SS		();
+			static bool VAES		();
+			static bool VPCLMULQDQ	();
+			static bool RDPID		();
+
+			static bool FSRM		();
+
+			static EX_Reg Fn0		();
+			static EX_Reg Fn1		();
+			static EX_Reg Fn7		();
+		};
+
+		// \brief consults a cached value
+		// fast, but undefined behaviour may occur if used in global variable initialization
+		struct CPU_feature_g
+		{
+			static std::u8string_view vendor();
+			static uint8_t cpu_count();
+			static bool SSE3		();
+			static bool PCLMULQDQ	();
+			static bool MONITOR		();
+			static bool SSSE3		();
+			static bool FMA			();
+			static bool CMPXCHG16B	();
+			static bool PCID		();
+			static bool SSE41		();
+			static bool SSE42		();
+			static bool X2APIC		();
+			static bool MOVBE		();
+			static bool POPCNT		();
+			static bool AES			();
+			static bool XSAVE		();
+			static bool OSXSAVE		();
+			static bool AVX			();
+			static bool F16C		();
+			static bool RDRAND		();
+
+			static bool FPU			();
+			static bool VME			();
+			static bool DE			();
+			static bool PSE			();
+			static bool TSC			();
+			static bool MSR			();
+			static bool PAE			();
+			static bool MCE			();
+			static bool CMPXCHG8B	();
+			static bool APIC		();
+			static bool SysESysE	();
+			static bool MTRR		();
+			static bool PGE			();
+			static bool MCA			();
+			static bool CMOV		();
+			static bool PAT			();
+			static bool PSE36		();
+			static bool CLFSH		();
+			static bool MMX			();
+			static bool FXSR		();
+			static bool SSE			();
+			static bool SSE2		();
+			static bool HTT			();
+
+			static bool FSGSBASE	();
+			static bool BMI1		();
+			static bool HLE			();
+			static bool AVX2		();
+			static bool SMEP		();
+			static bool BMI2		();
+			static bool ERMS		();
+			static bool INVPCID		();
+			static bool RTM			();
+			static bool PQM			();
+			static bool PQE			();
+			static bool AVX512F		();
+			static bool RDSEED		();
+			static bool ADX			();
+			static bool SMAP		();
+			static bool AVX512PF	();
+			static bool AVX512ER	();
+			static bool AVX512CD	();
+			static bool SHA			();
+
+			static bool PREFETCHWT1	();
+			static bool PKU			();
+			static bool CET_SS		();
+			static bool VAES		();
+			static bool VPCLMULQDQ	();
+			static bool RDPID		();
+
+			static bool FSRM		();
+
+			static EX_Reg Fn0();
+			static EX_Reg Fn1();
+			static EX_Reg Fn7();
+		};
+
+	}
+
+#endif
+
+} //namespace core
