@@ -31,6 +31,8 @@ namespace core
 			static bool SSE3		();
 			static bool PCLMULQDQ	();
 			static bool MONITOR		();
+			static bool VMX			();
+			static bool SMX			();
 			static bool SSSE3		();
 			static bool FMA			();
 			static bool CMPXCHG16B	();
@@ -64,6 +66,7 @@ namespace core
 			static bool CMOV		();
 			static bool PAT			();
 			static bool PSE36		();
+			static bool PSN			();
 			static bool CLFSH		();
 			static bool MMX			();
 			static bool FXSR		();
@@ -72,6 +75,7 @@ namespace core
 			static bool HTT			();
 
 			static bool FSGSBASE	();
+			static bool SGX			();
 			static bool BMI1		();
 			static bool HLE			();
 			static bool AVX2		();
@@ -83,26 +87,50 @@ namespace core
 			static bool PQM			();
 			static bool PQE			();
 			static bool AVX512F		();
+			static bool AVX512DQ	();
 			static bool RDSEED		();
 			static bool ADX			();
 			static bool SMAP		();
+			static bool AVX512_IFMA	();
 			static bool AVX512PF	();
 			static bool AVX512ER	();
 			static bool AVX512CD	();
 			static bool SHA			();
+			static bool AVX512BW	();
+			static bool AVX512VL	();
 
-			static bool PREFETCHWT1	();
-			static bool PKU			();
-			static bool CET_SS		();
-			static bool VAES		();
-			static bool VPCLMULQDQ	();
-			static bool RDPID		();
+			static bool PREFETCHWT1		();
+			static bool AVX512_VBMI		();
+			static bool UMIP			();
+			static bool PKU				();
+			static bool WAITPKG			();
+			static bool AVX512_VBMI2	();
+			static bool CET_SS			();
+			static bool GFNI			();
+			static bool VAES			();
+			static bool VPCLMULQDQ		();
+			static bool AVX512_VNNI		();
+			static bool AVX512_BITLAG	();
+			static bool AVX512_VPOPCNTDQ();
+			static bool RDPID			();
+			static bool KL				();
+			static bool MOVDIRI			();
+			static bool MOVDIR64B		();
+			static bool ENQCMD			();
+			static bool SGX_LC			();
+			static bool PKS				();
 
-			static bool FSRM		();
+			static bool FSRM				();
+			static bool UINTR				();
+			static bool AVX512_VP2INTERSECT	();
+			static bool AMX_BF16			();
+			static bool AVX512_FP16			();
+			static bool AMX_TILE			();
+			static bool AMX_INT8			();
 
-			static EX_Reg Fn0		();
-			static EX_Reg Fn1		();
-			static EX_Reg Fn7		();
+			static EX_Reg Fn0();
+			static EX_Reg Fn1();
+			static EX_Reg Fn7();
 		};
 
 		// \brief consults a cached value
@@ -114,6 +142,8 @@ namespace core
 			static bool SSE3		();
 			static bool PCLMULQDQ	();
 			static bool MONITOR		();
+			static bool VMX			();
+			static bool SMX			();
 			static bool SSSE3		();
 			static bool FMA			();
 			static bool CMPXCHG16B	();
@@ -147,6 +177,7 @@ namespace core
 			static bool CMOV		();
 			static bool PAT			();
 			static bool PSE36		();
+			static bool PSN			();
 			static bool CLFSH		();
 			static bool MMX			();
 			static bool FXSR		();
@@ -155,6 +186,7 @@ namespace core
 			static bool HTT			();
 
 			static bool FSGSBASE	();
+			static bool SGX			();
 			static bool BMI1		();
 			static bool HLE			();
 			static bool AVX2		();
@@ -163,25 +195,47 @@ namespace core
 			static bool ERMS		();
 			static bool INVPCID		();
 			static bool RTM			();
-			static bool PQM			();
-			static bool PQE			();
 			static bool AVX512F		();
+			static bool AVX512DQ	();
 			static bool RDSEED		();
 			static bool ADX			();
 			static bool SMAP		();
+			static bool AVX512_IFMA	();
 			static bool AVX512PF	();
 			static bool AVX512ER	();
 			static bool AVX512CD	();
 			static bool SHA			();
+			static bool AVX512BW	();
+			static bool AVX512VL	();
 
-			static bool PREFETCHWT1	();
-			static bool PKU			();
-			static bool CET_SS		();
-			static bool VAES		();
-			static bool VPCLMULQDQ	();
-			static bool RDPID		();
+			static bool PREFETCHWT1		();
+			static bool AVX512_VBMI		();
+			static bool UMIP			();
+			static bool PKU				();
+			static bool WAITPKG			();
+			static bool AVX512_VBMI2	();
+			static bool CET_SS			();
+			static bool GFNI			();
+			static bool VAES			();
+			static bool VPCLMULQDQ		();
+			static bool AVX512_VNNI		();
+			static bool AVX512_BITLAG	();
+			static bool AVX512_VPOPCNTDQ();
+			static bool RDPID			();
+			static bool KL				();
+			static bool MOVDIRI			();
+			static bool MOVDIR64B		();
+			static bool ENQCMD			();
+			static bool SGX_LC			();
+			static bool PKS				();
 
-			static bool FSRM		();
+			static bool FSRM				();
+			static bool UINTR				();
+			static bool AVX512_VP2INTERSECT	();
+			static bool AMX_BF16			();
+			static bool AVX512_FP16			();
+			static bool AMX_TILE			();
+			static bool AMX_INT8			();
 
 			static EX_Reg Fn0();
 			static EX_Reg Fn1();
