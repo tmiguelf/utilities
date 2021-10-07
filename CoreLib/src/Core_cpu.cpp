@@ -69,77 +69,103 @@ namespace core
 
 			uint8_t cpu_count	= 0;
 
-			bool m_SSE3			= false;
-			bool m_PCLMULQDQ	= false;
-			bool m_MONITOR		= false;
-			bool m_SSSE3		= false;
-			bool m_FMA			= false;
-			bool m_CMPXCHG16B	= false;
-			bool m_PCID			= false;
-			bool m_SSE41		= false;
-			bool m_SSE42		= false;
-			bool m_X2APIC		= false;
-			bool m_MOVBE		= false;
-			bool m_POPCNT		= false;
-			bool m_AES			= false;
-			bool m_XSAVE		= false;
-			bool m_OSXSAVE		= false;
-			bool m_AVX			= false;
-			bool m_F16C			= false;
-			bool m_RDRAND		= false;
+			bool m_SSE3				= false;
+			bool m_PCLMULQDQ		= false;
+			bool m_MONITOR			= false;
+			bool m_VMX				= false;
+			bool m_SMX				= false;
+			bool m_SSSE3			= false;
+			bool m_FMA				= false;
+			bool m_CMPXCHG16B		= false;
+			bool m_PCID				= false;
+			bool m_SSE41			= false;
+			bool m_SSE42			= false;
+			bool m_X2APIC			= false;
+			bool m_MOVBE			= false;
+			bool m_POPCNT			= false;
+			bool m_AES				= false;
+			bool m_XSAVE			= false;
+			bool m_OSXSAVE			= false;
+			bool m_AVX				= false;
+			bool m_F16C				= false;
+			bool m_RDRAND			= false;
 
-			bool m_FPU			= false;
-			bool m_VME			= false;
-			bool m_DE			= false;
-			bool m_PSE			= false;
-			bool m_TSC			= false;
-			bool m_MSR			= false;
-			bool m_PAE			= false;
-			bool m_MCE			= false;
-			bool m_CMPXCHG8B	= false;
-			bool m_APIC			= false;
-			bool m_SysESysE		= false;
-			bool m_MTRR			= false;
-			bool m_PGE			= false;
-			bool m_MCA			= false;
-			bool m_CMOV			= false;
-			bool m_PAT			= false;
-			bool m_PSE36		= false;
-			bool m_CLFSH		= false;
-			bool m_MMX			= false;
-			bool m_FXSR			= false;
-			bool m_SSE			= false;
-			bool m_SSE2			= false;
-			bool m_HTT			= false;
+			bool m_FPU				= false;
+			bool m_VME				= false;
+			bool m_DE				= false;
+			bool m_PSE				= false;
+			bool m_TSC				= false;
+			bool m_MSR				= false;
+			bool m_PAE				= false;
+			bool m_MCE				= false;
+			bool m_CMPXCHG8B		= false;
+			bool m_APIC				= false;
+			bool m_SysESysE			= false;
+			bool m_MTRR				= false;
+			bool m_PGE				= false;
+			bool m_MCA				= false;
+			bool m_CMOV				= false;
+			bool m_PAT				= false;
+			bool m_PSE36			= false;
+			bool m_PSN				= false;
+			bool m_CLFSH			= false;
+			bool m_MMX				= false;
+			bool m_FXSR				= false;
+			bool m_SSE				= false;
+			bool m_SSE2				= false;
+			bool m_HTT				= false;
 
-			bool m_FSGSBASE		= false;
-			bool m_BMI1			= false;
-			bool m_HLE			= false;
-			bool m_AVX2			= false;
-			bool m_SMEP			= false;
-			bool m_BMI2			= false;
-			bool m_ERMS			= false;
-			bool m_INVPCID		= false;
-			bool m_RTM			= false;
-			bool m_PQM			= false;
-			bool m_PQE			= false;
-			bool m_AVX512F		= false;
-			bool m_RDSEED		= false;
-			bool m_ADX			= false;
-			bool m_SMAP			= false;
-			bool m_AVX512PF		= false;
-			bool m_AVX512ER		= false;
-			bool m_AVX512CD		= false;
-			bool m_SHA			= false;
+			bool m_FSGSBASE			= false;
+			bool m_SGX				= false;
+			bool m_BMI1				= false;
+			bool m_HLE				= false;
+			bool m_AVX2				= false;
+			bool m_SMEP				= false;
+			bool m_BMI2				= false;
+			bool m_ERMS				= false;
+			bool m_INVPCID			= false;
+			bool m_RTM				= false;
+			bool m_AVX512F			= false;
+			bool m_AVX512DQ			= false;
+			bool m_RDSEED			= false;
+			bool m_ADX				= false;
+			bool m_SMAP				= false;
+			bool m_AVX512_IFMA		= false;
+			bool m_AVX512PF			= false;
+			bool m_AVX512ER			= false;
+			bool m_AVX512CD			= false;
+			bool m_SHA				= false;
+			bool m_AVX512BW			= false;
+			bool m_AVX512VL			= false;
 
-			bool m_PREFETCHWT1	= false;
-			bool m_PKU			= false;
-			bool m_CET_SS		= false;
-			bool m_VAES			= false;
-			bool m_VPCLMULQDQ	= false;
-			bool m_RDPID		= false;
+			bool m_PREFETCHWT1		= false;
+			bool m_AVX512_VBMI		= false;
+			bool m_UMIP				= false;
+			bool m_PKU				= false;
+			bool m_WAITPKG			= false;
+			bool m_AVX512_VBMI2		= false;
+			bool m_CET_SS			= false;
+			bool m_GFNI				= false;
+			bool m_VAES				= false;
+			bool m_VPCLMULQDQ		= false;
+			bool m_AVX512_VNNI		= false;
+			bool m_AVX512_BITLAG	= false;
+			bool m_AVX512_VPOPCNTDQ	= false;
+			bool m_RDPID			= false;
+			bool m_KL				= false;
+			bool m_MOVDIRI			= false;
+			bool m_MOVDIR64B		= false;
+			bool m_ENQCMD			= false;
+			bool m_SGX_LC			= false;
+			bool m_PKS				= false;
 
-			bool m_FSRM			= false;
+			bool m_FSRM					= false;
+			bool m_UINTR				= false;
+			bool m_AVX512_VP2INTERSECT	= false;
+			bool m_AMX_BF16				= false;
+			bool m_AVX512_FP16			= false;
+			bool m_AMX_TILE				= false;
+			bool m_AMX_INT8				= false;
 		};
 
 		static CPU_Data get_cpu_features()
@@ -163,6 +189,8 @@ namespace core
 						outp.m_SSE3			= data[ 0];
 						outp.m_PCLMULQDQ	= data[ 1];
 						outp.m_MONITOR		= data[ 3];
+						outp.m_VMX			= data[ 5];
+						outp.m_SMX			= data[ 6];
 						outp.m_SSSE3		= data[ 9];
 						outp.m_FMA			= data[12];
 						outp.m_CMPXCHG16B	= data[13];
@@ -198,6 +226,7 @@ namespace core
 						outp.m_CMOV			= data[15];
 						outp.m_PAT			= data[16];
 						outp.m_PSE36		= data[17];
+						outp.m_PSN			= data[18];
 						outp.m_CLFSH		= data[19];
 						outp.m_MMX			= data[23];
 						outp.m_FXSR			= data[24];
@@ -212,6 +241,7 @@ namespace core
 						{
 							const std::bitset<32> data = outp.m_Fn7.ebx;
 							outp.m_FSGSBASE		= data[ 0];
+							outp.m_SGX			= data[ 2];
 							outp.m_BMI1			= data[ 3];
 							outp.m_HLE			= data[ 4];
 							outp.m_AVX2			= data[ 5];
@@ -220,29 +250,51 @@ namespace core
 							outp.m_ERMS			= data[ 9];
 							outp.m_INVPCID		= data[10];
 							outp.m_RTM			= data[11];
-							outp.m_PQM			= data[12];
-							outp.m_PQE			= data[15];
 							outp.m_AVX512F		= data[16];
+							outp.m_AVX512DQ		= data[17];
 							outp.m_RDSEED		= data[18];
 							outp.m_ADX			= data[19];
 							outp.m_SMAP			= data[20];
+							outp.m_AVX512_IFMA	= data[21];
 							outp.m_AVX512PF		= data[26];
 							outp.m_AVX512ER		= data[27];
 							outp.m_AVX512CD		= data[28];
 							outp.m_SHA			= data[29];
+							outp.m_AVX512BW		= data[30];
+							outp.m_AVX512VL		= data[31];
 						}
 						{
 							const std::bitset<32> data = outp.m_Fn7.ecx;
-							outp.m_PREFETCHWT1	= data[ 0];
-							outp.m_PKU			= data[ 3];
-							outp.m_CET_SS		= data[ 7];
-							outp.m_VAES			= data[ 9];
-							outp.m_VPCLMULQDQ	= data[10];
-							outp.m_RDPID		= data[22];
+							outp.m_PREFETCHWT1		= data[ 0];
+							outp.m_AVX512_VBMI		= data[ 1];
+							outp.m_UMIP				= data[ 2];
+							outp.m_PKU				= data[ 3];
+							outp.m_WAITPKG			= data[ 5];
+							outp.m_AVX512_VBMI2		= data[ 6];
+							outp.m_CET_SS			= data[ 7];
+							outp.m_GFNI				= data[ 8];
+							outp.m_VAES				= data[ 9];
+							outp.m_VPCLMULQDQ		= data[10];
+							outp.m_AVX512_VNNI		= data[11];
+							outp.m_AVX512_BITLAG	= data[12];
+							outp.m_AVX512_VPOPCNTDQ	= data[14];
+							outp.m_RDPID			= data[22];
+							outp.m_KL				= data[23];
+							outp.m_MOVDIRI			= data[27];
+							outp.m_MOVDIR64B		= data[28];
+							outp.m_ENQCMD			= data[29];
+							outp.m_SGX_LC			= data[30];
+							outp.m_PKS				= data[31];
 						}
 						{
 							const std::bitset<32> data = outp.m_Fn7.edx;
-							outp.m_FSRM			= data[ 4];
+							outp.m_FSRM					= data[ 4];
+							outp.m_UINTR				= data[ 5];
+							outp.m_AVX512_VP2INTERSECT	= data[ 8];
+							outp.m_AMX_BF16				= data[22];
+							outp.m_AVX512_FP16			= data[23];
+							outp.m_AMX_TILE				= data[24];
+							outp.m_AMX_INT8				= data[25];
 						}
 					}
 				}
@@ -273,6 +325,8 @@ namespace core
 	bool CPU_feature_g::SSE3		() { return g_cpu_data.m_SSE3		; }
 	bool CPU_feature_g::PCLMULQDQ	() { return g_cpu_data.m_PCLMULQDQ	; }
 	bool CPU_feature_g::MONITOR		() { return g_cpu_data.m_MONITOR	; }
+	bool CPU_feature_g::VMX			() { return g_cpu_data.m_VMX		; }
+	bool CPU_feature_g::SMX			() { return g_cpu_data.m_SMX		; }
 	bool CPU_feature_g::SSSE3		() { return g_cpu_data.m_SSSE3		; }
 	bool CPU_feature_g::FMA			() { return g_cpu_data.m_FMA		; }
 	bool CPU_feature_g::CMPXCHG16B	() { return g_cpu_data.m_CMPXCHG16B	; }
@@ -306,6 +360,7 @@ namespace core
 	bool CPU_feature_g::CMOV		() { return g_cpu_data.m_CMOV		; }
 	bool CPU_feature_g::PAT			() { return g_cpu_data.m_PAT		; }
 	bool CPU_feature_g::PSE36		() { return g_cpu_data.m_PSE36		; }
+	bool CPU_feature_g::PSN			() { return g_cpu_data.m_PSN		; }
 	bool CPU_feature_g::CLFSH		() { return g_cpu_data.m_CLFSH		; }
 	bool CPU_feature_g::MMX			() { return g_cpu_data.m_MMX		; }
 	bool CPU_feature_g::FXSR		() { return g_cpu_data.m_FXSR		; }
@@ -314,6 +369,7 @@ namespace core
 	bool CPU_feature_g::HTT			() { return g_cpu_data.m_HTT		; }
 
 	bool CPU_feature_g::FSGSBASE	() { return g_cpu_data.m_FSGSBASE	; }
+	bool CPU_feature_g::SGX			() { return g_cpu_data.m_SGX		; }
 	bool CPU_feature_g::BMI1		() { return g_cpu_data.m_BMI1		; }
 	bool CPU_feature_g::HLE			() { return g_cpu_data.m_HLE		; }
 	bool CPU_feature_g::AVX2		() { return g_cpu_data.m_AVX2		; }
@@ -322,25 +378,48 @@ namespace core
 	bool CPU_feature_g::ERMS		() { return g_cpu_data.m_ERMS		; }
 	bool CPU_feature_g::INVPCID		() { return g_cpu_data.m_INVPCID	; }
 	bool CPU_feature_g::RTM			() { return g_cpu_data.m_RTM		; }
-	bool CPU_feature_g::PQM			() { return g_cpu_data.m_PQM		; }
-	bool CPU_feature_g::PQE			() { return g_cpu_data.m_PQE		; }
 	bool CPU_feature_g::AVX512F		() { return g_cpu_data.m_AVX512F	; }
+	bool CPU_feature_g::AVX512DQ	() { return g_cpu_data.m_AVX512DQ	; }
 	bool CPU_feature_g::RDSEED		() { return g_cpu_data.m_RDSEED		; }
 	bool CPU_feature_g::ADX			() { return g_cpu_data.m_ADX		; }
 	bool CPU_feature_g::SMAP		() { return g_cpu_data.m_SMAP		; }
+	bool CPU_feature_g::AVX512_IFMA	() { return g_cpu_data.m_AVX512_IFMA; }
 	bool CPU_feature_g::AVX512PF	() { return g_cpu_data.m_AVX512PF	; }
 	bool CPU_feature_g::AVX512ER	() { return g_cpu_data.m_AVX512ER	; }
 	bool CPU_feature_g::AVX512CD	() { return g_cpu_data.m_AVX512CD	; }
 	bool CPU_feature_g::SHA			() { return g_cpu_data.m_SHA		; }
+	bool CPU_feature_g::AVX512BW	() { return g_cpu_data.m_AVX512BW	; }
+	bool CPU_feature_g::AVX512VL	() { return g_cpu_data.m_AVX512VL	; }
 
-	bool CPU_feature_g::PREFETCHWT1	() { return g_cpu_data.m_PREFETCHWT1; }
-	bool CPU_feature_g::PKU			() { return g_cpu_data.m_PKU		; }
-	bool CPU_feature_g::CET_SS		() { return g_cpu_data.m_CET_SS		; }
-	bool CPU_feature_g::VAES		() { return g_cpu_data.m_VAES		; }
-	bool CPU_feature_g::VPCLMULQDQ	() { return g_cpu_data.m_VPCLMULQDQ	; }
-	bool CPU_feature_g::RDPID		() { return g_cpu_data.m_RDPID		; }
+	bool CPU_feature_g::PREFETCHWT1		() { return g_cpu_data.m_PREFETCHWT1		; }
+	bool CPU_feature_g::AVX512_VBMI		() { return g_cpu_data.m_AVX512_VBMI		; }
+	bool CPU_feature_g::UMIP			() { return g_cpu_data.m_UMIP				; }
+	bool CPU_feature_g::PKU				() { return g_cpu_data.m_PKU				; }
+	bool CPU_feature_g::WAITPKG			() { return g_cpu_data.m_WAITPKG			; }
+	bool CPU_feature_g::AVX512_VBMI2	() { return g_cpu_data.m_AVX512_VBMI2		; }
+	bool CPU_feature_g::CET_SS			() { return g_cpu_data.m_CET_SS				; }
+	bool CPU_feature_g::GFNI			() { return g_cpu_data.m_GFNI				; }
+	bool CPU_feature_g::VAES			() { return g_cpu_data.m_VAES				; }
+	bool CPU_feature_g::VPCLMULQDQ		() { return g_cpu_data.m_VPCLMULQDQ			; }
+	bool CPU_feature_g::AVX512_VNNI		() { return g_cpu_data.m_AVX512_VNNI		; }
+	bool CPU_feature_g::AVX512_BITLAG	() { return g_cpu_data.m_AVX512_BITLAG		; }
+	bool CPU_feature_g::AVX512_VPOPCNTDQ() { return g_cpu_data.m_AVX512_VPOPCNTDQ	; }
+	bool CPU_feature_g::RDPID			() { return g_cpu_data.m_RDPID				; }
+	bool CPU_feature_g::KL				() { return g_cpu_data.m_KL					; }
+	bool CPU_feature_g::MOVDIRI			() { return g_cpu_data.m_MOVDIRI			; }
+	bool CPU_feature_g::MOVDIR64B		() { return g_cpu_data.m_MOVDIR64B			; }
+	bool CPU_feature_g::ENQCMD			() { return g_cpu_data.m_ENQCMD				; }
+	bool CPU_feature_g::SGX_LC			() { return g_cpu_data.m_SGX_LC				; }
+	bool CPU_feature_g::PKS				() { return g_cpu_data.m_PKS				; }
 
-	bool CPU_feature_g::FSRM		() { return g_cpu_data.m_FSRM; }
+	bool CPU_feature_g::FSRM				() { return g_cpu_data.m_FSRM				; }
+	bool CPU_feature_g::UINTR				() { return g_cpu_data.m_UINTR				; }
+	bool CPU_feature_g::AVX512_VP2INTERSECT	() { return g_cpu_data.m_AVX512_VP2INTERSECT; }
+	bool CPU_feature_g::AMX_BF16			() { return g_cpu_data.m_AMX_BF16			; }
+	bool CPU_feature_g::AVX512_FP16			() { return g_cpu_data.m_AVX512_FP16		; }
+	bool CPU_feature_g::AMX_TILE			() { return g_cpu_data.m_AMX_TILE			; }
+	bool CPU_feature_g::AMX_INT8			() { return g_cpu_data.m_AMX_INT8			; }
+
 
 	EX_Reg CPU_feature_g::Fn0		() { return g_cpu_data.m_Fn0; }
 	EX_Reg CPU_feature_g::Fn1		() { return g_cpu_data.m_Fn1; }
@@ -419,6 +498,8 @@ namespace core
 	bool CPU_feature_su::SSE3			() { return help_fecth_single_cpu_id_bit<1, 1,  0>(); }
 	bool CPU_feature_su::PCLMULQDQ		() { return help_fecth_single_cpu_id_bit<1, 1,  1>(); }
 	bool CPU_feature_su::MONITOR		() { return help_fecth_single_cpu_id_bit<1, 1,  3>(); }
+	bool CPU_feature_su::VMX			() { return help_fecth_single_cpu_id_bit<1, 1,  5>(); }
+	bool CPU_feature_su::SMX			() { return help_fecth_single_cpu_id_bit<1, 1,  6>(); }
 	bool CPU_feature_su::SSSE3			() { return help_fecth_single_cpu_id_bit<1, 1,  9>(); }
 	bool CPU_feature_su::FMA			() { return help_fecth_single_cpu_id_bit<1, 1, 12>(); }
 	bool CPU_feature_su::CMPXCHG16B		() { return help_fecth_single_cpu_id_bit<1, 1, 13>(); }
@@ -452,6 +533,7 @@ namespace core
 	bool CPU_feature_su::CMOV			() { return help_fecth_single_cpu_id_bit<1, 3, 15>(); }
 	bool CPU_feature_su::PAT			() { return help_fecth_single_cpu_id_bit<1, 3, 16>(); }
 	bool CPU_feature_su::PSE36			() { return help_fecth_single_cpu_id_bit<1, 3, 17>(); }
+	bool CPU_feature_su::PSN			() { return help_fecth_single_cpu_id_bit<1, 3, 18>(); }
 	bool CPU_feature_su::CLFSH			() { return help_fecth_single_cpu_id_bit<1, 3, 19>(); }
 	bool CPU_feature_su::MMX			() { return help_fecth_single_cpu_id_bit<1, 3, 23>(); }
 	bool CPU_feature_su::FXSR			() { return help_fecth_single_cpu_id_bit<1, 3, 24>(); }
@@ -460,6 +542,7 @@ namespace core
 	bool CPU_feature_su::HTT			() { return help_fecth_single_cpu_id_bit<1, 3, 28>(); }
 
 	bool CPU_feature_su::FSGSBASE		() { return help_fecth_single_cpu_id_bit<7, 1,  0>(); }
+	bool CPU_feature_su::SGX			() { return help_fecth_single_cpu_id_bit<7, 1,  2>(); }
 	bool CPU_feature_su::BMI1			() { return help_fecth_single_cpu_id_bit<7, 1,  3>(); }
 	bool CPU_feature_su::HLE			() { return help_fecth_single_cpu_id_bit<7, 1,  4>(); }
 	bool CPU_feature_su::AVX2			() { return help_fecth_single_cpu_id_bit<7, 1,  5>(); }
@@ -471,22 +554,46 @@ namespace core
 	bool CPU_feature_su::PQM			() { return help_fecth_single_cpu_id_bit<7, 1, 12>(); }
 	bool CPU_feature_su::PQE			() { return help_fecth_single_cpu_id_bit<7, 1, 15>(); }
 	bool CPU_feature_su::AVX512F		() { return help_fecth_single_cpu_id_bit<7, 1, 16>(); }
+	bool CPU_feature_su::AVX512DQ		() { return help_fecth_single_cpu_id_bit<7, 1, 17>(); }
 	bool CPU_feature_su::RDSEED			() { return help_fecth_single_cpu_id_bit<7, 1, 18>(); }
 	bool CPU_feature_su::ADX			() { return help_fecth_single_cpu_id_bit<7, 1, 19>(); }
 	bool CPU_feature_su::SMAP			() { return help_fecth_single_cpu_id_bit<7, 1, 20>(); }
+	bool CPU_feature_su::AVX512_IFMA	() { return help_fecth_single_cpu_id_bit<7, 1, 21>(); }
 	bool CPU_feature_su::AVX512PF		() { return help_fecth_single_cpu_id_bit<7, 1, 26>(); }
 	bool CPU_feature_su::AVX512ER		() { return help_fecth_single_cpu_id_bit<7, 1, 27>(); }
 	bool CPU_feature_su::AVX512CD		() { return help_fecth_single_cpu_id_bit<7, 1, 28>(); }
 	bool CPU_feature_su::SHA			() { return help_fecth_single_cpu_id_bit<7, 1, 29>(); }
+	bool CPU_feature_su::AVX512BW		() { return help_fecth_single_cpu_id_bit<7, 1, 30>(); }
+	bool CPU_feature_su::AVX512VL		() { return help_fecth_single_cpu_id_bit<7, 1, 31>(); }
 
-	bool CPU_feature_su::PREFETCHWT1	() { return help_fecth_single_cpu_id_bit<7, 2,  0>(); }
-	bool CPU_feature_su::PKU			() { return help_fecth_single_cpu_id_bit<7, 2,  3>(); }
-	bool CPU_feature_su::CET_SS			() { return help_fecth_single_cpu_id_bit<7, 2,  7>(); }
-	bool CPU_feature_su::VAES			() { return help_fecth_single_cpu_id_bit<7, 2,  9>(); }
-	bool CPU_feature_su::VPCLMULQDQ		() { return help_fecth_single_cpu_id_bit<7, 2, 10>(); }
-	bool CPU_feature_su::RDPID			() { return help_fecth_single_cpu_id_bit<7, 2, 22>(); }
+	bool CPU_feature_su::PREFETCHWT1		() { return help_fecth_single_cpu_id_bit<7, 2,  0>(); }
+	bool CPU_feature_su::AVX512_VBMI		() { return help_fecth_single_cpu_id_bit<7, 2,  1>(); }
+	bool CPU_feature_su::UMIP				() { return help_fecth_single_cpu_id_bit<7, 2,  2>(); }
+	bool CPU_feature_su::PKU				() { return help_fecth_single_cpu_id_bit<7, 2,  3>(); }
+	bool CPU_feature_su::WAITPKG			() { return help_fecth_single_cpu_id_bit<7, 2,  5>(); }
+	bool CPU_feature_su::AVX512_VBMI2		() { return help_fecth_single_cpu_id_bit<7, 2,  6>(); }
+	bool CPU_feature_su::CET_SS				() { return help_fecth_single_cpu_id_bit<7, 2,  7>(); }
+	bool CPU_feature_su::GFNI				() { return help_fecth_single_cpu_id_bit<7, 2,  8>(); }
+	bool CPU_feature_su::VAES				() { return help_fecth_single_cpu_id_bit<7, 2,  9>(); }
+	bool CPU_feature_su::VPCLMULQDQ			() { return help_fecth_single_cpu_id_bit<7, 2, 10>(); }
+	bool CPU_feature_su::AVX512_VNNI		() { return help_fecth_single_cpu_id_bit<7, 2, 11>(); }
+	bool CPU_feature_su::AVX512_BITLAG		() { return help_fecth_single_cpu_id_bit<7, 2, 12>(); }
+	bool CPU_feature_su::AVX512_VPOPCNTDQ	() { return help_fecth_single_cpu_id_bit<7, 2, 14>(); }
+	bool CPU_feature_su::RDPID				() { return help_fecth_single_cpu_id_bit<7, 2, 22>(); }
+	bool CPU_feature_su::KL					() { return help_fecth_single_cpu_id_bit<7, 2, 23>(); }
+	bool CPU_feature_su::MOVDIRI			() { return help_fecth_single_cpu_id_bit<7, 2, 27>(); }
+	bool CPU_feature_su::MOVDIR64B			() { return help_fecth_single_cpu_id_bit<7, 2, 28>(); }
+	bool CPU_feature_su::ENQCMD				() { return help_fecth_single_cpu_id_bit<7, 2, 29>(); }
+	bool CPU_feature_su::SGX_LC				() { return help_fecth_single_cpu_id_bit<7, 2, 30>(); }
+	bool CPU_feature_su::PKS				() { return help_fecth_single_cpu_id_bit<7, 2, 31>(); }
 
-	bool CPU_feature_su::FSRM			() { return help_fecth_single_cpu_id_bit<7, 3,  4>(); }
+	bool CPU_feature_su::FSRM				() { return help_fecth_single_cpu_id_bit<7, 3,  4>(); }
+	bool CPU_feature_su::UINTR				() { return help_fecth_single_cpu_id_bit<7, 3,  5>(); }
+	bool CPU_feature_su::AVX512_VP2INTERSECT() { return help_fecth_single_cpu_id_bit<7, 3,  8>(); }
+	bool CPU_feature_su::AMX_BF16			() { return help_fecth_single_cpu_id_bit<7, 3, 22>(); }
+	bool CPU_feature_su::AVX512_FP16		() { return help_fecth_single_cpu_id_bit<7, 3, 23>(); }
+	bool CPU_feature_su::AMX_TILE			() { return help_fecth_single_cpu_id_bit<7, 3, 24>(); }
+	bool CPU_feature_su::AMX_INT8			() { return help_fecth_single_cpu_id_bit<7, 3, 25>(); }
 
 	EX_Reg CPU_feature_su::Fn0()
 	{
