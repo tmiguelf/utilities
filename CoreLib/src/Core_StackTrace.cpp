@@ -150,6 +150,7 @@ namespace
 
 #ifdef _WIN32
 
+
 #ifdef EnumerateLoadedModules64
 #	undef EnumerateLoadedModules64
 #endif
@@ -247,11 +248,38 @@ namespace
 		return t_flags;
 	}
 
-#if 0
 	/// \brief Auxiliary function used to print operating system version
 	static void PrintOS(file_write& p_file)
 	{
+#if 1
+		using fsig =  DWORD (__stdcall*)(PRTL_OSVERSIONINFOW);
 
+		HMODULE hDll = LoadLibraryW(L"Ntdll.dll");
+		if(hDll)
+		{
+			fsig pRtlGetVersion = reinterpret_cast<fsig>(GetProcAddress(hDll, "RtlGetVersion"));
+			if(pRtlGetVersion != nullptr)
+			{
+				RTL_OSVERSIONINFOEXW info;
+				info.dwOSVersionInfoSize = sizeof(RTL_OSVERSIONINFOEXW);
+				if(!pRtlGetVersion(reinterpret_cast<RTL_OSVERSIONINFOW*>(&info)))
+				{
+					OUTPUT(p_file, "OS:          Windows "sv,
+						info.dwMajorVersion, '.', info.dwMinorVersion, " ("sv, info.wProductType, '/', toPrint_hex_fix(info.wSuiteMask), ") build "sv, info.dwBuildNumber);
+					if(*info.szCSDVersion)
+					{
+						OUTPUT(p_file, ' ', std::wstring_view{info.szCSDVersion});
+					}
+					OUTPUT(p_file, '\n');
+
+					CloseHandle(hDll);
+					return;
+				}
+			}
+			CloseHandle(hDll);
+		}
+		OUTPUT(p_file, "OS:          Windows\n"sv);
+#else
 		OSVERSIONINFOEXW info;
 		info.dwOSVersionInfoSize = sizeof(decltype(info));
 		if(GetVersionExW(reinterpret_cast<OSVERSIONINFOW*>(&info)))
@@ -268,8 +296,8 @@ namespace
 		{
 			OUTPUT(p_file, "OS:          Windows\n"sv);
 		}
-	}
 #endif
+	}
 
 	/// \brief Auxiliary function used to print environment variables
 	static void PrintEnv(file_write& p_file)
@@ -572,9 +600,9 @@ namespace
 						OUTPUT(o_file, "CommandLine: "sv, os_string_view{temp_str}, '\n');
 					}
 				}
-#if 0
+
 				PrintOS(o_file);
-#endif
+
 				{
 					const std::optional<core::os_string>& res = machine_name();
 					if(res.has_value())
