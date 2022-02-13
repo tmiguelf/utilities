@@ -79,7 +79,6 @@ namespace _p
 	#endif
 	}
 
-
 	///	\brief Reverses the byte order of a 8Byte variable
 	[[nodiscard]] inline constexpr uint64_t byte_swap_64(uint64_t const p_in)
 	{
@@ -193,12 +192,15 @@ template<_p::endian_supported_type_c T>
 	{
 		return static_cast<const T>(_p::byte_swap_64(static_cast<const uint64_t>(p_value)));
 	}
-#if !defined(__GNUG__) // :(
 	else
 	{
-		static_assert(false, "Unsuported type");
+		static_assert(
+			std::is_same_v<uint8_t, _p::endianess_uint_align_t<T>> ||
+			std::is_same_v<uint16_t, _p::endianess_uint_align_t<T>> ||
+			std::is_same_v<uint32_t, _p::endianess_uint_align_t<T>> ||
+			std::is_same_v<uint64_t, _p::endianess_uint_align_t<T>>
+			, "Unsuported type");
 	}
-#endif
 }
 
 template<_p::is_endian_runtime_exclusive_c T>
@@ -219,12 +221,13 @@ template <_p::endian_supported_type_c T>
 	{
 		return byte_swap(p_in);
 	}
-#if !defined(__GNUG__) // :(
 	else
 	{
-		static_assert(false, "Unsuported host endianess");
+		static_assert(
+			std::endian::native == std::endian::little ||
+			std::endian::native == std::endian::big,
+			"Unsuported host endianess");
 	}
-#endif
 }
 
 template <_p::endian_supported_type_c T>
@@ -245,12 +248,13 @@ template <_p::endian_supported_type_c T>
 	{
 		return p_in;
 	}
-#if !defined(__GNUG__) // :(
 	else
 	{
-		static_assert(false, "Unsuported host endianess");
+		static_assert(
+			std::endian::native == std::endian::little ||
+			std::endian::native == std::endian::big,
+			"Unsuported host endianess");
 	}
-#endif
 }
 
 template <_p::endian_supported_type_c T>
@@ -270,12 +274,13 @@ template <_p::is_endian_runtime_exclusive_c T>
 	{
 		return byte_swap(p_in);
 	}
-#if !defined(__GNUG__) // :(
 	else
 	{
-		static_assert(false, "Unsuported host endianess");
+		static_assert(
+			std::endian::native == std::endian::little ||
+			std::endian::native == std::endian::big,
+			"Unsuported host endianess");
 	}
-#endif
 }
 
 template <_p::is_endian_runtime_exclusive_c T>
@@ -295,14 +300,13 @@ template <_p::is_endian_runtime_exclusive_c T>
 	{
 		return p_in;
 	}
-#if !defined(__GNUG__) // :(
 	else
 	{
 		static_assert(
-			std::endian::native != std::endian::little &&
-			std::endian::native != std::endian::big, "Unsuported host endianess");
+			std::endian::native == std::endian::little ||
+			std::endian::native == std::endian::big,
+			"Unsuported host endianess");
 	}
-#endif
 }
 
 template <_p::is_endian_runtime_exclusive_c T>
