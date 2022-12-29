@@ -20,6 +20,14 @@
       <Configuration>WSL_Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="SSH_Debug|x64">
+      <Configuration>SSH_Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="SSH_Release|x64">
+      <Configuration>SSH_Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="quickMSBuild" Condition="'$(Configuration)'=='Debug'">
     <CompilerFlavour>MSVC</CompilerFlavour>
@@ -39,6 +47,16 @@
   <PropertyGroup Label="quickMSBuild" Condition="'$(Configuration)'=='WSL_Release'">
     <CompilerFlavour>g++</CompilerFlavour>
     <BuildMethod>WSL</BuildMethod>
+    <UseDebugLibraries>false</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Label="quickMSBuild" Condition="'$(Configuration)'=='SSH_Debug'">
+    <CompilerFlavour>g++</CompilerFlavour>
+    <BuildMethod>ssh</BuildMethod>
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Label="quickMSBuild" Condition="'$(Configuration)'=='SSH_Release'">
+    <CompilerFlavour>g++</CompilerFlavour>
+    <BuildMethod>ssh</BuildMethod>
     <UseDebugLibraries>false</UseDebugLibraries>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
@@ -64,6 +82,8 @@
     <ClCompile Include="src\Core_Sync.cpp" />
     <ClCompile Include="src\Core_Thread.cpp" />
     <ClCompile Include="src\Core_Time.cpp" />
+    <ClCompile Include="src\fp_charconv.cpp" />
+    <ClCompile Include="src\fp_test.cpp" />
     <ClCompile Include="src\net\core_net.cpp" />
     <ClCompile Include="src\net\core_net_address.cpp" />
     <ClCompile Include="src\net\core_net_init.cpp" />
@@ -87,6 +107,9 @@
     <ClInclude Include="include\CoreLib\Core_Thread.hpp" />
     <ClInclude Include="include\CoreLib\Core_Time.hpp" />
     <ClInclude Include="include\CoreLib\Core_Type.hpp" />
+    <ClInclude Include="include\CoreLib\cpu\x64.hpp" />
+    <ClInclude Include="include\CoreLib\fp_charconv.hpp" />
+    <ClInclude Include="include\CoreLib\fp_test.hpp" />
     <ClInclude Include="include\CoreLib\net\core_net_address.hpp" />
     <ClInclude Include="include\CoreLib\net\core_net_init.hpp" />
     <ClInclude Include="include\CoreLib\net\core_net_socket.hpp" />

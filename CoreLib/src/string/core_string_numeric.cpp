@@ -377,10 +377,10 @@ namespace core
 			char_T* pivot = p_str.data() + size;
 			while(p_val > 9)
 			{
-				*(--pivot) = static_cast<char8_t>('0' + p_val % 10);
+				*(--pivot) = static_cast<char_T>('0' + p_val % 10);
 				p_val /= 10;
 			}
-			*(--pivot) = static_cast<char8_t>('0' + p_val);
+			*(--pivot) = static_cast<char_T>('0' + p_val);
 			return size;
 		}
 
@@ -391,10 +391,10 @@ namespace core
 			char_T* pivot = p_str + size;
 			while(p_val > 9)
 			{
-				*(--pivot) = static_cast<char8_t>('0' + p_val % 10);
+				*(--pivot) = static_cast<char_T>('0' + p_val % 10);
 				p_val /= 10;
 			}
-			*(--pivot) = static_cast<char8_t>('0' + p_val);
+			*(--pivot) = static_cast<char_T>('0' + p_val);
 		}
 
 		template <typename char_T, typename num_T>
@@ -591,7 +591,7 @@ namespace core
 				template<typename char_T>
 				static inline void to_chars_unsafe(const num_T p_val, char_T* const p_str)
 				{
-					return fp2dec_unsafe(p_val, p_str);
+					fp2dec_unsafe(p_val, p_str);
 				}
 			};
 
@@ -618,7 +618,7 @@ namespace core
 				template<typename char_T>
 				static inline void to_chars_unsafe(const num_T p_val, char_T* const p_str)
 				{
-					return int2dec_unsafe(p_val, p_str);
+					int2dec_unsafe(p_val, p_str);
 				}
 			};
 
@@ -645,7 +645,7 @@ namespace core
 				template<typename char_T>
 				static inline void to_chars_unsafe(const num_T p_val, char_T* const p_str)
 				{
-					return uint2dec_unsafe(p_val, p_str);
+					uint2dec_unsafe(p_val, p_str);
 				}
 			};
 		}	//namespace
@@ -716,7 +716,7 @@ namespace core
 		template <_p::is_internal_charconv_c char_T, char_conv_dec_supported_c num_T>
 		void to_chars_unsafe(const num_T p_val, char_T* const p_str)
 		{
-			return _p::help_char_conv<num_T>::to_chars_unsafe(p_val, p_str);
+			_p::help_char_conv<num_T>::to_chars_unsafe(p_val, p_str);
 		}
 
 		template <char_conv_hex_supported_c num_T>

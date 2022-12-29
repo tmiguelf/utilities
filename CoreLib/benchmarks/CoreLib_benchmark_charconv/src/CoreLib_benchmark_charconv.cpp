@@ -34,8 +34,12 @@
 
 #include <CoreLib/string/core_string_numeric.hpp>
 #include <CoreLib/string/core_string_misc.hpp>
+#include <CoreLib/fp_charconv.hpp>
+#include <CoreLib/fp_test.hpp>
 
 //======== ======== ======== ======== Auxiliary Test case generator ======== ======== ======== ========
+
+#if 0
 
 template <typename char_T>
 std::basic_string<char_T> str2_Tstring(std::string_view p_str)
@@ -931,3 +935,200 @@ BENCHMARK(core_to_hex_chars_fix_uint32);
 BENCHMARK( std_to_hex_chars_uint64);
 BENCHMARK(core_to_hex_chars_uint64);
 BENCHMARK(core_to_hex_chars_fix_uint64);
+
+#endif
+
+template<typename T>
+struct fp_cases;
+
+template<>
+struct fp_cases<float>
+{
+	static constexpr uint16_t buff_size = 256;
+
+	static constexpr uint16_t sig_digits = 111;
+	inline static float sci_case()
+	{
+		float test_case;// = 1.125E10f;
+		reinterpret_cast<uint32_t&>(test_case) = 0xFFFFFF;
+		//reinterpret_cast<uint32_t&>(test_case) = 1;
+		return test_case;
+	}
+
+	static constexpr uint16_t precision_digits = 2;
+	inline static float fix_case()
+	{
+		float test_case = 1.125;
+		//reinterpret_cast<uint32_t&>(test_case) = 1;
+		return test_case;
+	}
+};
+
+template<>
+struct fp_cases<double>
+{
+	static constexpr uint16_t buff_size = 2048;
+
+	static constexpr uint16_t sig_digits = 766;
+	inline static double sci_case()
+	{
+		double test_case;// = 1.125E10;
+		reinterpret_cast<uint64_t&>(test_case) = 0x001FFFFFFFFFFFFF;
+		//reinterpret_cast<uint64_t&>(test_case) = 1;
+		return test_case;
+	}
+
+	static constexpr uint16_t precision_digits = 2;
+	inline static double fix_case()
+	{
+		double test_case = 1.125;
+		//reinterpret_cast<uint64_t&>(test_case) = 1;
+		return test_case;
+	}
+};
+
+
+template<typename fp_t>
+static inline void std_to_chars_sci(benchmark::State& state)
+{
+	using fp_case_t = fp_cases<fp_t>;
+
+	const fp_t test_case = fp_case_t::sci_case();
+	const uint16_t sig_digits = fp_case_t::sig_digits;
+
+	std::array<char, fp_case_t::buff_size> buff;
+	for (auto _ : state)
+	{
+		std::to_chars(buff.data(), buff.data() + buff.size(), test_case, std::chars_format::scientific, sig_digits);
+		benchmark::DoNotOptimize(buff);
+	}
+}
+
+
+template<typename fp_t>
+static inline void std_to_chars_fix(benchmark::State& state)
+{
+	using fp_case_t = fp_cases<fp_t>;
+
+	const fp_t test_case = fp_case_t::fix_case();
+	const uint16_t precision_digits = fp_case_t::precision_digits;
+
+	std::array<char, fp_case_t::buff_size> buff;
+	for (auto _ : state)
+	{
+		std::to_chars(buff.data(), buff.data() + buff.size(), test_case, std::chars_format::fixed, precision_digits);
+		benchmark::DoNotOptimize(buff);
+	}
+}
+
+template<typename fp_t>
+static inline void std_to_chars_short(benchmark::State& state)
+{
+	using fp_case_t = fp_cases<fp_t>;
+	const fp_t test_case = fp_case_t::sci_case();
+
+	std::array<char, fp_case_t::buff_size> buff;
+	for (auto _ : state)
+	{
+		std::to_chars(buff.data(), buff.data() + buff.size(), test_case);
+		benchmark::DoNotOptimize(buff);
+	}
+}
+
+#if 0
+static inline void mod_to_chars_sci_float(benchmark::State& state)
+{
+	using fp_t = float;
+	using fp_case_t = fp_cases<fp_t>;
+	const fp_t test_case = fp_case_t::sci_case();
+	const uint16_t sig_digits = fp_case_t::sig_digits;
+
+	std::array<char, fp_case_t::buff_size> buff;
+	for (auto _ : state)
+	{
+		test::test_fp_func(buff.data(), buff.data() + buff.size(), test_case, sig_digits);
+		benchmark::DoNotOptimize(buff);
+	}
+}
+#endif
+
+template<typename fp_t>
+static inline void core_to_chars_sci(benchmark::State& state)
+{
+	using fp_case_t = fp_cases<fp_t>;
+
+	const fp_t test_case = fp_case_t::sci_case();
+	const uint16_t sig_digits = fp_case_t::sig_digits;
+
+	std::array<char8_t, fp_case_t::buff_size> buff;
+
+	for (auto _ : state)
+	{
+		core::fp_to_chars_sci_context<fp_t> context;
+		core::fp_to_chars_sci_result res =
+			core::to_chars_sci_size(test_case, context, sig_digits, core::fp_round::nearest);
+
+		if(res.classification == core::fp_classify::finite)
+		{
+			char8_t* pivot = buff.data();
+			if(res.is_negative)
+			{
+				*(pivot++) = '-';
+			}
+			char8_t* const unit_pos = pivot++;
+			char8_t* decimal_pos;
+			if(res.size.mantissa_decimal_size)
+			{
+				*(pivot++) = '.';
+				decimal_pos = pivot;
+				pivot += res.size.mantissa_decimal_size;
+			}
+			else
+			{
+				decimal_pos = pivot;
+			}
+			*(pivot++) = 'E';
+			char8_t* exp_pos = pivot;
+
+			if(res.size.is_exp_negative)
+			{
+				*(exp_pos++) = '-';
+			}
+
+			core::to_chars_sci_mantissa_unsafe(context, unit_pos, decimal_pos);
+			core::to_chars_sci_exp_unsafe(context, exp_pos);
+		}
+		benchmark::DoNotOptimize(buff);
+	}
+}
+
+template<typename fp_t>
+static inline void core_to_chars_fix(benchmark::State& state)
+{
+	using fp_case_t = fp_cases<fp_t>;
+
+	const fp_t test_case = fp_case_t::fix_case();
+	const uint16_t precision_digits = fp_case_t::precision_digits;
+
+	//std::array<char, fp_case_t::buff_size> buff;
+
+	for (auto _ : state)
+	{
+		core::fp_to_chars_fix_context<fp_t> context;
+		core::fp_to_chars_fix_result res =
+			core::to_chars_fix_size(test_case, context, precision_digits, core::fp_round::nearest);
+		benchmark::DoNotOptimize(res);
+	}
+}
+
+BENCHMARK_TEMPLATE(std_to_chars_sci, float);
+BENCHMARK_TEMPLATE(std_to_chars_fix, float);
+BENCHMARK_TEMPLATE(std_to_chars_short, float);
+
+BENCHMARK_TEMPLATE(std_to_chars_sci, double);
+BENCHMARK_TEMPLATE(std_to_chars_fix, double);
+BENCHMARK_TEMPLATE(std_to_chars_short, double);
+
+BENCHMARK_TEMPLATE(core_to_chars_sci, float);
+BENCHMARK_TEMPLATE(core_to_chars_fix, float);
+BENCHMARK_TEMPLATE(core_to_chars_sci, double);

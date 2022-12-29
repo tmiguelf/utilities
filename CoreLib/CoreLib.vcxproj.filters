@@ -27,6 +27,9 @@
     <Filter Include="Source Files\net">
       <UniqueIdentifier>{015a61ef-c3a7-4720-9828-de298ddc40fe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\cpu">
+      <UniqueIdentifier>{cdd89e89-76f0-4e94-90e8-849f85480834}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="CoreLib.include.props">
@@ -136,6 +139,15 @@
     <ClInclude Include="include\CoreLib\Core_cpu.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\CoreLib\fp_charconv.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\cpu\x64.hpp">
+      <Filter>Header Files\cpu</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\fp_test.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\string\core_string_misc.cpp">
@@ -184,6 +196,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core_cpu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\fp_charconv.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\fp_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

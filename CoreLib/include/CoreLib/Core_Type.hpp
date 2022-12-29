@@ -48,7 +48,7 @@ namespace literals
 	constexpr uint16_t  operator "" _ui16(unsigned long long int const p_var) { return static_cast<uint16_t >(p_var); }
 	constexpr uint32_t  operator "" _ui32(unsigned long long int const p_var) { return static_cast<uint32_t >(p_var); }
 	constexpr uint64_t  operator "" _ui64(unsigned long long int const p_var) { return static_cast<uint64_t >(p_var); }
-	constexpr int8_t    operator "" _i8	 (unsigned long long int const p_var) { return static_cast<int8_t   >(p_var); }
+	constexpr int8_t    operator "" _i8  (unsigned long long int const p_var) { return static_cast<int8_t   >(p_var); }
 	constexpr int16_t   operator "" _i16 (unsigned long long int const p_var) { return static_cast<int16_t  >(p_var); }
 	constexpr int32_t   operator "" _i32 (unsigned long long int const p_var) { return static_cast<int32_t  >(p_var); }
 	constexpr int64_t   operator "" _i64 (unsigned long long int const p_var) { return static_cast<int64_t  >(p_var); }
@@ -57,7 +57,7 @@ namespace literals
 	constexpr double    operator "" _fp64(unsigned long long int const p_var) { return static_cast<double   >(p_var); }
 	constexpr double    operator "" _fp64(         long double   const p_var) { return static_cast<double   >(p_var); }
 	constexpr uintptr_t operator "" _uip (unsigned long long int const p_var) { return static_cast<uintptr_t>(p_var); }
-	constexpr intptr_t  operator "" _ip	 (unsigned long long int const p_var) { return static_cast<intptr_t >(p_var); }
+	constexpr intptr_t  operator "" _ip  (unsigned long long int const p_var) { return static_cast<intptr_t >(p_var); }
 } //namespace literals
 
 } //namespace core
