@@ -345,7 +345,7 @@ namespace core
 		}
 
 
-		static inline void exp_load(const exp_st exponent, fp_to_chars_sci_data& p_out)
+		static inline void exp_load(const exp_st exponent, fp_to_chars_sci_size& p_out)
 		{
 			if(exponent < 0)
 			{
@@ -386,7 +386,7 @@ namespace core
 		using uint_t = uint64_t;
 
 		static constexpr uint_t exponent_mask	= 0x7FF0000000000000_ui64;
-		static constexpr uint_t exponent_offset	= 23_ui32;
+		static constexpr uint_t exponent_offset	= 52_ui64;
 		static constexpr uint_t mantissa_mask	= 0x000FFFFFFFFFFFFF_ui64;
 		static constexpr uint_t sign_mask		= 0x8000000000000000_ui64;
 
@@ -537,12 +537,12 @@ namespace core
 			const uint16_t t_size = static_cast<uint16_t>(p_val.size());
 			for(uint16_t i = 2; i < t_size; ++i)
 			{
-				if(p_val[i]) return i * max_pow_10_digits + leading_0(p_val[0]);
+				if(p_val[i]) return static_cast<exp_ut>(i * max_pow_10_digits + leading_0(p_val[0]));
 			}
 			return t_size * max_pow_10_digits;
 		}
 
-		static inline void exp_load(exp_st exponent, fp_to_chars_sci_data& p_out)
+		static inline void exp_load(exp_st exponent, fp_to_chars_sci_size& p_out)
 		{
 			if(exponent < 0)
 			{
@@ -1202,7 +1202,6 @@ namespace core
 	{
 		using fp_type = float;
 		using fp_utils_t = fp_utils<fp_type>;
-		using exp_ut = fp_utils_t::exp_ut;
 
 		fp_utils_t::to_chars_exp(context.exponent, exp_chars);
 	}
@@ -1263,7 +1262,7 @@ namespace core
 
 		precision = std::clamp(precision, fp_utils_t::min_fixed_precision, fp_utils_t::max_fixed_precision);
 
-		const int16_t digits_to_precision = decimal_seperator_offset - precision;
+		const int16_t digits_to_precision = static_cast<int16_t>(decimal_seperator_offset) - precision;
 
 		if(digits_to_precision <= leading_zeros)
 		{ //all digits make it exactly
@@ -1295,7 +1294,7 @@ namespace core
 						else
 						{
 							res.size.decimal_size = 0;
-							res.size.unit_size = 1 + num_digits - decimal_seperator_offset;
+							res.size.unit_size = static_cast<exp_ut>(1 + num_digits - static_cast<exp_ut>(decimal_seperator_offset));
 						}
 
 						while(last_block)
@@ -1511,8 +1510,6 @@ namespace core
 	{
 		using fp_type = double;
 		using fp_utils_t = fp_utils<fp_type>;
-		using exp_ut = fp_utils_t::exp_ut;
-
 		fp_utils_t::to_chars_exp(context.exponent, exp_chars);
 	}
 

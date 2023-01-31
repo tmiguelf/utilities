@@ -63,7 +63,7 @@ namespace core
 	template <>
 	struct fp_type_traits<double>
 	{
-		static constexpr int16_t max_scientific_exponent = 324;
+		static constexpr int16_t max_scientific_exponent = 308;
 		static constexpr int16_t min_scientific_exponent = -324;
 		 
 		static constexpr uint16_t max_scientific_decimal_digits = 766;
@@ -92,6 +92,12 @@ namespace core
 		inf     ,
 		nan     ,
 	};
+
+
+
+
+
+
 
 	enum class fp_round: uint8_t
 	{
@@ -139,38 +145,30 @@ namespace core
 
 
 
-	struct fp_to_chars_fix_data
+	struct fp_to_chars_fix_size
 	{
 		uint16_t unit_size;
 		uint16_t decimal_size;
 	};
 
-	struct fp_to_chars_sci_data
+	struct fp_to_chars_sci_size
 	{
 		uint16_t mantissa_decimal_size;
 		uint16_t exponent_size;
 		bool is_exp_negative;
 	};
 
+
 	struct fp_to_chars_fix_result: public fp_base_classify
 	{
-		fp_to_chars_fix_data size;
+		fp_to_chars_fix_size size;
 	};
 
 	struct fp_to_chars_sci_result: public fp_base_classify
 	{
-		fp_to_chars_sci_data size;
+		fp_to_chars_sci_size size;
 	};
 
-	struct fp_to_chars_shortest_result: public fp_base_classify
-	{
-		union
-		{
-			fp_to_chars_fix_data fix;
-			fp_to_chars_sci_data sci;
-		} size;
-		bool is_fix;
-	};
 
 
 	template <class T>
@@ -187,13 +185,57 @@ namespace core
 		int16_t decimal_offset;
 	};
 
+
+	template <class T>
+	struct fp_to_chars_shortest_context;
+
+	template <>
+	struct fp_to_chars_shortest_context<float>
+	{
+		uint32_t mantissa;
+		int16_t exponent;
+		uint8_t sig_digits;
+	};
+
+	template <>
+	struct fp_to_chars_shortest_context<double>
+	{
+		uint64_t mantissa;
+		int16_t exponent;
+		uint8_t sig_digits;
+	};
+
+
+
+
+	template<typename fp_t>
+	fp_base_classify to_chars_shortest_classify(fp_t value, fp_to_chars_shortest_context<fp_t>& context);
+
+	template<typename fp_t>
+	fp_to_chars_sci_size to_chars_shortest_sci_size(fp_to_chars_shortest_context<fp_t> context);
+
+	template<typename fp_t>
+	fp_to_chars_fix_size to_chars_shortest_fix_size(fp_to_chars_shortest_context<fp_t> context);
+
+
+	template<typename fp_t, typename char_t>
+	void to_chars_shortest_sci_unsafe(fp_to_chars_shortest_context<fp_t> context, char_t* unit_char, char_t* decimal_chars);
+
+	template<typename fp_t, typename char_t>
+	void to_chars_shortest_sci_exp_unsafe(fp_to_chars_shortest_context<fp_t> context, char_t* exp_chars);
+
+	template<typename fp_t, typename char_t>
+	void to_chars_shortest_fix_unsafe(fp_to_chars_shortest_context<fp_t> context, char_t* unit_chars, char_t* decimal_chars);
+
+
+
+
+
 	fp_to_chars_sci_result to_chars_sci_size(float value, fp_to_chars_sci_context<float>& context, uint16_t significant_digits, fp_round rounding_mode);
 	fp_to_chars_fix_result to_chars_fix_size(float value, fp_to_chars_fix_context<float>& context, int16_t precision, fp_round rounding_mode);
 
 	fp_to_chars_sci_result to_chars_sci_shortest_size(float value);
 	fp_to_chars_fix_result to_chars_fix_shortest_size(float value);
-	fp_to_chars_shortest_result to_chars_shortest_size(float value, uint8_t exp_penalty, bool exp_p_sign_penalty, bool fix_0_unit_penalty);
-
 
 
 	void to_chars_sci_mantissa_unsafe(const fp_to_chars_sci_context<float>& context, char8_t* unit_char, char8_t* decimal_chars);

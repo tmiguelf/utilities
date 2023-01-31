@@ -30,6 +30,9 @@
     <Filter Include="Header Files\cpu">
       <UniqueIdentifier>{cdd89e89-76f0-4e94-90e8-849f85480834}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\ryu">
+      <UniqueIdentifier>{e2536726-8ff2-4e91-b498-63f4d321c6d4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="CoreLib.include.props">
@@ -148,6 +151,42 @@
     <ClInclude Include="include\CoreLib\fp_test.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\ryu\common.hpp">
+      <Filter>Source Files\ryu</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ryu\d2fixed_full_table.hpp">
+      <Filter>Source Files\ryu</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ryu\d2s_full_table.hpp">
+      <Filter>Source Files\ryu</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ryu\d2s_intrinsics.hpp">
+      <Filter>Source Files\ryu</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ryu\d2s_small_table.hpp">
+      <Filter>Source Files\ryu</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ryu\digit_table.hpp">
+      <Filter>Source Files\ryu</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ryu\f2s_full_table.hpp">
+      <Filter>Source Files\ryu</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ryu\f2s_intrinsics.hpp">
+      <Filter>Source Files\ryu</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ryu\generic_128.hpp">
+      <Filter>Source Files\ryu</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ryu\ryu.hpp">
+      <Filter>Source Files\ryu</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ryu\ryu_generic_128.hpp">
+      <Filter>Source Files\ryu</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ryu\ryu_parse.hpp">
+      <Filter>Source Files\ryu</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\string\core_string_misc.cpp">
@@ -202,6 +241,27 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\fp_test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ryu\s2d.cpp">
+      <Filter>Source Files\ryu</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ryu\s2f.cpp">
+      <Filter>Source Files\ryu</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ryu\d2fixed.cpp">
+      <Filter>Source Files\ryu</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ryu\d2s.cpp">
+      <Filter>Source Files\ryu</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ryu\f2s.cpp">
+      <Filter>Source Files\ryu</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ryu\generic_128.cpp">
+      <Filter>Source Files\ryu</Filter>
+    </ClCompile>
+    <ClCompile Include="src\fp_charconv2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
