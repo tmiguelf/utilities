@@ -95,7 +95,7 @@ static inline uint32_t mulShift_mod1e9(const uint64_t m, const std::array<uint64
 
 	assert(j >= 128);
 	assert(j <= 180);
-	const uint32_t dist			= static_cast<uint32_t>(j - 128); // dist: [0, 52]
+	const uint8_t dist			= static_cast<uint8_t>(j - 128); // dist: [0, 52]
 	const uint64_t shiftedhigh	= s1high >> dist;
 	const uint64_t shiftedlow	= shiftright128(s1low, s1high, dist);
 	return uint128_mod1e9(shiftedhigh, shiftedlow);
@@ -228,11 +228,13 @@ static inline uint32_t pow10BitsForIndex(const uint32_t idx)
 	return 16 * idx + POW10_ADDITIONAL_BITS;
 }
 
+#if 0
 static inline uint32_t lengthForIndex(const uint32_t idx)
 {
 	// +1 for ceil, +16 for mantissa, +8 to round up when dividing by 9
 	return (log10Pow2(16 * (int32_t) idx) + 1 + 16 + 8) / 9;
 }
+#endif
 
 static inline int copy_special_str_printf(char* const result, const bool sign, const uint64_t mantissa)
 {
@@ -248,7 +250,7 @@ static inline int copy_special_str_printf(char* const result, const bool sign, c
 	memcpy(result + sign, "Infinity", 8);
 	return sign + 8;
 }
-
+#if 0
 uintptr_t d2fixed_buffered_n(double d, uint32_t precision, char* result)
 {
 	const uint64_t bits = reinterpret_cast<uint64_t&>(d);
@@ -727,3 +729,4 @@ uintptr_t d2exp_buffered_n(double d, uint32_t precision, char* result)
 
 	return index;
 }
+#endif

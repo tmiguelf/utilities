@@ -35,7 +35,6 @@
 #include <CoreLib/string/core_string_numeric.hpp>
 #include <CoreLib/string/core_string_misc.hpp>
 #include <CoreLib/fp_charconv.hpp>
-#include <CoreLib/fp_test.hpp>
 
 //======== ======== ======== ======== Auxiliary Test case generator ======== ======== ======== ========
 
@@ -1084,6 +1083,107 @@ static inline void core_to_chars_shortest(benchmark::State& state)
 	}
 }
 
+template<typename fp_t>
+static inline void core_to_chars_shortest_classify(benchmark::State& state)
+{
+	using fp_case_t = fp_cases<fp_t>;
+	const fp_t test_case = fp_case_t::sci_case();
+
+	for (auto _ : state)
+	{
+		core::fp_to_chars_shortest_context<fp_t> context;
+		core::fp_base_classify res =
+			core::to_chars_shortest_classify(test_case, context);
+		benchmark::DoNotOptimize(res);
+	}
+}
+
+template<typename fp_t>
+static inline void core_to_chars_shortest_size(benchmark::State& state)
+{
+	using fp_case_t = fp_cases<fp_t>;
+
+	const fp_t test_case = fp_case_t::sci_case();
+
+	core::fp_to_chars_shortest_context<fp_t> context;
+	core::fp_base_classify res =
+		core::to_chars_shortest_classify(test_case, context);
+
+	for (auto _ : state)
+	{
+		if(res.classification == core::fp_classify::finite)
+		{
+			core::fp_to_chars_sci_size sci_size = core::to_chars_shortest_sci_size(context);
+			core::fp_to_chars_fix_size fix_size = core::to_chars_shortest_fix_size(context);
+
+			const uint8_t sci_total_size = static_cast<uint8_t>(sci_size.exponent_size + sci_size.mantissa_decimal_size + sci_size.is_exp_negative + 3);
+			const uint8_t fix_total_size = static_cast<uint8_t>(fix_size.unit_size + fix_size.decimal_size + 1);
+			benchmark::DoNotOptimize(sci_total_size);
+			benchmark::DoNotOptimize(fix_total_size);
+		}
+	}
+}
+
+template<typename fp_t, typename char_t>
+static inline void core_to_chars_shortest_convert(benchmark::State& state)
+{
+	using fp_case_t = fp_cases<fp_t>;
+
+	const fp_t test_case = fp_case_t::sci_case();
+
+	std::array<char_t, fp_case_t::buff_size> buff;
+
+	core::fp_to_chars_shortest_context<fp_t> context;
+	core::fp_base_classify res =
+		core::to_chars_shortest_classify(test_case, context);
+
+	core::fp_to_chars_sci_size sci_size = core::to_chars_shortest_sci_size(context);
+	core::fp_to_chars_fix_size fix_size = core::to_chars_shortest_fix_size(context);
+
+	const uint8_t sci_total_size = static_cast<uint8_t>(sci_size.exponent_size + sci_size.mantissa_decimal_size + sci_size.is_exp_negative + 3);
+	const uint8_t fix_total_size = static_cast<uint8_t>(fix_size.unit_size + fix_size.decimal_size + 1);
+
+
+	for (auto _ : state)
+	{
+		if(res.classification == core::fp_classify::finite)
+		{
+			char_t* pivot = buff.data();
+			if(res.is_negative)
+			{
+				*(pivot++) = char_t{'-'};
+			}
+
+			if(sci_total_size < fix_total_size)
+			{
+				char_t* const unit_pos = pivot++;
+				*(pivot++) = char_t{'.'};
+				char_t* const decimal_pos = pivot;
+				pivot += sci_size.mantissa_decimal_size;
+
+				*(pivot++) = char_t{'E'};
+				if(sci_size.is_exp_negative)
+				{
+					*(pivot++) = char_t{'-'};
+				}
+				char_t* const exp_pos = pivot;
+
+				core::to_chars_shortest_sci_unsafe(context, unit_pos, decimal_pos);
+				core::to_chars_shortest_sci_exp_unsafe(context, exp_pos);
+			}
+			else
+			{
+				char_t* const unit_pos = pivot;
+				pivot += fix_size.unit_size;
+				*(pivot++) = char_t{'.'};
+				char_t* const decimal_pos = pivot;
+				core::to_chars_shortest_fix_unsafe(context, unit_pos, decimal_pos);
+			}
+		}
+		benchmark::DoNotOptimize(buff);
+	}
+}
+
 BENCHMARK_TEMPLATE(std_to_chars_short, float);
 BENCHMARK_TEMPLATE(std_to_chars_short, double);
 
@@ -1095,6 +1195,15 @@ BENCHMARK_TEMPLATE(core_to_chars_shortest, double, char16_t);
 
 BENCHMARK_TEMPLATE(core_to_chars_shortest, float , char32_t);
 BENCHMARK_TEMPLATE(core_to_chars_shortest, double, char32_t);
+
+BENCHMARK_TEMPLATE(core_to_chars_shortest_classify, float);
+BENCHMARK_TEMPLATE(core_to_chars_shortest_classify, double);
+
+BENCHMARK_TEMPLATE(core_to_chars_shortest_size, float);
+BENCHMARK_TEMPLATE(core_to_chars_shortest_size, double);
+
+BENCHMARK_TEMPLATE(core_to_chars_shortest_convert, float , char8_t);
+BENCHMARK_TEMPLATE(core_to_chars_shortest_convert, double, char8_t);
 
 //BENCHMARK_TEMPLATE(std_to_chars_sci, float);
 //BENCHMARK_TEMPLATE(std_to_chars_fix, float);

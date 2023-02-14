@@ -41,6 +41,8 @@
 #define DOUBLE_EXPONENT_BITS 11
 #define DOUBLE_EXPONENT_BIAS 1023
 
+#if 0
+
 static inline uint32_t floor_log2(const uint64_t value)
 {
 	return static_cast<uint32_t>(std::countl_zero(value));
@@ -252,3 +254,4 @@ Status s2d_n(const char* buffer, uintptr_t len, double* result)
 	*result		  = int64Bits2Double(ieee);
 	return Status::SUCCESS;
 }
+#endif

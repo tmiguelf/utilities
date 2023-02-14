@@ -84,14 +84,12 @@
     <ClCompile Include="src\Core_Time.cpp" />
     <ClCompile Include="src\fp_charconv.cpp" />
     <ClCompile Include="src\fp_charconv2.cpp" />
-    <ClCompile Include="src\fp_test.cpp" />
     <ClCompile Include="src\net\core_net.cpp" />
     <ClCompile Include="src\net\core_net_address.cpp" />
     <ClCompile Include="src\net\core_net_init.cpp" />
     <ClCompile Include="src\ryu\d2fixed.cpp" />
     <ClCompile Include="src\ryu\d2s.cpp" />
     <ClCompile Include="src\ryu\f2s.cpp" />
-    <ClCompile Include="src\ryu\generic_128.cpp" />
     <ClCompile Include="src\ryu\s2d.cpp" />
     <ClCompile Include="src\ryu\s2f.cpp" />
     <ClCompile Include="src\string\core_os_string.cpp" />
@@ -116,7 +114,6 @@
     <ClInclude Include="include\CoreLib\Core_Type.hpp" />
     <ClInclude Include="include\CoreLib\cpu\x64.hpp" />
     <ClInclude Include="include\CoreLib\fp_charconv.hpp" />
-    <ClInclude Include="include\CoreLib\fp_test.hpp" />
     <ClInclude Include="include\CoreLib\net\core_net_address.hpp" />
     <ClInclude Include="include\CoreLib\net\core_net_init.hpp" />
     <ClInclude Include="include\CoreLib\net\core_net_socket.hpp" />
@@ -136,6 +133,7 @@
     <ClInclude Include="include\CoreLib\toPrint\toPrint_sink.hpp" />
     <ClInclude Include="include\CoreLib\toPrint\toPrint_std_ostream.hpp" />
     <ClInclude Include="include\CoreLib\toPrint\toPrint_support.hpp" />
+    <ClInclude Include="src\fp_traits.hpp" />
     <ClInclude Include="src\ryu\common.hpp" />
     <ClInclude Include="src\ryu\d2fixed_full_table.hpp" />
     <ClInclude Include="src\ryu\d2s_full_table.hpp" />
@@ -144,9 +142,7 @@
     <ClInclude Include="src\ryu\digit_table.hpp" />
     <ClInclude Include="src\ryu\f2s_full_table.hpp" />
     <ClInclude Include="src\ryu\f2s_intrinsics.hpp" />
-    <ClInclude Include="src\ryu\generic_128.hpp" />
     <ClInclude Include="src\ryu\ryu.hpp" />
-    <ClInclude Include="src\ryu\ryu_generic_128.hpp" />
     <ClInclude Include="src\ryu\ryu_parse.hpp" />
   </ItemGroup>
   <ItemGroup>

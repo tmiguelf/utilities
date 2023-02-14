@@ -46,6 +46,7 @@ struct floating_decimal_32
 	int32_t exponent;
 };
 
+#if 0
 static inline floating_decimal_32 f2d(const uint32_t ieeeMantissa, const uint32_t ieeeExponent)
 {
 	int32_t	 e2;
@@ -214,6 +215,7 @@ static inline floating_decimal_32 f2d(const uint32_t ieeeMantissa, const uint32_
 	return fd;
 }
 
+
 static inline int to_chars(const floating_decimal_32 v, const bool sign, char* const result)
 {
 	// Step 5: Print the decimal representation.
@@ -316,3 +318,4 @@ uintptr_t f2s_buffered_n(float f, char* result)
 	const floating_decimal_32 v = f2d(ieeeMantissa, ieeeExponent);
 	return to_chars(v, ieeeSign, result);
 }
+#endif

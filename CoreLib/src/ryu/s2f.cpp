@@ -35,6 +35,8 @@
 #define FLOAT_EXPONENT_BITS 8
 #define FLOAT_EXPONENT_BIAS 127
 
+#if 0
+
 static inline uint32_t floor_log2(const uint32_t value)
 {
 	return static_cast<uint32_t>(std::countl_zero(value));
@@ -173,7 +175,7 @@ Status s2f_n(const char* buffer, uintptr_t len, float* result)
 		// To that end, we use the FLOAT_POW5_SPLIT table.
 		int j = e2 - e10 - ceil_log2pow5(e10) + FLOAT_POW5_BITCOUNT;
 		assert(j >= 0);
-		m2 = mulPow5divPow2(m10, e10, j);
+		m2 = mulPow5divPow2(m10, static_cast<uint16_t>(e10), static_cast<uint8_t>(j));
 
 		// We also compute if the result is exact, i.e.,
 		//   [m10 * 10^e10 / 2^e2] == m10 * 10^e10 / 2^e2.
@@ -244,3 +246,4 @@ Status s2f_n(const char* buffer, uintptr_t len, float* result)
 	*result		  = int32Bits2Float(ieee);
 	return Status::SUCCESS;
 }
+#endif

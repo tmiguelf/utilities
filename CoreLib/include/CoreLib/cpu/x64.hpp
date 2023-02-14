@@ -59,7 +59,6 @@ namespace core
 	{
 		return _subborrow_u64(p_borrow, p_1, p_2, &p_out);
 	}
-
 #else
 	static inline uint64_t umul(uint64_t p_1, const uint64_t p_2, uint64_t& p_out_hi)
 	{

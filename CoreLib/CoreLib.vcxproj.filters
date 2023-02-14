@@ -148,9 +148,6 @@
     <ClInclude Include="include\CoreLib\cpu\x64.hpp">
       <Filter>Header Files\cpu</Filter>
     </ClInclude>
-    <ClInclude Include="include\CoreLib\fp_test.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\ryu\common.hpp">
       <Filter>Source Files\ryu</Filter>
     </ClInclude>
@@ -175,17 +172,14 @@
     <ClInclude Include="src\ryu\f2s_intrinsics.hpp">
       <Filter>Source Files\ryu</Filter>
     </ClInclude>
-    <ClInclude Include="src\ryu\generic_128.hpp">
-      <Filter>Source Files\ryu</Filter>
-    </ClInclude>
     <ClInclude Include="src\ryu\ryu.hpp">
-      <Filter>Source Files\ryu</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ryu\ryu_generic_128.hpp">
       <Filter>Source Files\ryu</Filter>
     </ClInclude>
     <ClInclude Include="src\ryu\ryu_parse.hpp">
       <Filter>Source Files\ryu</Filter>
+    </ClInclude>
+    <ClInclude Include="src\fp_traits.hpp">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -240,9 +234,6 @@
     <ClCompile Include="src\fp_charconv.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\fp_test.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\ryu\s2d.cpp">
       <Filter>Source Files\ryu</Filter>
     </ClCompile>
@@ -256,9 +247,6 @@
       <Filter>Source Files\ryu</Filter>
     </ClCompile>
     <ClCompile Include="src\ryu\f2s.cpp">
-      <Filter>Source Files\ryu</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ryu\generic_128.cpp">
       <Filter>Source Files\ryu</Filter>
     </ClCompile>
     <ClCompile Include="src\fp_charconv2.cpp">

@@ -88,6 +88,7 @@ struct floating_decimal_64
 	int32_t exponent;
 };
 
+#if 0
 static inline floating_decimal_64 d2d(const uint64_t ieeeMantissa, const uint32_t ieeeExponent)
 {
 	int32_t	 e2;
@@ -501,3 +502,4 @@ uintptr_t d2s_buffered_n(double f, char* result)
 
 	return to_chars(v, ieeeSign, result);
 }
+#endif

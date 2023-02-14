@@ -23,12 +23,18 @@
 #include <cstdint>
 
 #include <CoreLib/cpu/x64.hpp>
-
+#ifdef _WIN32
 #include <intrin.h>
 
+
+#endif // _WIN32
+
+
+
 // Returns the lower 64 bits of (hi*2^64 + lo) >> dist, with 0 < dist < 64.
-static inline uint64_t shiftright128(const uint64_t lo, const uint64_t hi, const uint32_t dist)
+static inline uint64_t shiftright128(const uint64_t lo, const uint64_t hi, const uint8_t dist)
 {
+
 	// For the __shiftright128 intrinsic, the shift value is always
 	// modulo 64.
 	// In the current implementation of the double-precision version
@@ -40,7 +46,12 @@ static inline uint64_t shiftright128(const uint64_t lo, const uint64_t hi, const
 	// Check this here in case a future change requires larger shift
 	// values. In this case this function needs to be adjusted.
 	assert(dist < 64);
-	return __shiftright128(lo, hi, (unsigned char) dist);
+#ifdef _WIN32
+	return __shiftright128(lo, hi, dist);
+#else
+	const uint8_t rem = 64 - dist;
+	return (lo >> dist) | (hi << rem);
+#endif
 }
 
 static inline uint32_t pow5Factor(uint64_t value)
@@ -66,7 +77,7 @@ static inline bool multipleOfPowerOf5(const uint64_t value, const uint32_t p)
 }
 
 // Returns true if value is divisible by 2^p.
-static inline bool multipleOfPowerOf2(const uint64_t value, const uint32_t p)
+static inline bool multipleOfPowerOf2(const uint64_t value, const uint8_t p)
 {
 	assert(value != 0);
 	assert(p < 64);
@@ -112,7 +123,7 @@ static inline bool multipleOfPowerOf2(const uint64_t value, const uint32_t p)
 //       no internal overflow, but requires extra work since the intermediate
 //       results are not perfectly aligned.
 
-static inline uint64_t mulShift64(const uint64_t m, const uint64_t* const mul, const int32_t j)
+static inline uint64_t mulShift64(const uint64_t m, const uint64_t* const mul, const uint8_t j)
 {
 	// m is maximum 55 bits
 	uint64_t	   high1;								// 128
@@ -124,15 +135,16 @@ static inline uint64_t mulShift64(const uint64_t m, const uint64_t* const mul, c
 	{
 		++high1; // overflow into high1
 	}
-	return shiftright128(sum, high1, j - 64);
+	return shiftright128(sum, high1, static_cast<uint8_t>(j - 64));
 }
 
-static inline uint64_t mulShiftAll64(const uint64_t m,
-	const uint64_t* const							mul,
-	const int32_t									j,
-	uint64_t* const									vp,
-	uint64_t* const									vm,
-	const uint32_t									mmShift)
+static inline uint64_t mulShiftAll64(
+	const uint64_t			m,
+	const uint64_t* const	mul,
+	const uint8_t			j,
+	uint64_t* const			vp,
+	uint64_t* const			vm,
+	const uint8_t			mmShift)
 {
 	*vp = mulShift64(4 * m + 2, mul, j);
 	*vm = mulShift64(4 * m - 1 - mmShift, mul, j);

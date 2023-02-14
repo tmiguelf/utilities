@@ -56,36 +56,11 @@ static inline uint32_t log2pow5(const uint32_t e)
 }
 
 // Returns e == 0 ? 1 : ceil(log_2(5^e)); requires 0 <= e <= 3528.
-static inline uint32_t pow5bits(const uint32_t e)
-{
-	// This approximation works up to the point that the multiplication overflows at e = 3529.
-	// If the multiplication were done in 64 bits, it would fail at 5^4004 which is just greater
-	// than 2^9297.
-	assert(e <= 3528);
-	return ((e * 1217359) >> 19) + 1;
-}
-
-// Returns e == 0 ? 1 : ceil(log_2(5^e)); requires 0 <= e <= 3528.
 static inline uint32_t ceil_log2pow5(const uint32_t e)
 {
 	return log2pow5(e) + 1;
 }
 
-// Returns floor(log_10(2^e)); requires 0 <= e <= 1650.
-static inline uint32_t log10Pow2(const uint32_t e)
-{
-	// The first value this approximation fails for is 2^1651 which is just greater than 10^297.
-	assert(e <= 1650);
-	return (e * 78913) >> 18;
-}
-
-// Returns floor(log_10(5^e)); requires 0 <= e <= 2620.
-static inline uint32_t log10Pow5(const uint32_t e)
-{
-	// The first value this approximation fails for is 5^2621 which is just greater than 10^1832.
-	assert(e <= 2620);
-	return (e * 732923) >> 20;
-}
 
 static inline uintptr_t copy_special_str(char* const result, const bool sign, const bool exponent, const bool mantissa)
 {
@@ -105,4 +80,42 @@ static inline uintptr_t copy_special_str(char* const result, const bool sign, co
 	}
 	memcpy(result + sign, "0E0", 3);
 	return sign + 3;
+}
+
+
+
+
+
+
+
+
+
+
+
+// Returns e == 0 ? 1 : ceil(log_2(5^e)); requires 0 <= e <= 3528.
+static inline uint16_t pow5bits(const uint16_t e)
+{
+	// This approximation works up to the point that the multiplication overflows at e = 3529.
+	// If the multiplication were done in 64 bits, it would fail at 5^4004 which is just greater
+	// than 2^9297.
+	assert(e <= 3528);
+	return static_cast<uint16_t>(((static_cast<uint32_t>(e) * 1217359_ui32) >> 19) + 1);
+}
+
+
+
+// Returns floor(log_10(2^e)); requires 0 <= e <= 1650.
+static inline uint16_t log10Pow2(const uint16_t e)
+{
+	// The first value this approximation fails for is 2^1651 which is just greater than 10^297.
+	assert(e <= 1650);
+	return static_cast<uint16_t>((static_cast<uint32_t>(e) * 78913_ui32) >> 18);
+}
+
+// Returns floor(log_10(5^e)); requires 0 <= e <= 2620.
+static inline uint16_t log10Pow5(const uint16_t e)
+{
+	// The first value this approximation fails for is 5^2621 which is just greater than 10^1832.
+	assert(e <= 2620);
+	return static_cast<uint16_t>((static_cast<uint32_t>(e) * 732923_ui32) >> 20);
 }

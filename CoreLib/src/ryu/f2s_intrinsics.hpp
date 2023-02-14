@@ -28,8 +28,8 @@
 #	else
 #		include "d2s_full_table.hpp"
 #	endif
-#	define FLOAT_POW5_INV_BITCOUNT (DOUBLE_POW5_INV_BITCOUNT - 64)
-#	define FLOAT_POW5_BITCOUNT		(DOUBLE_POW5_BITCOUNT - 64)
+constexpr uint16_t FLOAT_POW5_INV_BITCOUNT = (DOUBLE_POW5_INV_BITCOUNT - 64);
+constexpr uint16_t FLOAT_POW5_BITCOUNT     = (DOUBLE_POW5_BITCOUNT - 64);
 
 #endif
 
@@ -66,7 +66,7 @@ static inline bool multipleOfPowerOf2_32(const uint32_t value, const uint32_t p)
 
 // It seems to be slightly faster to avoid uint128_t here, although the
 // generated code for uint128_t looks slightly nicer.
-static inline uint32_t mulShift32(const uint32_t m, const uint64_t factor, const int32_t shift)
+static inline uint32_t mulShift32(const uint32_t m, const uint64_t factor, const uint8_t shift)
 {
 	assert(shift > 32);
 
@@ -74,8 +74,8 @@ static inline uint32_t mulShift32(const uint32_t m, const uint64_t factor, const
 	// function.
 	const uint32_t factorLo = (uint32_t) (factor);
 	const uint32_t factorHi = (uint32_t) (factor >> 32);
-	const uint64_t bits0	= (uint64_t) m * factorLo;
-	const uint64_t bits1	= (uint64_t) m * factorHi;
+	const uint64_t bits0    = (uint64_t) m * factorLo;
+	const uint64_t bits1    = (uint64_t) m * factorHi;
 
 	const uint64_t sum		  = (bits0 >> 32) + bits1;
 	const uint64_t shiftedSum = sum >> (shift - 32);
@@ -83,7 +83,7 @@ static inline uint32_t mulShift32(const uint32_t m, const uint64_t factor, const
 	return (uint32_t) shiftedSum;
 }
 
-static inline uint32_t mulPow5InvDivPow2(const uint32_t m, const uint32_t q, const int32_t j)
+static inline uint32_t mulPow5InvDivPow2(const uint32_t m, const uint16_t q, const uint8_t j)
 {
 #if defined(RYU_FLOAT_FULL_TABLE)
 	return mulShift32(m, FLOAT_POW5_INV_SPLIT[q], j);
@@ -99,7 +99,7 @@ static inline uint32_t mulPow5InvDivPow2(const uint32_t m, const uint32_t q, con
 #endif
 }
 
-static inline uint32_t mulPow5divPow2(const uint32_t m, const uint32_t i, const int32_t j)
+static inline uint32_t mulPow5divPow2(const uint32_t m, const uint16_t i, const uint8_t j)
 {
 #if defined(RYU_FLOAT_FULL_TABLE)
 	return mulShift32(m, FLOAT_POW5_SPLIT[i], j);
