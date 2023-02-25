@@ -1142,7 +1142,7 @@ namespace core
 		exp_ut leading_zeros   = fp_utils_t::leading_zeros(digits);
 		exp_ut sig_digits      = static_cast<exp_ut>((num_digits - 1) - leading_zeros);
 
-		significant_digits = std::min(significant_digits, fp_utils_t::max_scientific_decimal_digits);
+		significant_digits = std::min(significant_digits, fp_utils_t::max_scientific_decimal_digits_10);
 		if(significant_digits < sig_digits)
 		{
 			const exp_ut round_pos = static_cast<exp_ut>((num_digits - 1) - significant_digits);
@@ -1260,7 +1260,7 @@ namespace core
 		exp_ut num_digits      = static_cast<exp_ut>(last_block * fp_utils_t::max_pow_10_digits + last_num_digits);
 		exp_ut leading_zeros   = fp_utils_t::leading_zeros(digits);
 
-		precision = std::clamp(precision, fp_utils_t::min_fixed_precision, fp_utils_t::max_fixed_precision);
+		precision = std::clamp(precision, fp_utils_t::min_fixed_precision_10, fp_utils_t::max_fixed_precision_10);
 
 		const int16_t digits_to_precision = static_cast<int16_t>(decimal_seperator_offset) - precision;
 
@@ -1450,7 +1450,7 @@ namespace core
 		exp_ut leading_zeros   = fp_utils_t::leading_zeros(digits);
 		exp_ut sig_digits      = static_cast<exp_ut>((num_digits - 1) - leading_zeros);
 
-		significant_digits = std::min(significant_digits, fp_utils_t::max_scientific_decimal_digits);
+		significant_digits = std::min(significant_digits, fp_utils_t::max_scientific_decimal_digits_10);
 		if(significant_digits < sig_digits)
 		{
 			const exp_ut round_pos = static_cast<exp_ut>((num_digits - 1) - significant_digits);

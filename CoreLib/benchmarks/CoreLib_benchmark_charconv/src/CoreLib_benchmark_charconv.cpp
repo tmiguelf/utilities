@@ -1205,6 +1205,7 @@ BENCHMARK_TEMPLATE(core_to_chars_shortest_size, double);
 BENCHMARK_TEMPLATE(core_to_chars_shortest_convert, float , char8_t);
 BENCHMARK_TEMPLATE(core_to_chars_shortest_convert, double, char8_t);
 
+
 //BENCHMARK_TEMPLATE(std_to_chars_sci, float);
 //BENCHMARK_TEMPLATE(std_to_chars_fix, float);
 //BENCHMARK_TEMPLATE(std_to_chars_short, float);

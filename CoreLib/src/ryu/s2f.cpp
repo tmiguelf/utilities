@@ -21,12 +21,11 @@
 #include "ryu_parse.hpp"
 
 #include <algorithm>
-#include <assert.h>
+#include <cassert>
 #include <bit>
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdint>
+#include <cstdlib>
+#include <cstring>
 
 #include "common.hpp"
 #include "f2s_intrinsics.hpp"

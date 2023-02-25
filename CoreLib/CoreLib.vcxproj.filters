@@ -252,5 +252,8 @@
     <ClCompile Include="src\fp_charconv2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\fp_charconv_ryu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

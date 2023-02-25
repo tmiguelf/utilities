@@ -37,19 +37,22 @@ namespace core
 	template <>
 	struct fp_type_traits<float>
 	{
-		static constexpr int16_t max_scientific_exponent = 38;
-		static constexpr int16_t min_scientific_exponent = -45;
+		static constexpr int16_t max_scientific_exponent_10 = 38;
+		static constexpr int16_t min_scientific_exponent_10 = -45;
 
-		static constexpr uint16_t max_scientific_decimal_digits = 111;
-		static constexpr uint16_t max_scientific_precision = max_scientific_decimal_digits;
+		static constexpr uint16_t max_scientific_decimal_digits_10 = 111;
+		static constexpr uint16_t max_scientific_precision_10 = max_scientific_decimal_digits_10;
 
-		static constexpr uint16_t max_scientific_exponent_digits = 2;
+		static constexpr uint16_t max_scientific_exponent_digits_10 = 2;
 
-		static constexpr uint16_t max_fixed_decimal_digits = 149;
-		static constexpr uint16_t max_fixed_unit_digits = 39;
+		static constexpr uint16_t max_fixed_decimal_digits_10 = 149;
+		static constexpr uint16_t max_fixed_unit_digits_10 = 39;
 
-		static constexpr int16_t max_fixed_precision = 149;
-		static constexpr int16_t min_fixed_precision = -38;
+		static constexpr int16_t max_fixed_precision_10 = 149;
+		static constexpr int16_t min_fixed_precision_10 = -38;
+
+		static constexpr uint16_t max_shortest_digits_10 = 9;
+
 
 
 
@@ -58,30 +61,31 @@ namespace core
 		using exp_t = int16_t;
 
 
-		static constexpr uint16_t max_shortest_digits = 9;
+
 	};
 
 	template <>
 	struct fp_type_traits<double>
 	{
-		static constexpr int16_t max_scientific_exponent = 308;
-		static constexpr int16_t min_scientific_exponent = -324;
+		static constexpr int16_t max_scientific_exponent_10 = 308;
+		static constexpr int16_t min_scientific_exponent_10 = -324;
 		 
-		static constexpr uint16_t max_scientific_decimal_digits = 766;
-		static constexpr uint16_t max_scientific_precision = 766;
+		static constexpr uint16_t max_scientific_decimal_digits_10 = 766;
+		static constexpr uint16_t max_scientific_precision_10 = 766;
 
-		static constexpr uint16_t max_scientific_exponent_digits = 3;
+		static constexpr uint16_t max_scientific_exponent_digits_10 = 3;
 
-		static constexpr uint16_t max_fixed_decimal_digits = 1074;
-		static constexpr uint16_t max_fixed_unit_digits = 325;
-		static constexpr int16_t max_fixed_precision = 1074;
-		static constexpr int16_t min_fixed_precision = -324;
+		static constexpr uint16_t max_fixed_decimal_digits_10 = 1074;
+		static constexpr uint16_t max_fixed_unit_digits_10 = 325;
+
+		static constexpr int16_t max_fixed_precision_10 = 1074;
+		static constexpr int16_t min_fixed_precision_10 = -324;
+
+		static constexpr uint16_t max_shortest_digits_10 = 17;
 
 		static constexpr uint8_t bignum_width = 41;
 		using bignum_t = std::array<uint64_t, bignum_width>;
 		using exp_t = int16_t;
-
-		static constexpr uint16_t max_shortest_digits = 17;
 	};
 
 
@@ -207,8 +211,6 @@ namespace core
 	};
 
 
-
-
 	template<typename fp_t>
 	fp_base_classify to_chars_shortest_classify(fp_t value, fp_to_chars_shortest_context<fp_t>& context);
 
@@ -232,11 +234,12 @@ namespace core
 
 
 
+
+
+
+
 	fp_to_chars_sci_result to_chars_sci_size(float value, fp_to_chars_sci_context<float>& context, uint16_t significant_digits, fp_round rounding_mode);
 	fp_to_chars_fix_result to_chars_fix_size(float value, fp_to_chars_fix_context<float>& context, int16_t precision, fp_round rounding_mode);
-
-	fp_to_chars_sci_result to_chars_sci_shortest_size(float value);
-	fp_to_chars_fix_result to_chars_fix_shortest_size(float value);
 
 
 	void to_chars_sci_mantissa_unsafe(const fp_to_chars_sci_context<float>& context, char8_t* unit_char, char8_t* decimal_chars);

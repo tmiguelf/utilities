@@ -84,6 +84,7 @@
     <ClCompile Include="src\Core_Time.cpp" />
     <ClCompile Include="src\fp_charconv.cpp" />
     <ClCompile Include="src\fp_charconv2.cpp" />
+    <ClCompile Include="src\fp_charconv_ryu.cpp" />
     <ClCompile Include="src\net\core_net.cpp" />
     <ClCompile Include="src\net\core_net_address.cpp" />
     <ClCompile Include="src\net\core_net_init.cpp" />
