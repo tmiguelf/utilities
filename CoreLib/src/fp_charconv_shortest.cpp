@@ -206,16 +206,17 @@ namespace core
 		if(ryu_exp >= 0)
 		{
 			unit_chars += ryu_exp + context.sig_digits;
+			while(ryu_exp--)
+			{
+				*(--unit_chars) = char_t{'0'};
+			}
 			do
 			{
 				*(--unit_chars) = static_cast<char_t>('0' + mantissa % 10);
 				mantissa /= 10;
 			}
 			while(mantissa);
-			while(ryu_exp--)
-			{
-				*(--unit_chars) = char_t{'0'};
-			}
+
 		}
 		else
 		{

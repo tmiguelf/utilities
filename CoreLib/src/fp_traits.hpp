@@ -32,6 +32,7 @@ namespace core
 	using ::core::literals::operator "" _ui64;
 	using ::core::literals::operator "" _ui32;
 	using ::core::literals::operator "" _i16;
+	using ::core::literals::operator "" _ui8;
 
 
 	struct fp_common_traits
@@ -50,13 +51,13 @@ namespace core
 		using fp_type = float;
 		using uint_t = uint32_t;
 
-		static constexpr uint_t exponent_mask	= 0x7F800000_ui32;
-		static constexpr uint_t exponent_offset	= 23_ui32;
-		static constexpr uint_t mantissa_mask	= 0x007FFFFF_ui32;
-		static constexpr uint_t sign_mask		= 0x80000000_ui32;
+		static constexpr uint_t  sign_mask		= 0x80000000_ui32;
+		static constexpr uint_t  exponent_mask	= 0x7F800000_ui32;
+		static constexpr uint_t  mantissa_mask	= 0x007FFFFF_ui32;
 
-		static constexpr exp_st exponent_bias	= 0x7F_i16;
-		static constexpr uint_t mantissa_bits	= 23_ui32;
+		static constexpr exp_st  exponent_bias		= 0x7F_i16;
+		static constexpr uint8_t mantissa_bits		= 23_ui8;
+		static constexpr uint8_t exponent_offset	= mantissa_bits;
 
 		static constexpr exp_st exponent_fix_bias	= exponent_bias + mantissa_bits;
 		static constexpr uint_t mantissa_implicit_bit = 1_ui32 << mantissa_bits;
@@ -68,13 +69,13 @@ namespace core
 		using fp_type = double;
 		using uint_t = uint64_t;
 
-		static constexpr uint_t exponent_mask	= 0x7FF0000000000000_ui64;
-		static constexpr uint_t exponent_offset	= 52_ui64;
-		static constexpr uint_t mantissa_mask	= 0x000FFFFFFFFFFFFF_ui64;
 		static constexpr uint_t sign_mask		= 0x8000000000000000_ui64;
+		static constexpr uint_t exponent_mask	= 0x7FF0000000000000_ui64;
+		static constexpr uint_t mantissa_mask	= 0x000FFFFFFFFFFFFF_ui64;
 
-		static constexpr exp_st exponent_bias	= 0x3FF_i16;
-		static constexpr uint_t mantissa_bits	= 52_ui64;
+		static constexpr exp_st  exponent_bias		= 0x3FF_i16;
+		static constexpr uint8_t mantissa_bits		= 52_ui8;
+		static constexpr uint8_t exponent_offset	= mantissa_bits;
 
 		static constexpr exp_st exponent_fix_bias	= exponent_bias + mantissa_bits;
 		static constexpr uint_t mantissa_implicit_bit = 1_ui64 << mantissa_bits;

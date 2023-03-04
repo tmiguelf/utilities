@@ -28,6 +28,7 @@
 #include <array>
 #include <cstdint>
 #include <type_traits>
+#include <string_view>
 
 namespace core
 {
@@ -215,6 +216,9 @@ namespace core
 	fp_base_classify to_chars_shortest_classify(fp_t value, fp_to_chars_shortest_context<fp_t>& context);
 
 	template<typename fp_t>
+	fp_base_classify to_chars_shortest_classify2(fp_t value, fp_to_chars_shortest_context<fp_t>& context);
+
+	template<typename fp_t>
 	fp_to_chars_sci_size to_chars_shortest_sci_size(fp_to_chars_shortest_context<fp_t> context);
 
 	template<typename fp_t>
@@ -231,7 +235,8 @@ namespace core
 	void to_chars_shortest_fix_unsafe(fp_to_chars_shortest_context<fp_t> context, char_t* unit_chars, char_t* decimal_chars);
 
 
-
+	template<typename fp_t, typename char_t>
+	bool from_chars(bool sign_bit, std::basic_string_view<char_t> units, std::basic_string_view<char_t> decimal, bool exp_negative, std::basic_string_view<char_t> exponent, fp_t& result);
 
 
 

@@ -46,49 +46,20 @@ static inline uint32_t decimalLength9(const uint32_t v)
 }
 
 // Returns e == 0 ? 1 : [log_2(5^e)]; requires 0 <= e <= 3528.
-static inline uint32_t log2pow5(const uint32_t e)
+static inline uint16_t log2pow5(const uint16_t e)
 {
 	// This approximation works up to the point that the multiplication overflows at e = 3529.
 	// If the multiplication were done in 64 bits, it would fail at 5^4004 which is just greater
 	// than 2^9297.
 	assert(e <= 3528);
-	return (e * 1217359) >> 19;
+	return static_cast<uint16_t>((static_cast<uint32_t>(e) * 1217359_ui32) >> 19);
 }
 
 // Returns e == 0 ? 1 : ceil(log_2(5^e)); requires 0 <= e <= 3528.
-static inline uint32_t ceil_log2pow5(const uint32_t e)
+static inline uint16_t ceil_log2pow5(const uint16_t e)
 {
 	return log2pow5(e) + 1;
 }
-
-
-static inline uintptr_t copy_special_str(char* const result, const bool sign, const bool exponent, const bool mantissa)
-{
-	if(mantissa)
-	{
-		memcpy(result, "NaN", 3);
-		return 3;
-	}
-	if(sign)
-	{
-		result[0] = '-';
-	}
-	if(exponent)
-	{
-		memcpy(result + sign, "Infinity", 8);
-		return sign + 8;
-	}
-	memcpy(result + sign, "0E0", 3);
-	return sign + 3;
-}
-
-
-
-
-
-
-
-
 
 
 

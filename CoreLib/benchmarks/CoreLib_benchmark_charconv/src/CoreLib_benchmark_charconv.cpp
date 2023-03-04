@@ -38,8 +38,6 @@
 
 //======== ======== ======== ======== Auxiliary Test case generator ======== ======== ======== ========
 
-#if 1
-
 template <typename char_T>
 std::basic_string<char_T> str2_Tstring(std::string_view p_str)
 {
@@ -839,7 +837,6 @@ BENCHMARK_TEMPLATE( std_to_hex_chars,     uint64_t);
 BENCHMARK_TEMPLATE(core_to_hex_chars,     uint64_t);
 BENCHMARK_TEMPLATE(core_to_hex_chars_fix, uint64_t);
 #endif
-#endif
 
 template<typename T>
 struct fp_cases;
@@ -938,22 +935,6 @@ static inline void std_to_chars_short(benchmark::State& state)
 	}
 }
 
-#if 0
-static inline void mod_to_chars_sci_float(benchmark::State& state)
-{
-	using fp_t = float;
-	using fp_case_t = fp_cases<fp_t>;
-	const fp_t test_case = fp_case_t::sci_case();
-	const uint16_t sig_digits = fp_case_t::sig_digits;
-
-	std::array<char, fp_case_t::buff_size> buff;
-	for (auto _ : state)
-	{
-		test::test_fp_func(buff.data(), buff.data() + buff.size(), test_case, sig_digits);
-		benchmark::DoNotOptimize(buff);
-	}
-}
-#endif
 
 template<typename fp_t>
 static inline void core_to_chars_sci(benchmark::State& state)
@@ -1097,6 +1078,7 @@ static inline void core_to_chars_shortest_classify(benchmark::State& state)
 		benchmark::DoNotOptimize(res);
 	}
 }
+
 
 template<typename fp_t>
 static inline void core_to_chars_shortest_size(benchmark::State& state)

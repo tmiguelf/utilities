@@ -75,7 +75,6 @@ namespace core
 				return 17;
 			}
 		};
-
 	} //namespace
 
 
@@ -266,7 +265,7 @@ namespace core
 				}
 			}
 
-			if(vrIsTrailingZeros && lastRemovedDigit == 5 && vr % 2 == 0)
+			if(vrIsTrailingZeros && lastRemovedDigit == 5 && (vr & 1) == 0)
 			{
 				// Round even if the exact number is .....50..0.
 				lastRemovedDigit = 4;
@@ -382,14 +381,7 @@ namespace core
 			const uint8_t  i = static_cast<uint8_t>(ne2 + static_cast<int16_t>(q + k));
 
 			e10 = static_cast<int16_t>(q);
-
-#if defined(RYU_OPTIMIZE_SIZE)
-			uint64_t pow5[2];
-			double_computeInvPow5(q, pow5);
-			vr = mulShiftAll64(m2, pow5, i, &vp, &vm, mmShift);
-#else
 			vr = mulShiftAll64(m2, DOUBLE_POW5_INV_SPLIT[q], i, &vp, &vm, mmShift);
-#endif
 
 			if(q <= 21)
 			{
@@ -424,14 +416,7 @@ namespace core
 			const uint8_t  j = static_cast<uint8_t>(static_cast<int16_t>(q) - k);
 
 			e10 = static_cast<int16_t>(q) + e2;
-
-#if defined(RYU_OPTIMIZE_SIZE)
-			uint64_t pow5[2];
-			double_computePow5(i, pow5);
-			vr = mulShiftAll64(m2, pow5, j, &vp, &vm, mmShift);
-#else
 			vr = mulShiftAll64(m2, DOUBLE_POW5_SPLIT[i], j, &vp, &vm, mmShift);
-#endif
 
 			if(q <= 1)
 			{
@@ -508,7 +493,7 @@ namespace core
 				}
 			}
 
-			if(vrIsTrailingZeros && lastRemovedDigit == 5 && vr % 2 == 0)
+			if(vrIsTrailingZeros && lastRemovedDigit == 5 && (vr & 1) == 0)
 			{
 				// Round even if the exact number is .....50..0.
 				lastRemovedDigit = 4;

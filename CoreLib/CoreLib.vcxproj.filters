@@ -151,31 +151,16 @@
     <ClInclude Include="src\ryu\common.hpp">
       <Filter>Source Files\ryu</Filter>
     </ClInclude>
-    <ClInclude Include="src\ryu\d2fixed_full_table.hpp">
-      <Filter>Source Files\ryu</Filter>
-    </ClInclude>
     <ClInclude Include="src\ryu\d2s_full_table.hpp">
       <Filter>Source Files\ryu</Filter>
     </ClInclude>
     <ClInclude Include="src\ryu\d2s_intrinsics.hpp">
       <Filter>Source Files\ryu</Filter>
     </ClInclude>
-    <ClInclude Include="src\ryu\d2s_small_table.hpp">
-      <Filter>Source Files\ryu</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ryu\digit_table.hpp">
-      <Filter>Source Files\ryu</Filter>
-    </ClInclude>
     <ClInclude Include="src\ryu\f2s_full_table.hpp">
       <Filter>Source Files\ryu</Filter>
     </ClInclude>
     <ClInclude Include="src\ryu\f2s_intrinsics.hpp">
-      <Filter>Source Files\ryu</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ryu\ryu.hpp">
-      <Filter>Source Files\ryu</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ryu\ryu_parse.hpp">
       <Filter>Source Files\ryu</Filter>
     </ClInclude>
     <ClInclude Include="src\fp_traits.hpp">
@@ -234,25 +219,13 @@
     <ClCompile Include="src\fp_charconv.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\ryu\s2d.cpp">
-      <Filter>Source Files\ryu</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ryu\s2f.cpp">
-      <Filter>Source Files\ryu</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ryu\d2fixed.cpp">
-      <Filter>Source Files\ryu</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ryu\d2s.cpp">
-      <Filter>Source Files\ryu</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ryu\f2s.cpp">
-      <Filter>Source Files\ryu</Filter>
-    </ClCompile>
-    <ClCompile Include="src\fp_charconv2.cpp">
+    <ClCompile Include="src\fp_charconv_shortest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\fp_charconv_ryu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\fp_charconv_from_chars.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
