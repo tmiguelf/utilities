@@ -301,7 +301,7 @@ TYPED_TEST(QuaternionRotator_T, fromVector)
 
 }
 
-TYPED_TEST(QuaternionRotator_T, toVector)
+TYPED_TEST(QuaternionRotator_T, to_axis_angle)
 {
 	using real_t = TypeParam;
 	constexpr real_t epsilon = std::numeric_limits<real_t>::epsilon() * real_t{10.0};
@@ -320,14 +320,18 @@ TYPED_TEST(QuaternionRotator_T, toVector)
 		MIRROR(1.0, 0.0, 0.0),
 		MIRROR(0.0, 1.0, 0.0),
 		MIRROR(0.0, 0.0, 1.0),
-		MIRROR(1.0, 2.0, 3.0),
+		MIRROR(0.5, 1.5, 2.0),
 
 
-		{VECT(2.0 * pi<real_t>, 0.0, 0.0), VECT(0.0, 0.0, 0.0)},
-		{VECT(0.0, 2.0 * pi<real_t>, 0.0), VECT(0.0, 0.0, 0.0)},
-		{VECT(0.0, 0.0, 2.0 * pi<real_t>), VECT(0.0, 0.0, 0.0)},
+		{VECT(tau<real_t>, 0.0, 0.0), VECT(0.0, 0.0, 0.0)},
+		{VECT(0.0, tau<real_t>, 0.0), VECT(0.0, 0.0, 0.0)},
+		{VECT(0.0, 0.0, tau<real_t>), VECT(0.0, 0.0, 0.0)},
 
-		MIRROR(-2.0, 3.0, -1.0),
+		{VECT(pi<real_t> + real_t{0.125}, 0.0, 0.0), VECT(-pi<real_t> + real_t{0.125}, 0.0, 0.0)},
+		{VECT(0.0, pi<real_t> + real_t{0.125}, 0.0), VECT(0.0, -pi<real_t> + real_t{0.125}, 0.0)},
+		{VECT(0.0, 0.0, pi<real_t> + real_t{0.125}), VECT(0.0, 0.0, -pi<real_t> + real_t{0.125})},
+
+		MIRROR(-1.5, 2.0, -0.5),
 	};
 #undef MIRROR
 #undef VECT
@@ -336,7 +340,7 @@ TYPED_TEST(QuaternionRotator_T, toVector)
 	for(const TestCase& tcase: testData)
 	{
 		QuaternionRotator<real_t> quat{tcase.vect};
-		Vector3<real_t> res = quat.vector();
+		Vector3<real_t> res = quat.axis_angle();
 		HELP_NEAR(res[0], tcase.result[0], epsilon) << tcase.vect;
 		HELP_NEAR(res[1], tcase.result[1], epsilon) << tcase.vect;
 		HELP_NEAR(res[2], tcase.result[2], epsilon) << tcase.vect;
