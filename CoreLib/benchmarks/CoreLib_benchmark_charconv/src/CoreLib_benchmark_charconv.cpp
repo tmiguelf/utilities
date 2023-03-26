@@ -34,7 +34,8 @@
 
 #include <CoreLib/string/core_string_numeric.hpp>
 #include <CoreLib/string/core_string_misc.hpp>
-#include <CoreLib/fp_charconv.hpp>
+#include <CoreLib/string/core_fp_charconv.hpp>
+#include <CoreLib/string/core_fp_to_chars_round.hpp>
 
 //======== ======== ======== ======== Auxiliary Test case generator ======== ======== ======== ========
 

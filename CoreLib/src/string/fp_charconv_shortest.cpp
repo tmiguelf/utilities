@@ -155,7 +155,7 @@ namespace core
 	}
 
 
-	template<typename fp_t, typename char_t>
+	template<_p::is_charconv_fp_supported_c fp_t, _p::is_internal_charconv_c char_t>
 	void to_chars_shortest_sci_unsafe(fp_to_chars_shortest_context<fp_t> context, char_t* unit_char, char_t* decimal_chars)
 	{
 		using fp_utils_t = fp_utils<fp_t>;
@@ -173,7 +173,7 @@ namespace core
 		*unit_char = static_cast<char_t>('0' + mantissa);
 	}
 
-	template<typename fp_t, typename char_t>
+	template<_p::is_charconv_fp_supported_c fp_t, _p::is_internal_charconv_c char_t>
 	void to_chars_shortest_sci_exp_unsafe(fp_to_chars_shortest_context<fp_t> context, char_t* exp_chars)
 	{
 		using fp_props_p = fp_utils<fp_t>;
@@ -193,7 +193,7 @@ namespace core
 		}
 	}
 
-	template<typename fp_t, typename char_t>
+	template<_p::is_charconv_fp_supported_c fp_t, _p::is_internal_charconv_c char_t>
 	void to_chars_shortest_fix_unsafe(fp_to_chars_shortest_context<fp_t> context, char_t* unit_chars, char_t* decimal_chars)
 	{
 		using fp_props_p = fp_utils<fp_t>;
