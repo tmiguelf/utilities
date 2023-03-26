@@ -31,6 +31,7 @@
 #include "quaternions.hpp"
 #include <MathLib/LinearAlgebra/3D.hpp>
 #include <MathLib/_p/mathlib_type_help.hpp>
+#include <MathLib/constants.hpp>
 
 namespace mathlib
 {
@@ -51,11 +52,11 @@ public:
 	{
 	}
 
-	QuaternionRotator(const Vector3<T> p_vector)
+	QuaternionRotator(const Vector3<T> p_axis_angle)
 	{
-		T vx = p_vector[0];
-		T vy = p_vector[1];
-		T vz = p_vector[2];
+		T vx = p_axis_angle[0];
+		T vy = p_axis_angle[1];
+		T vz = p_axis_angle[2];
 		T norm = std::hypot(vx, vy, vz);
 
 		if(norm > 0.0)
@@ -120,19 +121,28 @@ public:
 	Quaternion<T> identity() const { return m_identity; }
 	Quaternion<T> inverse () const { return m_identity.conjugate(); }
 
-	Vector3<T> vector() const
+	Vector3<T> axis_angle() const
 	{
 		const T r = m_identity.r();
 		const T i = m_identity.i();
 		const T j = m_identity.j();
 		const T k = m_identity.k();
 
-		const T angle = std::acos(r) * T{2.0};
 		const T norm  = std::sqrt(1 - r * r);
 
 		if(norm == T{0.0})
 		{
 			return {T{0.0}, T{0.0}, T{0.0}};
+		}
+
+		T angle = std::acos(r) * T{2.0};
+		if(angle > pi<T>)
+		{
+			angle -= tau<T>;
+		}
+		else if(angle <= -pi<T>)
+		{
+			angle += tau<T>;
 		}
 
 		return Vector3<T>{i / norm, j / norm, k / norm} * angle;
