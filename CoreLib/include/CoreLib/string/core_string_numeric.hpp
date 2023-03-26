@@ -39,26 +39,11 @@
 
 #include <CoreLib/Core_Alternate.hpp>
 #include "core_wchar_alias.hpp"
+#include "numeric_common.hpp"
 
 /// \n
 namespace core
 {
-	//======== Type support ========
-	namespace _p
-	{
-		template <typename T>
-		concept is_internal_charconv_c =
-			std::is_same_v<T, char8_t>  ||
-			std::is_same_v<T, char16_t> ||
-			std::is_same_v<T, char32_t>;
-
-		template <typename T>
-		concept is_supported_charconv_c =
-			is_internal_charconv_c<T> ||
-			std::is_same_v<T, char> ||
-			std::is_same_v<T, wchar_t>;
-	} //namespace _p
-
 
 	template <typename>
 	struct char_conv_dec_supported: public std::false_type {};

@@ -30,7 +30,7 @@
 
 
 // Returns the lower 64 bits of (hi*2^64 + lo) >> dist, with 0 < dist < 64.
-static inline uint64_t shiftright128(const uint64_t lo, const uint64_t hi, const uint8_t dist)
+static inline uint64_t shiftright128(const uint64_t lo, const uint64_t hi, uint8_t dist)
 {
 
 	// For the __shiftright128 intrinsic, the shift value is always
@@ -47,8 +47,10 @@ static inline uint64_t shiftright128(const uint64_t lo, const uint64_t hi, const
 #ifdef _WIN32
 	return __shiftright128(lo, hi, dist);
 #else
+	dist %= 64;
 	const uint8_t rem = 64 - dist;
 	return (lo >> dist) | (hi << rem);
+
 #endif
 }
 
@@ -121,7 +123,7 @@ static inline bool multipleOfPowerOf2(const uint64_t value, const uint8_t p)
 //       no internal overflow, but requires extra work since the intermediate
 //       results are not perfectly aligned.
 
-static inline uint64_t mulShift64(const uint64_t m, const uint64_t* const mul, const uint8_t j)
+static inline uint64_t mulShift64(const uint64_t m, const std::array<uint64_t, 2> mul, const uint8_t j)
 {
 	// m is maximum 55 bits
 	uint64_t	   high1;								// 128
@@ -138,13 +140,13 @@ static inline uint64_t mulShift64(const uint64_t m, const uint64_t* const mul, c
 
 static inline uint64_t mulShiftAll64(
 	const uint64_t			m,
-	const uint64_t* const	mul,
+	const std::array<uint64_t, 2>	mul,
 	const uint8_t			j,
-	uint64_t* const			vp,
-	uint64_t* const			vm,
+	uint64_t&				vp,
+	uint64_t&				vm,
 	const uint8_t			mmShift)
 {
-	*vp = mulShift64(4 * m + 2, mul, j);
-	*vm = mulShift64(4 * m - 1 - mmShift, mul, j);
+	vp = mulShift64(4 * m + 2, mul, j);
+	vm = mulShift64(4 * m - 1 - mmShift, mul, j);
 	return mulShift64(4 * m, mul, j);
 }

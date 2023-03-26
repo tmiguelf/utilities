@@ -23,7 +23,7 @@
 ///		SOFTWARE.
 //======== ======== ======== ======== ======== ======== ======== ========
 
-#include <CoreLib/fp_charconv.hpp>
+#include <CoreLib/string/core_fp_charconv.hpp>
 #include <CoreLib/Core_Type.hpp>
 
 

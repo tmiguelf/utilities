@@ -30,7 +30,7 @@
     <Filter Include="Header Files\cpu">
       <UniqueIdentifier>{cdd89e89-76f0-4e94-90e8-849f85480834}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\ryu">
+    <Filter Include="Source Files\string\ryu">
       <UniqueIdentifier>{e2536726-8ff2-4e91-b498-63f4d321c6d4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -142,29 +142,32 @@
     <ClInclude Include="include\CoreLib\Core_cpu.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\CoreLib\fp_charconv.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\CoreLib\cpu\x64.hpp">
       <Filter>Header Files\cpu</Filter>
     </ClInclude>
-    <ClInclude Include="src\ryu\common.hpp">
-      <Filter>Source Files\ryu</Filter>
+    <ClInclude Include="include\CoreLib\string\core_fp_to_chars_round.hpp">
+      <Filter>Header Files\string</Filter>
     </ClInclude>
-    <ClInclude Include="src\ryu\d2s_full_table.hpp">
-      <Filter>Source Files\ryu</Filter>
+    <ClInclude Include="include\CoreLib\string\core_fp_charconv.hpp">
+      <Filter>Header Files\string</Filter>
     </ClInclude>
-    <ClInclude Include="src\ryu\d2s_intrinsics.hpp">
-      <Filter>Source Files\ryu</Filter>
+    <ClInclude Include="src\string\fp_traits.hpp">
+      <Filter>Source Files\string</Filter>
     </ClInclude>
-    <ClInclude Include="src\ryu\f2s_full_table.hpp">
-      <Filter>Source Files\ryu</Filter>
+    <ClInclude Include="src\string\ryu\f2s_intrinsics.hpp">
+      <Filter>Source Files\string\ryu</Filter>
     </ClInclude>
-    <ClInclude Include="src\ryu\f2s_intrinsics.hpp">
-      <Filter>Source Files\ryu</Filter>
+    <ClInclude Include="src\string\ryu\common.hpp">
+      <Filter>Source Files\string\ryu</Filter>
     </ClInclude>
-    <ClInclude Include="src\fp_traits.hpp">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="src\string\ryu\d2s_full_table.hpp">
+      <Filter>Source Files\string\ryu</Filter>
+    </ClInclude>
+    <ClInclude Include="src\string\ryu\d2s_intrinsics.hpp">
+      <Filter>Source Files\string\ryu</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\string\numeric_common.hpp">
+      <Filter>Header Files\string</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -216,17 +219,17 @@
     <ClCompile Include="src\Core_cpu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\fp_charconv.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\string\fp_charconv_from_chars.cpp">
+      <Filter>Source Files\string</Filter>
     </ClCompile>
-    <ClCompile Include="src\fp_charconv_shortest.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\string\fp_charconv_ryu.cpp">
+      <Filter>Source Files\string</Filter>
     </ClCompile>
-    <ClCompile Include="src\fp_charconv_ryu.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\string\fp_charconv_shortest.cpp">
+      <Filter>Source Files\string</Filter>
     </ClCompile>
-    <ClCompile Include="src\fp_charconv_from_chars.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\string\fp_charconv_round.cpp">
+      <Filter>Source Files\string</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

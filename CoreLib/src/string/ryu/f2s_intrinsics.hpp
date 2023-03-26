@@ -18,20 +18,12 @@
 // Modified by: Tiago Freire
 
 #pragma once
+#include <cassert>
+#include <limits>
 
-#if defined(RYU_FLOAT_FULL_TABLE)
-#	include "f2s_full_table.hpp"
-#else
-
-#	if defined(RYU_OPTIMIZE_SIZE)
-#		include "d2s_small_table.hpp"
-#	else
-#		include "d2s_full_table.hpp"
-#	endif
+#include "d2s_full_table.hpp"
 constexpr uint16_t FLOAT_POW5_INV_BITCOUNT = (DOUBLE_POW5_INV_BITCOUNT - 64);
 constexpr uint16_t FLOAT_POW5_BITCOUNT     = (DOUBLE_POW5_BITCOUNT - 64);
-
-#endif
 
 static inline uint32_t pow5factor_32(uint32_t value)
 {
@@ -72,42 +64,25 @@ static inline uint32_t mulShift32(const uint32_t m, const uint64_t factor, const
 
 	// The casts here help MSVC to avoid calls to the __allmul library
 	// function.
-	const uint32_t factorLo = (uint32_t) (factor);
-	const uint32_t factorHi = (uint32_t) (factor >> 32);
-	const uint64_t bits0    = (uint64_t) m * factorLo;
-	const uint64_t bits1    = (uint64_t) m * factorHi;
+	const uint32_t factorLo = static_cast<uint32_t>(factor);
+	const uint32_t factorHi = static_cast<uint32_t>(factor >> 32);
+	const uint64_t bits0    = static_cast<uint64_t>(m) * static_cast<uint64_t>(factorLo);
+	const uint64_t bits1    = static_cast<uint64_t>(m) * static_cast<uint64_t>(factorHi);
 
 	const uint64_t sum		  = (bits0 >> 32) + bits1;
 	const uint64_t shiftedSum = sum >> (shift - 32);
-	assert(shiftedSum <= UINT32_MAX);
-	return (uint32_t) shiftedSum;
+	assert(shiftedSum <= std::numeric_limits<uint32_t>::max());
+	return static_cast<uint32_t>(shiftedSum);
 }
+
+
 
 static inline uint32_t mulPow5InvDivPow2(const uint32_t m, const uint16_t q, const uint8_t j)
 {
-#if defined(RYU_FLOAT_FULL_TABLE)
-	return mulShift32(m, FLOAT_POW5_INV_SPLIT[q], j);
-#elif defined(RYU_OPTIMIZE_SIZE)
-	// The inverse multipliers are defined as [2^x / 5^y] + 1; the upper 64 bits from the double lookup
-	// table are the correct bits for [2^x / 5^y], so we have to add 1 here. Note that we rely on the
-	// fact that the added 1 that's already stored in the table never overflows into the upper 64 bits.
-	uint64_t pow5[2];
-	double_computeInvPow5(q, pow5);
-	return mulShift32(m, pow5[1] + 1, j);
-#else
 	return mulShift32(m, DOUBLE_POW5_INV_SPLIT[q][1] + 1, j);
-#endif
 }
 
 static inline uint32_t mulPow5divPow2(const uint32_t m, const uint16_t i, const uint8_t j)
 {
-#if defined(RYU_FLOAT_FULL_TABLE)
-	return mulShift32(m, FLOAT_POW5_SPLIT[i], j);
-#elif defined(RYU_OPTIMIZE_SIZE)
-	uint64_t pow5[2];
-	double_computePow5(i, pow5);
-	return mulShift32(m, pow5[1], j);
-#else
 	return mulShift32(m, DOUBLE_POW5_SPLIT[i][1], j);
-#endif
 }

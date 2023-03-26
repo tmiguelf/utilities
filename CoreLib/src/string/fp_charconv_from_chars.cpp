@@ -17,7 +17,7 @@
 //
 // Modified by: Tiago Freire
 
-#include <CoreLib/fp_charconv.hpp>
+#include <CoreLib/string/core_fp_charconv.hpp>
 
 #include <algorithm>
 
@@ -93,10 +93,10 @@ namespace core
 		}
 		else
 		{
-			e2 = static_cast<exp_st>(floor_log2(m10) + e10 - ceil_log2pow5(-e10) - (mantisssa_bits + 1));
+			e2 = static_cast<exp_st>(floor_log2(m10) + e10 - ceil_log2pow5(static_cast<uint16_t>(-e10)) - (mantisssa_bits + 1));
 
 			// We now compute [m10 * 10^e10 / 2^e2] = [m10 / (5^(-e10) 2^(e2-e10))].
-			const uint8_t j = static_cast<uint8_t>(e2 - e10 + ceil_log2pow5(-e10) - 1 + FLOAT_POW5_INV_BITCOUNT);
+			const uint8_t j = static_cast<uint8_t>(e2 - e10 + ceil_log2pow5(static_cast<uint16_t>(-e10)) - 1 + FLOAT_POW5_INV_BITCOUNT);
 			m2	  = mulPow5InvDivPow2(m10, static_cast<uint16_t>(-e10), j);
 
 			// We also compute if the result is exact, i.e.,
@@ -112,7 +112,7 @@ namespace core
 		}
 
 
-		exp_st e2_base = e2 + fp_utils_t::exponent_bias + floor_log2(m2);
+		exp_st e2_base = static_cast<exp_st>(e2 + fp_utils_t::exponent_bias + floor_log2(m2));
 
 		if(e2_base > 0xFE)
 		{
@@ -203,8 +203,8 @@ namespace core
 		}
 		else
 		{
-			e2 = static_cast<exp_st>(floor_log2(m10) + e10 - ceil_log2pow5(-e10) - (mantisssa_bits + 1));
-			const uint8_t j = static_cast<uint8_t>(e2 - e10 + ceil_log2pow5(-e10) - 1 + DOUBLE_POW5_INV_BITCOUNT);
+			e2 = static_cast<exp_st>(floor_log2(m10) + e10 - ceil_log2pow5(static_cast<uint16_t>(-e10)) - (mantisssa_bits + 1));
+			const uint8_t j = static_cast<uint8_t>(e2 - e10 + ceil_log2pow5(static_cast<uint16_t>(-e10)) - 1 + DOUBLE_POW5_INV_BITCOUNT);
 
 			assert(-e10 < DOUBLE_POW5_INV_TABLE_SIZE);
 			m2 = mulShift64(m10, DOUBLE_POW5_INV_SPLIT[-e10], j);
@@ -212,7 +212,7 @@ namespace core
 			trailingZeros = multipleOfPowerOf5(m10, -e10);
 		}
 
-		exp_st e2_base = e2 + fp_utils_t::exponent_bias + floor_log2(m2);
+		exp_st e2_base = static_cast<exp_st>(e2 + fp_utils_t::exponent_bias + floor_log2(m2));
 
 
 		if(e2_base > 0x7FE)
@@ -258,8 +258,7 @@ namespace core
 	}
 
 
-
-	template<typename fp_t, typename char_t>
+	template<_p::is_charconv_fp_supported_c fp_t, _p::is_internal_charconv_c char_t>
 	bool from_chars(bool sign_bit, std::basic_string_view<char_t> units, std::basic_string_view<char_t> decimal, bool exp_negative, std::basic_string_view<char_t> exponent, fp_t& result)
 	{
 		using fp_utils_t = fp_utils_pre<fp_t>;

@@ -936,6 +936,26 @@ static inline void std_to_chars_short(benchmark::State& state)
 }
 
 
+
+template<typename fp_t, typename char_t>
+static inline void core_to_chars2(benchmark::State& state)
+{
+	using fp_case_t = fp_cases<fp_t>;
+	const fp_t test_case = fp_case_t::sci_case();
+
+	std::array<char_t, fp_case_t::buff_size> buff;
+
+	constexpr uintptr_t expected_size = core::to_chars_dec_max_digits_v<fp_t>;
+
+	for (auto _ : state)
+	{
+		uintptr_t size = core::to_chars(test_case, std::span<char_t, expected_size>{buff.data(), expected_size});
+		benchmark::DoNotOptimize(buff);
+		benchmark::DoNotOptimize(size);
+	}
+}
+
+
 template<typename fp_t>
 static inline void core_to_chars_sci(benchmark::State& state)
 {
@@ -1167,25 +1187,34 @@ static inline void core_to_chars_shortest_convert(benchmark::State& state)
 }
 
 BENCHMARK_TEMPLATE(std_to_chars_short, float);
-BENCHMARK_TEMPLATE(std_to_chars_short, double);
+//BENCHMARK_TEMPLATE(std_to_chars_short, double);
+
+
+//BENCHMARK_TEMPLATE(core_to_chars2, float , char8_t);
+//BENCHMARK_TEMPLATE(core_to_chars2, double, char8_t);
+//BENCHMARK_TEMPLATE(core_to_chars2, float , char16_t);
+//BENCHMARK_TEMPLATE(core_to_chars2, double, char16_t);
+//BENCHMARK_TEMPLATE(core_to_chars2, float , char32_t);
+//BENCHMARK_TEMPLATE(core_to_chars2, double, char32_t);
+
 
 BENCHMARK_TEMPLATE(core_to_chars_shortest, float , char8_t);
-BENCHMARK_TEMPLATE(core_to_chars_shortest, double, char8_t);
-
-BENCHMARK_TEMPLATE(core_to_chars_shortest, float , char16_t);
-BENCHMARK_TEMPLATE(core_to_chars_shortest, double, char16_t);
-
-BENCHMARK_TEMPLATE(core_to_chars_shortest, float , char32_t);
-BENCHMARK_TEMPLATE(core_to_chars_shortest, double, char32_t);
+//BENCHMARK_TEMPLATE(core_to_chars_shortest, double, char8_t);
+//BENCHMARK_TEMPLATE(core_to_chars_shortest, float , char16_t);
+//BENCHMARK_TEMPLATE(core_to_chars_shortest, double, char16_t);
+//BENCHMARK_TEMPLATE(core_to_chars_shortest, float , char32_t);
+//BENCHMARK_TEMPLATE(core_to_chars_shortest, double, char32_t);
 
 BENCHMARK_TEMPLATE(core_to_chars_shortest_classify, float);
 BENCHMARK_TEMPLATE(core_to_chars_shortest_classify, double);
 
+
+
 BENCHMARK_TEMPLATE(core_to_chars_shortest_size, float);
-BENCHMARK_TEMPLATE(core_to_chars_shortest_size, double);
+//BENCHMARK_TEMPLATE(core_to_chars_shortest_size, double);
 
 BENCHMARK_TEMPLATE(core_to_chars_shortest_convert, float , char8_t);
-BENCHMARK_TEMPLATE(core_to_chars_shortest_convert, double, char8_t);
+//BENCHMARK_TEMPLATE(core_to_chars_shortest_convert, double, char8_t);
 
 
 //BENCHMARK_TEMPLATE(std_to_chars_sci, float);

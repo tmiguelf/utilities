@@ -23,7 +23,7 @@
 ///		SOFTWARE.
 //======== ======== ======== ======== ======== ======== ======== ========
 
-#include <CoreLib/fp_charconv.hpp>
+#include <CoreLib/string/core_fp_charconv.hpp>
 
 #include <CoreLib/Core_Type.hpp>
 #include <algorithm>
@@ -164,6 +164,7 @@ namespace core
 		uint_t mantissa = context.mantissa;
 		uint8_t dec_digits = context.sig_digits;
 		char_t* pivot = decimal_chars + dec_digits - 1;
+
 		while(--dec_digits)
 		{
 			*(--pivot) = static_cast<char_t>('0' + mantissa % 10);

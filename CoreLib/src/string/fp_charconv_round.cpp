@@ -24,15 +24,14 @@
 //======== ======== ======== ======== ======== ======== ======== ========
 
 
-#if 1
-
 #include <array>
 #include <algorithm>
 
-#include <CoreLib/fp_charconv.hpp>
+#include <CoreLib/string/core_fp_to_chars_round.hpp>
 #include <CoreLib/Core_Type.hpp>
 #include <CoreLib/cpu/x64.hpp>
 
+#include "fp_traits.hpp"
 
 #define USE_ORDER_REDUCE 1
 
@@ -46,67 +45,11 @@ namespace core
 
 	CORE_MAKE_ENUM_ORDERABLE(fp_round)
 
-#if 0
-	template <class T>
-	struct fp_type_traits;
-
-	template <>
-	struct fp_type_traits<float> {
-		static constexpr int32_t _Mantissa_bits           = 24; // FLT_MANT_DIG
-		static constexpr int32_t _Exponent_bits           = 8; // sizeof(float) * CHAR_BIT - FLT_MANT_DIG
-		static constexpr int32_t _Maximum_binary_exponent = 127; // FLT_MAX_EXP - 1
-		static constexpr int32_t _Minimum_binary_exponent = -126; // FLT_MIN_EXP - 1
-		static constexpr int32_t _Exponent_bias           = 127;
-		static constexpr int32_t _Sign_shift              = 31; // _Exponent_bits + _Mantissa_bits - 1
-		static constexpr int32_t _Exponent_shift          = 23; // _Mantissa_bits - 1
-
-		using uint_t = uint32_t;
-
-		static constexpr uint32_t _Exponent_mask             = 0x000000FFu; // (1u << _Exponent_bits) - 1
-		static constexpr uint32_t _Normal_mantissa_mask      = 0x00FFFFFFu; // (1u << _Mantissa_bits) - 1
-		static constexpr uint32_t _Denormal_mantissa_mask    = 0x007FFFFFu; // (1u << (_Mantissa_bits - 1)) - 1
-		static constexpr uint32_t _Special_nan_mantissa_mask = 0x00400000u; // 1u << (_Mantissa_bits - 2)
-		static constexpr uint32_t _Shifted_sign_mask         = 0x80000000u; // 1u << _Sign_shift
-		static constexpr uint32_t _Shifted_exponent_mask     = 0x7F800000u; // _Exponent_mask << _Exponent_shift
-	};
-
-	template <>
-	struct fp_type_traits<double> {
-		static constexpr int32_t _Mantissa_bits           = 53; // DBL_MANT_DIG
-		static constexpr int32_t _Exponent_bits           = 11; // sizeof(double) * CHAR_BIT - DBL_MANT_DIG
-		static constexpr int32_t _Maximum_binary_exponent = 1023; // DBL_MAX_EXP - 1
-		static constexpr int32_t _Minimum_binary_exponent = -1022; // DBL_MIN_EXP - 1
-		static constexpr int32_t _Exponent_bias           = 1023;
-		static constexpr int32_t _Sign_shift              = 63; // _Exponent_bits + _Mantissa_bits - 1
-		static constexpr int32_t _Exponent_shift          = 52; // _Mantissa_bits - 1
-
-		using uint_t = uint64_t;
-
-		static constexpr uint64_t _Exponent_mask             = 0x00000000000007FFu; // (1ULL << _Exponent_bits) - 1
-		static constexpr uint64_t _Normal_mantissa_mask      = 0x001FFFFFFFFFFFFFu; // (1ULL << _Mantissa_bits) - 1
-		static constexpr uint64_t _Denormal_mantissa_mask    = 0x000FFFFFFFFFFFFFu; // (1ULL << (_Mantissa_bits - 1)) - 1
-		static constexpr uint64_t _Special_nan_mantissa_mask = 0x0008000000000000u; // 1ULL << (_Mantissa_bits - 2)
-		static constexpr uint64_t _Shifted_sign_mask         = 0x8000000000000000u; // 1ULL << _Sign_shift
-		static constexpr uint64_t _Shifted_exponent_mask     = 0x7FF0000000000000u; // _Exponent_mask << _Exponent_shift
-	};
-
-#endif
-
-	template<typename T>
-	concept is_charconv_fp_supported_c =
-		   std::is_same_v<T, float>
-		|| std::is_same_v<T, double>
-		//|| std::is_same_v<T, long double>
-		;
-
-
 
 	struct fp_common_utils
 	{
 		static constexpr uint64_t max_pow_10		= 10000000000000000000_ui64;
 		static constexpr uint8_t  max_pow_10_digits	= 19_ui8;
-		using exp_st = int16_t;
-		using exp_ut = uint16_t;
 
 		static constexpr std::array<uint64_t, 16> pow_5_low_table
 		{
@@ -151,18 +94,18 @@ namespace core
 			1000000000000000000_ui64,
 		};
 
-		static constexpr exp_ut  pow_5_low_mask		= 0x0F_ui16;
-		static constexpr uint8_t pow_5_hi_offset	= 4_ui8;
+		static constexpr uint16_t pow_5_low_mask  = 0x0F_ui16;
+		static constexpr uint8_t  pow_5_hi_offset = 4_ui8;
 
-		inline static constexpr uint64_t pow_2_low_table(exp_ut p_offset)
+		inline static constexpr uint64_t pow_2_low_table(uint16_t p_offset)
 		{
 			return 1_ui64 << p_offset;
 		}
 
-		static constexpr exp_ut pow_2_low_mask		= 0x1F_ui16;
-		static constexpr uint8_t pow_2_hi_offset	= 5_ui8;
+		static constexpr uint16_t pow_2_low_mask = 0x1F_ui16;
+		static constexpr uint8_t pow_2_hi_offset = 5_ui8;
 
-		inline static constexpr exp_ut num_digits(const uint64_t p_val)
+		inline static constexpr uint16_t num_digits(const uint64_t p_val)
 		{
 			if(p_val <                  10_ui64) return  1;
 			if(p_val <                 100_ui64) return  2;
@@ -186,9 +129,9 @@ namespace core
 		}
 
 		//
-		inline static exp_ut leading_0(uint64_t p_val)
+		inline static uint16_t leading_0(uint64_t p_val)
 		{
-			exp_ut out = 0;
+			uint16_t out = 0;
 			while(!(p_val % 10))
 			{
 				p_val /= 10;
@@ -197,7 +140,7 @@ namespace core
 			return out;
 		}
 
-		template<typename char_t>
+		template<_p::is_internal_charconv_c char_t>
 		inline static void output_19_digits(uint64_t p_val, char_t* p_out)
 		{
 			p_out += 18;
@@ -244,8 +187,8 @@ namespace core
 			*(--p_out) = static_cast<char_t>('0' + p_val);
 		}
 
-		template<typename char_t>
-		inline static void output_sig_digits(uint64_t p_val, char_t* p_out, exp_ut sig_digits)
+		template<_p::is_internal_charconv_c char_t>
+		inline static void output_sig_digits(uint64_t p_val, char_t* p_out, uint16_t sig_digits)
 		{
 			if(sig_digits)
 			{
@@ -279,27 +222,18 @@ namespace core
 
 	};
 
-
-
-	template<typename T> requires is_charconv_fp_supported_c<T>
+	template<typename T>
 	struct fp_utils_pre;
 
 	template<>
-	struct fp_utils_pre<float>: public fp_common_utils, public fp_type_traits<float>
+	struct fp_utils_pre<float>: public fp_common_utils, public fp_traits<float>
 	{
 		using fp_type = float;
 		using uint_t = uint32_t;
+		using bignum_t = fp_to_chars_round_context<fp_type>::bignum_t;
 
-		static constexpr uint_t exponent_mask	= 0x7F800000_ui32;
-		static constexpr uint_t exponent_offset	= 23_ui32;
-		static constexpr uint_t mantissa_mask	= 0x007FFFFF_ui32;
-		static constexpr uint_t sign_mask		= 0x80000000_ui32;
 
-		static constexpr exp_st exponent_bias	= 0x7F_i16;
-		static constexpr uint_t mantissa_bits	= 23_ui32;
-
-		static constexpr exp_st exponent_fix_bias	= exponent_bias + mantissa_bits;
-		static constexpr uint_t mantissa_implicit_bit = 1_ui32 << mantissa_bits;
+		static constexpr uint8_t bignum_width = fp_to_chars_round_context<fp_type>::bignum_width;
 
 		static constexpr std::array pow_2_hack_table
 		{
@@ -359,7 +293,7 @@ namespace core
 			}
 		}
 
-		template<typename char_t>
+		template<_p::is_internal_charconv_c char_t>
 		static inline void to_chars_exp(exp_st exponent, char_t* exp_char)
 		{
 			if(exponent < 0)
@@ -380,21 +314,13 @@ namespace core
 	};
 
 	template<>
-	struct fp_utils_pre<double>: public fp_common_utils, public fp_type_traits<double>
+	struct fp_utils_pre<double>: public fp_common_utils, public fp_traits<double>
 	{
 		using fp_type = double;
 		using uint_t = uint64_t;
+		using bignum_t = fp_to_chars_round_context<fp_type>::bignum_t;
 
-		static constexpr uint_t exponent_mask	= 0x7FF0000000000000_ui64;
-		static constexpr uint_t exponent_offset	= 52_ui64;
-		static constexpr uint_t mantissa_mask	= 0x000FFFFFFFFFFFFF_ui64;
-		static constexpr uint_t sign_mask		= 0x8000000000000000_ui64;
-
-		static constexpr exp_st exponent_bias	= 0x3FF_i16;
-		static constexpr uint_t mantissa_bits	= 52_ui64;
-
-		static constexpr exp_st exponent_fix_bias	= exponent_bias + mantissa_bits;
-		static constexpr uint_t mantissa_implicit_bit = 1_ui64 << mantissa_bits;
+		static constexpr uint8_t bignum_width = fp_to_chars_round_context<fp_type>::bignum_width;
 
 		static inline uint_t get_mantissa(fp_type input)
 		{
@@ -564,7 +490,7 @@ namespace core
 			}
 		}
 
-		template<typename char_t>
+		template<_p::is_internal_charconv_c char_t>
 		static inline void to_chars_exp(exp_st exponent, char_t* exp_char)
 		{
 			if(exponent < 0)
@@ -597,7 +523,7 @@ namespace core
 	};
 
 
-	template<typename fp_type> requires is_charconv_fp_supported_c<fp_type>
+	template<_p::is_charconv_fp_supported_c fp_type>
 	struct fp_utils: public fp_utils_pre<fp_type>
 	{
 		using fp_utils_p = fp_utils_pre<fp_type>;
@@ -864,7 +790,7 @@ namespace core
 			}
 		}
 
-		template<typename char_t>
+		template<_p::is_internal_charconv_c char_t>
 		static inline void fill_digits(const bignum_t& digits,
 			exp_ut last_block,
 			exp_ut last_num_digits,
@@ -904,7 +830,7 @@ namespace core
 		}
 
 
-		template<typename char_t>
+		template<_p::is_internal_charconv_c char_t>
 		static inline void to_chars_fix(const bignum_t& digits,
 			exp_st decimal_offset,
 			char_t* unit_chars, char_t* decimal_chars,
@@ -1079,14 +1005,6 @@ namespace core
 
 	};
 
-
-
-
-
-
-
-
-
 	fp_to_chars_sci_result to_chars_sci_size(float value, fp_to_chars_sci_context<float>& context, uint16_t significant_digits, fp_round rounding_mode)
 	{
 		using fp_type = float;
@@ -1181,29 +1099,6 @@ namespace core
 			res.size);
 
 		return res;
-	}
-
-	void to_chars_sci_mantissa_unsafe(const fp_to_chars_sci_context<float>& context, char8_t* const unit_char, char8_t* const decimal_chars)
-	{
-		using fp_type = float;
-		using fp_utils_t = fp_utils<fp_type>;
-		using exp_ut = fp_utils_t::exp_ut;
-
-		exp_ut last_block      = fp_utils_t::last_block(context.digits);
-		exp_ut last_num_digits = fp_common_utils::num_digits(context.digits[last_block]);
-		exp_ut num_digits      = static_cast<exp_ut>(last_block * fp_utils_t::max_pow_10_digits + last_num_digits);
-		exp_ut leading_zeros   = fp_utils_t::leading_zeros(context.digits);
-		exp_ut sig_digits      = static_cast<exp_ut>((num_digits - 1) - leading_zeros);
-
-		fp_utils_t::to_chars_sci_mantissa(context.digits, unit_char, decimal_chars, last_block, last_num_digits, sig_digits);
-	}
-
-	void to_chars_sci_exp_unsafe(const fp_to_chars_sci_context<float>& context, char8_t* exp_chars)
-	{
-		using fp_type = float;
-		using fp_utils_t = fp_utils<fp_type>;
-
-		fp_utils_t::to_chars_exp(context.exponent, exp_chars);
 	}
 
 	fp_to_chars_fix_result to_chars_fix_size(const float value, fp_to_chars_fix_context<float>& context, int16_t precision, fp_round rounding_mode)
@@ -1377,6 +1272,30 @@ namespace core
 		return res;
 	}
 
+
+	void to_chars_sci_mantissa_unsafe(const fp_to_chars_sci_context<float>& context, char8_t* const unit_char, char8_t* const decimal_chars)
+	{
+		using fp_type = float;
+		using fp_utils_t = fp_utils<fp_type>;
+		using exp_ut = fp_utils_t::exp_ut;
+
+		exp_ut last_block      = fp_utils_t::last_block(context.digits);
+		exp_ut last_num_digits = fp_common_utils::num_digits(context.digits[last_block]);
+		exp_ut num_digits      = static_cast<exp_ut>(last_block * fp_utils_t::max_pow_10_digits + last_num_digits);
+		exp_ut leading_zeros   = fp_utils_t::leading_zeros(context.digits);
+		exp_ut sig_digits      = static_cast<exp_ut>((num_digits - 1) - leading_zeros);
+
+		fp_utils_t::to_chars_sci_mantissa(context.digits, unit_char, decimal_chars, last_block, last_num_digits, sig_digits);
+	}
+
+	void to_chars_sci_exp_unsafe(const fp_to_chars_sci_context<float>& context, char8_t* exp_chars)
+	{
+		using fp_type = float;
+		using fp_utils_t = fp_utils<fp_type>;
+
+		fp_utils_t::to_chars_exp(context.exponent, exp_chars);
+	}
+
 	void to_chars_fix_unsafe(const fp_to_chars_fix_context<float>& context, char8_t* unit_chars, char8_t* decimal_chars)
 	{
 		using fp_type = float;
@@ -1390,10 +1309,7 @@ namespace core
 
 		fp_utils_t::to_chars_fix(context.digits, context.decimal_offset,
 			unit_chars, decimal_chars, last_block, last_num_digits, leading_zeros);
-
 	}
-
-
 
 	fp_to_chars_sci_result to_chars_sci_size(double value, fp_to_chars_sci_context<double>& context, uint16_t significant_digits, fp_round rounding_mode)
 	{
@@ -1513,7 +1429,19 @@ namespace core
 		fp_utils_t::to_chars_exp(context.exponent, exp_chars);
 	}
 
+	void to_chars_fix_unsafe(const fp_to_chars_fix_context<double>& context, char8_t* unit_chars, char8_t* decimal_chars)
+	{
+		using fp_type = double;
+		using fp_utils_t = fp_utils<fp_type>;
+		using exp_ut = fp_utils_t::exp_ut;
+
+		exp_ut last_block      = fp_utils_t::last_block(context.digits);
+		exp_ut last_num_digits = fp_common_utils::num_digits(context.digits[last_block]);
+		//exp_ut num_digits      = static_cast<exp_ut>(last_block * fp_utils_t::max_pow_10_digits + last_num_digits);
+		exp_ut leading_zeros   = fp_utils_t::leading_zeros(context.digits);
+
+		fp_utils_t::to_chars_fix(context.digits, context.decimal_offset,
+			unit_chars, decimal_chars, last_block, last_num_digits, leading_zeros);
+	}
 
 } //namespace core
-
-#endif

@@ -46,7 +46,7 @@ using ::core::literals::operator "" _ui32;
 #include <gtest/gtest.h>
 
 
-uint32_t make_valid_fp(uint32_t tcase)
+static uint32_t make_valid_fp(uint32_t tcase)
 {
 	tcase &= 0x7FFFFFFF_ui32;
 	if(tcase == 0)
@@ -65,7 +65,7 @@ uint32_t make_valid_fp(uint32_t tcase)
 
 
 
-TEST(fp_charconv, equiv)
+TEST(fp_charconv, round_trip)
 {
 	std::random_device rd;  //Will be used to obtain a seed for the random number engine
 	std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
