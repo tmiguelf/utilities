@@ -32,102 +32,76 @@
 #include <optional>
 #include <span>
 #include <string_view>
-#include <system_error>
 #include <type_traits>
 #include <cstdint>
 
-
-#include <CoreLib/Core_Alternate.hpp>
 #include "core_wchar_alias.hpp"
 #include "numeric_common.hpp"
 
 /// \n
 namespace core
 {
-
-	template <typename>
-	struct char_conv_dec_supported: public std::false_type {};
-	template <> struct char_conv_dec_supported<uint8_t>		: public std::true_type {};
-	template <> struct char_conv_dec_supported<int8_t>		: public std::true_type {};
-	template <> struct char_conv_dec_supported<uint16_t>	: public std::true_type {};
-	template <> struct char_conv_dec_supported<int16_t>		: public std::true_type {};
-	template <> struct char_conv_dec_supported<uint32_t>	: public std::true_type {};
-	template <> struct char_conv_dec_supported<int32_t>		: public std::true_type {};
-	template <> struct char_conv_dec_supported<uint64_t>	: public std::true_type {};
-	template <> struct char_conv_dec_supported<int64_t>		: public std::true_type {};
-	template <> struct char_conv_dec_supported<float>		: public std::true_type {};
-	template <> struct char_conv_dec_supported<double>		: public std::true_type {};
-	template <> struct char_conv_dec_supported<long double>	: public std::true_type {};
+	template <typename T>
+	concept char_conv_dec_supported_c = _p::charconv_int_c<T> || _p::charconv_fp_c<T>;
 
 	template <typename T>
-	concept char_conv_dec_supported_c = char_conv_dec_supported<T>::value;
-
-
-	template <typename>
-	struct char_conv_hex_supported: public std::false_type {};
-	template <> struct char_conv_hex_supported<uint8_t>		: public std::true_type {};
-	template <> struct char_conv_hex_supported<uint16_t>	: public std::true_type {};
-	template <> struct char_conv_hex_supported<uint32_t>	: public std::true_type {};
-	template <> struct char_conv_hex_supported<uint64_t>	: public std::true_type {};
-	
-	template <typename T>
-	concept char_conv_hex_supported_c = char_conv_hex_supported<T>::value;
+	concept char_conv_hex_supported_c = _p::charconv_uint_c<T>;
 
 
 	//======== Type properties ========
 	template<typename T>
-	struct to_chars_dec_max_digits;
+	struct to_chars_dec_max_size;
 
 	template<typename T> requires char_conv_dec_supported_c<T> && std::floating_point<T>
-	struct to_chars_dec_max_digits<T>
+	struct to_chars_dec_max_size<T>
 	{
-		static constexpr uintptr_t maxExpDigits()
+		static constexpr uintptr_t max_exp_digits()
 		{
 			uintptr_t res = 1;
 			for(uintptr_t it = std::numeric_limits<T>::max_exponent10; it /= 10; ++res) {}
 			return res;
 		}
-		static constexpr uintptr_t value = std::numeric_limits<T>::max_digits10 + maxExpDigits() + 4; //4 extra -.E-
+		static constexpr uintptr_t value = std::numeric_limits<T>::max_digits10 + max_exp_digits() + 4; //4 extra -.E-
 	};
 
 	template<typename T> requires char_conv_dec_supported_c<T> && std::signed_integral<T>
-	struct to_chars_dec_max_digits<T>
+	struct to_chars_dec_max_size<T>
 	{
-		static constexpr uintptr_t maxDigits()
+		static constexpr uintptr_t max_size()
 		{
 			uintptr_t res = 1;
-			for(int64_t it = std::numeric_limits<T>::max(); it /= 10; ++res) {}
+			for(T it = std::numeric_limits<T>::max(); it /= 10; ++res) {}
 			return res;
 		}
 
-		static constexpr uintptr_t value = maxDigits() + 1;
+		static constexpr uintptr_t value = max_size() + 1;
 	};
 
 	template<typename T> requires char_conv_dec_supported_c<T> && std::unsigned_integral<T>
-	struct to_chars_dec_max_digits<T>
+	struct to_chars_dec_max_size<T>
 	{
-		static constexpr uintptr_t maxDigits()
+		static constexpr uintptr_t max_size()
 		{
 			uintptr_t res = 1;
-			for(uint64_t it = std::numeric_limits<T>::max(); it /= 10; ++res) {}
+			for(T it = std::numeric_limits<T>::max(); it /= 10; ++res) {}
 			return res;
 		}
 
-		static constexpr uintptr_t value = maxDigits();
+		static constexpr uintptr_t value = max_size();
 	};
 
 	template<char_conv_dec_supported_c T>
-	constexpr uintptr_t to_chars_dec_max_digits_v = to_chars_dec_max_digits<T>::value;
+	constexpr uintptr_t to_chars_dec_max_size_v = to_chars_dec_max_size<T>::value;
 
 
 	template<char_conv_hex_supported_c T>
-	struct to_chars_hex_max_digits
+	struct to_chars_hex_max_size
 	{
 		static constexpr uintptr_t value = sizeof(T) * 2;
 	};
 
 	template<char_conv_hex_supported_c T>
-	constexpr uintptr_t to_chars_hex_max_digits_v = to_chars_hex_max_digits<T>::value;
+	constexpr uintptr_t to_chars_hex_max_size_v = to_chars_hex_max_size<T>::value;
 
 
 	//======== Functions ========
@@ -138,66 +112,55 @@ namespace core
 		template <char_conv_dec_supported_c num_T>
 		[[nodiscard]] uintptr_t to_chars_estimate(num_T p_val);
 
-		template <_p::is_internal_charconv_c char_T, char_conv_dec_supported_c num_T>
+		template <_p::charconv_char_c char_T, char_conv_dec_supported_c num_T>
 		void to_chars_unsafe(num_T p_val, char_T* p_out);
 
 		template <char_conv_hex_supported_c num_T>
 		[[nodiscard]] uintptr_t to_chars_hex_estimate(num_T p_val);
 
-		template <_p::is_internal_charconv_c char_T, char_conv_hex_supported_c num_T>
+		template <_p::charconv_char_c char_T, char_conv_hex_supported_c num_T>
 		void to_chars_hex_unsafe(num_T p_val, char_T* p_out);
 
 		template <char_conv_hex_supported_c num_T>
-		[[nodiscard]] inline constexpr uintptr_t to_chars_hex_fix_estimate(num_T const) { return to_chars_hex_max_digits_v<num_T>; }
+		[[nodiscard]] inline constexpr uintptr_t to_chars_hex_fix_estimate(num_T const) { return to_chars_hex_max_size_v<num_T>; }
 
-		template <_p::is_internal_charconv_c char_T, char_conv_hex_supported_c num_T>
+		template <_p::charconv_char_c char_T, char_conv_hex_supported_c num_T>
 		void to_chars_hex_fix_unsafe(num_T p_val, char_T* p_out);
 	} //namespace _p
 
 	//======== Low level ========
 
-	//from_chars_result
-	//illegal_byte_sequence
-	//value_too_large
-	//no_buffer_space
-	//invalid_argument
-	//
-	/// \brief 
-	///		Auxiliary structure to return an optional result from a potentially failing conversion function
-	template <char_conv_dec_supported_c T>
-	using from_chars_result = alternate<T, std::errc, std::errc{}, std::errc::invalid_argument>;
-
-	template <_p::is_supported_charconv_c T>
+	template <_p::charconv_char_extended_c T>
 	[[nodiscard]] inline constexpr bool is_digit(const T p_char) { return (p_char >= '0' && p_char <= '9'); }
 
-	template <_p::is_supported_charconv_c T>
+	template <_p::charconv_char_extended_c T>
 	[[nodiscard]] inline constexpr bool is_xdigit(const T p_char) { return is_digit(p_char) || (p_char >= 'A' && p_char <= 'F') || (p_char >= 'a' && p_char <= 'f'); }
 
 	namespace _p
 	{
-		template <_p::is_internal_charconv_c T>
+		template <_p::charconv_char_c T>
 		[[nodiscard]] bool is_uint(std::basic_string_view<T> p_str);
 
-		template <_p::is_internal_charconv_c T>
+		template <_p::charconv_char_c T>
 		[[nodiscard]] bool is_int(std::basic_string_view<T> p_str);
 
-		template <_p::is_internal_charconv_c T>
+		template <_p::charconv_char_c T>
 		[[nodiscard]] bool is_hex(std::basic_string_view<T> p_str);
 
-		template<char_conv_dec_supported_c num_T, _p::is_internal_charconv_c char_T>
+		template<char_conv_dec_supported_c num_T, _p::charconv_char_c char_T>
 		[[nodiscard]] from_chars_result<num_T> from_chars(std::basic_string_view<char_T> p_str);
 
-		template<char_conv_hex_supported_c num_T, _p::is_internal_charconv_c char_T>
+		template<char_conv_hex_supported_c num_T, _p::charconv_char_c char_T>
 		[[nodiscard]] from_chars_result<num_T> from_chars_hex(std::basic_string_view<char_T> p_str);
 
-		template <_p::is_internal_charconv_c char_T, char_conv_dec_supported_c num_T>
-		[[nodiscard]] uintptr_t to_chars(num_T p_val, std::span<char_T, to_chars_dec_max_digits_v<num_T>> p_str);
+		template <_p::charconv_char_c char_T, char_conv_dec_supported_c num_T>
+		[[nodiscard]] uintptr_t to_chars(num_T p_val, std::span<char_T, to_chars_dec_max_size_v<num_T>> p_str);
 
-		template <_p::is_internal_charconv_c char_T, char_conv_hex_supported_c num_T>
-		[[nodiscard]] uintptr_t to_chars_hex(num_T p_val, std::span<char_T, to_chars_hex_max_digits_v<num_T>> p_str);
+		template <_p::charconv_char_c char_T, char_conv_hex_supported_c num_T>
+		[[nodiscard]] uintptr_t to_chars_hex(num_T p_val, std::span<char_T, to_chars_hex_max_size_v<num_T>> p_str);
 
-		template <_p::is_internal_charconv_c char_T, char_conv_hex_supported_c num_T>
-		void to_chars_hex_fix(num_T p_val, std::span<char_T, to_chars_hex_max_digits_v<num_T>> p_str);
+		template <_p::charconv_char_c char_T, char_conv_hex_supported_c num_T>
+		void to_chars_hex_fix(num_T p_val, std::span<char_T, to_chars_hex_max_size_v<num_T>> p_str);
 	}
 
 
@@ -289,97 +252,97 @@ namespace core
 	}
 
 	template <char_conv_dec_supported_c num_T>
-	[[nodiscard]] inline uintptr_t to_chars(num_T const p_val, std::span<char8_t , to_chars_dec_max_digits_v<num_T>> const p_str) { return _p::to_chars(p_val, p_str); }
+	[[nodiscard]] inline uintptr_t to_chars(num_T const p_val, std::span<char8_t , to_chars_dec_max_size_v<num_T>> const p_str) { return _p::to_chars(p_val, p_str); }
 
 	template <char_conv_dec_supported_c num_T>
-	[[nodiscard]] inline uintptr_t to_chars(num_T const p_val, std::span<char16_t, to_chars_dec_max_digits_v<num_T>> const p_str) { return _p::to_chars(p_val, p_str); }
+	[[nodiscard]] inline uintptr_t to_chars(num_T const p_val, std::span<char16_t, to_chars_dec_max_size_v<num_T>> const p_str) { return _p::to_chars(p_val, p_str); }
 
 	template <char_conv_dec_supported_c num_T>
-	[[nodiscard]] inline uintptr_t to_chars(num_T const p_val, std::span<char32_t, to_chars_dec_max_digits_v<num_T>> const p_str) { return _p::to_chars(p_val, p_str); }
+	[[nodiscard]] inline uintptr_t to_chars(num_T const p_val, std::span<char32_t, to_chars_dec_max_size_v<num_T>> const p_str) { return _p::to_chars(p_val, p_str); }
 
 	template <char_conv_dec_supported_c num_T>
-	[[nodiscard]] inline uintptr_t to_chars(num_T const p_val, std::span<char    , to_chars_dec_max_digits_v<num_T>> const p_str)
+	[[nodiscard]] inline uintptr_t to_chars(num_T const p_val, std::span<char    , to_chars_dec_max_size_v<num_T>> const p_str)
 	{
-		constexpr uintptr_t size = to_chars_dec_max_digits_v<num_T>;
+		constexpr uintptr_t size = to_chars_dec_max_size_v<num_T>;
 		return _p::to_chars(p_val, std::span<char8_t, size>{reinterpret_cast<char8_t*>(p_str.data()), size});
 	}
 
 	template <char_conv_dec_supported_c num_T>
-	[[nodiscard]] inline uintptr_t to_chars(num_T const p_val, std::span<wchar_t , to_chars_dec_max_digits_v<num_T>> const p_str)
+	[[nodiscard]] inline uintptr_t to_chars(num_T const p_val, std::span<wchar_t , to_chars_dec_max_size_v<num_T>> const p_str)
 	{
-		constexpr uintptr_t size = to_chars_dec_max_digits_v<num_T>;
+		constexpr uintptr_t size = to_chars_dec_max_size_v<num_T>;
 		return _p::to_chars(p_val, std::span<wchar_alias, size>{reinterpret_cast<wchar_alias*>(p_str.data()), size});
 	}
 
 
 	template <char_conv_hex_supported_c num_T>
-	[[nodiscard]] inline uintptr_t to_chars_hex(num_T const p_val, std::span<char8_t , to_chars_hex_max_digits_v<num_T>> const p_str) { return _p::to_chars_hex(p_val, p_str); }
+	[[nodiscard]] inline uintptr_t to_chars_hex(num_T const p_val, std::span<char8_t , to_chars_hex_max_size_v<num_T>> const p_str) { return _p::to_chars_hex(p_val, p_str); }
 
 	template <char_conv_hex_supported_c num_T>
-	[[nodiscard]] inline uintptr_t to_chars_hex(num_T const p_val, std::span<char16_t, to_chars_hex_max_digits_v<num_T>> const p_str) { return _p::to_chars_hex(p_val, p_str); }
+	[[nodiscard]] inline uintptr_t to_chars_hex(num_T const p_val, std::span<char16_t, to_chars_hex_max_size_v<num_T>> const p_str) { return _p::to_chars_hex(p_val, p_str); }
 
 	template <char_conv_hex_supported_c num_T>
-	[[nodiscard]] inline uintptr_t to_chars_hex(num_T const p_val, std::span<char32_t, to_chars_hex_max_digits_v<num_T>> const p_str) { return _p::to_chars_hex(p_val, p_str); }
+	[[nodiscard]] inline uintptr_t to_chars_hex(num_T const p_val, std::span<char32_t, to_chars_hex_max_size_v<num_T>> const p_str) { return _p::to_chars_hex(p_val, p_str); }
 
 	template <char_conv_hex_supported_c num_T>
-	[[nodiscard]] inline uintptr_t to_chars_hex(num_T const p_val, std::span<char, to_chars_hex_max_digits_v<num_T>> const p_str)
+	[[nodiscard]] inline uintptr_t to_chars_hex(num_T const p_val, std::span<char, to_chars_hex_max_size_v<num_T>> const p_str)
 	{
-		constexpr uintptr_t size = to_chars_hex_max_digits_v<num_T>;
+		constexpr uintptr_t size = to_chars_hex_max_size_v<num_T>;
 		return _p::to_chars_hex(p_val, std::span<char8_t, size>{reinterpret_cast<char8_t*>(p_str.data()), size});
 	}
 
 	template <char_conv_hex_supported_c num_T>
-	[[nodiscard]] inline uintptr_t to_chars_hex(num_T const p_val, std::span<wchar_t, to_chars_hex_max_digits_v<num_T>> const p_str)
+	[[nodiscard]] inline uintptr_t to_chars_hex(num_T const p_val, std::span<wchar_t, to_chars_hex_max_size_v<num_T>> const p_str)
 	{
-		constexpr uintptr_t size = to_chars_hex_max_digits_v<num_T>;
+		constexpr uintptr_t size = to_chars_hex_max_size_v<num_T>;
 		return _p::to_chars_hex(p_val, std::span<wchar_alias, size>{reinterpret_cast<wchar_alias*>(p_str.data()), size});
 	}
 
 
 	template <char_conv_hex_supported_c num_T>
-	inline void to_chars_hex_fix(num_T const p_val, std::span<char8_t , to_chars_hex_max_digits_v<num_T>> const p_str) { _p::to_chars_hex_fix(p_val, p_str); }
+	inline void to_chars_hex_fix(num_T const p_val, std::span<char8_t , to_chars_hex_max_size_v<num_T>> const p_str) { _p::to_chars_hex_fix(p_val, p_str); }
 
 	template <char_conv_hex_supported_c num_T>
-	inline void to_chars_hex_fix(num_T const p_val, std::span<char16_t, to_chars_hex_max_digits_v<num_T>> const p_str) { _p::to_chars_hex_fix(p_val, p_str); }
+	inline void to_chars_hex_fix(num_T const p_val, std::span<char16_t, to_chars_hex_max_size_v<num_T>> const p_str) { _p::to_chars_hex_fix(p_val, p_str); }
 
 	template <char_conv_hex_supported_c num_T>
-	inline void to_chars_hex_fix(num_T const p_val, std::span<char32_t, to_chars_hex_max_digits_v<num_T>> const p_str) { _p::to_chars_hex_fix(p_val, p_str); }
+	inline void to_chars_hex_fix(num_T const p_val, std::span<char32_t, to_chars_hex_max_size_v<num_T>> const p_str) { _p::to_chars_hex_fix(p_val, p_str); }
 
 	template <char_conv_hex_supported_c num_T>
-	inline void to_chars_hex_fix(num_T const p_val, std::span<char    , to_chars_hex_max_digits_v<num_T>> const p_str)
+	inline void to_chars_hex_fix(num_T const p_val, std::span<char    , to_chars_hex_max_size_v<num_T>> const p_str)
 	{
-		constexpr uintptr_t size = to_chars_dec_max_digits_v<num_T>;
+		constexpr uintptr_t size = to_chars_dec_max_size_v<num_T>;
 		_p::to_chars_hex_fix(p_val, std::span<char8_t, size>{reinterpret_cast<char8_t*>(p_str.data()), size});
 	}
 
 	template <char_conv_hex_supported_c num_T>
-	inline void to_chars_hex_fix(num_T const p_val, std::span<wchar_t , to_chars_hex_max_digits_v<num_T>> const p_str)
+	inline void to_chars_hex_fix(num_T const p_val, std::span<wchar_t , to_chars_hex_max_size_v<num_T>> const p_str)
 	{
-		constexpr uintptr_t size = to_chars_dec_max_digits_v<num_T>;
+		constexpr uintptr_t size = to_chars_dec_max_size_v<num_T>;
 		_p::to_chars_hex_fix(p_val, std::span<wchar_alias, size>{reinterpret_cast<wchar_alias*>(p_str.data()), size});
 	}
 
 
-	template <_p::is_supported_charconv_c char_T, char_conv_dec_supported_c num_T>
+	template <_p::charconv_char_extended_c char_T, char_conv_dec_supported_c num_T>
 	[[nodiscard]] inline std::basic_string<char_T> to_chars(num_T const p_val)
 	{
-		constexpr uintptr_t size = to_chars_dec_max_digits_v<num_T>;
+		constexpr uintptr_t size = to_chars_dec_max_size_v<num_T>;
 		std::array<char_T, size> buff;
 		return {buff.data(), _p::to_chars(p_val, std::span<char_T, size>{buff})};
 	}
 
-	template <_p::is_supported_charconv_c char_T, char_conv_hex_supported_c num_T>
+	template <_p::charconv_char_extended_c char_T, char_conv_hex_supported_c num_T>
 	[[nodiscard]] inline std::basic_string<char_T> to_chars_hex(num_T const p_val)
 	{
-		constexpr uintptr_t size = to_chars_hex_max_digits_v<num_T>;
+		constexpr uintptr_t size = to_chars_hex_max_size_v<num_T>;
 		std::array<char_T, size> buff;
 		return {buff.data(), _p::to_chars_hex(p_val, std::span<char_T, size>{buff})};
 	}
 
-	template <_p::is_supported_charconv_c char_T, char_conv_hex_supported_c num_T>
+	template <_p::charconv_char_extended_c char_T, char_conv_hex_supported_c num_T>
 	[[nodiscard]] inline std::basic_string<char_T> to_chars_hex_fix(num_T const p_val)
 	{
-		constexpr uintptr_t size = to_chars_hex_max_digits_v<num_T>;
+		constexpr uintptr_t size = to_chars_hex_max_size_v<num_T>;
 		std::basic_string<char_T> buff;
 		buff.resize(size);
 		_p::to_chars_hex_fix(p_val, std::span<char_T, size>{buff.data(), size});

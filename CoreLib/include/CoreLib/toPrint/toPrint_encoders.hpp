@@ -35,6 +35,8 @@
 #include <array>
 #include <concepts>
 #include <type_traits>
+#include <charconv>
+#include <limits>
 
 #include "toPrint_base.hpp"
 
@@ -75,7 +77,7 @@ template<typename T> requires (std::is_pointer_v<T> && !_p::toPrint_explicitly_d
 class toPrint<T>: public toPrint_base
 {
 private:
-	static constexpr uintptr_t aux_size = core::to_chars_hex_max_digits_v<uintptr_t>;
+	static constexpr uintptr_t aux_size = core::to_chars_hex_max_size_v<uintptr_t>;
 public:
 	toPrint(const T p_data): m_data(reinterpret_cast<uintptr_t>(p_data)) {}
 
@@ -415,11 +417,11 @@ namespace _p
 }
 //-------- Decimal -------- 
 
-template<typename Num_T> requires core::char_conv_dec_supported<Num_T>::value && std::is_floating_point_v<Num_T>
+template<typename Num_T> requires core::char_conv_dec_supported_c<Num_T> && std::is_floating_point_v<Num_T>
 class toPrint<Num_T>: public toPrint_base
 {
 private:
-	using array_t = std::array<char8_t, core::to_chars_dec_max_digits_v<Num_T>>;
+	using array_t = std::array<char8_t, core::to_chars_dec_max_size_v<Num_T>>;
 public:
 	toPrint(Num_T const p_data)
 		: m_size(core::to_chars(p_data, m_preCalc))
@@ -443,10 +445,13 @@ public:
 
 private:
 	array_t m_preCalc;
-	uintptr_t m_size;
+	const uintptr_t m_size;
 };
 
-template<typename Num_T> requires (core::char_conv_dec_supported<Num_T>::value && !std::is_floating_point_v<Num_T>)
+
+
+
+template<typename Num_T> requires (core::char_conv_dec_supported_c<Num_T> && !std::is_floating_point_v<Num_T>)
 class toPrint<Num_T>: public toPrint_base
 {
 public:
@@ -473,13 +478,68 @@ private:
 	const Num_T m_data;
 };
 
-template<typename Num_T> requires (std::integral<Num_T> && !core::char_conv_dec_supported<Num_T>::value)
+template<typename Num_T> requires (std::integral<Num_T> && !core::char_conv_dec_supported_c<Num_T>)
 class toPrint<Num_T>: public toPrint<_p::toPrint_int_aliased_t<Num_T>>
 {
 	using alias_t = _p::toPrint_int_aliased_t<Num_T>;
 public:
 	constexpr toPrint(Num_T const p_data): toPrint<alias_t>(static_cast<alias_t const>(p_data)) {}
 };
+
+
+template<typename Num_T> requires (std::is_floating_point_v<Num_T> && !core::char_conv_dec_supported_c<Num_T> && sizeof(Num_T) > 4)
+class toPrint<Num_T>: public toPrint_base
+{
+private:
+	static constexpr uintptr_t max_exp_digits()
+	{
+		uintptr_t res = 1;
+		for(uintptr_t it = std::numeric_limits<Num_T>::max_exponent10; it /= 10; ++res) {}
+		return res;
+	}
+	static constexpr uintptr_t max_size = std::numeric_limits<Num_T>::max_digits10 + max_exp_digits() + 4; //4 extra -.E-
+
+	using array_t = std::array<char8_t, max_size>;
+
+	static inline uintptr_t fp2dec(const Num_T p_val, std::span<char8_t, max_size> const p_out)
+	{
+		char* const start = reinterpret_cast<char*>(p_out.data());
+		const std::to_chars_result res = std::to_chars(start, start + p_out.size(), p_val);
+
+		if(res.ec == std::errc{})
+		{
+			return static_cast<uintptr_t>(res.ptr - start);
+		}
+		return 0;
+	}
+
+
+public:
+	toPrint(Num_T const p_data)
+		: m_size(fp2dec(p_data, m_preCalc))
+
+	{
+	}
+
+	template<_p::c_toPrint_char CharT>
+	inline constexpr uintptr_t size(const CharT&) const { return m_size; }
+
+	template<_p::c_toPrint_char CharT>
+	void getPrint(CharT* p_out) const
+	{
+		const char8_t* pivot = m_preCalc.data();
+		const char8_t* const last = pivot + m_size;
+		while(pivot != last)
+		{
+			*(p_out++) = *(pivot++);
+		}
+	}
+
+private:
+	array_t m_preCalc;
+	const uintptr_t m_size;
+};
+
 
 
 //-------- Hexadecimal -------- 
@@ -491,7 +551,7 @@ template<core::char_conv_hex_supported_c Num_T>
 class toPrint_hex<Num_T>: public toPrint_base
 {
 private:
-	using array_t = std::array<char8_t, core::to_chars_hex_max_digits_v<Num_T>>;
+	using array_t = std::array<char8_t, core::to_chars_hex_max_size_v<Num_T>>;
 
 public:
 	constexpr toPrint_hex(Num_T const p_data)
@@ -514,7 +574,7 @@ private:
 	const Num_T m_data;
 };
 
-template<typename Num_T> requires (std::integral<Num_T> && !core::char_conv_hex_supported<Num_T>::value)
+template<typename Num_T> requires (std::integral<Num_T> && !core::char_conv_hex_supported_c<Num_T>)
 class toPrint_hex<Num_T>: public toPrint_hex<_p::toPrint_uint_clobber_t<Num_T>>
 {
 	using alias_t = _p::toPrint_uint_clobber_t<Num_T>;
@@ -532,7 +592,7 @@ template<core::char_conv_hex_supported_c Num_T>
 class toPrint_hex_fix<Num_T>: public toPrint_base
 {
 private:
-	static constexpr uintptr_t array_size = core::to_chars_hex_max_digits_v<Num_T>;
+	static constexpr uintptr_t array_size = core::to_chars_hex_max_size_v<Num_T>;
 
 public:
 	constexpr toPrint_hex_fix(Num_T const p_data): m_data{p_data} {}
@@ -550,7 +610,7 @@ private:
 	const Num_T m_data;
 };
 
-template<typename Num_T> requires (std::integral<Num_T> && !core::char_conv_hex_supported<Num_T>::value)
+template<typename Num_T> requires (std::integral<Num_T> && !core::char_conv_hex_supported_c<Num_T>)
 class toPrint_hex_fix<Num_T>: public toPrint_hex_fix<_p::toPrint_uint_clobber_t<Num_T>>
 {
 	using alias_t = _p::toPrint_uint_clobber_t<Num_T>;

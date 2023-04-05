@@ -33,11 +33,11 @@
 namespace core
 {
 
-	template <_p::is_charconv_fp_supported_c T>
+	template <_p::charconv_fp_c T>
 	struct fp_type_traits;
 
 	template <>
-	struct fp_type_traits<float>
+	struct fp_type_traits<float32_t>
 	{
 		static constexpr int16_t max_scientific_exponent_10 = 38;
 		static constexpr int16_t min_scientific_exponent_10 = -45;
@@ -57,13 +57,13 @@ namespace core
 	};
 
 	template <>
-	struct fp_type_traits<double>
+	struct fp_type_traits<float64_t>
 	{
 		static constexpr int16_t max_scientific_exponent_10 = 308;
 		static constexpr int16_t min_scientific_exponent_10 = -324;
 
 		static constexpr uint16_t max_scientific_decimal_digits_10 = 766;
-		static constexpr uint16_t max_scientific_precision_10 = 766;
+		static constexpr uint16_t max_scientific_precision_10 = max_scientific_decimal_digits_10;
 
 		static constexpr uint16_t max_scientific_exponent_digits_10 = 3;
 
@@ -108,7 +108,7 @@ namespace core
 	struct fp_to_chars_shortest_context;
 
 	template <>
-	struct fp_to_chars_shortest_context<float>
+	struct fp_to_chars_shortest_context<float32_t>
 	{
 		uint32_t mantissa;
 		int16_t exponent;
@@ -116,32 +116,56 @@ namespace core
 	};
 
 	template <>
-	struct fp_to_chars_shortest_context<double>
+	struct fp_to_chars_shortest_context<float64_t>
 	{
 		uint64_t mantissa;
 		int16_t exponent;
 		uint8_t sig_digits;
 	};
 
-	template<_p::is_charconv_fp_supported_c fp_t>
+
+	namespace _p
+	{
+		template<_p::charconv_fp_c fp_t, _p::charconv_char_c char_t>
+		[[nodiscard]] from_chars_result<fp_t> from_chars_fp(bool sign_bit, std::basic_string_view<char_t> units, std::basic_string_view<char_t> decimal, bool exp_negative, std::basic_string_view<char_t> exponent);
+	} //namespace _p
+
+
+	template<_p::charconv_fp_c fp_t>
 	fp_base_classify to_chars_shortest_classify(fp_t value, fp_to_chars_shortest_context<fp_t>& context);
 
-	template<_p::is_charconv_fp_supported_c fp_t>
+	template<_p::charconv_fp_c fp_t>
 	[[nodiscard]] fp_to_chars_sci_size to_chars_shortest_sci_size(fp_to_chars_shortest_context<fp_t> context);
 
-	template<_p::is_charconv_fp_supported_c fp_t>
+	template<_p::charconv_fp_c fp_t>
 	[[nodiscard]] fp_to_chars_fix_size to_chars_shortest_fix_size(fp_to_chars_shortest_context<fp_t> context);
 
-	template<_p::is_charconv_fp_supported_c fp_t, _p::is_internal_charconv_c char_t>
+	template<_p::charconv_fp_c fp_t, _p::charconv_char_c char_t>
 	void to_chars_shortest_sci_unsafe(fp_to_chars_shortest_context<fp_t> context, char_t* unit_char, char_t* decimal_chars);
 
-	template<_p::is_charconv_fp_supported_c fp_t, _p::is_internal_charconv_c char_t>
+	template<_p::charconv_fp_c fp_t, _p::charconv_char_c char_t>
 	void to_chars_shortest_sci_exp_unsafe(fp_to_chars_shortest_context<fp_t> context, char_t* exp_chars);
 
-	template<_p::is_charconv_fp_supported_c fp_t, _p::is_internal_charconv_c char_t>
+	template<_p::charconv_fp_c fp_t, _p::charconv_char_c char_t>
 	void to_chars_shortest_fix_unsafe(fp_to_chars_shortest_context<fp_t> context, char_t* unit_chars, char_t* decimal_chars);
 
-	template<_p::is_charconv_fp_supported_c fp_t, _p::is_internal_charconv_c char_t>
-	bool from_chars(bool sign_bit, std::basic_string_view<char_t> units, std::basic_string_view<char_t> decimal, bool exp_negative, std::basic_string_view<char_t> exponent, fp_t& result);
+
+	template<_p::charconv_fp_c fp_t>
+	[[nodiscard]] inline from_chars_result<fp_t> from_chars_fp(bool sign_bit, std::basic_string_view<char8_t> units, std::basic_string_view<char8_t> decimal, bool exp_negative, std::basic_string_view<char8_t> exponent)
+	{
+		return _p::from_chars_fp<fp_t>(sign_bit, units, decimal, exp_negative, exponent);
+	}
+
+	template<_p::charconv_fp_c fp_t>
+	[[nodiscard]] inline from_chars_result<fp_t> from_chars_fp(bool sign_bit, std::basic_string_view<char16_t> units, std::basic_string_view<char16_t> decimal, bool exp_negative, std::basic_string_view<char16_t> exponent)
+	{
+		return _p::from_chars_fp<fp_t>(sign_bit, units, decimal, exp_negative, exponent);
+	}
+
+	template<_p::charconv_fp_c fp_t>
+	[[nodiscard]] inline from_chars_result<fp_t> from_chars_fp(bool sign_bit, std::basic_string_view<char32_t> units, std::basic_string_view<char32_t> decimal, bool exp_negative, std::basic_string_view<char32_t> exponent)
+	{
+		return _p::from_chars_fp<fp_t>(sign_bit, units, decimal, exp_negative, exponent);
+	}
 
 } //namespace core

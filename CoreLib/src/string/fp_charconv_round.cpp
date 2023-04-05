@@ -97,7 +97,7 @@ namespace core
 		static constexpr uint16_t pow_5_low_mask  = 0x0F_ui16;
 		static constexpr uint8_t  pow_5_hi_offset = 4_ui8;
 
-		inline static constexpr uint64_t pow_2_low_table(uint16_t p_offset)
+		[[nodiscard]] inline static constexpr uint64_t pow_2_low_table(uint16_t p_offset)
 		{
 			return 1_ui64 << p_offset;
 		}
@@ -105,7 +105,7 @@ namespace core
 		static constexpr uint16_t pow_2_low_mask = 0x1F_ui16;
 		static constexpr uint8_t pow_2_hi_offset = 5_ui8;
 
-		inline static constexpr uint16_t num_digits(const uint64_t p_val)
+		[[nodiscard]] inline static constexpr uint16_t num_digits(const uint64_t p_val)
 		{
 			if(p_val <                  10_ui64) return  1;
 			if(p_val <                 100_ui64) return  2;
@@ -129,7 +129,7 @@ namespace core
 		}
 
 		//
-		inline static uint16_t leading_0(uint64_t p_val)
+		[[nodiscard]] inline static uint16_t leading_0(uint64_t p_val)
 		{
 			uint16_t out = 0;
 			while(!(p_val % 10))
@@ -140,7 +140,7 @@ namespace core
 			return out;
 		}
 
-		template<_p::is_internal_charconv_c char_t>
+		template<_p::charconv_char_c char_t>
 		inline static void output_19_digits(uint64_t p_val, char_t* p_out)
 		{
 			p_out += 18;
@@ -187,7 +187,7 @@ namespace core
 			*(--p_out) = static_cast<char_t>('0' + p_val);
 		}
 
-		template<_p::is_internal_charconv_c char_t>
+		template<_p::charconv_char_c char_t>
 		inline static void output_sig_digits(uint64_t p_val, char_t* p_out, uint16_t sig_digits)
 		{
 			if(sig_digits)
@@ -222,13 +222,13 @@ namespace core
 
 	};
 
-	template<typename T>
+	template<_p::charconv_fp_c T>
 	struct fp_utils_pre;
 
 	template<>
-	struct fp_utils_pre<float>: public fp_common_utils, public fp_traits<float>
+	struct fp_utils_pre<float32_t>: public fp_common_utils, public fp_traits<float32_t>
 	{
-		using fp_type = float;
+		using fp_type = float32_t;
 		using uint_t = uint32_t;
 		using bignum_t = fp_to_chars_round_context<fp_type>::bignum_t;
 
@@ -257,7 +257,7 @@ namespace core
 			bignum_t{7572422027587890625_ui64, 8447331464594753924_ui64, 1400485046962261850_ui64, 6665277316200968382_ui64, 5085839414626955934_ui64, 448415_ui64},
 		};
 
-		static inline exp_ut last_block(const bignum_t& p_val)
+		[[nodiscard]] static inline exp_ut last_block(const bignum_t& p_val)
 		{
 			if(p_val[5]) return 5;
 			if(p_val[4]) return 4;
@@ -267,7 +267,7 @@ namespace core
 			return 0;
 		}
 
-		static inline exp_ut leading_zeros(const bignum_t& p_val)
+		[[nodiscard]] static inline exp_ut leading_zeros(const bignum_t& p_val)
 		{
 			if(p_val[0]) return                         leading_0(p_val[0]);
 			if(p_val[1]) return     max_pow_10_digits + leading_0(p_val[1]);
@@ -293,7 +293,7 @@ namespace core
 			}
 		}
 
-		template<_p::is_internal_charconv_c char_t>
+		template<_p::charconv_char_c char_t>
 		static inline void to_chars_exp(exp_st exponent, char_t* exp_char)
 		{
 			if(exponent < 0)
@@ -314,25 +314,25 @@ namespace core
 	};
 
 	template<>
-	struct fp_utils_pre<double>: public fp_common_utils, public fp_traits<double>
+	struct fp_utils_pre<float64_t>: public fp_common_utils, public fp_traits<float64_t>
 	{
-		using fp_type = double;
+		using fp_type = float64_t;
 		using uint_t = uint64_t;
 		using bignum_t = fp_to_chars_round_context<fp_type>::bignum_t;
 
 		static constexpr uint8_t bignum_width = fp_to_chars_round_context<fp_type>::bignum_width;
 
-		static inline uint_t get_mantissa(fp_type input)
+		[[nodiscard]] static inline uint_t get_mantissa(fp_type input)
 		{
 			return reinterpret_cast<const uint_t&>(input) & mantissa_mask;
 		}
 
-		static inline uint_t get_exponent_bits(fp_type input)
+		[[nodiscard]] static inline uint_t get_exponent_bits(fp_type input)
 		{
 			return (reinterpret_cast<const uint_t&>(input) & exponent_mask);
 		}
 
-		static inline bool get_sign(const fp_type input)
+		[[nodiscard]] static inline bool get_sign(const fp_type input)
 		{
 			return reinterpret_cast<const uint_t&>(input) & sign_mask;
 		}
@@ -446,7 +446,7 @@ namespace core
 			bignum_t{6788730621337890625_ui64, 8260916350154730025_ui64, 1054836111697107017_ui64, 9746592397646568228_ui64, 9003823349558934395_ui64, 6440580415145095266_ui64, 5026422047965260195_ui64, 4588071890710870340_ui64, 3911281493787879813_ui64, 1055037089914986243_ui64, 3316991619930098923_ui64, 7923901231336910927_ui64, 8334722404240460246_ui64, 3329727744369531573_ui64, 1332890737901334288_ui64, 7751610724284299668_ui64, 2005392141059738880_ui64, 8907120637420954446_ui64, 5329809902859147605_ui64, 1677279576363216662_ui64, 7604509920518839998_ui64, 6596982131722182617_ui64, 2412424997277810863_ui64, 6634226747072748158_ui64, 9650495426236468410_ui64, 4605601268615415922_ui64, 7549249893589092678_ui64, 2554963661425993_ui64, 8745442279949228922_ui64, 3268671395928414754_ui64, 285276124561811138_ui64, 991840431275125052_ui64, 6626841423759185595_ui64, 8625878178287092370_ui64, 1993454465439695191_ui64, 2702029080835007461_ui64, 5729905770234273000_ui64, 4728854894602392104_ui64, 3364986176706275171_ui64, 197626258_ui64, 0_ui64},
 		};
 
-		static inline exp_ut last_block(const bignum_t& p_val)
+		[[nodiscard]] static inline exp_ut last_block(const bignum_t& p_val)
 		{
 			for(uint16_t i = static_cast<uint16_t>(p_val.size()); --i;)
 			{
@@ -455,7 +455,7 @@ namespace core
 			return 0;
 		}
 
-		static inline exp_ut leading_zeros(const bignum_t& p_val)
+		[[nodiscard]] static inline exp_ut leading_zeros(const bignum_t& p_val)
 		{
 			if(p_val[0]) return                     leading_0(p_val[0]);
 			if(p_val[1]) return max_pow_10_digits + leading_0(p_val[1]);
@@ -490,7 +490,7 @@ namespace core
 			}
 		}
 
-		template<_p::is_internal_charconv_c char_t>
+		template<_p::charconv_char_c char_t>
 		static inline void to_chars_exp(exp_st exponent, char_t* exp_char)
 		{
 			if(exponent < 0)
@@ -523,7 +523,7 @@ namespace core
 	};
 
 
-	template<_p::is_charconv_fp_supported_c fp_type>
+	template<_p::charconv_fp_c fp_type>
 	struct fp_utils: public fp_utils_pre<fp_type>
 	{
 		using fp_utils_p = fp_utils_pre<fp_type>;
@@ -533,22 +533,22 @@ namespace core
 		using exp_ut = typename fp_utils_p::exp_ut;
 
 
-		static inline uint_t get_mantissa(fp_type input)
+		[[nodiscard]] static inline uint_t get_mantissa(fp_type input)
 		{
 			return reinterpret_cast<const uint_t&>(input) & fp_utils_p::mantissa_mask;
 		}
 
-		static inline uint_t get_exponent_bits(fp_type input)
+		[[nodiscard]] static inline uint_t get_exponent_bits(fp_type input)
 		{
 			return (reinterpret_cast<const uint_t&>(input) & fp_utils_p::exponent_mask);
 		}
 
-		static inline bool get_sign(const fp_type input)
+		[[nodiscard]] static inline bool get_sign(const fp_type input)
 		{
 			return reinterpret_cast<const uint_t&>(input) & fp_utils_p::sign_mask;
 		}
 
-		static void mul_hack(bignum_t& p_1, const uint64_t p_2)
+		[[nodiscard]] static void mul_hack(bignum_t& p_1, const uint64_t p_2)
 		{
 			uint64_t mul_carry = 0;
 			uint64_t carry = 0;
@@ -618,7 +618,7 @@ namespace core
 			}
 		}
 
-		static inline exp_ut load_digits(bignum_t& digits, uint_t mantissa, exp_st exponent)
+		[[nodiscard]] static inline exp_ut load_digits(bignum_t& digits, uint_t mantissa, exp_st exponent)
 		{
 #if USE_ORDER_REDUCE
 			{
@@ -790,7 +790,7 @@ namespace core
 			}
 		}
 
-		template<_p::is_internal_charconv_c char_t>
+		template<_p::charconv_char_c char_t>
 		static inline void fill_digits(const bignum_t& digits,
 			exp_ut last_block,
 			exp_ut last_num_digits,
@@ -830,7 +830,7 @@ namespace core
 		}
 
 
-		template<_p::is_internal_charconv_c char_t>
+		template<_p::charconv_char_c char_t>
 		static inline void to_chars_fix(const bignum_t& digits,
 			exp_st decimal_offset,
 			char_t* unit_chars, char_t* decimal_chars,
@@ -1005,9 +1005,9 @@ namespace core
 
 	};
 
-	fp_to_chars_sci_result to_chars_sci_size(float value, fp_to_chars_sci_context<float>& context, uint16_t significant_digits, fp_round rounding_mode)
+	fp_to_chars_sci_result to_chars_sci_size(float32_t value, fp_to_chars_sci_context<float32_t>& context, uint16_t significant_digits, fp_round rounding_mode)
 	{
-		using fp_type = float;
+		using fp_type = float32_t;
 		using fp_utils_t = fp_utils<fp_type>;
 		using uint_t = fp_utils_t::uint_t;
 		using exp_st = fp_utils_t::exp_st;
@@ -1101,9 +1101,9 @@ namespace core
 		return res;
 	}
 
-	fp_to_chars_fix_result to_chars_fix_size(const float value, fp_to_chars_fix_context<float>& context, int16_t precision, fp_round rounding_mode)
+	fp_to_chars_fix_result to_chars_fix_size(const float32_t value, fp_to_chars_fix_context<float32_t>& context, int16_t precision, fp_round rounding_mode)
 	{
-		using fp_type = float;
+		using fp_type = float32_t;
 		using fp_utils_t = fp_utils<fp_type>;
 		using uint_t = fp_utils_t::uint_t;
 		using exp_st = fp_utils_t::exp_st;
@@ -1273,9 +1273,9 @@ namespace core
 	}
 
 
-	void to_chars_sci_mantissa_unsafe(const fp_to_chars_sci_context<float>& context, char8_t* const unit_char, char8_t* const decimal_chars)
+	void to_chars_sci_mantissa_unsafe(const fp_to_chars_sci_context<float32_t>& context, char8_t* const unit_char, char8_t* const decimal_chars)
 	{
-		using fp_type = float;
+		using fp_type = float32_t;
 		using fp_utils_t = fp_utils<fp_type>;
 		using exp_ut = fp_utils_t::exp_ut;
 
@@ -1288,17 +1288,17 @@ namespace core
 		fp_utils_t::to_chars_sci_mantissa(context.digits, unit_char, decimal_chars, last_block, last_num_digits, sig_digits);
 	}
 
-	void to_chars_sci_exp_unsafe(const fp_to_chars_sci_context<float>& context, char8_t* exp_chars)
+	void to_chars_sci_exp_unsafe(const fp_to_chars_sci_context<float32_t>& context, char8_t* exp_chars)
 	{
-		using fp_type = float;
+		using fp_type = float32_t;
 		using fp_utils_t = fp_utils<fp_type>;
 
 		fp_utils_t::to_chars_exp(context.exponent, exp_chars);
 	}
 
-	void to_chars_fix_unsafe(const fp_to_chars_fix_context<float>& context, char8_t* unit_chars, char8_t* decimal_chars)
+	void to_chars_fix_unsafe(const fp_to_chars_fix_context<float32_t>& context, char8_t* unit_chars, char8_t* decimal_chars)
 	{
-		using fp_type = float;
+		using fp_type = float32_t;
 		using fp_utils_t = fp_utils<fp_type>;
 		using exp_ut = fp_utils_t::exp_ut;
 
@@ -1311,9 +1311,9 @@ namespace core
 			unit_chars, decimal_chars, last_block, last_num_digits, leading_zeros);
 	}
 
-	fp_to_chars_sci_result to_chars_sci_size(double value, fp_to_chars_sci_context<double>& context, uint16_t significant_digits, fp_round rounding_mode)
+	fp_to_chars_sci_result to_chars_sci_size(float64_t value, fp_to_chars_sci_context<float64_t>& context, uint16_t significant_digits, fp_round rounding_mode)
 	{
-		using fp_type = double;
+		using fp_type = float64_t;
 		using fp_utils_t = fp_utils<fp_type>;
 		using uint_t = fp_utils_t::uint_t;
 		using exp_st = fp_utils_t::exp_st;
@@ -1407,9 +1407,9 @@ namespace core
 		return res;
 	}
 
-	void to_chars_sci_mantissa_unsafe(const fp_to_chars_sci_context<double>& context, char8_t* unit_char, char8_t* decimal_chars)
+	void to_chars_sci_mantissa_unsafe(const fp_to_chars_sci_context<float64_t>& context, char8_t* unit_char, char8_t* decimal_chars)
 	{
-		using fp_type = double;
+		using fp_type = float64_t;
 		using fp_utils_t = fp_utils<fp_type>;
 		using exp_ut = fp_utils_t::exp_ut;
 
@@ -1422,16 +1422,16 @@ namespace core
 		fp_utils_t::to_chars_sci_mantissa(context.digits, unit_char, decimal_chars, last_block, last_num_digits, sig_digits);
 	}
 
-	void to_chars_sci_exp_unsafe(const fp_to_chars_sci_context<double>& context, char8_t* exp_chars)
+	void to_chars_sci_exp_unsafe(const fp_to_chars_sci_context<float64_t>& context, char8_t* exp_chars)
 	{
-		using fp_type = double;
+		using fp_type = float64_t;
 		using fp_utils_t = fp_utils<fp_type>;
 		fp_utils_t::to_chars_exp(context.exponent, exp_chars);
 	}
 
-	void to_chars_fix_unsafe(const fp_to_chars_fix_context<double>& context, char8_t* unit_chars, char8_t* decimal_chars)
+	void to_chars_fix_unsafe(const fp_to_chars_fix_context<float64_t>& context, char8_t* unit_chars, char8_t* decimal_chars)
 	{
-		using fp_type = double;
+		using fp_type = float64_t;
 		using fp_utils_t = fp_utils<fp_type>;
 		using exp_ut = fp_utils_t::exp_ut;
 

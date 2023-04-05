@@ -320,7 +320,7 @@ std::vector<std::pair<num_T, std::basic_string<char_T>>> get_goodCases()
 {
 	if constexpr(std::is_floating_point_v<num_T>)
 	{
-		if constexpr (std::is_same_v<num_T, float>)
+		if constexpr (std::is_same_v<num_T, float32_t>)
 		{
 			return
 			{
@@ -338,7 +338,7 @@ std::vector<std::pair<num_T, std::basic_string<char_T>>> get_goodCases()
 				{-0.1234f	, str2_Tstring<char_T>("-0.1234")},
 			};
 		}
-		else if constexpr (std::is_same_v<num_T, double>)
+		else if constexpr (std::is_same_v<num_T, float64_t>)
 		{
 			return
 			{
@@ -354,24 +354,6 @@ std::vector<std::pair<num_T, std::basic_string<char_T>>> get_goodCases()
 				{-123456.0	, str2_Tstring<char_T>("-123456")},
 				{ 0.1234	, str2_Tstring<char_T>("0.1234")},
 				{-0.1234	, str2_Tstring<char_T>("-0.1234")},
-			};
-		}
-		else if constexpr (std::is_same_v<num_T, long double>)
-		{
-			return
-			{
-				{ 0.0l		, str2_Tstring<char_T>("0")},
-				{-0.0l		, str2_Tstring<char_T>("-0")},
-				{ 0.1l		, str2_Tstring<char_T>("0.1")},
-				{-0.1l		, str2_Tstring<char_T>("-0.1")},
-				{ 1.0l		, str2_Tstring<char_T>("1")},
-				{-1.0l		, str2_Tstring<char_T>("-1")},
-				{ 1.1l		, str2_Tstring<char_T>("1.1")},
-				{-1.1l		, str2_Tstring<char_T>("-1.1")},
-				{ 123456.0l	, str2_Tstring<char_T>("123456")},
-				{-123456.0l	, str2_Tstring<char_T>("-123456")},
-				{ 0.1234l	, str2_Tstring<char_T>("0.1234")},
-				{-0.1234l	, str2_Tstring<char_T>("-0.1234")},
 			};
 		}
 	}
@@ -414,7 +396,7 @@ std::vector<std::pair<num_T, std::basic_string<char_T>>> get_goodCases()
 template <typename num_T, typename char_T>
 std::vector<std::pair<num_T, std::basic_string<char_T>>> getFpCases_extra()
 {
-	if constexpr (std::is_same_v<num_T, float>)
+	if constexpr (std::is_same_v<num_T, float32_t>)
 	{
 		return
 		{
@@ -424,7 +406,7 @@ std::vector<std::pair<num_T, std::basic_string<char_T>>> getFpCases_extra()
 			{-1.175494351e-38f	, str2_Tstring<char_T>("-1.175494351e-38")},
 		};
 	}
-	else if constexpr (std::is_same_v<num_T, double>)
+	else if constexpr (std::is_same_v<num_T, float64_t>)
 	{
 		return 
 		{
@@ -433,10 +415,6 @@ std::vector<std::pair<num_T, std::basic_string<char_T>>> getFpCases_extra()
 			{ 2.2250738585072014e-308	, str2_Tstring<char_T>("2.2250738585072014e-308")},
 			{-2.2250738585072014e-308	, str2_Tstring<char_T>("-2.2250738585072014e-308")},
 		};
-	}
-	else if constexpr (std::is_same_v<num_T, long double>)
-	{
-		return {};
 	}
 }
 
@@ -485,9 +463,8 @@ using DecTypes = ::testing::Types<
 	std::pair<int16_t		, char8_t >,
 	std::pair<int32_t		, char8_t >,
 	std::pair<int64_t		, char8_t >,
-	std::pair<float			, char8_t >,
-	std::pair<double		, char8_t >,
-	std::pair<long double	, char8_t >,
+	std::pair<float32_t		, char8_t >,
+	std::pair<float64_t		, char8_t >,
 	std::pair<uint8_t		, char16_t>,
 	std::pair<uint16_t		, char16_t>,
 	std::pair<uint32_t		, char16_t>,
@@ -496,9 +473,8 @@ using DecTypes = ::testing::Types<
 	std::pair<int16_t		, char16_t>,
 	std::pair<int32_t		, char16_t>,
 	std::pair<int64_t		, char16_t>,
-	std::pair<float			, char16_t>,
-	std::pair<double		, char16_t>,
-	std::pair<long double	, char16_t>,
+	std::pair<float32_t		, char16_t>,
+	std::pair<float64_t		, char16_t>,
 	std::pair<uint8_t		, char32_t>,
 	std::pair<uint16_t		, char32_t>,
 	std::pair<uint32_t		, char32_t>,
@@ -507,9 +483,8 @@ using DecTypes = ::testing::Types<
 	std::pair<int16_t		, char32_t>,
 	std::pair<int32_t		, char32_t>,
 	std::pair<int64_t		, char32_t>,
-	std::pair<float			, char32_t>,
-	std::pair<double		, char32_t>,
-	std::pair<long double	, char32_t>
+	std::pair<float32_t		, char32_t>,
+	std::pair<float64_t		, char32_t>
 >;
 
 TYPED_TEST_SUITE(charconv_Decimal_T, DecTypes);

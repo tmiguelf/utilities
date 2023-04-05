@@ -26,7 +26,16 @@
 
 #pragma once
 
+#include <system_error>
 #include <type_traits>
+#include <CoreLib/Core_Alternate.hpp>
+
+#if 0
+#include <stdfloat>
+#else
+using float32_t = float;
+using float64_t = double;
+#endif
 
 /// \n
 namespace core
@@ -35,20 +44,58 @@ namespace core
 	namespace _p
 	{
 		template <typename T>
-		concept is_internal_charconv_c =
-			std::is_same_v<T, char8_t>  ||
-			std::is_same_v<T, char16_t> ||
-			std::is_same_v<T, char32_t>;
+		concept charconv_char_c =
+			std::same_as<T, char8_t>  ||
+			std::same_as<T, char16_t> ||
+			std::same_as<T, char32_t>;
 
 		template <typename T>
-		concept is_supported_charconv_c =
-			is_internal_charconv_c<T> ||
-			std::is_same_v<T, char> ||
-			std::is_same_v<T, wchar_t>;
+		concept charconv_char_extension_c =
+			std::same_as<T, char> ||
+			std::same_as<T, wchar_t>;
+
+		template <typename T>
+		concept charconv_char_extended_c =
+			charconv_char_c<T> ||
+			charconv_char_extension_c<T>;
+
+
+		template <typename T>
+		concept charconv_uint_c =
+			std::same_as<T, uint8_t>  ||
+			std::same_as<T, uint16_t> ||
+			std::same_as<T, uint32_t> ||
+			std::same_as<T, uint64_t>;
+
+		template <typename T>
+		concept charconv_sint_c =
+			std::same_as<T, int8_t>  ||
+			std::same_as<T, int16_t> ||
+			std::same_as<T, int32_t> ||
+			std::same_as<T, int64_t>;
+
+		template <typename T>
+		concept charconv_int_c =
+			charconv_uint_c<T> ||
+			charconv_sint_c<T>;
+
 
 		template<typename T>
-		concept is_charconv_fp_supported_c = 
-			std::is_same_v<T, float>
-			|| std::is_same_v<T, double>;
+		concept charconv_fp_c = 
+			std::same_as<T, float32_t> ||
+			std::same_as<T, float64_t>;
+
 	} //namespace _p
+
+	//from_chars_result
+	//illegal_byte_sequence
+	//value_too_large
+	//no_buffer_space
+	//invalid_argument
+	//
+	/// \brief 
+	///		Auxiliary structure to return an optional result from a potentially failing conversion function
+	template <typename T>
+	using from_chars_result = alternate<T, std::errc, std::errc{}, std::errc::invalid_argument>;
+
 } //namespace core

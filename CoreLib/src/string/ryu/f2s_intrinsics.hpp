@@ -25,7 +25,7 @@
 constexpr uint16_t FLOAT_POW5_INV_BITCOUNT = (DOUBLE_POW5_INV_BITCOUNT - 64);
 constexpr uint16_t FLOAT_POW5_BITCOUNT     = (DOUBLE_POW5_BITCOUNT - 64);
 
-static inline uint32_t pow5factor_32(uint32_t value)
+[[nodiscard]] static inline constexpr uint32_t pow5factor_32(uint32_t value)
 {
 	uint32_t count = 0;
 	for(;;)
@@ -44,13 +44,13 @@ static inline uint32_t pow5factor_32(uint32_t value)
 }
 
 // Returns true if value is divisible by 5^p.
-static inline bool multipleOfPowerOf5_32(const uint32_t value, const uint32_t p)
+[[nodiscard]] static inline constexpr bool multipleOfPowerOf5_32(const uint32_t value, const uint32_t p)
 {
 	return pow5factor_32(value) >= p;
 }
 
 // Returns true if value is divisible by 2^p.
-static inline bool multipleOfPowerOf2_32(const uint32_t value, const uint32_t p)
+[[nodiscard]] static inline constexpr bool multipleOfPowerOf2_32(const uint32_t value, const uint32_t p)
 {
 	// __builtin_ctz doesn't appear to be faster here.
 	return (value & ((1u << p) - 1)) == 0;
@@ -58,7 +58,7 @@ static inline bool multipleOfPowerOf2_32(const uint32_t value, const uint32_t p)
 
 // It seems to be slightly faster to avoid uint128_t here, although the
 // generated code for uint128_t looks slightly nicer.
-static inline uint32_t mulShift32(const uint32_t m, const uint64_t factor, const uint8_t shift)
+[[nodiscard]] static inline constexpr uint32_t mulShift32(const uint32_t m, const uint64_t factor, const uint8_t shift)
 {
 	assert(shift > 32);
 
@@ -77,12 +77,12 @@ static inline uint32_t mulShift32(const uint32_t m, const uint64_t factor, const
 
 
 
-static inline uint32_t mulPow5InvDivPow2(const uint32_t m, const uint16_t q, const uint8_t j)
+[[nodiscard]] static inline constexpr uint32_t mulPow5InvDivPow2(const uint32_t m, const uint16_t q, const uint8_t j)
 {
 	return mulShift32(m, DOUBLE_POW5_INV_SPLIT[q][1] + 1, j);
 }
 
-static inline uint32_t mulPow5divPow2(const uint32_t m, const uint16_t i, const uint8_t j)
+[[nodiscard]] static inline constexpr uint32_t mulPow5divPow2(const uint32_t m, const uint16_t i, const uint8_t j)
 {
 	return mulShift32(m, DOUBLE_POW5_SPLIT[i][1], j);
 }

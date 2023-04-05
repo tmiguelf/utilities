@@ -46,9 +46,9 @@ namespace core
 
 
 	template<>
-	struct fp_traits<float>: public fp_type_traits<float>, public fp_common_traits
+	struct fp_traits<float32_t>: public fp_type_traits<float32_t>, public fp_common_traits
 	{
-		using fp_type = float;
+		using fp_type = float32_t;
 		using uint_t = uint32_t;
 
 		static constexpr uint_t  sign_mask		= 0x80000000_ui32;
@@ -64,9 +64,9 @@ namespace core
 	};
 
 	template<>
-	struct fp_traits<double>: public fp_type_traits<double>, public fp_common_traits
+	struct fp_traits<float64_t>: public fp_type_traits<float64_t>, public fp_common_traits
 	{
-		using fp_type = double;
+		using fp_type = float64_t;
 		using uint_t = uint64_t;
 
 		static constexpr uint_t sign_mask		= 0x8000000000000000_ui64;
@@ -81,26 +81,23 @@ namespace core
 		static constexpr uint_t mantissa_implicit_bit = 1_ui64 << mantissa_bits;
 	};
 
-	template<typename T>
-	struct fp_utils_pre;
-
-	template<typename fp_type>
+	template<_p::charconv_fp_c fp_type>
 	struct fp_utils_pre: public fp_traits<fp_type>
 	{
 		using fp_traits_t = fp_traits<fp_type>;
 		using uint_t = fp_traits_t::uint_t;
 
-		static inline uint_t get_mantissa(fp_type input)
+		[[nodiscard]] static inline uint_t get_mantissa(fp_type input)
 		{
 			return reinterpret_cast<const uint_t&>(input) & fp_traits_t::mantissa_mask;
 		}
 
-		static inline uint_t get_exponent_bits(fp_type input)
+		[[nodiscard]] static inline uint_t get_exponent_bits(fp_type input)
 		{
 			return (reinterpret_cast<const uint_t&>(input) & fp_traits_t::exponent_mask);
 		}
 
-		static inline bool get_sign(const fp_type input)
+		[[nodiscard]] static inline bool get_sign(const fp_type input)
 		{
 			return reinterpret_cast<const uint_t&>(input) & fp_traits_t::sign_mask;
 		}

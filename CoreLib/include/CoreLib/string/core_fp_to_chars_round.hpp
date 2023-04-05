@@ -56,32 +56,32 @@ namespace core
 	};
 
 
-	template <_p::is_charconv_fp_supported_c T>
+	template <_p::charconv_fp_c T>
 	struct fp_to_chars_round_context;
 
 	template <>
-	struct fp_to_chars_round_context<float>
+	struct fp_to_chars_round_context<float32_t>
 	{
 		static constexpr uint8_t bignum_width = 6;
 		using bignum_t = std::array<uint64_t, bignum_width>;
 	};
 
 	template <>
-	struct fp_to_chars_round_context<double>
+	struct fp_to_chars_round_context<float64_t>
 	{
 		static constexpr uint8_t bignum_width = 41;
 		using bignum_t = std::array<uint64_t, bignum_width>;
 	};
 
 
-	template <_p::is_charconv_fp_supported_c T>
+	template <_p::charconv_fp_c T>
 	struct fp_to_chars_sci_context
 	{
 		fp_to_chars_round_context<T>::bignum_t digits;
 		int16_t exponent;
 	};
 
-	template <_p::is_charconv_fp_supported_c T>
+	template <_p::charconv_fp_c T>
 	struct fp_to_chars_fix_context
 	{
 		fp_to_chars_round_context<T>::bignum_t digits;
@@ -89,19 +89,19 @@ namespace core
 	};
 
 
-	template<_p::is_charconv_fp_supported_c fp_t>
+	template<_p::charconv_fp_c fp_t>
 	fp_to_chars_sci_result to_chars_sci_size(fp_t value, fp_to_chars_sci_context<fp_t>& context, uint16_t significant_digits, fp_round rounding_mode);
 
-	template<_p::is_charconv_fp_supported_c fp_t>
+	template<_p::charconv_fp_c fp_t>
 	fp_to_chars_fix_result to_chars_fix_size(fp_t value, fp_to_chars_fix_context<fp_t>& context, int16_t precision, fp_round rounding_mode);
 
-	template<_p::is_charconv_fp_supported_c fp_t, _p::is_internal_charconv_c char_t>
+	template<_p::charconv_fp_c fp_t, _p::charconv_char_c char_t>
 	void to_chars_sci_mantissa_unsafe(const fp_to_chars_sci_context<fp_t>& context, char_t* unit_char, char_t* decimal_chars);
 	
-	template<_p::is_charconv_fp_supported_c fp_t, _p::is_internal_charconv_c char_t>
+	template<_p::charconv_fp_c fp_t, _p::charconv_char_c char_t>
 	void to_chars_sci_exp_unsafe(const fp_to_chars_sci_context<fp_t>& context, char_t* exp_chars);
 
-	template<_p::is_charconv_fp_supported_c fp_t, _p::is_internal_charconv_c char_t>
+	template<_p::charconv_fp_c fp_t, _p::charconv_char_c char_t>
 	void to_chars_fix_unsafe(const fp_to_chars_fix_context<fp_t>& context, char_t* unit_chars, char_t* decimal_chars);
 
 } //namespace core

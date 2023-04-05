@@ -85,14 +85,14 @@ TEST(fp_charconv, round_trip)
 		0x4E313FD4_ui32,
 	};
 
-	core::fp_to_chars_shortest_context<float> context;
+	core::fp_to_chars_shortest_context<float32_t> context;
 
 	std::array<char8_t, 1024> buff;
 
 
 	for(const uint32_t tcase : fix_cases)
 	{
-		const float f_case = reinterpret_cast<const float&>(tcase);
+		const float32_t f_case = reinterpret_cast<const float32_t&>(tcase);
 
 		const core::fp_base_classify classification = core::to_chars_shortest_classify(f_case, context);
 		const core::fp_to_chars_sci_size size = core::to_chars_shortest_sci_size(context);
@@ -106,25 +106,23 @@ TEST(fp_charconv, round_trip)
 		core::to_chars_shortest_sci_unsafe(context, units, decimal);
 		core::to_chars_shortest_sci_exp_unsafe(context, exp);
 
-		float new_float = 0.0;
-		const bool result = core::from_chars(
+		const core::from_chars_result<float32_t> result = core::from_chars_fp<float32_t>(
 			classification.is_negative,
 			std::u8string_view(units, 1),
 			std::u8string_view(decimal, decimal_size),
 			size.is_exp_negative,
-			std::u8string_view(exp, exp_size),
-			new_float);
+			std::u8string_view(exp, exp_size));
 
-		ASSERT_TRUE(result);
+		ASSERT_TRUE(result.has_value());
 
-		const uint32_t round_trip = reinterpret_cast<const uint32_t&>(new_float);
+		const uint32_t round_trip = reinterpret_cast<const uint32_t&>(result.value());
 		ASSERT_EQ(round_trip, tcase) << core::toPrint_hex_fix{tcase};
 	}
 
 	for(uint16_t i = 0; i < 255; ++i)
 	{
 		const uint32_t tcase = make_valid_fp(distrib(gen));
-		const float f_case = reinterpret_cast<const float&>(tcase);
+		const float32_t f_case = reinterpret_cast<const float32_t&>(tcase);
 
 		const core::fp_base_classify classification = core::to_chars_shortest_classify(f_case, context);
 		const core::fp_to_chars_sci_size size = core::to_chars_shortest_sci_size(context);
@@ -138,18 +136,16 @@ TEST(fp_charconv, round_trip)
 		core::to_chars_shortest_sci_unsafe(context, units, decimal);
 		core::to_chars_shortest_sci_exp_unsafe(context, exp);
 
-		float new_float = 0.0;
-		const bool result = core::from_chars(
+		const core::from_chars_result<float32_t> result = core::from_chars_fp<float32_t>(
 			classification.is_negative,
 			std::u8string_view(units, 1),
 			std::u8string_view(decimal, decimal_size),
 			size.is_exp_negative,
-			std::u8string_view(exp, exp_size),
-			new_float);
+			std::u8string_view(exp, exp_size));
 
-		ASSERT_TRUE(result);
+		ASSERT_TRUE(result.has_value());
 
-		const uint32_t round_trip = reinterpret_cast<const uint32_t&>(new_float);
+		const uint32_t round_trip = reinterpret_cast<const uint32_t&>(result.value());
 		ASSERT_EQ(round_trip, tcase) << core::toPrint(i) << core::toPrint_hex_fix{tcase};
 	}
 

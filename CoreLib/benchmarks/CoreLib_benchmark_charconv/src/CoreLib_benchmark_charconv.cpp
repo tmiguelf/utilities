@@ -647,7 +647,7 @@ static void std_to_chars(benchmark::State& state)
 	const std::vector<num_T>& testList = get_num<num_T>();
 	uintptr_t index = 0;
 
-	constexpr uintptr_t buffSize = core::to_chars_dec_max_digits_v<num_T>;
+	constexpr uintptr_t buffSize = core::to_chars_dec_max_size_v<num_T>;
 	std::array<char8_t, buffSize> buffer;
 
 	for (auto _ : state)
@@ -670,7 +670,7 @@ static void core_to_chars(benchmark::State& state)
 	const std::vector<num_T>& testList = get_num<num_T>();
 	uintptr_t index = 0;
 
-	constexpr uintptr_t buffSize = core::to_chars_dec_max_digits_v<num_T>;
+	constexpr uintptr_t buffSize = core::to_chars_dec_max_size_v<num_T>;
 	std::array<char8_t, buffSize> buffer;
 
 	for (auto _ : state)
@@ -692,7 +692,7 @@ static void std_to_hex_chars(benchmark::State& state)
 	const std::vector<num_T>& testList = get_num_hex<num_T>();
 	uintptr_t index = 0;
 
-	constexpr uintptr_t buffSize = core::to_chars_hex_max_digits_v<num_T>;
+	constexpr uintptr_t buffSize = core::to_chars_dec_max_size_v<num_T>;
 	std::array<char8_t, buffSize> buffer;
 
 	for (auto _ : state)
@@ -715,7 +715,7 @@ static void core_to_hex_chars(benchmark::State& state)
 	const std::vector<num_T>& testList = get_num_hex<num_T>();
 	uintptr_t index = 0;
 
-	constexpr uintptr_t buffSize = core::to_chars_hex_max_digits_v<num_T>;
+	constexpr uintptr_t buffSize = core::to_chars_dec_max_size_v<num_T>;
 	std::array<char8_t, buffSize> buffer;
 
 	for (auto _ : state)
@@ -736,7 +736,7 @@ static void core_to_hex_chars_fix(benchmark::State& state)
 	const std::vector<num_T>& testList = get_num_hex<num_T>();
 	uintptr_t index = 0;
 
-	constexpr uintptr_t buffSize = core::to_chars_hex_max_digits_v<num_T>;
+	constexpr uintptr_t buffSize = core::to_chars_dec_max_size_v<num_T>;
 	std::array<char8_t, buffSize> buffer;
 
 	for (auto _ : state)
@@ -946,7 +946,7 @@ static inline void core_to_chars2(benchmark::State& state)
 
 	std::array<char_t, fp_case_t::buff_size> buff;
 
-	constexpr uintptr_t expected_size = core::to_chars_dec_max_digits_v<fp_t>;
+	constexpr uintptr_t expected_size = core::to_chars_dec_max_size_v<fp_t>;
 
 	for (auto _ : state)
 	{

@@ -55,7 +55,7 @@ static uintptr_t to_chars_quat_estimate(const mathlib::Quaternion<T>& p_data)
 template<typename T>
 static uintptr_t to_chars_quat_unsafe(const mathlib::Quaternion<T>& p_data, char8_t* p_out)
 {
-	constexpr uintptr_t max_size = core::to_chars_dec_max_digits_v<T>;
+	constexpr uintptr_t max_size = core::to_chars_dec_max_size_v<T>;
 	char8_t* const begin = p_out;
 	*(p_out++) = u8'[';
 	p_out += core::_p::to_chars(p_data.r(), std::span<char8_t, max_size>{p_out, max_size});
@@ -156,7 +156,7 @@ TYPED_TEST(Quaternion_T, Getters)
 
 		void getPrint(char8_t* p_out) const
 		{
-			constexpr uintptr_t max_size = core::to_chars_dec_max_digits_v<real_t>;
+			constexpr uintptr_t max_size = core::to_chars_dec_max_size_v<real_t>;
 			*(p_out++) = u8'[';
 			p_out += core::_p::to_chars(m_data.m_r, std::span<char8_t, max_size>{p_out, max_size});
 			*(p_out++) = u8';';
@@ -237,7 +237,7 @@ TYPED_TEST(Quaternion_T, Setters)
 
 		void getPrint(char8_t* p_out) const
 		{
-			constexpr uintptr_t max_size = core::to_chars_dec_max_digits_v<real_t>;
+			constexpr uintptr_t max_size = core::to_chars_dec_max_size_v<real_t>;
 			*(p_out++) = u8'[';
 			p_out += core::_p::to_chars(m_data.m_r, std::span<char8_t, max_size>{p_out, max_size});
 			*(p_out++) = u8';';

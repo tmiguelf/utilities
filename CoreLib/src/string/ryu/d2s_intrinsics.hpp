@@ -30,7 +30,7 @@
 
 
 // Returns the lower 64 bits of (hi*2^64 + lo) >> dist, with 0 < dist < 64.
-static inline uint64_t shiftright128(const uint64_t lo, const uint64_t hi, uint8_t dist)
+[[nodiscard]] static inline uint64_t shiftright128(const uint64_t lo, const uint64_t hi, uint8_t dist)
 {
 
 	// For the __shiftright128 intrinsic, the shift value is always
@@ -54,7 +54,7 @@ static inline uint64_t shiftright128(const uint64_t lo, const uint64_t hi, uint8
 #endif
 }
 
-static inline uint32_t pow5Factor(uint64_t value)
+[[nodiscard]] static inline constexpr uint32_t pow5Factor(uint64_t value)
 {
 	const uint64_t m_inv_5 = 14757395258967641293u; // 5 * m_inv_5 = 1 (mod 2^64)
 	const uint64_t n_div_5 = 3689348814741910323u;	// #{ n | n = 0 (mod 2^64) } = 2^64 / 5
@@ -70,14 +70,14 @@ static inline uint32_t pow5Factor(uint64_t value)
 }
 
 // Returns true if value is divisible by 5^p.
-static inline bool multipleOfPowerOf5(const uint64_t value, const uint32_t p)
+[[nodiscard]] static inline constexpr bool multipleOfPowerOf5(const uint64_t value, const uint32_t p)
 {
 	// I tried a case distinction on p, but there was no performance difference.
 	return pow5Factor(value) >= p;
 }
 
 // Returns true if value is divisible by 2^p.
-static inline bool multipleOfPowerOf2(const uint64_t value, const uint8_t p)
+[[nodiscard]] static inline constexpr bool multipleOfPowerOf2(const uint64_t value, const uint8_t p)
 {
 	assert(value != 0);
 	assert(p < 64);
@@ -123,7 +123,7 @@ static inline bool multipleOfPowerOf2(const uint64_t value, const uint8_t p)
 //       no internal overflow, but requires extra work since the intermediate
 //       results are not perfectly aligned.
 
-static inline uint64_t mulShift64(const uint64_t m, const std::array<uint64_t, 2> mul, const uint8_t j)
+[[nodiscard]] static inline uint64_t mulShift64(const uint64_t m, const std::array<uint64_t, 2> mul, const uint8_t j)
 {
 	// m is maximum 55 bits
 	uint64_t	   high1;								// 128
@@ -138,7 +138,7 @@ static inline uint64_t mulShift64(const uint64_t m, const std::array<uint64_t, 2
 	return shiftright128(sum, high1, static_cast<uint8_t>(j - 64));
 }
 
-static inline uint64_t mulShiftAll64(
+[[nodiscard]] static inline uint64_t mulShiftAll64(
 	const uint64_t			m,
 	const std::array<uint64_t, 2>	mul,
 	const uint8_t			j,
