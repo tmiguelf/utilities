@@ -24,10 +24,11 @@
 ///		SOFTWARE.
 //======== ======== ======== ======== ======== ======== ======== ========
 
-#include <charconv>
 #include <array>
 
 #include <CoreLib/string/core_string_numeric.hpp>
+#include <CoreLib/string/core_fp_charconv.hpp>
+
 #include <CoreLib/Core_Type.hpp>
 
 namespace core
@@ -244,8 +245,52 @@ namespace core
 		}
 
 		template<typename fp_T, _p::charconv_char_extended_c char_T>
-		[[nodiscard]] static from_chars_result<fp_T> dec2fp(std::basic_string_view<char_T> const p_str)
+		[[nodiscard]] static from_chars_result<fp_T> dec2fp(std::basic_string_view<char_T> p_str)
 		{
+			if(p_str.empty())
+			{
+				return std::errc::invalid_argument;
+			}
+
+			const bool sig_bit = (p_str[0] == '-');
+			if(sig_bit)
+			{
+				p_str = p_str.substr(1);
+				if(p_str.empty())
+				{
+					return std::errc::invalid_argument;
+				}
+			}
+
+			{
+				const char_T first_char = p_str[0];
+				if(is_digit(first_char))
+				{
+
+				}
+				switch(first_char)
+				{
+				case '.':
+					break;
+				case '-':
+					break
+				case 'i':
+					break;
+				case 'I':
+					break;
+				case 'n':
+					break;
+				case 'N':
+					break;
+				default:
+					return std::errc::invalid_argument;
+				}
+			}
+
+
+
+
+
 			const uintptr_t tsize = p_str.size();
 			if(tsize > 126) return std::errc::no_buffer_space; //large enough to not make any sense
 			for(const char_T t_char: p_str)
@@ -342,14 +387,58 @@ namespace core
 		template<typename Fp_t>
 		[[nodiscard]] static inline uintptr_t fp2dec_estimate(Fp_t const p_val)
 		{
-			std::array<char, to_chars_dec_max_size_v<Fp_t>> buff;
-			char* const start = reinterpret_cast<char*>(buff.data());
-			const std::to_chars_result res = std::to_chars(start, start + buff.size(), p_val);
-			if(res.ec == std::errc{})
+
+			fp_to_chars_shortest_context<Fp_t> context;
+			const fp_base_classify classification = to_chars_shortest_classify(p_val, context);
+
+			switch(classification.classification)
 			{
-				return static_cast<uintptr_t>(res.ptr - start);
+			default:
+			case fp_classify::zero:
+				return classification.is_negative ? 2 : 1;
+			case fp_classify::finite:
+				break;
+			case fp_classify::inf:
+				return classification.is_negative ? 4 : 3;
+			case fp_classify::nan:
+				return 3;
 			}
-			return 0;
+
+			const fp_to_chars_sci_size sci_size_data = to_chars_shortest_sci_size(context);
+			const fp_to_chars_fix_size fix_size_data = to_chars_shortest_fix_size(context);
+
+			uint8_t sci_size = 1;
+			if(sci_size_data.mantissa_decimal_size)
+			{
+				sci_size += sci_size_data.mantissa_decimal_size + 1;
+			}
+			if(sci_size_data.exponent_size)
+			{
+				sci_size += sci_size_data.exponent_size + 1;
+				if(sci_size_data.is_exp_negative)
+				{
+					++sci_size;
+				}
+			}
+
+			uint8_t fix_size = 1;
+			if(fix_size_data.unit_size)
+			{
+				fix_size = fix_size_data.unit_size;
+			}
+
+			if(fix_size_data.decimal_size)
+			{
+				fix_size += fix_size_data.decimal_size +1;
+			}
+
+			uint8_t min_size = std::min(sci_size, fix_size); 
+
+			if(classification.is_negative)
+			{
+				++min_size;
+			}
+			return min_size;
 		}
 
 		template <typename num_T>
@@ -534,32 +623,121 @@ namespace core
 		template<typename char_T, typename Fp_t>
 		static inline uintptr_t fp2dec(const Fp_t p_val, std::span<char_T, to_chars_dec_max_size_v<Fp_t>> const p_out)
 		{
-			std::array<char8_t, to_chars_dec_max_size_v<Fp_t>> buff;
-			const uintptr_t ret = fp2dec<Fp_t>(p_val, buff);
-			for(uintptr_t i = 0; i < ret; ++i)
-			{
-				p_out[i] = static_cast<char_T>(buff[i]);
-			}
-			return ret;
-		}
+			fp_to_chars_shortest_context<Fp_t> context;
+			const fp_base_classify classification = to_chars_shortest_classify(p_val, context);
 
-		template<typename Fp_t>
-		static inline void fp2dec_unsafe(const Fp_t p_val, char8_t* const p_out)
-		{
-			constexpr uintptr_t size = to_chars_dec_max_size_v<Fp_t>;
-			char* const start = reinterpret_cast<char*>(p_out);
-			std::to_chars(start, start + size, p_val);
+			if(classification.classification == fp_classify::nan)
+			{
+				p_out[0] = 'n';
+				p_out[1] = 'a';
+				p_out[2] = 'n';
+				return 3;
+			}
+
+			char_T* pivot = p_out.data();
+
+			if(classification.is_negative)
+			{
+				*(pivot++) = '-';
+			}
+
+			switch(classification.classification)
+			{
+			default:
+			case fp_classify::zero:
+				*(pivot++) = '0';
+				break;
+			case fp_classify::finite:
+				{
+					const fp_to_chars_sci_size sci_size_data = to_chars_shortest_sci_size(context);
+					const fp_to_chars_fix_size fix_size_data = to_chars_shortest_fix_size(context);
+
+					uint8_t sci_size = 1;
+					if(sci_size_data.mantissa_decimal_size)
+					{
+						sci_size += sci_size_data.mantissa_decimal_size + 1;
+					}
+					if(sci_size_data.exponent_size)
+					{
+						sci_size += sci_size_data.exponent_size + 1;
+						if(sci_size_data.is_exp_negative)
+						{
+							++sci_size;
+						}
+					}
+
+					uint8_t fix_size = 1;
+					if(fix_size_data.unit_size)
+					{
+						fix_size = fix_size_data.unit_size;
+					}
+
+					if(fix_size_data.decimal_size)
+					{
+						fix_size += fix_size_data.decimal_size +1;
+					}
+
+					if(sci_size < fix_size)
+					{
+						{
+							char_T* const unit_digit = pivot++;
+							char_T* decimal_digit = pivot;
+							if(sci_size_data.mantissa_decimal_size)
+							{
+								*(pivot++) = '.';
+								decimal_digit = pivot;
+								pivot += sci_size_data.mantissa_decimal_size;
+							}
+							to_chars_shortest_sci_unsafe(context, unit_digit, decimal_digit);
+						}
+						if(sci_size_data.exponent_size)
+						{
+							*(pivot++) = 'E';
+							if(sci_size_data.is_exp_negative)
+							{
+								*(pivot++) = '-';
+							}
+							to_chars_shortest_sci_exp_unsafe(context, pivot);
+							pivot += sci_size_data.exponent_size;
+						}
+					}
+					else
+					{
+						char_T* const unit_digit = pivot;
+						if(fix_size_data.unit_size)
+						{
+							pivot += fix_size_data.unit_size;
+						}
+						else
+						{
+							*(pivot++) = '0';
+						}
+
+						char_T* decimal_digit = pivot;
+						if(fix_size_data.decimal_size)
+						{
+							*(pivot++) = '.';
+							decimal_digit = pivot;
+							pivot += fix_size_data.decimal_size;
+						}
+						to_chars_shortest_fix_unsafe(context, unit_digit, decimal_digit);
+					}
+				}
+				break;
+			case fp_classify::inf:
+				*(pivot++) = 'i';
+				*(pivot++) = 'n';
+				*(pivot++) = 'f';
+				break;
+			}
+
+			return pivot - p_out.data();
 		}
 
 		template<typename char_T, typename Fp_t>
 		static inline void fp2dec_unsafe(const Fp_t p_val, char_T* p_out)
 		{
-			std::array<char8_t, to_chars_dec_max_size_v<Fp_t>> buff;
-			const uintptr_t ret = fp2dec<Fp_t>(p_val, buff);
-			for(uintptr_t i = 0; i < ret; ++i)
-			{
-				p_out[i] = static_cast<char_T>(buff[i]);
-			}
+			fp2dec(p_val, std::span<char_T, to_chars_dec_max_size_v<Fp_t>>{p_out, to_chars_dec_max_size_v<Fp_t>});
 		}
 
 		namespace

@@ -35,8 +35,12 @@
 #include <array>
 #include <concepts>
 #include <type_traits>
-#include <charconv>
-#include <limits>
+
+#ifndef _WIN32
+#	include <charconv>
+#	include <limits>
+#endif
+
 
 #include "toPrint_base.hpp"
 
@@ -487,7 +491,17 @@ public:
 };
 
 
-template<typename Num_T> requires (std::is_floating_point_v<Num_T> && !core::char_conv_dec_supported_c<Num_T> && sizeof(Num_T) > 4)
+#ifdef _WIN32
+template<typename Num_T> requires std::same_as<Num_T, long double>
+class toPrint<Num_T>: public toPrint<float64_t>
+{
+public:
+	toPrint(Num_T const p_data): toPrint<float64_t>(reinterpret_cast<const float64_t&>(p_data)){}
+};
+
+#else
+
+template<typename Num_T> requires std::same_as<Num_T, long double>
 class toPrint<Num_T>: public toPrint_base
 {
 private:
@@ -539,8 +553,7 @@ private:
 	array_t m_preCalc;
 	const uintptr_t m_size;
 };
-
-
+#endif
 
 //-------- Hexadecimal -------- 
 template<typename>
