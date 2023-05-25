@@ -31,6 +31,8 @@
 
 #include <CoreLib/Core_Type.hpp>
 
+#include "fp_traits.hpp"
+
 namespace core
 {
 	using ::core::literals::operator "" _ui8 ;
@@ -216,33 +218,114 @@ namespace core
 			return r_val;
 		}
 
-
-		template<typename fp_T>
-		[[nodiscard]] static inline from_chars_result<fp_T> dec2fp(std::basic_string_view<char8_t> const p_str)
+		template<_p::charconv_char_extended_c char_T>
+		static bool is_inf(std::basic_string_view<char_T> p_str)
 		{
-			if(p_str.empty())
+			if(p_str.size() == 3)
 			{
-				return std::errc::invalid_argument;
+				if(p_str[0] == 'I')
+				{
+					if(p_str[1] == 'n')
+					{
+						return p_str[2] == 'f';
+					}
+					return p_str[1] == 'N' && p_str[2] == 'F';
+				}
+
+				if constexpr (std::is_same_v<char_T, char8_t>)
+				{
+					if(p_str[0] == 'i')
+					{
+						return p_str[1] == 'n' && p_str[2] == 'f';
+					}
+					return
+						p_str[0] == 0xE2 &&
+						p_str[1] == 0x88 &&
+						p_str[2] == 0x9E;
+				}
+				else
+				{
+					return p_str[0] == 'i' && p_str[1] == 'n' && p_str[2] == 'f';
+				}
+			}
+			
+			if(p_str.size() == 8)
+			{
+				if(p_str[0] == 'I')
+				{
+					if(p_str[1] == 'n')
+					{
+						return
+							p_str[2] == 'f' &&
+							p_str[3] == 'i' &&
+							p_str[4] == 'n' &&
+							p_str[5] == 'i' &&
+							p_str[6] == 't' &&
+							(p_str[7] == 'e' || p_str[7] == 'y');
+					}
+					return
+						p_str[1] == 'N' &&
+						p_str[2] == 'F' &&
+						p_str[3] == 'I' &&
+						p_str[4] == 'N' &&
+						p_str[5] == 'I' &&
+						p_str[6] == 'T' &&
+						(p_str[7] == 'E' || p_str[7] == 'Y');
+				}
+				return
+					p_str[0] == 'i' &&
+					p_str[1] == 'n' &&
+					p_str[2] == 'f' &&
+					p_str[3] == 'i' &&
+					p_str[4] == 'n' &&
+					p_str[5] == 'i' &&
+					p_str[6] == 't' &&
+					(p_str[7] == 'e' || p_str[7] == 'y');
 			}
 
-			fp_T				ret;
-			const char* const	pivot = reinterpret_cast<const char*>(p_str.data());
-			const char* const	last  = pivot + p_str.size();
-
-			const std::from_chars_result res = std::from_chars(pivot, last, ret);
-
-			if(res.ec != std::errc{})
+			if constexpr (!std::is_same_v<char_T, char8_t>)
 			{
-				return res.ec;
+				if(p_str.size() == 1)
+				{
+					return p_str[0] == 0x221E;
+				}
 			}
-
-			if(res.ptr == last)
-			{
-				return ret;
-			}
-
-			return std::errc::invalid_argument;
+			return false;
 		}
+
+		template<_p::charconv_char_extended_c char_T>
+		static bool is_nan(std::basic_string_view<char_T> p_str)
+		{
+			if(p_str.size() == 3)
+			{
+				if(p_str[0] == 'n')
+				{
+					return p_str[1] == 'a' && p_str[2] == 'n';
+				}
+				else if(p_str[0] == 'N')
+				{
+					if(p_str[1] == 'a')
+					{
+						return p_str[2] == 'n' || p_str[2] == 'N';
+					}
+					return p_str[1] == 'A' && p_str[2] == 'N';
+				}
+			}
+			else if(p_str.size() == 9)
+			{
+				return p_str[0] == 'n' &&
+					p_str[1] == 'a' &&
+					p_str[2] == 'n' &&
+					p_str[3] == '(' &&
+					(p_str[4] == 's' || p_str[4] == 'q') &&
+					p_str[5] == 'n' &&
+					p_str[6] == 'a' &&
+					p_str[7] == 'n' &&
+					p_str[8] == ')';
+			}
+			return false;
+		}
+
 
 		template<typename fp_T, _p::charconv_char_extended_c char_T>
 		[[nodiscard]] static from_chars_result<fp_T> dec2fp(std::basic_string_view<char_T> p_str)
@@ -253,7 +336,7 @@ namespace core
 			}
 
 			const bool sig_bit = (p_str[0] == '-');
-			if(sig_bit)
+			if(sig_bit || p_str[0] == '+')
 			{
 				p_str = p_str.substr(1);
 				if(p_str.empty())
@@ -264,51 +347,101 @@ namespace core
 
 			{
 				const char_T first_char = p_str[0];
-				if(is_digit(first_char))
+				if(is_digit(first_char) || first_char == '.')
 				{
+					std::basic_string_view<char_T> exp_str;
+					bool exp_sign = false;
+					{
+						uintptr_t pos = p_str.find(char_T{'E'});
+						if(pos != std::basic_string_view<char_T>::npos ||
+							(pos = p_str.find(char_T{'e'}), pos != std::basic_string_view<char_T>::npos))
+						{
+							exp_str = p_str.substr(pos  + 1);
+							p_str = p_str.substr(0, pos);
+							if(exp_str.empty() || p_str.empty())
+							{
+								return std::errc::invalid_argument;
+							}
+							exp_sign = exp_str[0] == '-';
+							if(exp_sign || exp_str[0] == '+')
+							{
+								exp_str = exp_str.substr(1);
+								if(exp_str.empty())
+								{
+									return std::errc::invalid_argument;
+								}
+							}
+						}
+					}
+					std::basic_string_view<char_T> unit_str;
+					std::basic_string_view<char_T> decimal_str;
+					if(first_char == '.')
+					{
+						decimal_str = p_str.substr(1);
+						if(decimal_str.empty()) return std::errc::invalid_argument;
+					}
+					else
+					{
+						const uintptr_t pos = p_str.find(char_T{'.'});
+						if(pos == std::basic_string_view<char_T>::npos)
+						{
+							unit_str = p_str;
+						}
+						else
+						{
+							unit_str = p_str.substr(0, pos);
+							decimal_str = p_str.substr(pos + 1);
+						}
+					}
 
-				}
-				switch(first_char)
-				{
-				case '.':
-					break;
-				case '-':
-					break
-				case 'i':
-					break;
-				case 'I':
-					break;
-				case 'n':
-					break;
-				case 'N':
-					break;
-				default:
-					return std::errc::invalid_argument;
+					return from_chars_fp<fp_T, char_T>(sig_bit, unit_str, decimal_str, exp_sign, exp_str);
 				}
 			}
+			using uint_t = fp_traits<fp_T>::uint_t;
 
-
-
-
-
-			const uintptr_t tsize = p_str.size();
-			if(tsize > 126) return std::errc::no_buffer_space; //large enough to not make any sense
-			for(const char_T t_char: p_str)
+			if(is_inf(p_str))
 			{
-				//last allowable character also checks that conversion to to char8_t will not alias
-				if(t_char > 'e') return std::errc::invalid_argument;
-			}
+				uint_t bits = core::fp_traits<fp_T>::exponent_mask;
 
-			std::array<char8_t, 126> buff;
-			{
-				char8_t* pos = buff.data();
-				for(const char_T t_char : p_str)
+				if(sig_bit)
 				{
-					*(pos++) = static_cast<char8_t>(t_char);
+					bits |= core::fp_traits<fp_T>::sign_mask;
 				}
+				return reinterpret_cast<const fp_T&>(bits);
+			}
+			if(is_nan(p_str))
+			{
+				uint_t bits =
+					core::fp_traits<fp_T>::exponent_mask |
+					core::fp_traits<fp_T>::mantissa_mask;
+
+				if(sig_bit)
+				{
+					bits |= core::fp_traits<fp_T>::sign_mask;
+				}
+				return reinterpret_cast<const fp_T&>(bits);
 			}
 
-			return dec2fp<fp_T>(std::basic_string_view<char8_t>{buff.data(), tsize});
+			return std::errc::invalid_argument;
+
+			//const uintptr_t tsize = p_str.size();
+			//if(tsize > 126) return std::errc::no_buffer_space; //large enough to not make any sense
+			//for(const char_T t_char: p_str)
+			//{
+			//	//last allowable character also checks that conversion to to char8_t will not alias
+			//	if(t_char > 'e') return std::errc::invalid_argument;
+			//}
+			//
+			//std::array<char8_t, 126> buff;
+			//{
+			//	char8_t* pos = buff.data();
+			//	for(const char_T t_char : p_str)
+			//	{
+			//		*(pos++) = static_cast<char8_t>(t_char);
+			//	}
+			//}
+			//
+			//return dec2fp<fp_T>(std::basic_string_view<char8_t>{buff.data(), tsize});
 		}
 
 		template <typename num_T>
@@ -410,11 +543,11 @@ namespace core
 			uint8_t sci_size = 1;
 			if(sci_size_data.mantissa_decimal_size)
 			{
-				sci_size += sci_size_data.mantissa_decimal_size + 1;
+				sci_size += static_cast<uint8_t>(sci_size_data.mantissa_decimal_size + 1);
 			}
 			if(sci_size_data.exponent_size)
 			{
-				sci_size += sci_size_data.exponent_size + 1;
+				sci_size += static_cast<uint8_t>(sci_size_data.exponent_size + 1);
 				if(sci_size_data.is_exp_negative)
 				{
 					++sci_size;
@@ -424,12 +557,12 @@ namespace core
 			uint8_t fix_size = 1;
 			if(fix_size_data.unit_size)
 			{
-				fix_size = fix_size_data.unit_size;
+				fix_size = static_cast<uint8_t>(fix_size_data.unit_size);
 			}
 
 			if(fix_size_data.decimal_size)
 			{
-				fix_size += fix_size_data.decimal_size +1;
+				fix_size += static_cast<uint8_t>(fix_size_data.decimal_size + 1);
 			}
 
 			uint8_t min_size = std::min(sci_size, fix_size); 
@@ -607,18 +740,6 @@ namespace core
 			*++p_str = _p::Hex2Nible(p_val);
 		}
 
-		template<typename Fp_t>
-		static inline uintptr_t fp2dec(const Fp_t p_val, std::span<char8_t, to_chars_dec_max_size_v<Fp_t>> const p_out)
-		{
-			char* const start = reinterpret_cast<char*>(p_out.data());
-			const std::to_chars_result res = std::to_chars(start, start + p_out.size(), p_val);
-
-			if(res.ec == std::errc{})
-			{
-				return static_cast<uintptr_t>(res.ptr - start);
-			}
-			return 0;
-		}
 
 		template<typename char_T, typename Fp_t>
 		static inline uintptr_t fp2dec(const Fp_t p_val, std::span<char_T, to_chars_dec_max_size_v<Fp_t>> const p_out)
@@ -628,9 +749,9 @@ namespace core
 
 			if(classification.classification == fp_classify::nan)
 			{
-				p_out[0] = 'n';
-				p_out[1] = 'a';
-				p_out[2] = 'n';
+				p_out[0] = char_T{'n'};
+				p_out[1] = char_T{'a'};
+				p_out[2] = char_T{'n'};
 				return 3;
 			}
 
@@ -638,14 +759,14 @@ namespace core
 
 			if(classification.is_negative)
 			{
-				*(pivot++) = '-';
+				*(pivot++) = char_T{'-'};
 			}
 
 			switch(classification.classification)
 			{
 			default:
 			case fp_classify::zero:
-				*(pivot++) = '0';
+				*(pivot++) = char_T{'0'};
 				break;
 			case fp_classify::finite:
 				{
@@ -655,11 +776,11 @@ namespace core
 					uint8_t sci_size = 1;
 					if(sci_size_data.mantissa_decimal_size)
 					{
-						sci_size += sci_size_data.mantissa_decimal_size + 1;
+						sci_size += static_cast<uint8_t>(sci_size_data.mantissa_decimal_size + 1);
 					}
 					if(sci_size_data.exponent_size)
 					{
-						sci_size += sci_size_data.exponent_size + 1;
+						sci_size += static_cast<uint8_t>(sci_size_data.exponent_size + 1);
 						if(sci_size_data.is_exp_negative)
 						{
 							++sci_size;
@@ -669,12 +790,12 @@ namespace core
 					uint8_t fix_size = 1;
 					if(fix_size_data.unit_size)
 					{
-						fix_size = fix_size_data.unit_size;
+						fix_size = static_cast<uint8_t>(fix_size_data.unit_size);
 					}
 
 					if(fix_size_data.decimal_size)
 					{
-						fix_size += fix_size_data.decimal_size +1;
+						fix_size += static_cast<uint8_t>(fix_size_data.decimal_size + 1);
 					}
 
 					if(sci_size < fix_size)
@@ -684,7 +805,7 @@ namespace core
 							char_T* decimal_digit = pivot;
 							if(sci_size_data.mantissa_decimal_size)
 							{
-								*(pivot++) = '.';
+								*(pivot++) = char_T{'.'};
 								decimal_digit = pivot;
 								pivot += sci_size_data.mantissa_decimal_size;
 							}
@@ -692,10 +813,10 @@ namespace core
 						}
 						if(sci_size_data.exponent_size)
 						{
-							*(pivot++) = 'E';
+							*(pivot++) = char_T{'E'};
 							if(sci_size_data.is_exp_negative)
 							{
-								*(pivot++) = '-';
+								*(pivot++) = char_T{'-'};
 							}
 							to_chars_shortest_sci_exp_unsafe(context, pivot);
 							pivot += sci_size_data.exponent_size;
@@ -710,13 +831,13 @@ namespace core
 						}
 						else
 						{
-							*(pivot++) = '0';
+							*(pivot++) = char_T{'0'};
 						}
 
 						char_T* decimal_digit = pivot;
 						if(fix_size_data.decimal_size)
 						{
-							*(pivot++) = '.';
+							*(pivot++) = char_T{'.'};
 							decimal_digit = pivot;
 							pivot += fix_size_data.decimal_size;
 						}
@@ -725,9 +846,9 @@ namespace core
 				}
 				break;
 			case fp_classify::inf:
-				*(pivot++) = 'i';
-				*(pivot++) = 'n';
-				*(pivot++) = 'f';
+				*(pivot++) = char_T{'i'};
+				*(pivot++) = char_T{'n'};
+				*(pivot++) = char_T{'f'};
 				break;
 			}
 

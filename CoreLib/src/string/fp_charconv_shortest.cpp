@@ -244,7 +244,7 @@ namespace core
 			}
 			else
 			{
-				decimal_chars += ryu_exp;
+				decimal_chars += static_cast<exp_ut>(-ryu_exp);
 				do
 				{
 					*(--decimal_chars) = static_cast<char_t>('0' + mantissa % 10);
