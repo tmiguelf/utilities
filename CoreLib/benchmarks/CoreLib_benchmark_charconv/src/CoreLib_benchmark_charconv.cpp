@@ -715,7 +715,7 @@ static void core_to_hex_chars(benchmark::State& state)
 	const std::vector<num_T>& testList = get_num_hex<num_T>();
 	uintptr_t index = 0;
 
-	constexpr uintptr_t buffSize = core::to_chars_dec_max_size_v<num_T>;
+	constexpr uintptr_t buffSize = core::to_chars_hex_max_size_v<num_T>;
 	std::array<char8_t, buffSize> buffer;
 
 	for (auto _ : state)
@@ -736,7 +736,7 @@ static void core_to_hex_chars_fix(benchmark::State& state)
 	const std::vector<num_T>& testList = get_num_hex<num_T>();
 	uintptr_t index = 0;
 
-	constexpr uintptr_t buffSize = core::to_chars_dec_max_size_v<num_T>;
+	constexpr uintptr_t buffSize = core::to_chars_hex_max_size_v<num_T>;
 	std::array<char8_t, buffSize> buffer;
 
 	for (auto _ : state)
@@ -753,7 +753,6 @@ static void core_to_hex_chars_fix(benchmark::State& state)
 
 //======== ======== ======== ======== Benchmark Instantiation ======== ======== ======== ========
 
-#if 0
 BENCHMARK_TEMPLATE( std_from_chars_good, uint8_t );
 BENCHMARK_TEMPLATE(core_from_chars_good, uint8_t );
 BENCHMARK_TEMPLATE( std_from_chars_good, uint16_t);
@@ -837,7 +836,7 @@ BENCHMARK_TEMPLATE(core_to_hex_chars_fix, uint32_t);
 BENCHMARK_TEMPLATE( std_to_hex_chars,     uint64_t);
 BENCHMARK_TEMPLATE(core_to_hex_chars,     uint64_t);
 BENCHMARK_TEMPLATE(core_to_hex_chars_fix, uint64_t);
-#endif
+
 
 template<typename T>
 struct fp_cases;
@@ -1188,23 +1187,14 @@ static inline void core_to_chars_shortest_convert(benchmark::State& state)
 }
 
 BENCHMARK_TEMPLATE(std_to_chars_short, float);
-//BENCHMARK_TEMPLATE(std_to_chars_short, double);
-
-
-//BENCHMARK_TEMPLATE(core_to_chars2, float , char8_t);
-//BENCHMARK_TEMPLATE(core_to_chars2, double, char8_t);
-//BENCHMARK_TEMPLATE(core_to_chars2, float , char16_t);
-//BENCHMARK_TEMPLATE(core_to_chars2, double, char16_t);
-//BENCHMARK_TEMPLATE(core_to_chars2, float , char32_t);
-//BENCHMARK_TEMPLATE(core_to_chars2, double, char32_t);
-
+BENCHMARK_TEMPLATE(std_to_chars_short, double);
 
 BENCHMARK_TEMPLATE(core_to_chars_shortest, float , char8_t);
-//BENCHMARK_TEMPLATE(core_to_chars_shortest, double, char8_t);
-//BENCHMARK_TEMPLATE(core_to_chars_shortest, float , char16_t);
-//BENCHMARK_TEMPLATE(core_to_chars_shortest, double, char16_t);
-//BENCHMARK_TEMPLATE(core_to_chars_shortest, float , char32_t);
-//BENCHMARK_TEMPLATE(core_to_chars_shortest, double, char32_t);
+BENCHMARK_TEMPLATE(core_to_chars_shortest, double, char8_t);
+BENCHMARK_TEMPLATE(core_to_chars_shortest, float , char16_t);
+BENCHMARK_TEMPLATE(core_to_chars_shortest, double, char16_t);
+BENCHMARK_TEMPLATE(core_to_chars_shortest, float , char32_t);
+BENCHMARK_TEMPLATE(core_to_chars_shortest, double, char32_t);
 
 BENCHMARK_TEMPLATE(core_to_chars_shortest_classify, float);
 BENCHMARK_TEMPLATE(core_to_chars_shortest_classify, double);
@@ -1212,10 +1202,10 @@ BENCHMARK_TEMPLATE(core_to_chars_shortest_classify, double);
 
 
 BENCHMARK_TEMPLATE(core_to_chars_shortest_size, float);
-//BENCHMARK_TEMPLATE(core_to_chars_shortest_size, double);
+BENCHMARK_TEMPLATE(core_to_chars_shortest_size, double);
 
 BENCHMARK_TEMPLATE(core_to_chars_shortest_convert, float , char8_t);
-//BENCHMARK_TEMPLATE(core_to_chars_shortest_convert, double, char8_t);
+BENCHMARK_TEMPLATE(core_to_chars_shortest_convert, double, char8_t);
 
 
 //BENCHMARK_TEMPLATE(std_to_chars_sci, float);
