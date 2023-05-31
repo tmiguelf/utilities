@@ -548,7 +548,7 @@ namespace core
 			return reinterpret_cast<const uint_t&>(input) & fp_utils_p::sign_mask;
 		}
 
-		[[nodiscard]] static void mul_hack(bignum_t& p_1, const uint64_t p_2)
+		static void mul_hack(bignum_t& p_1, const uint64_t p_2)
 		{
 			uint64_t mul_carry = 0;
 			uint64_t carry = 0;

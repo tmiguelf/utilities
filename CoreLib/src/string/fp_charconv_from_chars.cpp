@@ -20,6 +20,7 @@
 #include <CoreLib/string/core_fp_charconv.hpp>
 
 #include <algorithm>
+#include <bit>
 
 
 #include <CoreLib/string/core_string_numeric.hpp>

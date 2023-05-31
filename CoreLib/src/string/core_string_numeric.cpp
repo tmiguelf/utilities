@@ -25,6 +25,7 @@
 //======== ======== ======== ======== ======== ======== ======== ========
 
 #include <array>
+#include <bit>
 
 #include <CoreLib/string/core_string_numeric.hpp>
 #include <CoreLib/string/core_fp_charconv.hpp>
