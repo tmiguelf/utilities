@@ -60,6 +60,7 @@
   <ItemGroup>
     <ClCompile Include="src\core_endian_test.cpp" />
     <ClCompile Include="src\core_file_test.cpp" />
+    <ClCompile Include="src\fp_charconv_shortest_test.cpp" />
     <ClCompile Include="src\string_encoding_test.cpp" />
     <ClCompile Include="src\string_misc_test.cpp" />
     <ClCompile Include="src\string_numeric_test.cpp" />

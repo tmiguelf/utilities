@@ -34,6 +34,8 @@
 
 #include <CoreLib/string/core_string_numeric.hpp>
 #include <CoreLib/string/core_string_misc.hpp>
+#include <CoreLib/string/core_fp_charconv.hpp>
+#include <CoreLib/string/core_fp_to_chars_round.hpp>
 
 //======== ======== ======== ======== Auxiliary Test case generator ======== ======== ======== ========
 
@@ -322,14 +324,14 @@ std::vector<std::basic_string<char_T>> get_goodStr()
 	std::vector<std::basic_string<char_T>> out;
 	constexpr num_T max = std::numeric_limits<num_T>::max();
 	std::array<char, 20> buff;
-	char* first = buff.data();
-	char* last = first + buff.size();
+	char* const first = buff.data();
+	char* const last = first + buff.size();
 
 	for(uint64_t num : u_numbers)
 	{
 		if(num <= max)
 		{
-			std::to_chars_result res = std::to_chars(first, last, num);
+			const std::to_chars_result res = std::to_chars(first, last, num);
 			out.push_back(str2_Tstring<char_T>(std::string_view{first, static_cast<uintptr_t>(res.ptr - first)}));
 		}
 		else break;
@@ -342,7 +344,7 @@ std::vector<std::basic_string<char_T>> get_goodStr()
 		{
 			if(num >= min)
 			{
-				std::to_chars_result res = std::to_chars(first, last, num);
+				const std::to_chars_result res = std::to_chars(first, last, num);
 				out.push_back(str2_Tstring<char_T>(std::string_view{first, static_cast<uintptr_t>(res.ptr - first)}));
 			}
 			else break;
@@ -386,11 +388,11 @@ std::vector<num_T> get_num()
 	std::vector<num_T> out;
 	constexpr num_T max = std::numeric_limits<num_T>::max();
 
-	for(uint64_t num : u_numbers)
+	for(const uint64_t num : u_numbers)
 	{
 		if(num <= max)
 		{
-			out.push_back(static_cast<num_T>(num));
+			out.push_back(static_cast<const num_T>(num));
 		}
 		else break;
 	}
@@ -398,11 +400,11 @@ std::vector<num_T> get_num()
 	if constexpr(std::is_signed_v<num_T>)
 	{
 		constexpr num_T min = std::numeric_limits<num_T>::min();
-		for(int64_t num : s_numbers)
+		for(const int64_t num : s_numbers)
 		{
 			if(num >= min)
 			{
-				out.push_back(static_cast<num_T>(num));
+				out.push_back(static_cast<const num_T>(num));
 			}
 			else break;
 		}
@@ -416,14 +418,14 @@ std::vector<std::basic_string<char_T>> get_goodStr_hex()
 	std::vector<std::basic_string<char_T>> out;
 	constexpr num_T max = std::numeric_limits<num_T>::max();
 	std::array<char, 16> buff;
-	char* first = buff.data();
-	char* last = first + buff.size();
+	char* const first = buff.data();
+	char* const last = first + buff.size();
 
-	for(uint64_t num : hex_numbers)
+	for(const uint64_t num : hex_numbers)
 	{
 		if(num <= max)
 		{
-			std::to_chars_result res = std::to_chars(first, last, num, 16);
+			const std::to_chars_result res = std::to_chars(first, last, num, 16);
 			core::toUpperCase(std::span<char8_t>{reinterpret_cast<char8_t*>(first), static_cast<uintptr_t>(res.ptr - first)});
 			out.push_back(str2_Tstring<char_T>(std::string_view{first, static_cast<uintptr_t>(res.ptr - first)}));
 		}
@@ -454,11 +456,11 @@ std::vector<num_T> get_num_hex()
 	std::vector<num_T> out;
 	constexpr num_T max = std::numeric_limits<num_T>::max();
 
-	for(uint64_t num : hex_numbers)
+	for(const uint64_t num : hex_numbers)
 	{
 		if(num <= max)
 		{
-			out.push_back(static_cast<num_T>(num));
+			out.push_back(static_cast<const num_T>(num));
 		}
 		else break;
 	}
@@ -477,12 +479,12 @@ static void std_from_chars_good(benchmark::State& state)
 	for (auto _ : state)
 	{
 		const std::u8string& testCase = testList[index];
-		const char* first = reinterpret_cast<const char*>(testCase.data());
-		const char* last = first + testCase.size();
+		const char* const first = reinterpret_cast<const char*>(testCase.data());
+		const char* const last = first + testCase.size();
 		num_T result;
-		std::from_chars_result res = std::from_chars(first, last, result);
+		const std::from_chars_result res = std::from_chars(first, last, result);
 
-		volatile bool ok = res.ec == std::error_code{} && res.ptr == last;
+		const bool ok = (res.ec == std::error_code{} && res.ptr == last);
 
 		benchmark::DoNotOptimize(result);
 		benchmark::DoNotOptimize(ok);
@@ -500,9 +502,9 @@ static void core_from_chars_good(benchmark::State& state)
 	for (auto _ : state)
 	{
 		const std::u8string& testCase = testList[index];
-		core::from_chars_result<num_T> result = core::from_chars<num_T>(testCase);
+		const core::from_chars_result<num_T> result = core::from_chars<num_T>(testCase);
 
-		volatile bool ok = result.has_value();
+		const bool ok = result.has_value();
 
 		benchmark::DoNotOptimize(result.value());
 		benchmark::DoNotOptimize(ok);
@@ -521,12 +523,12 @@ static void std_from_chars_bad(benchmark::State& state)
 	for (auto _ : state)
 	{
 		const std::u8string& testCase = testList[index];
-		const char* first = reinterpret_cast<const char*>(testCase.data());
-		const char* last = first + testCase.size();
+		const char* const first = reinterpret_cast<const char*>(testCase.data());
+		const char* const last = first + testCase.size();
 		num_T result;
-		std::from_chars_result res = std::from_chars(first, last, result);
+		const std::from_chars_result res = std::from_chars(first, last, result);
 
-		volatile bool ok = res.ec == std::error_code{} && res.ptr == last;
+		const bool ok = (res.ec == std::error_code{} && res.ptr == last);
 
 		benchmark::DoNotOptimize(ok);
 
@@ -543,9 +545,9 @@ static void core_from_chars_bad(benchmark::State& state)
 	for (auto _ : state)
 	{
 		const std::u8string& testCase = testList[index];
-		core::from_chars_result<num_T> result = core::from_chars<num_T>(testCase);
+		const core::from_chars_result<num_T> result = core::from_chars<num_T>(testCase);
 
-		volatile bool ok = result.has_value();
+		const bool ok = result.has_value();
 
 		benchmark::DoNotOptimize(ok);
 
@@ -562,12 +564,12 @@ static void std_from_hex_chars_good(benchmark::State& state)
 	for (auto _ : state)
 	{
 		const std::u8string& testCase = testList[index];
-		const char* first = reinterpret_cast<const char*>(testCase.data());
-		const char* last = first + testCase.size();
+		const char* const first = reinterpret_cast<const char*>(testCase.data());
+		const char* const last = first + testCase.size();
 		num_T result;
-		std::from_chars_result res = std::from_chars(first, last, result, 16);
+		const std::from_chars_result res = std::from_chars(first, last, result, 16);
 
-		volatile bool ok = res.ec == std::error_code{} && res.ptr == last;
+		const bool ok = (res.ec == std::error_code{} && res.ptr == last);
 
 		benchmark::DoNotOptimize(result);
 		benchmark::DoNotOptimize(ok);
@@ -585,9 +587,9 @@ static void core_from_hex_chars_good(benchmark::State& state)
 	for (auto _ : state)
 	{
 		const std::u8string& testCase = testList[index];
-		core::from_chars_result<num_T> result = core::from_chars_hex<num_T>(testCase);
+		const core::from_chars_result<num_T> result = core::from_chars_hex<num_T>(testCase);
 
-		volatile bool ok = result.has_value();
+		const bool ok = result.has_value();
 
 		benchmark::DoNotOptimize(result.value());
 		benchmark::DoNotOptimize(ok);
@@ -606,12 +608,12 @@ static void std_from_hex_chars_bad(benchmark::State& state)
 	for (auto _ : state)
 	{
 		const std::u8string& testCase = testList[index];
-		const char* first = reinterpret_cast<const char*>(testCase.data());
-		const char* last = first + testCase.size();
+		const char* const first = reinterpret_cast<const char*>(testCase.data());
+		const char* const last = first + testCase.size();
 		num_T result;
-		std::from_chars_result res = std::from_chars(first, last, result, 16);
+		const std::from_chars_result res = std::from_chars(first, last, result, 16);
 
-		volatile bool ok = res.ec == std::error_code{} && res.ptr == last;
+		const bool ok = (res.ec == std::error_code{} && res.ptr == last);
 
 		benchmark::DoNotOptimize(ok);
 
@@ -628,9 +630,9 @@ static void core_from_hex_chars_bad(benchmark::State& state)
 	for (auto _ : state)
 	{
 		const std::u8string& testCase = testList[index];
-		core::from_chars_result<num_T> result = core::from_chars_hex<num_T>(testCase);
+		const core::from_chars_result<num_T> result = core::from_chars_hex<num_T>(testCase);
 
-		volatile bool ok = result.has_value();
+		const bool ok = result.has_value();
 
 		benchmark::DoNotOptimize(ok);
 
@@ -645,17 +647,17 @@ static void std_to_chars(benchmark::State& state)
 	const std::vector<num_T>& testList = get_num<num_T>();
 	uintptr_t index = 0;
 
-	constexpr uintptr_t buffSize = core::to_chars_dec_max_digits_v<num_T>;
+	constexpr uintptr_t buffSize = core::to_chars_dec_max_size_v<num_T>;
 	std::array<char8_t, buffSize> buffer;
 
 	for (auto _ : state)
 	{
-		num_T testCase = testList[index];
-		char* first = reinterpret_cast<char*>(buffer.data());
-		char* last = first + buffer.size();
-		std::to_chars_result res = std::to_chars(first, last, testCase);
+		const num_T testCase = testList[index];
+		char* const first = reinterpret_cast<char*>(buffer.data());
+		char* const last = first + buffer.size();
+		const std::to_chars_result res = std::to_chars(first, last, testCase);
 
-		std::u8string_view result {buffer.data(), static_cast<uintptr_t>(res.ptr - first)};
+		const std::u8string_view result {buffer.data(), static_cast<uintptr_t>(res.ptr - first)};
 
 		benchmark::DoNotOptimize(result);
 		if(index >= testList.size()) index = 0;
@@ -668,15 +670,15 @@ static void core_to_chars(benchmark::State& state)
 	const std::vector<num_T>& testList = get_num<num_T>();
 	uintptr_t index = 0;
 
-	constexpr uintptr_t buffSize = core::to_chars_dec_max_digits_v<num_T>;
+	constexpr uintptr_t buffSize = core::to_chars_dec_max_size_v<num_T>;
 	std::array<char8_t, buffSize> buffer;
 
 	for (auto _ : state)
 	{
-		num_T testCase = testList[index];
-		uintptr_t res_size = core::to_chars(testCase, std::span<char8_t, buffSize>(buffer));
+		const num_T testCase = testList[index];
+		const uintptr_t res_size = core::to_chars(testCase, std::span<char8_t, buffSize>(buffer));
 
-		std::u8string_view result {buffer.data(), res_size};
+		const std::u8string_view result {buffer.data(), res_size};
 
 		benchmark::DoNotOptimize(result);
 		if(index >= testList.size()) index = 0;
@@ -690,17 +692,17 @@ static void std_to_hex_chars(benchmark::State& state)
 	const std::vector<num_T>& testList = get_num_hex<num_T>();
 	uintptr_t index = 0;
 
-	constexpr uintptr_t buffSize = core::to_chars_hex_max_digits_v<num_T>;
+	constexpr uintptr_t buffSize = core::to_chars_dec_max_size_v<num_T>;
 	std::array<char8_t, buffSize> buffer;
 
 	for (auto _ : state)
 	{
-		num_T testCase = testList[index];
-		char* first = reinterpret_cast<char*>(buffer.data());
-		char* last = first + buffer.size();
-		std::to_chars_result res = std::to_chars(first, last, testCase, 16);
+		const num_T testCase = testList[index];
+		char* const first = reinterpret_cast<char*>(buffer.data());
+		char* const last = first + buffer.size();
+		const std::to_chars_result res = std::to_chars(first, last, testCase, 16);
 
-		std::u8string_view result {buffer.data(), static_cast<uintptr_t>(res.ptr - first)};
+		const std::u8string_view result {buffer.data(), static_cast<uintptr_t>(res.ptr - first)};
 
 		benchmark::DoNotOptimize(result);
 		if(index >= testList.size()) index = 0;
@@ -713,15 +715,15 @@ static void core_to_hex_chars(benchmark::State& state)
 	const std::vector<num_T>& testList = get_num_hex<num_T>();
 	uintptr_t index = 0;
 
-	constexpr uintptr_t buffSize = core::to_chars_hex_max_digits_v<num_T>;
+	constexpr uintptr_t buffSize = core::to_chars_hex_max_size_v<num_T>;
 	std::array<char8_t, buffSize> buffer;
 
 	for (auto _ : state)
 	{
-		num_T testCase = testList[index];
-		uintptr_t res_size = core::to_chars_hex(testCase, std::span<char8_t, buffSize>(buffer));
+		const num_T testCase = testList[index];
+		const uintptr_t res_size = core::to_chars_hex(testCase, std::span<char8_t, buffSize>(buffer));
 
-		std::u8string_view result {buffer.data(), res_size};
+		const std::u8string_view result {buffer.data(), res_size};
 
 		benchmark::DoNotOptimize(result);
 		if(index >= testList.size()) index = 0;
@@ -734,200 +736,500 @@ static void core_to_hex_chars_fix(benchmark::State& state)
 	const std::vector<num_T>& testList = get_num_hex<num_T>();
 	uintptr_t index = 0;
 
-	constexpr uintptr_t buffSize = core::to_chars_hex_max_digits_v<num_T>;
+	constexpr uintptr_t buffSize = core::to_chars_hex_max_size_v<num_T>;
 	std::array<char8_t, buffSize> buffer;
 
 	for (auto _ : state)
 	{
-		num_T testCase = testList[index];
+		const num_T testCase = testList[index];
 		core::to_chars_hex_fix(testCase, std::span<char8_t, buffSize>(buffer));
 
-		std::u8string_view result {buffer.data(), buffSize};
+		const std::u8string_view result {buffer.data(), buffSize};
 
 		benchmark::DoNotOptimize(result);
 		if(index >= testList.size()) index = 0;
 	}
 }
 
-
-//======== ======== ======== ======== Template Resolution ======== ======== ======== ========
-
-//---- from Decimal ----
-static inline void  std_from_chars_good_uint8 (benchmark::State& state) {  std_from_chars_good<uint8_t >(state); }
-static inline void  std_from_chars_good_uint16(benchmark::State& state) {  std_from_chars_good<uint16_t>(state); }
-static inline void  std_from_chars_good_uint32(benchmark::State& state) {  std_from_chars_good<uint32_t>(state); }
-static inline void  std_from_chars_good_uint64(benchmark::State& state) {  std_from_chars_good<uint64_t>(state); }
-static inline void  std_from_chars_good_int8  (benchmark::State& state) {  std_from_chars_good<int8_t  >(state); }
-static inline void  std_from_chars_good_int16 (benchmark::State& state) {  std_from_chars_good<int16_t >(state); }
-static inline void  std_from_chars_good_int32 (benchmark::State& state) {  std_from_chars_good<int32_t >(state); }
-static inline void  std_from_chars_good_int64 (benchmark::State& state) {  std_from_chars_good<int64_t >(state); }
-
-static inline void core_from_chars_good_uint8 (benchmark::State& state) { core_from_chars_good<uint8_t >(state); }
-static inline void core_from_chars_good_uint16(benchmark::State& state) { core_from_chars_good<uint16_t>(state); }
-static inline void core_from_chars_good_uint32(benchmark::State& state) { core_from_chars_good<uint32_t>(state); }
-static inline void core_from_chars_good_uint64(benchmark::State& state) { core_from_chars_good<uint64_t>(state); }
-static inline void core_from_chars_good_int8  (benchmark::State& state) { core_from_chars_good<int8_t  >(state); }
-static inline void core_from_chars_good_int16 (benchmark::State& state) { core_from_chars_good<int16_t >(state); }
-static inline void core_from_chars_good_int32 (benchmark::State& state) { core_from_chars_good<int32_t >(state); }
-static inline void core_from_chars_good_int64 (benchmark::State& state) { core_from_chars_good<int64_t >(state); }
-
-static inline void  std_from_chars_bad_uint8 (benchmark::State& state) {  std_from_chars_bad<uint8_t >(state); }
-static inline void  std_from_chars_bad_uint16(benchmark::State& state) {  std_from_chars_bad<uint16_t>(state); }
-static inline void  std_from_chars_bad_uint32(benchmark::State& state) {  std_from_chars_bad<uint32_t>(state); }
-static inline void  std_from_chars_bad_uint64(benchmark::State& state) {  std_from_chars_bad<uint64_t>(state); }
-static inline void  std_from_chars_bad_int8  (benchmark::State& state) {  std_from_chars_bad<int8_t  >(state); }
-static inline void  std_from_chars_bad_int16 (benchmark::State& state) {  std_from_chars_bad<int16_t >(state); }
-static inline void  std_from_chars_bad_int32 (benchmark::State& state) {  std_from_chars_bad<int32_t >(state); }
-static inline void  std_from_chars_bad_int64 (benchmark::State& state) {  std_from_chars_bad<int64_t >(state); }
-
-static inline void core_from_chars_bad_uint8 (benchmark::State& state) { core_from_chars_bad<uint8_t >(state); }
-static inline void core_from_chars_bad_uint16(benchmark::State& state) { core_from_chars_bad<uint16_t>(state); }
-static inline void core_from_chars_bad_uint32(benchmark::State& state) { core_from_chars_bad<uint32_t>(state); }
-static inline void core_from_chars_bad_uint64(benchmark::State& state) { core_from_chars_bad<uint64_t>(state); }
-static inline void core_from_chars_bad_int8  (benchmark::State& state) { core_from_chars_bad<int8_t  >(state); }
-static inline void core_from_chars_bad_int16 (benchmark::State& state) { core_from_chars_bad<int16_t >(state); }
-static inline void core_from_chars_bad_int32 (benchmark::State& state) { core_from_chars_bad<int32_t >(state); }
-static inline void core_from_chars_bad_int64 (benchmark::State& state) { core_from_chars_bad<int64_t >(state); }
-
-
-//---- from Hexadecimal ----
-static inline void  std_from_hex_chars_good_uint8 (benchmark::State& state) {  std_from_hex_chars_good<uint8_t >(state); }
-static inline void  std_from_hex_chars_good_uint16(benchmark::State& state) {  std_from_hex_chars_good<uint16_t>(state); }
-static inline void  std_from_hex_chars_good_uint32(benchmark::State& state) {  std_from_hex_chars_good<uint32_t>(state); }
-static inline void  std_from_hex_chars_good_uint64(benchmark::State& state) {  std_from_hex_chars_good<uint64_t>(state); }
-
-static inline void core_from_hex_chars_good_uint8 (benchmark::State& state) { core_from_hex_chars_good<uint8_t >(state); }
-static inline void core_from_hex_chars_good_uint16(benchmark::State& state) { core_from_hex_chars_good<uint16_t>(state); }
-static inline void core_from_hex_chars_good_uint32(benchmark::State& state) { core_from_hex_chars_good<uint32_t>(state); }
-static inline void core_from_hex_chars_good_uint64(benchmark::State& state) { core_from_hex_chars_good<uint64_t>(state); }
-
-static inline void  std_from_hex_chars_bad_uint8 (benchmark::State& state) {  std_from_hex_chars_bad<uint8_t >(state); }
-static inline void  std_from_hex_chars_bad_uint16(benchmark::State& state) {  std_from_hex_chars_bad<uint16_t>(state); }
-static inline void  std_from_hex_chars_bad_uint32(benchmark::State& state) {  std_from_hex_chars_bad<uint32_t>(state); }
-static inline void  std_from_hex_chars_bad_uint64(benchmark::State& state) {  std_from_hex_chars_bad<uint64_t>(state); }
-
-static inline void core_from_hex_chars_bad_uint8 (benchmark::State& state) { core_from_hex_chars_bad<uint8_t >(state); }
-static inline void core_from_hex_chars_bad_uint16(benchmark::State& state) { core_from_hex_chars_bad<uint16_t>(state); }
-static inline void core_from_hex_chars_bad_uint32(benchmark::State& state) { core_from_hex_chars_bad<uint32_t>(state); }
-static inline void core_from_hex_chars_bad_uint64(benchmark::State& state) { core_from_hex_chars_bad<uint64_t>(state); }
-
-
-//---- to Decimal ----
-static inline void  std_to_chars_uint8 (benchmark::State& state) {  std_to_chars<uint8_t >(state); }
-static inline void  std_to_chars_uint16(benchmark::State& state) {  std_to_chars<uint16_t>(state); }
-static inline void  std_to_chars_uint32(benchmark::State& state) {  std_to_chars<uint32_t>(state); }
-static inline void  std_to_chars_uint64(benchmark::State& state) {  std_to_chars<uint64_t>(state); }
-static inline void  std_to_chars_int8  (benchmark::State& state) {  std_to_chars<int8_t  >(state); }
-static inline void  std_to_chars_int16 (benchmark::State& state) {  std_to_chars<int16_t >(state); }
-static inline void  std_to_chars_int32 (benchmark::State& state) {  std_to_chars<int32_t >(state); }
-static inline void  std_to_chars_int64 (benchmark::State& state) {  std_to_chars<int64_t >(state); }
-
-static inline void core_to_chars_uint8 (benchmark::State& state) { core_to_chars<uint8_t >(state); }
-static inline void core_to_chars_uint16(benchmark::State& state) { core_to_chars<uint16_t>(state); }
-static inline void core_to_chars_uint32(benchmark::State& state) { core_to_chars<uint32_t>(state); }
-static inline void core_to_chars_uint64(benchmark::State& state) { core_to_chars<uint64_t>(state); }
-static inline void core_to_chars_int8  (benchmark::State& state) { core_to_chars<int8_t  >(state); }
-static inline void core_to_chars_int16 (benchmark::State& state) { core_to_chars<int16_t >(state); }
-static inline void core_to_chars_int32 (benchmark::State& state) { core_to_chars<int32_t >(state); }
-static inline void core_to_chars_int64 (benchmark::State& state) { core_to_chars<int64_t >(state); }
-
-//---- to Hexadecimal ----
-static inline void  std_to_hex_chars_uint8 (benchmark::State& state) {  std_to_hex_chars<uint8_t >(state); }
-static inline void  std_to_hex_chars_uint16(benchmark::State& state) {  std_to_hex_chars<uint16_t>(state); }
-static inline void  std_to_hex_chars_uint32(benchmark::State& state) {  std_to_hex_chars<uint32_t>(state); }
-static inline void  std_to_hex_chars_uint64(benchmark::State& state) {  std_to_hex_chars<uint64_t>(state); }
-
-static inline void core_to_hex_chars_uint8 (benchmark::State& state) { core_to_hex_chars<uint8_t >(state); }
-static inline void core_to_hex_chars_uint16(benchmark::State& state) { core_to_hex_chars<uint16_t>(state); }
-static inline void core_to_hex_chars_uint32(benchmark::State& state) { core_to_hex_chars<uint32_t>(state); }
-static inline void core_to_hex_chars_uint64(benchmark::State& state) { core_to_hex_chars<uint64_t>(state); }
-
-static inline void core_to_hex_chars_fix_uint8 (benchmark::State& state) { core_to_hex_chars_fix<uint8_t >(state); }
-static inline void core_to_hex_chars_fix_uint16(benchmark::State& state) { core_to_hex_chars_fix<uint16_t>(state); }
-static inline void core_to_hex_chars_fix_uint32(benchmark::State& state) { core_to_hex_chars_fix<uint32_t>(state); }
-static inline void core_to_hex_chars_fix_uint64(benchmark::State& state) { core_to_hex_chars_fix<uint64_t>(state); }
 //======== ======== ======== ======== Benchmark Instantiation ======== ======== ======== ========
 
-BENCHMARK( std_from_chars_good_uint8 );
-BENCHMARK(core_from_chars_good_uint8 );
-BENCHMARK( std_from_chars_good_uint16);
-BENCHMARK(core_from_chars_good_uint16);
-BENCHMARK( std_from_chars_good_uint32);
-BENCHMARK(core_from_chars_good_uint32);
-BENCHMARK( std_from_chars_good_uint64);
-BENCHMARK(core_from_chars_good_uint64);
-BENCHMARK( std_from_chars_good_int8  );
-BENCHMARK(core_from_chars_good_int8  );
-BENCHMARK( std_from_chars_good_int16 );
-BENCHMARK(core_from_chars_good_int16 );
-BENCHMARK( std_from_chars_good_int32 );
-BENCHMARK(core_from_chars_good_int32 );
-BENCHMARK( std_from_chars_good_int64 );
-BENCHMARK(core_from_chars_good_int64 );
+BENCHMARK_TEMPLATE( std_from_chars_good, uint8_t );
+BENCHMARK_TEMPLATE(core_from_chars_good, uint8_t );
+BENCHMARK_TEMPLATE( std_from_chars_good, uint16_t);
+BENCHMARK_TEMPLATE(core_from_chars_good, uint16_t);
+BENCHMARK_TEMPLATE( std_from_chars_good, uint32_t);
+BENCHMARK_TEMPLATE(core_from_chars_good, uint32_t);
+BENCHMARK_TEMPLATE( std_from_chars_good, uint64_t);
+BENCHMARK_TEMPLATE(core_from_chars_good, uint64_t);
+BENCHMARK_TEMPLATE( std_from_chars_good, int8_t  );
+BENCHMARK_TEMPLATE(core_from_chars_good, int8_t  );
+BENCHMARK_TEMPLATE( std_from_chars_good, int16_t );
+BENCHMARK_TEMPLATE(core_from_chars_good, int16_t );
+BENCHMARK_TEMPLATE( std_from_chars_good, int32_t );
+BENCHMARK_TEMPLATE(core_from_chars_good, int32_t );
+BENCHMARK_TEMPLATE( std_from_chars_good, int64_t );
+BENCHMARK_TEMPLATE(core_from_chars_good, int64_t );
 
-BENCHMARK( std_from_chars_bad_uint8 );
-BENCHMARK(core_from_chars_bad_uint8 );
-BENCHMARK( std_from_chars_bad_uint16);
-BENCHMARK(core_from_chars_bad_uint16);
-BENCHMARK( std_from_chars_bad_uint32);
-BENCHMARK(core_from_chars_bad_uint32);
-BENCHMARK( std_from_chars_bad_uint64);
-BENCHMARK(core_from_chars_bad_uint64);
-BENCHMARK( std_from_chars_bad_int8  );
-BENCHMARK(core_from_chars_bad_int8  );
-BENCHMARK( std_from_chars_bad_int16 );
-BENCHMARK(core_from_chars_bad_int16 );
-BENCHMARK( std_from_chars_bad_int32 );
-BENCHMARK(core_from_chars_bad_int32 );
-BENCHMARK( std_from_chars_bad_int64 );
-BENCHMARK(core_from_chars_bad_int64 );
-
-
-BENCHMARK( std_from_hex_chars_good_uint8 );
-BENCHMARK(core_from_hex_chars_good_uint8 );
-BENCHMARK( std_from_hex_chars_good_uint16);
-BENCHMARK(core_from_hex_chars_good_uint16);
-BENCHMARK( std_from_hex_chars_good_uint32);
-BENCHMARK(core_from_hex_chars_good_uint32);
-BENCHMARK( std_from_hex_chars_good_uint64);
-BENCHMARK(core_from_hex_chars_good_uint64);
-
-BENCHMARK( std_from_hex_chars_bad_uint8 );
-BENCHMARK(core_from_hex_chars_bad_uint8 );
-BENCHMARK( std_from_hex_chars_bad_uint16);
-BENCHMARK(core_from_hex_chars_bad_uint16);
-BENCHMARK( std_from_hex_chars_bad_uint32);
-BENCHMARK(core_from_hex_chars_bad_uint32);
-BENCHMARK( std_from_hex_chars_bad_uint64);
-BENCHMARK(core_from_hex_chars_bad_uint64);
+BENCHMARK_TEMPLATE( std_from_chars_bad, uint8_t );
+BENCHMARK_TEMPLATE(core_from_chars_bad, uint8_t );
+BENCHMARK_TEMPLATE( std_from_chars_bad, uint16_t);
+BENCHMARK_TEMPLATE(core_from_chars_bad, uint16_t);
+BENCHMARK_TEMPLATE( std_from_chars_bad, uint32_t);
+BENCHMARK_TEMPLATE(core_from_chars_bad, uint32_t);
+BENCHMARK_TEMPLATE( std_from_chars_bad, uint64_t);
+BENCHMARK_TEMPLATE(core_from_chars_bad, uint64_t);
+BENCHMARK_TEMPLATE( std_from_chars_bad, int8_t  );
+BENCHMARK_TEMPLATE(core_from_chars_bad, int8_t  );
+BENCHMARK_TEMPLATE( std_from_chars_bad, int16_t );
+BENCHMARK_TEMPLATE(core_from_chars_bad, int16_t );
+BENCHMARK_TEMPLATE( std_from_chars_bad, int32_t );
+BENCHMARK_TEMPLATE(core_from_chars_bad, int32_t );
+BENCHMARK_TEMPLATE( std_from_chars_bad, int64_t );
+BENCHMARK_TEMPLATE(core_from_chars_bad, int64_t );
 
 
-BENCHMARK( std_to_chars_uint8 );
-BENCHMARK(core_to_chars_uint8 );
-BENCHMARK( std_to_chars_uint16);
-BENCHMARK(core_to_chars_uint16);
-BENCHMARK( std_to_chars_uint32);
-BENCHMARK(core_to_chars_uint32);
-BENCHMARK( std_to_chars_uint64);
-BENCHMARK(core_to_chars_uint64);
-BENCHMARK( std_to_chars_int8  );
-BENCHMARK(core_to_chars_int8  );
-BENCHMARK( std_to_chars_int16 );
-BENCHMARK(core_to_chars_int16 );
-BENCHMARK( std_to_chars_int32 );
-BENCHMARK(core_to_chars_int32 );
-BENCHMARK( std_to_chars_int64 );
-BENCHMARK(core_to_chars_int64 );
+BENCHMARK_TEMPLATE( std_from_hex_chars_good, uint8_t );
+BENCHMARK_TEMPLATE(core_from_hex_chars_good, uint8_t );
+BENCHMARK_TEMPLATE( std_from_hex_chars_good, uint16_t);
+BENCHMARK_TEMPLATE(core_from_hex_chars_good, uint16_t);
+BENCHMARK_TEMPLATE( std_from_hex_chars_good, uint32_t);
+BENCHMARK_TEMPLATE(core_from_hex_chars_good, uint32_t);
+BENCHMARK_TEMPLATE( std_from_hex_chars_good, uint64_t);
+BENCHMARK_TEMPLATE(core_from_hex_chars_good, uint64_t);
 
-BENCHMARK( std_to_hex_chars_uint8 );
-BENCHMARK(core_to_hex_chars_uint8 );
-BENCHMARK(core_to_hex_chars_fix_uint8 );
-BENCHMARK( std_to_hex_chars_uint16);
-BENCHMARK(core_to_hex_chars_uint16);
-BENCHMARK(core_to_hex_chars_fix_uint16);
-BENCHMARK( std_to_hex_chars_uint32);
-BENCHMARK(core_to_hex_chars_uint32);
-BENCHMARK(core_to_hex_chars_fix_uint32);
-BENCHMARK( std_to_hex_chars_uint64);
-BENCHMARK(core_to_hex_chars_uint64);
-BENCHMARK(core_to_hex_chars_fix_uint64);
+BENCHMARK_TEMPLATE( std_from_hex_chars_bad, uint8_t );
+BENCHMARK_TEMPLATE(core_from_hex_chars_bad, uint8_t );
+BENCHMARK_TEMPLATE( std_from_hex_chars_bad, uint16_t);
+BENCHMARK_TEMPLATE(core_from_hex_chars_bad, uint16_t);
+BENCHMARK_TEMPLATE( std_from_hex_chars_bad, uint32_t);
+BENCHMARK_TEMPLATE(core_from_hex_chars_bad, uint32_t);
+BENCHMARK_TEMPLATE( std_from_hex_chars_bad, uint64_t);
+BENCHMARK_TEMPLATE(core_from_hex_chars_bad, uint64_t);
+
+
+BENCHMARK_TEMPLATE( std_to_chars, uint8_t );
+BENCHMARK_TEMPLATE(core_to_chars, uint8_t );
+BENCHMARK_TEMPLATE( std_to_chars, uint16_t);
+BENCHMARK_TEMPLATE(core_to_chars, uint16_t);
+BENCHMARK_TEMPLATE( std_to_chars, uint32_t);
+BENCHMARK_TEMPLATE(core_to_chars, uint32_t);
+BENCHMARK_TEMPLATE( std_to_chars, uint64_t);
+BENCHMARK_TEMPLATE(core_to_chars, uint64_t);
+BENCHMARK_TEMPLATE( std_to_chars, int8_t  );
+BENCHMARK_TEMPLATE(core_to_chars, int8_t  );
+BENCHMARK_TEMPLATE( std_to_chars, int16_t );
+BENCHMARK_TEMPLATE(core_to_chars, int16_t );
+BENCHMARK_TEMPLATE( std_to_chars, int32_t );
+BENCHMARK_TEMPLATE(core_to_chars, int32_t );
+BENCHMARK_TEMPLATE( std_to_chars, int64_t );
+BENCHMARK_TEMPLATE(core_to_chars, int64_t );
+
+BENCHMARK_TEMPLATE( std_to_hex_chars,     uint8_t );
+BENCHMARK_TEMPLATE(core_to_hex_chars,     uint8_t );
+BENCHMARK_TEMPLATE(core_to_hex_chars_fix, uint8_t );
+BENCHMARK_TEMPLATE( std_to_hex_chars,     uint16_t);
+BENCHMARK_TEMPLATE(core_to_hex_chars,     uint16_t);
+BENCHMARK_TEMPLATE(core_to_hex_chars_fix, uint16_t);
+BENCHMARK_TEMPLATE( std_to_hex_chars,     uint32_t);
+BENCHMARK_TEMPLATE(core_to_hex_chars,     uint32_t);
+BENCHMARK_TEMPLATE(core_to_hex_chars_fix, uint32_t);
+BENCHMARK_TEMPLATE( std_to_hex_chars,     uint64_t);
+BENCHMARK_TEMPLATE(core_to_hex_chars,     uint64_t);
+BENCHMARK_TEMPLATE(core_to_hex_chars_fix, uint64_t);
+
+
+template<typename T>
+struct fp_cases;
+
+template<>
+struct fp_cases<float32_t>
+{
+	static constexpr uint16_t buff_size = 256;
+
+	static constexpr uint16_t sig_digits = 111;
+	inline static float32_t sci_case()
+	{
+		float32_t test_case;// = -1.125f;
+		reinterpret_cast<uint32_t&>(test_case) = 0xFFFFFF;
+		//reinterpret_cast<uint32_t&>(test_case) = 1;
+		return test_case;
+	}
+
+	static constexpr uint16_t precision_digits = 2;
+	inline static float32_t fix_case()
+	{
+		float32_t test_case = 1.125f;
+		//reinterpret_cast<uint32_t&>(test_case) = 1;
+		return test_case;
+	}
+};
+
+template<>
+struct fp_cases<float64_t>
+{
+	static constexpr uint16_t buff_size = 2048;
+
+	static constexpr uint16_t sig_digits = 766;
+	inline static float64_t sci_case()
+	{
+		float64_t test_case;// = -1.125;
+		reinterpret_cast<uint64_t&>(test_case) = 0x001FFFFFFFFFFFFF;
+		//reinterpret_cast<uint64_t&>(test_case) = 1;
+		return test_case;
+	}
+
+	static constexpr uint16_t precision_digits = 2;
+	inline static float64_t fix_case()
+	{
+		float64_t test_case = 1.125;
+		//reinterpret_cast<uint64_t&>(test_case) = 1;
+		return test_case;
+	}
+};
+
+
+template<typename fp_t>
+static inline void std_to_chars_sci(benchmark::State& state)
+{
+	using fp_case_t = fp_cases<fp_t>;
+
+	const fp_t test_case = fp_case_t::sci_case();
+	const uint16_t sig_digits = fp_case_t::sig_digits;
+
+	std::array<char, fp_case_t::buff_size> buff;
+	for (auto _ : state)
+	{
+		std::to_chars(buff.data(), buff.data() + buff.size(), test_case, std::chars_format::scientific, sig_digits);
+		benchmark::DoNotOptimize(buff);
+	}
+}
+
+
+template<typename fp_t>
+static inline void std_to_chars_fix(benchmark::State& state)
+{
+	using fp_case_t = fp_cases<fp_t>;
+
+	const fp_t test_case = fp_case_t::fix_case();
+	const uint16_t precision_digits = fp_case_t::precision_digits;
+
+	std::array<char, fp_case_t::buff_size> buff;
+	for (auto _ : state)
+	{
+		std::to_chars(buff.data(), buff.data() + buff.size(), test_case, std::chars_format::fixed, precision_digits);
+		benchmark::DoNotOptimize(buff);
+	}
+}
+
+template<typename fp_t>
+static inline void std_to_chars_short(benchmark::State& state)
+{
+	using fp_case_t = fp_cases<fp_t>;
+	const fp_t test_case = fp_case_t::sci_case();
+
+	std::array<char, fp_case_t::buff_size> buff;
+	for (auto _ : state)
+	{
+		std::to_chars(buff.data(), buff.data() + buff.size(), test_case);
+		benchmark::DoNotOptimize(buff);
+	}
+}
+
+
+
+template<typename fp_t, typename char_t>
+static inline void core_to_chars2(benchmark::State& state)
+{
+	using fp_case_t = fp_cases<fp_t>;
+	const fp_t test_case = fp_case_t::sci_case();
+
+	std::array<char_t, fp_case_t::buff_size> buff;
+
+	constexpr uintptr_t expected_size = core::to_chars_dec_max_size_v<fp_t>;
+
+	for (auto _ : state)
+	{
+		uintptr_t size = core::to_chars(test_case, std::span<char_t, expected_size>{buff.data(), expected_size});
+		benchmark::DoNotOptimize(buff);
+		benchmark::DoNotOptimize(size);
+	}
+}
+
+
+template<typename fp_t>
+static inline void core_to_chars_sci(benchmark::State& state)
+{
+	using fp_case_t = fp_cases<fp_t>;
+
+	const fp_t test_case = fp_case_t::sci_case();
+	const uint16_t sig_digits = fp_case_t::sig_digits;
+
+	std::array<char8_t, fp_case_t::buff_size> buff;
+
+	for (auto _ : state)
+	{
+		core::fp_to_chars_sci_context<fp_t> context;
+		core::fp_to_chars_sci_result res =
+			core::to_chars_sci_size(test_case, context, sig_digits, core::fp_round::nearest);
+
+		if(res.classification == core::fp_classify::finite)
+		{
+			char8_t* pivot = buff.data();
+			if(res.is_negative)
+			{
+				*(pivot++) = '-';
+			}
+			char8_t* const unit_pos = pivot++;
+			char8_t* decimal_pos;
+			if(res.size.mantissa_decimal_size)
+			{
+				*(pivot++) = '.';
+				decimal_pos = pivot;
+				pivot += res.size.mantissa_decimal_size;
+			}
+			else
+			{
+				decimal_pos = pivot;
+			}
+			*(pivot++) = 'E';
+			char8_t* exp_pos = pivot;
+
+			if(res.size.is_exp_negative)
+			{
+				*(exp_pos++) = '-';
+			}
+
+			core::to_chars_sci_mantissa_unsafe(context, unit_pos, decimal_pos);
+			core::to_chars_sci_exp_unsafe(context, exp_pos);
+		}
+		benchmark::DoNotOptimize(buff);
+	}
+}
+
+template<typename fp_t>
+static inline void core_to_chars_fix(benchmark::State& state)
+{
+	using fp_case_t = fp_cases<fp_t>;
+
+	const fp_t test_case = fp_case_t::fix_case();
+	const uint16_t precision_digits = fp_case_t::precision_digits;
+
+	//std::array<char, fp_case_t::buff_size> buff;
+
+	for (auto _ : state)
+	{
+		core::fp_to_chars_fix_context<fp_t> context;
+		core::fp_to_chars_fix_result res =
+			core::to_chars_fix_size(test_case, context, precision_digits, core::fp_round::nearest);
+		benchmark::DoNotOptimize(res);
+	}
+}
+
+template<typename fp_t, typename char_t>
+static inline void core_to_chars_shortest(benchmark::State& state)
+{
+	using fp_case_t = fp_cases<fp_t>;
+
+	const fp_t test_case = fp_case_t::sci_case();
+
+	std::array<char_t, fp_case_t::buff_size> buff;
+
+	for (auto _ : state)
+	{
+		core::fp_to_chars_shortest_context<fp_t> context;
+		core::fp_base_classify res =
+			core::to_chars_shortest_classify(test_case, context);
+
+		if(res.classification == core::fp_classify::finite)
+		{
+			core::fp_to_chars_sci_size sci_size = core::to_chars_shortest_sci_size(context);
+			core::fp_to_chars_fix_size fix_size = core::to_chars_shortest_fix_size(context);
+
+			const uint8_t sci_total_size = static_cast<uint8_t>(sci_size.exponent_size + sci_size.mantissa_decimal_size + sci_size.is_exp_negative + 3);
+			const uint8_t fix_total_size = static_cast<uint8_t>(fix_size.unit_size + fix_size.decimal_size + 1);
+
+			char_t* pivot = buff.data();
+			if(res.is_negative)
+			{
+				*(pivot++) = char_t{'-'};
+			}
+
+			if(sci_total_size < fix_total_size)
+			{
+				char_t* const unit_pos = pivot++;
+				*(pivot++) = char_t{'.'};
+				char_t* const decimal_pos = pivot;
+				pivot += sci_size.mantissa_decimal_size;
+
+				*(pivot++) = char_t{'E'};
+				if(sci_size.is_exp_negative)
+				{
+					*(pivot++) = char_t{'-'};
+				}
+				char_t* const exp_pos = pivot;
+
+				core::to_chars_shortest_sci_unsafe(context, unit_pos, decimal_pos);
+				core::to_chars_shortest_sci_exp_unsafe(context, exp_pos);
+			}
+			else
+			{
+				char_t* const unit_pos = pivot;
+				pivot += fix_size.unit_size;
+				*(pivot++) = char_t{'.'};
+				char_t* const decimal_pos = pivot;
+				core::to_chars_shortest_fix_unsafe(context, unit_pos, decimal_pos);
+			}
+		}
+		benchmark::DoNotOptimize(buff);
+	}
+}
+
+template<typename fp_t>
+static inline void core_to_chars_shortest_classify(benchmark::State& state)
+{
+	using fp_case_t = fp_cases<fp_t>;
+	const fp_t test_case = fp_case_t::sci_case();
+
+	for (auto _ : state)
+	{
+		core::fp_to_chars_shortest_context<fp_t> context;
+		core::fp_base_classify res =
+			core::to_chars_shortest_classify(test_case, context);
+		benchmark::DoNotOptimize(res);
+	}
+}
+
+
+template<typename fp_t>
+static inline void core_to_chars_shortest_size(benchmark::State& state)
+{
+	using fp_case_t = fp_cases<fp_t>;
+
+	const fp_t test_case = fp_case_t::sci_case();
+
+	core::fp_to_chars_shortest_context<fp_t> context;
+	core::fp_base_classify res =
+		core::to_chars_shortest_classify(test_case, context);
+
+	for (auto _ : state)
+	{
+		if(res.classification == core::fp_classify::finite)
+		{
+			core::fp_to_chars_sci_size sci_size = core::to_chars_shortest_sci_size(context);
+			core::fp_to_chars_fix_size fix_size = core::to_chars_shortest_fix_size(context);
+
+			const uint8_t sci_total_size = static_cast<uint8_t>(sci_size.exponent_size + sci_size.mantissa_decimal_size + sci_size.is_exp_negative + 3);
+			const uint8_t fix_total_size = static_cast<uint8_t>(fix_size.unit_size + fix_size.decimal_size + 1);
+			benchmark::DoNotOptimize(sci_total_size);
+			benchmark::DoNotOptimize(fix_total_size);
+		}
+	}
+}
+
+template<typename fp_t, typename char_t>
+static inline void core_to_chars_shortest_convert(benchmark::State& state)
+{
+	using fp_case_t = fp_cases<fp_t>;
+
+	const fp_t test_case = fp_case_t::sci_case();
+
+	std::array<char_t, fp_case_t::buff_size> buff;
+
+	core::fp_to_chars_shortest_context<fp_t> context;
+	core::fp_base_classify res =
+		core::to_chars_shortest_classify(test_case, context);
+
+	core::fp_to_chars_sci_size sci_size = core::to_chars_shortest_sci_size(context);
+	core::fp_to_chars_fix_size fix_size = core::to_chars_shortest_fix_size(context);
+
+	const uint8_t sci_total_size = static_cast<uint8_t>(sci_size.exponent_size + sci_size.mantissa_decimal_size + sci_size.is_exp_negative + 3);
+	const uint8_t fix_total_size = static_cast<uint8_t>(fix_size.unit_size + fix_size.decimal_size + 1);
+
+
+	for (auto _ : state)
+	{
+		if(res.classification == core::fp_classify::finite)
+		{
+			char_t* pivot = buff.data();
+			if(res.is_negative)
+			{
+				*(pivot++) = char_t{'-'};
+			}
+
+			if(sci_total_size < fix_total_size)
+			{
+				char_t* const unit_pos = pivot++;
+				*(pivot++) = char_t{'.'};
+				char_t* const decimal_pos = pivot;
+				pivot += sci_size.mantissa_decimal_size;
+
+				*(pivot++) = char_t{'E'};
+				if(sci_size.is_exp_negative)
+				{
+					*(pivot++) = char_t{'-'};
+				}
+				char_t* const exp_pos = pivot;
+
+				core::to_chars_shortest_sci_unsafe(context, unit_pos, decimal_pos);
+				core::to_chars_shortest_sci_exp_unsafe(context, exp_pos);
+			}
+			else
+			{
+				char_t* const unit_pos = pivot;
+				pivot += fix_size.unit_size;
+				*(pivot++) = char_t{'.'};
+				char_t* const decimal_pos = pivot;
+				core::to_chars_shortest_fix_unsafe(context, unit_pos, decimal_pos);
+			}
+		}
+		benchmark::DoNotOptimize(buff);
+	}
+}
+
+BENCHMARK_TEMPLATE(std_to_chars_short, float32_t);
+BENCHMARK_TEMPLATE(std_to_chars_short, float64_t);
+
+BENCHMARK_TEMPLATE(core_to_chars_shortest, float32_t , char8_t);
+BENCHMARK_TEMPLATE(core_to_chars_shortest, float64_t, char8_t);
+BENCHMARK_TEMPLATE(core_to_chars_shortest, float32_t , char16_t);
+BENCHMARK_TEMPLATE(core_to_chars_shortest, float64_t, char16_t);
+BENCHMARK_TEMPLATE(core_to_chars_shortest, float32_t , char32_t);
+BENCHMARK_TEMPLATE(core_to_chars_shortest, float64_t, char32_t);
+
+BENCHMARK_TEMPLATE(core_to_chars_shortest_classify, float32_t);
+BENCHMARK_TEMPLATE(core_to_chars_shortest_classify, float64_t);
+
+
+
+BENCHMARK_TEMPLATE(core_to_chars_shortest_size, float32_t);
+BENCHMARK_TEMPLATE(core_to_chars_shortest_size, float64_t);
+
+BENCHMARK_TEMPLATE(core_to_chars_shortest_convert, float32_t , char8_t);
+BENCHMARK_TEMPLATE(core_to_chars_shortest_convert, float64_t, char8_t);
+
+
+//BENCHMARK_TEMPLATE(std_to_chars_sci, float32_t);
+//BENCHMARK_TEMPLATE(std_to_chars_fix, float32_t);
+//BENCHMARK_TEMPLATE(std_to_chars_short, float32_t);
+//
+//BENCHMARK_TEMPLATE(std_to_chars_sci, float64_t);
+//BENCHMARK_TEMPLATE(std_to_chars_fix, float64_t);
+//BENCHMARK_TEMPLATE(std_to_chars_short, float64_t);
+//
+//BENCHMARK_TEMPLATE(core_to_chars_sci, float32_t);
+//BENCHMARK_TEMPLATE(core_to_chars_fix, float32_t);
+//BENCHMARK_TEMPLATE(core_to_chars_sci, float64_t);
+
+
+
+
+static void no_op(benchmark::State& state)
+{
+	for(auto _ : state)
+	{
+		const volatile bool ok = false;
+		benchmark::DoNotOptimize(ok);
+	}
+}
+
+BENCHMARK(no_op);

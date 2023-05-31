@@ -145,7 +145,7 @@ TYPED_TEST(QuaternionRotator_T, Rotator)
 
 		void getPrint(char8_t* p_out) const
 		{
-			constexpr uintptr_t max_size = core::to_chars_dec_max_digits_v<real_t>;
+			constexpr uintptr_t max_size = core::to_chars_dec_max_size_v<real_t>;
 
 			*(p_out++) = u8'R';
 			*(p_out++) = u8':';

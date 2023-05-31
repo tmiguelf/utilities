@@ -204,7 +204,7 @@ namespace core
 
 		static inline std::errc os_file_resize(void* const p_handle, int64_t p_size)
 		{
-			return p_handle ? std::errc{_chsize_s(_fileno(reinterpret_cast<FILE*>(p_handle)), p_size) ? errno : 0} : std::errc::bad_file_descriptor;
+			return p_handle ? std::errc{_chsize_s(_fileno(reinterpret_cast<FILE*>(p_handle)), p_size)} : std::errc::bad_file_descriptor;
 		}
 
 		static inline uintptr_t os_read(void* const p_handle, void* const p_buff, const uintptr_t p_size)

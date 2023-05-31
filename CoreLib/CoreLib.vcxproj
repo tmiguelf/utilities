@@ -2,6 +2,7 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="Globals">
     <ProjectGuid>{ea04e8e6-b05b-416e-b0a3-218406672173}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -18,6 +19,14 @@
     </ProjectConfiguration>
     <ProjectConfiguration Include="WSL_Release|x64">
       <Configuration>WSL_Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="SSH_Debug|x64">
+      <Configuration>SSH_Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="SSH_Release|x64">
+      <Configuration>SSH_Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
@@ -39,6 +48,16 @@
   <PropertyGroup Label="quickMSBuild" Condition="'$(Configuration)'=='WSL_Release'">
     <CompilerFlavour>g++</CompilerFlavour>
     <BuildMethod>WSL</BuildMethod>
+    <UseDebugLibraries>false</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Label="quickMSBuild" Condition="'$(Configuration)'=='SSH_Debug'">
+    <CompilerFlavour>g++</CompilerFlavour>
+    <BuildMethod>ssh</BuildMethod>
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Label="quickMSBuild" Condition="'$(Configuration)'=='SSH_Release'">
+    <CompilerFlavour>g++</CompilerFlavour>
+    <BuildMethod>ssh</BuildMethod>
     <UseDebugLibraries>false</UseDebugLibraries>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
@@ -71,6 +90,10 @@
     <ClCompile Include="src\string\core_string_encoding.cpp" />
     <ClCompile Include="src\string\core_string_misc.cpp" />
     <ClCompile Include="src\string\core_string_numeric.cpp" />
+    <ClCompile Include="src\string\fp_charconv_from_chars.cpp" />
+    <ClCompile Include="src\string\fp_charconv_round.cpp" />
+    <ClCompile Include="src\string\fp_charconv_ryu.cpp" />
+    <ClCompile Include="src\string\fp_charconv_shortest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\CoreLib\Core_Alloca.hpp" />
@@ -87,16 +110,20 @@
     <ClInclude Include="include\CoreLib\Core_Thread.hpp" />
     <ClInclude Include="include\CoreLib\Core_Time.hpp" />
     <ClInclude Include="include\CoreLib\Core_Type.hpp" />
+    <ClInclude Include="include\CoreLib\cpu\x64.hpp" />
     <ClInclude Include="include\CoreLib\net\core_net_address.hpp" />
     <ClInclude Include="include\CoreLib\net\core_net_init.hpp" />
     <ClInclude Include="include\CoreLib\net\core_net_socket.hpp" />
     <ClInclude Include="include\CoreLib\net\core_net_TCP.hpp" />
     <ClInclude Include="include\CoreLib\net\core_net_UDP.hpp" />
+    <ClInclude Include="include\CoreLib\string\core_fp_to_chars_round.hpp" />
+    <ClInclude Include="include\CoreLib\string\core_fp_charconv.hpp" />
     <ClInclude Include="include\CoreLib\string\core_os_string.hpp" />
     <ClInclude Include="include\CoreLib\string\core_string_encoding.hpp" />
     <ClInclude Include="include\CoreLib\string\core_string_misc.hpp" />
     <ClInclude Include="include\CoreLib\string\core_string_numeric.hpp" />
     <ClInclude Include="include\CoreLib\string\core_wchar_alias.hpp" />
+    <ClInclude Include="include\CoreLib\string\numeric_common.hpp" />
     <ClInclude Include="include\CoreLib\toPrint\toPrint.hpp" />
     <ClInclude Include="include\CoreLib\toPrint\toPrint_base.hpp" />
     <ClInclude Include="include\CoreLib\toPrint\toPrint_encoders.hpp" />
@@ -106,6 +133,11 @@
     <ClInclude Include="include\CoreLib\toPrint\toPrint_sink.hpp" />
     <ClInclude Include="include\CoreLib\toPrint\toPrint_std_ostream.hpp" />
     <ClInclude Include="include\CoreLib\toPrint\toPrint_support.hpp" />
+    <ClInclude Include="src\string\fp_traits.hpp" />
+    <ClInclude Include="src\string\ryu\common.hpp" />
+    <ClInclude Include="src\string\ryu\d2s_full_table.hpp" />
+    <ClInclude Include="src\string\ryu\d2s_intrinsics.hpp" />
+    <ClInclude Include="src\string\ryu\f2s_intrinsics.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="CoreLib.import.props" />
