@@ -201,6 +201,10 @@ Thread::Error Thread::_setPreferedProcessor(const uint8_t p_num)
 	return Error::Unavailable;
 }
 
+void milli_sleep(uint16_t p_time)
+{
+	Sleep(p_time);
+}
 
 #else
 
