@@ -26,6 +26,7 @@
 
 #include <array>
 #include <algorithm>
+#include <bit>
 
 #include <CoreLib/string/core_fp_to_chars_round.hpp>
 #include <CoreLib/Core_Type.hpp>

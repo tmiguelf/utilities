@@ -145,7 +145,7 @@ public:
 			angle += tau<T>;
 		}
 
-		return Vector3<T>{i / norm, j / norm, k / norm} * angle;
+		return Vector3<T>{i, j, k} * angle / norm;
 	}
 
 	Matrix3<T> matrix() const

@@ -36,19 +36,6 @@ using core::literals::operator "" _ui8;
 using core::literals::operator "" _i8;
 using core::literals::operator "" _uip;
 
-class test_sink: public core::sink_toPrint_base
-{
-public:
-	void write(std::u8string_view p_message)
-	{
-		m_print_cache.push_back(std::u8string{p_message});
-	}
-
-public:
-
-	std::vector<std::u8string> m_print_cache;
-};
-
 
 class TestStr
 {
@@ -79,8 +66,24 @@ private:
 
 
 
+
+
+
 TEST(toPrint, toPrint_interface)
 {
+	class test_sink: public core::sink_toPrint_base
+	{
+	public:
+		void write(std::u8string_view p_message)
+		{
+			m_print_cache.push_back(std::u8string{p_message});
+		}
+
+	public:
+
+		std::vector<std::u8string> m_print_cache;
+	};
+
 	{
 		test_sink tsink;
 
@@ -116,4 +119,44 @@ TEST(toPrint, toPrint_interface)
 		ASSERT_EQ(tsink.m_print_cache[ 9], u8""sv);
 		ASSERT_EQ(tsink.m_print_cache[10], u8"Combination 32 TestStr"sv);
 	}
+}
+
+
+
+template<typename char_t>
+class test_type_sink: public core::sink_toPrint_base
+{
+public:
+	void write(std::basic_string_view<char_t>) const
+	{
+	}
+
+public:
+};
+
+TEST(toPrint, toPrint_type_support)
+{
+#define TYPE_TEST_PRINT(Type, ...) core_ToPrint(Type , test_type_sink<Type>{}, __VA_ARGS__)
+
+
+	TYPE_TEST_PRINT(char8_t, "string_view"sv);
+	TYPE_TEST_PRINT(core::wchar_alias, L"string_view"sv);
+
+	TYPE_TEST_PRINT(char8_t , u8"u8string_view"sv);
+	TYPE_TEST_PRINT(char16_t, u"string_view"sv);
+	TYPE_TEST_PRINT(char32_t, U"string_view"sv);
+
+
+	TYPE_TEST_PRINT(char8_t , 0);
+	TYPE_TEST_PRINT(char16_t, 0);
+	TYPE_TEST_PRINT(char32_t, 0);
+
+	TYPE_TEST_PRINT(char8_t );
+	TYPE_TEST_PRINT(char16_t);
+	TYPE_TEST_PRINT(char32_t);
+
+#undef TYPE_TEST_PRINT
+
+	[[maybe_unused]] constexpr bool test_derived = core::_p::is_sink_toPrint_v<const test_type_sink<wchar_t>>;
+
 }
