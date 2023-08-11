@@ -211,7 +211,7 @@ namespace core::_p
 
 		static inline void push_toPrint(Sink& p_sink)
 		{
-			p_sink.write(std::u8string_view{nullptr, 0});
+			p_sink.write(std::basic_string_view<CharT>{nullptr, 0});
 		};
 
 		template<c_tuple_toPrint Tuple>
@@ -240,7 +240,7 @@ namespace core::_p
 					return;
 				}
 			}
-			p_sink.write(std::u8string_view{nullptr, 0});
+			p_sink.write(std::basic_string_view<CharT>{nullptr, 0});
 		};
 
 		//---- const ----
@@ -262,7 +262,7 @@ namespace core::_p
 
 		static inline void push_toPrint(const Sink& p_sink)
 		{
-			p_sink.write(std::u8string_view{nullptr, 0});
+			p_sink.write(std::basic_string_view<CharT>{nullptr, 0});
 		};
 
 		template<c_tuple_toPrint Tuple>
@@ -291,10 +291,9 @@ namespace core::_p
 					return;
 				}
 			}
-			p_sink.write(std::u8string_view{nullptr, 0});
+			p_sink.write(std::basic_string_view<CharT>{nullptr, 0});
 		};
 	};
-
 
 } //namespace core::_p
 

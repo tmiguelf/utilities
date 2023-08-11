@@ -27,11 +27,11 @@
 ///			extra information regarding he nature of the failure
 //======== ======== ======== ======== ======== ======== ======== ========
 
-#include "CoreLib/string/core_os_string.hpp"
+#include <CoreLib/string/core_os_string.hpp>
 
 #include <span>
 
-#include "CoreLib/string/core_string_encoding.hpp"
+#include <CoreLib/string/core_string_encoding.hpp>
 
 namespace core
 {
