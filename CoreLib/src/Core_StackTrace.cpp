@@ -478,7 +478,7 @@ namespace
 			file_write o_file;		// file to be output
 			{
 				std::error_code ec;
-				create_directories(g_straceOpt.m_output_file.parent_path(), ec);
+				std::filesystem::create_directories(g_straceOpt.m_output_file.parent_path(), ec);
 				o_file.open(g_straceOpt.m_output_file, file_write::open_mode::create);
 			}
 			if(o_file.is_open())
@@ -973,7 +973,7 @@ namespace
 
 				{
 					std::error_code ec;
-					create_directories(g_straceOpt.m_output_file.parent_path(), ec);
+					std::filesystem::create_directories(g_straceOpt.m_output_file.parent_path(), ec);
 					o_file.open(g_straceOpt.m_output_file, file_write::open_mode::create);
 				}
 
