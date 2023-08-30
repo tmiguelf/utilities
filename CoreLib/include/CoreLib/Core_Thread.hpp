@@ -94,7 +94,7 @@ void _thread_call_object_assist(void*);
 
 ///	\brief
 ///		Used to create threads or to manage thread related actions (such as joining, detatching, etc...)
-class Thread
+class thread
 {
 public:
 	enum class Error: uint8_t
@@ -109,9 +109,9 @@ public:
 
 	static constexpr uint32_t Infinite = 0xFFFFFFFF;
 private:
-	Thread& operator = (const Thread&)	= delete;
-	Thread& operator = (Thread&&)		= delete;
-	Thread(const Thread&)				= delete;
+	thread& operator = (const thread&)	= delete;
+	thread& operator = (thread&&)		= delete;
+	thread(const thread&)				= delete;
 
 #ifdef _WIN32
 	void*		m_handle = nullptr;
@@ -122,16 +122,16 @@ private:
 #endif
 
 public:
-	Thread();
+	thread();
 
-	Thread(Thread&& p_other);
+	thread(thread&& p_other);
 
 	///	\note
 	///		If a thread has been launched, but it has neither been \ref join or \ref detach
 	///		the destructor will detach the thread.
-	~Thread();
+	~thread();
 
-	void swap(Thread& p_other);
+	void swap(thread& p_other);
 
 	///	\brief Spawns a thread and gives it to user control via a function pointer
 	///
@@ -212,8 +212,8 @@ public:
 };
 
 #ifdef _WIN32
-inline thread_id_t	Thread::id			() const { return m_id;					}
-inline bool			Thread::joinable	() const { return m_handle != nullptr;	}
+inline thread_id_t	thread::id			() const { return m_id;					}
+inline bool			thread::joinable	() const { return m_handle != nullptr;	}
 
 ///	\brief Gets the current thread ID as seen by the OS
 [[nodiscard]] thread_id_t current_thread_id();
@@ -233,8 +233,8 @@ void milli_sleep(uint16_t p_time);
 
 #else
 
-inline thread_id_t	Thread::id			() const { return m_handle;		}
-inline bool			Thread::joinable	() const { return m_hasThread;	}
+inline thread_id_t	thread::id			() const { return m_handle;		}
+inline bool			thread::joinable	() const { return m_hasThread;	}
 
 
 ///	\brief Gets the current thread ID as seen by the OS
