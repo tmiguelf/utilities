@@ -37,7 +37,7 @@ namespace core
 {
 
 #ifdef _WIN32
-DLL::~DLL()
+dll::~dll()
 {
 	if(handle)
 	{
@@ -45,7 +45,7 @@ DLL::~DLL()
 	}
 }
 
-DLL::Error DLL::load(const std::filesystem::path& p_path, DLL::Native_attr* const p_attr)
+dll::Error dll::load(const std::filesystem::path& p_path, dll::native_attr* const p_attr)
 {
 	unload();
 
@@ -64,7 +64,7 @@ DLL::Error DLL::load(const std::filesystem::path& p_path, DLL::Native_attr* cons
 	return Error::failed;
 }
 
-void DLL::unload()
+void dll::unload()
 {
 	if(handle)
 	{
@@ -73,7 +73,7 @@ void DLL::unload()
 	}
 }
 
-void* DLL::resolve(std::u8string_view const p_name) const
+void* dll::resolve(std::u8string_view const p_name) const
 {
 	if(handle && !p_name.empty())
 	{
@@ -91,7 +91,7 @@ void* DLL::resolve(std::u8string_view const p_name) const
 }
 #else
 
-DLL::~DLL()
+dll::~dll()
 {
 	if(handle)
 	{
@@ -99,7 +99,7 @@ DLL::~DLL()
 	}
 }
 
-DLL::Error DLL::load(const std::filesystem::path& p_path, DLL::Native_attr* const p_attr)
+dll::Error dll::load(const std::filesystem::path& p_path, dll::native_attr* const p_attr)
 {
 	unload();
 
@@ -135,7 +135,7 @@ DLL::Error DLL::load(const std::filesystem::path& p_path, DLL::Native_attr* cons
 }
 
 
-void DLL::unload()
+void dll::unload()
 {
 	if(handle)
 	{
@@ -144,7 +144,7 @@ void DLL::unload()
 	}
 }
 
-void* DLL::resolve(std::u8string_view const p_name) const
+void* dll::resolve(std::u8string_view const p_name) const
 {
 	if(handle)
 	{

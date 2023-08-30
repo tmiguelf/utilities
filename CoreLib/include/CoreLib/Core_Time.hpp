@@ -33,7 +33,7 @@ namespace core
 {
 
 /// \brief holds date and time data
-struct DateTime
+struct date_time
 {
 	struct
 	{
@@ -52,7 +52,7 @@ struct DateTime
 };
 
 
-struct DateTime_extra
+struct date_time_extra
 {
 	uint8_t week_day;	//!< 0 = Sunday
 	bool    dst;		//!< True if Daylight savings is active
@@ -71,7 +71,7 @@ struct DateTime_extra
 ///			that the smallest non 0 value can be in the order of 100 nanoseconds or higher
 ///
 ///	\warning	Value may overflow before reaching uint64_t limit.
-class Chrono
+class chrono
 {
 private:
 	uint64_t m_ref;
@@ -85,12 +85,12 @@ public:
 	[[nodiscard]] uint64_t elapsed() const;
 };
 
-/// \brief	The Core_TrackChrono is an high precision real time chronometer.
+/// \brief	The track_chrono is an high precision real time chronometer.
 ///			Its function is similar to Chrono with the additional complication
 ///			of being able to pause and resume the chronometer. This complication
-///			adds a minor overhead in relation to Core_Chrono that the user may
+///			adds a minor overhead in relation to chrono that the user may
 ///			not want to pay for. If the ability to pause the counter is not required,
-///			you should use Core_Chrono instead as this provides less overhead
+///			you should use chrono instead as this provides less overhead
 ///			and a better performance.
 ///
 ///	\note	Although the time readout provides a nanosecond resolution, the granularity
@@ -99,7 +99,7 @@ public:
 ///
 ///	\warning	Internal counter may overflow before reaching uint64_t limit,
 ///				when this occurs value will be invalid until reset.
-class TrackChrono
+class track_chrono
 {
 private:
 	uint64_t	m_ref;
@@ -139,15 +139,15 @@ public:
 [[nodiscard]] uint64_t clock_stamp();
 
 /// \brief	gets the current local date and time based on internal clock
-void date_time_local(DateTime& p_out);
+void date_time_local(date_time& p_out);
 
 /// \brief	gets the current local date and time based on internal clock
-void date_time_local(DateTime& p_out, DateTime_extra& p_extra);
+void date_time_local(date_time& p_out, date_time_extra& p_extra);
 
 /// \brief	gets the current UTC date and time based on internal clock
-void date_time_UTC(DateTime& p_out);
+void date_time_UTC(date_time& p_out);
 
 /// \brief	gets the current UTC date and time based on internal clock
-void date_time_UTC(DateTime& p_out, uint8_t& p_weekDay);
+void date_time_UTC(date_time& p_out, uint8_t& p_weekDay);
 
 } //namespace core

@@ -40,7 +40,7 @@ namespace core
 ///	\note
 ///		- On Windows it encapsulates LoadLibraryEx and LoadLibrary
 ///		- On Linux it encapsulates dlopen
-class DLL
+class dll
 {
 public:
 	//TODO: Should provid a more extensive error codes in the future
@@ -55,7 +55,7 @@ private:
 	void* handle = nullptr;
 
 public:
-	struct Native_attr
+	struct native_attr
 	{
 	#ifdef _WIN32
 		uint32_t Flags;
@@ -64,7 +64,7 @@ public:
 	#endif
 	};
 
-	~DLL();
+	~dll();
 
 	inline constexpr bool is_loaded() const { return handle != nullptr; }
 
@@ -77,7 +77,7 @@ public:
 	///	\note
 	///		- On Windows it encapsulates LoadLibraryExW and LoadLibraryW
 	///		- On Linux it encapsulates dlopen
-	Error load(const std::filesystem::path& p_path, Native_attr* p_attr = nullptr);
+	Error load(const std::filesystem::path& p_path, native_attr* p_attr = nullptr);
 
 	///	\brief	unloads a module previously loaded by this object
 	void unload();

@@ -45,12 +45,12 @@ namespace core_p
 /// \brief Used to get and store the performance frequency
 ///	as recomended in https://msdn.microsoft.com/en-us/library/windows/desktop/ms644905(v=vs.85).aspx
 //
-class OS_ClockFrequency
+class os_clock_frequency
 {
 private:
 	uint64_t m_frequency;
 public:
-	OS_ClockFrequency()
+	os_clock_frequency()
 	{
 		LARGE_INTEGER t_Frequency;
 		QueryPerformanceFrequency(&t_Frequency);
@@ -60,7 +60,7 @@ public:
 	inline uint64_t frequency() const { return m_frequency; }
 };
 
-static const OS_ClockFrequency g_WinFreq;
+static const os_clock_frequency g_WinFreq;
 #endif
 
 static constexpr uint64_t g_sec2nsec = uint64_t{1000000000};
@@ -68,7 +68,7 @@ static constexpr uint64_t g_sec2nsec = uint64_t{1000000000};
 }	//namespace core_p
 
 
-void Chrono::set()
+void chrono::set()
 {
 #ifdef _WIN32
 	LARGE_INTEGER Time;
@@ -81,7 +81,7 @@ void Chrono::set()
 #endif
 }
 
-uint64_t Chrono::elapsed() const //nanosecond resolution
+uint64_t chrono::elapsed() const //nanosecond resolution
 {
 #ifdef _WIN32
 	const uint64_t freq = core_p::g_WinFreq.frequency();
@@ -98,7 +98,7 @@ uint64_t Chrono::elapsed() const //nanosecond resolution
 #endif
 }
 
-void TrackChrono::pause()
+void track_chrono::pause()
 {
 	if(!m_isPaused)
 	{
@@ -115,7 +115,7 @@ void TrackChrono::pause()
 	}
 }
 
-void TrackChrono::resume()
+void track_chrono::resume()
 {
 	if(m_isPaused)
 	{
@@ -132,7 +132,7 @@ void TrackChrono::resume()
 	}
 }
 
-void TrackChrono::restart()
+void track_chrono::restart()
 {
 #ifdef _WIN32
 	LARGE_INTEGER Time;
@@ -148,7 +148,7 @@ void TrackChrono::restart()
 	m_isPaused		= false;
 }
 
-uint64_t TrackChrono::read() const
+uint64_t track_chrono::read() const
 {
 
 #ifdef _WIN32
@@ -175,7 +175,7 @@ uint64_t TrackChrono::read() const
 #endif
 }
 
-void TrackChrono::set(uint64_t p_value)
+void track_chrono::set(uint64_t p_value)
 {
 #ifdef _WIN32
 	const uint64_t freq = core_p::g_WinFreq.frequency();
@@ -213,7 +213,7 @@ uint64_t clock_stamp() //1 nanosecond resolution
 #endif
 }
 
-void date_time_local(DateTime& p_out)
+void date_time_local(date_time& p_out)
 {
 #ifdef _WIN32
 	SYSTEMTIME timeinfo;
@@ -241,7 +241,7 @@ void date_time_local(DateTime& p_out)
 #endif
 }
 
-void date_time_local(DateTime& p_out, DateTime_extra& p_extra)
+void date_time_local(date_time& p_out, date_time_extra& p_extra)
 {
 	struct tm timeinfo;
 
@@ -271,7 +271,7 @@ void date_time_local(DateTime& p_out, DateTime_extra& p_extra)
 }
 
 /// \todo Accuracy has not been extensively tested
-void date_time_UTC(DateTime& p_out)
+void date_time_UTC(date_time& p_out)
 {
 #ifdef _WIN32
 	SYSTEMTIME timeinfo;
@@ -302,7 +302,7 @@ void date_time_UTC(DateTime& p_out)
 }
 
 /// \todo Accuracy has not been extensively tested
-void date_time_UTC(DateTime& p_out, uint8_t& p_weekDay)
+void date_time_UTC(date_time& p_out, uint8_t& p_weekDay)
 {
 #ifdef _WIN32
 	SYSTEMTIME timeinfo;

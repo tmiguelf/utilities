@@ -36,17 +36,17 @@ namespace core
 
 
 #ifdef _WIN32
-Mutex::Mutex()
+mutex::mutex()
 {
 	m_mutex = nullptr;
 }
 
-Mutex::~Mutex()
+mutex::~mutex()
 {
 	destroy();
 }
 
-SYNC_Error Mutex::create()
+SYNC_Error mutex::create()
 {
 	destroy();
 	m_mutex = CreateMutexA(nullptr, false, "");
@@ -54,7 +54,7 @@ SYNC_Error Mutex::create()
 	return SYNC_Error::NoErr;
 }
 
-SYNC_Error Mutex::destroy()
+SYNC_Error mutex::destroy()
 {
 	if(m_mutex != nullptr)
 	{
@@ -68,7 +68,7 @@ SYNC_Error Mutex::destroy()
 	return SYNC_Error::NoErr;
 }
 
-SYNC_Error Mutex::lock()
+SYNC_Error mutex::lock()
 {
 	switch(WaitForSingleObject(m_mutex, INFINITE))
 	{
@@ -87,7 +87,7 @@ SYNC_Error Mutex::lock()
 	return SYNC_Error::Fail;
 }
 
-SYNC_Error Mutex::try_lock()
+SYNC_Error mutex::try_lock()
 {
 	switch(WaitForSingleObject(m_mutex, 0))
 	{
@@ -108,7 +108,7 @@ SYNC_Error Mutex::try_lock()
 	return SYNC_Error::Fail;
 }
 
-SYNC_Error Mutex::unlock()
+SYNC_Error mutex::unlock()
 {
 	if(ReleaseMutex(m_mutex) == TRUE) return SYNC_Error::NoErr;
 #ifdef __CORE_EXTENDED_ERROR__
@@ -121,17 +121,17 @@ SYNC_Error Mutex::unlock()
 }
 
 
-Semaphore::Semaphore()
+semaphore::semaphore()
 {
 	m_semaphore = nullptr;
 }
 
-Semaphore::~Semaphore()
+semaphore::~semaphore()
 {
 	destroy();
 }
 
-SYNC_Error Semaphore::create(std::u8string& p_name, const uint32_t p_range)
+SYNC_Error semaphore::create(std::u8string& p_name, const uint32_t p_range)
 {
 	destroy();
 #ifdef __CORE_EXTENDED_ERROR__
@@ -142,7 +142,7 @@ SYNC_Error Semaphore::create(std::u8string& p_name, const uint32_t p_range)
 	return SYNC_Error::NoErr;
 }
 
-SYNC_Error Semaphore::create(std::u16string& p_name, const uint32_t p_range)
+SYNC_Error semaphore::create(std::u16string& p_name, const uint32_t p_range)
 {
 	destroy();
 #ifdef __CORE_EXTENDED_ERROR__
@@ -153,7 +153,7 @@ SYNC_Error Semaphore::create(std::u16string& p_name, const uint32_t p_range)
 	return SYNC_Error::NoErr;
 }
 
-SYNC_Error Semaphore::create(const uint32_t p_range)
+SYNC_Error semaphore::create(const uint32_t p_range)
 {
 	destroy();
 #ifdef __CORE_EXTENDED_ERROR__
@@ -164,7 +164,7 @@ SYNC_Error Semaphore::create(const uint32_t p_range)
 	return SYNC_Error::NoErr;
 }
 
-SYNC_Error Semaphore::destroy()
+SYNC_Error semaphore::destroy()
 {
 	if(m_semaphore != nullptr)
 	{
@@ -178,7 +178,7 @@ SYNC_Error Semaphore::destroy()
 	return SYNC_Error::NoErr;
 }
 
-SYNC_Error Semaphore::wait()
+SYNC_Error semaphore::wait()
 {
 	switch(WaitForSingleObject(m_semaphore, INFINITE))
 	{
@@ -197,7 +197,7 @@ SYNC_Error Semaphore::wait()
 	return SYNC_Error::Fail;
 }
 
-SYNC_Error Semaphore::try_wait()
+SYNC_Error semaphore::try_wait()
 {
 	switch(WaitForSingleObject(m_semaphore, 0))
 	{
@@ -218,7 +218,7 @@ SYNC_Error Semaphore::try_wait()
 	return SYNC_Error::Fail;
 }
 
-SYNC_Error Semaphore::post()
+SYNC_Error semaphore::post()
 {
 	if(ReleaseSemaphore(m_semaphore, 1, nullptr) == TRUE) return SYNC_Error::NoErr;
 #ifdef __CORE_EXTENDED_ERROR__
@@ -230,17 +230,17 @@ SYNC_Error Semaphore::post()
 	return SYNC_Error::Fail;
 }
 
-EventTrap::EventTrap()
+event_trap::event_trap()
 {
 	m_event = nullptr;
 }
 
-EventTrap::~EventTrap()
+event_trap::~event_trap()
 {
 	destroy();
 }
 
-SYNC_Error EventTrap::create()
+SYNC_Error event_trap::create()
 {
 	destroy();
 	if(((m_event = CreateEventA(nullptr, TRUE, FALSE, nullptr))) != 0)
@@ -250,7 +250,7 @@ SYNC_Error EventTrap::create()
 	return SYNC_Error::Fail;
 }
 
-void EventTrap::destroy()
+void event_trap::destroy()
 {
 	if(m_event)
 	{
@@ -259,7 +259,7 @@ void EventTrap::destroy()
 	}
 }
 
-SYNC_Error EventTrap::signal()
+SYNC_Error event_trap::signal()
 {
 	if(SetEvent(m_event))
 	{
@@ -271,7 +271,7 @@ SYNC_Error EventTrap::signal()
 	return SYNC_Error::Fail;
 }
 
-SYNC_Error EventTrap::reset()
+SYNC_Error event_trap::reset()
 {
 	if(ResetEvent(m_event))
 	{
@@ -283,7 +283,7 @@ SYNC_Error EventTrap::reset()
 	return SYNC_Error::Fail;
 }
 
-SYNC_Error EventTrap::wait()
+SYNC_Error event_trap::wait()
 {
 	switch(WaitForSingleObjectEx(m_event, INFINITE, TRUE))
 	{
@@ -301,7 +301,7 @@ SYNC_Error EventTrap::wait()
 	return SYNC_Error::Fail;
 }
 
-SYNC_Error EventTrap::timed_wait(const uint32_t p_miliseconds)
+SYNC_Error event_trap::timed_wait(const uint32_t p_miliseconds)
 {
 	switch(WaitForSingleObjectEx(m_event, p_miliseconds, TRUE))
 	{
@@ -326,17 +326,17 @@ SYNC_Error EventTrap::timed_wait(const uint32_t p_miliseconds)
 #include <fcntl.h>
 #include <sys/stat.h>
 
-Mutex::Mutex()
+mutex::mutex()
 {
 	m_init = false;
 }
 
-Mutex::~Mutex()
+mutex::~mutex()
 {
 	destroy();
 }
 
-SYNC_Error Mutex::create()
+SYNC_Error mutex::create()
 {
 	destroy();
 	if(pthread_mutex_init(&m_mutex, nullptr)) return SYNC_Error::Fail;
@@ -344,7 +344,7 @@ SYNC_Error Mutex::create()
 	return SYNC_Error::NoErr;
 }
 
-SYNC_Error Mutex::destroy()
+SYNC_Error mutex::destroy()
 {
 	if(m_init)
 	{
@@ -355,7 +355,7 @@ SYNC_Error Mutex::destroy()
 	return SYNC_Error::Does_Not_Exist;
 }
 
-SYNC_Error Mutex::lock()
+SYNC_Error mutex::lock()
 {
 	if(pthread_mutex_lock(&m_mutex) == 0) return SYNC_Error::NoErr;
 
@@ -366,7 +366,7 @@ SYNC_Error Mutex::lock()
 	return SYNC_Error::Fail;
 }
 
-SYNC_Error Mutex::try_lock()
+SYNC_Error mutex::try_lock()
 {
 	switch(pthread_mutex_trylock(&m_mutex))
 	{
@@ -385,7 +385,7 @@ SYNC_Error Mutex::try_lock()
 	return SYNC_Error::Fail;
 }
 
-SYNC_Error Mutex::unlock()
+SYNC_Error mutex::unlock()
 {
 	if(pthread_mutex_unlock(&m_mutex) == 0) return SYNC_Error::NoErr;
 
@@ -397,17 +397,17 @@ SYNC_Error Mutex::unlock()
 }
 
 
-Semaphore::Semaphore()
+semaphore::semaphore()
 {
 	m_semaphore = nullptr;
 }
 
-Semaphore::~Semaphore()
+semaphore::~semaphore()
 {
 	destroy();
 }
 
-SYNC_Error Semaphore::create(std::u8string& p_name, const uint32_t p_range)
+SYNC_Error semaphore::create(std::u8string& p_name, const uint32_t p_range)
 {
 	destroy();
 #ifdef __CORE_EXTENDED_ERROR__
@@ -420,7 +420,7 @@ SYNC_Error Semaphore::create(std::u8string& p_name, const uint32_t p_range)
 	return SYNC_Error::Fail;
 }
 
-SYNC_Error Semaphore::create(const uint32_t p_range)
+SYNC_Error semaphore::create(const uint32_t p_range)
 {
 	destroy();
 	is_named = false;
@@ -429,7 +429,7 @@ SYNC_Error Semaphore::create(const uint32_t p_range)
 	return SYNC_Error::NoErr;
 }
 
-SYNC_Error Semaphore::destroy()
+SYNC_Error semaphore::destroy()
 {
 	if(m_semaphore != nullptr)
 	{
@@ -449,7 +449,7 @@ SYNC_Error Semaphore::destroy()
 	return SYNC_Error::NoErr;
 }
 
-SYNC_Error Semaphore::wait()
+SYNC_Error semaphore::wait()
 {
 	if(sem_wait(m_semaphore) == 0) return SYNC_Error::NoErr;
 #ifdef __CORE_EXTENDED_ERROR__
@@ -461,7 +461,7 @@ SYNC_Error Semaphore::wait()
 	return SYNC_Error::Fail;
 }
 
-SYNC_Error Semaphore::try_wait()
+SYNC_Error semaphore::try_wait()
 {
 	switch(sem_trywait(m_semaphore))
 	{
@@ -481,7 +481,7 @@ SYNC_Error Semaphore::try_wait()
 	return SYNC_Error::Fail;
 }
 
-SYNC_Error Semaphore::post()
+SYNC_Error semaphore::post()
 {
 	if(sem_post(m_semaphore) == 0) return SYNC_Error::NoErr;
 #ifdef __CORE_EXTENDED_ERROR__
@@ -493,17 +493,17 @@ SYNC_Error Semaphore::post()
 	return SYNC_Error::Fail;
 }
 
-EventTrap::EventTrap()
+event_trap::event_trap()
 {
 	m_init	= false;
 }
 
-EventTrap::~EventTrap()
+event_trap::~event_trap()
 {
 	destroy();
 }
 
-SYNC_Error EventTrap::create()
+SYNC_Error event_trap::create()
 {
 	pthread_condattr_t attr;
 	destroy();
@@ -524,7 +524,7 @@ SYNC_Error EventTrap::create()
 	return SYNC_Error::NoErr;
 }
 
-void EventTrap::destroy()
+void event_trap::destroy()
 {
 	if(m_init)
 	{
@@ -534,7 +534,7 @@ void EventTrap::destroy()
 	}
 }
 
-SYNC_Error EventTrap::reset()
+SYNC_Error event_trap::reset()
 {
 	pthread_mutex_lock(&m_mutex);
 	m_cond = false;
@@ -542,7 +542,7 @@ SYNC_Error EventTrap::reset()
 	return SYNC_Error::NoErr;
 }
 
-SYNC_Error EventTrap::signal()
+SYNC_Error event_trap::signal()
 {
 	int ret;
 	pthread_mutex_lock(&m_mutex);
@@ -559,7 +559,7 @@ SYNC_Error EventTrap::signal()
 	return SYNC_Error::Fail;
 }
 
-/*SYNC_Error EventTrap::BroadCast()
+/*SYNC_Error event_trap::BroadCast()
 {
 	int ret;
 	pthread_mutex_lock(&m_mutex);
@@ -576,7 +576,7 @@ SYNC_Error EventTrap::signal()
 	return SYNC_Error::Fail;
 }*/
 
-SYNC_Error EventTrap::wait()
+SYNC_Error event_trap::wait()
 {
 	bool condition;
 	pthread_mutex_lock(&m_mutex);
@@ -603,7 +603,7 @@ SYNC_Error EventTrap::wait()
 	return SYNC_Error::PreEmptive;
 }
 
-SYNC_Error EventTrap::timed_wait(const uint32_t p_miliseconds)
+SYNC_Error event_trap::timed_wait(const uint32_t p_miliseconds)
 {
 	struct timespec end;
 	uint64_t counter;
@@ -642,7 +642,7 @@ SYNC_Error EventTrap::timed_wait(const uint32_t p_miliseconds)
 	return SYNC_Error::PreEmptive;
 }
 
-/*SYNC_Error EventTrap::Peek()
+/*SYNC_Error event_trap::Peek()
 {
 	if(m_cond)
 	{

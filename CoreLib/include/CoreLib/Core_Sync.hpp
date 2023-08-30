@@ -56,8 +56,9 @@ enum class SYNC_Error: uint8_t
 ///	\brief	Encapsulates a mutex
 ///			Mutex needs to be created before use, instantiating a class does not create the mutex
 ///			mutex is destroyed if it goes out of scope
-class Mutex
+class mutex
 {
+private:
 #ifdef _WIN32
 	void* m_mutex;
 #else
@@ -66,8 +67,8 @@ class Mutex
 #endif
 
 public:
-	Mutex();
-	~Mutex();
+	mutex();
+	~mutex();
 
 	/// \brief Creates the mutex, required before the object is in a usable state
 	core::SYNC_Error create();
@@ -87,6 +88,15 @@ public:
 	///	\return		0 on success, or an error code from \ref CORE_ERROR::SYNC
 	core::SYNC_Error unlock();
 
+	[[nodiscard]]
+	inline bool initialized() const
+	{
+#ifdef _WIN32
+		return m_mutex != nullptr;
+#else
+		return m_init;
+#endif
+	}
 
 public:
 	///	\brief	Class to use scope locking technics with a mutex
@@ -95,12 +105,12 @@ public:
 	///			as an argument and locks it.
 	///			When this class goes out of scope (and the object is destroyed)
 	///			the lock is released.
-	class ScopeLocker
+	class scope_locker
 	{
-		Mutex& m_mux;
+		mutex& m_mux;
 	public:
-		inline ScopeLocker(Mutex& p_mux): m_mux(p_mux) { p_mux.lock(); }
-		inline ~ScopeLocker() { m_mux.unlock(); }
+		inline scope_locker(mutex& p_mux): m_mux(p_mux) { p_mux.lock(); }
+		inline ~scope_locker() { m_mux.unlock(); }
 	};
 
 };
@@ -109,8 +119,9 @@ public:
 ///	\brief	Encapsulates a Semaphore
 ///			Semaphore needs to be created before use, instantiating a class does not create the semaphore
 ///			Semaphore is destroyed if it goes out of scope
-class Semaphore
+class semaphore
 {
+private:
 #ifdef _WIN32
 	void*	m_semaphore;
 #else
@@ -120,8 +131,8 @@ class Semaphore
 #endif
 
 public:
-	Semaphore();
-	~Semaphore();
+	semaphore();
+	~semaphore();
 
 	///	\brief		Creates a named semaphore, required before the object is in a usable state
 	core::SYNC_Error create(std::u8string& p_name, uint32_t p_range);
@@ -151,12 +162,18 @@ public:
 	///	\brief	releases the semaphore
 	///	\return	0 on success, or an error code from \ref SYNC_Error
 	core::SYNC_Error post();
+
+	[[nodiscard]]
+	inline bool initialized() const
+	{
+		return m_semaphore != nullptr;
+	}
 };
 
 ///	\brief	Encapsulates an event trap i.e. on call thread blocks execution until a separate thread signals it.
 ///			EventTrap needs to be created before use, instantiating a class does not create the EventTrap.
 ///			EventTrap is destroyed if it goes out of scope.
-class EventTrap
+class event_trap
 {
 private:
 #ifdef _WIN32
@@ -174,8 +191,8 @@ private:
 	};*/
 
 public:
-	EventTrap();
-	~EventTrap();
+	event_trap();
+	~event_trap();
 
 	///	\brief		Creates the trap, required before the object is in a usable state
 	core::SYNC_Error create();
@@ -199,10 +216,20 @@ public:
 	core::SYNC_Error timed_wait(uint32_t p_miliseconds);
 	
 	//core::SYNC_Error	Peek(); //todo
+
+	[[nodiscard]]
+	inline bool initialized() const
+	{
+#ifdef _WIN32
+		return m_event != nullptr;
+#else
+		return m_init;
+#endif
+	}
 };
 
 ///	\brief	Uses atomic bool to implement simple spinlock
-class AtomicSpinLock
+class atomic_spinlock
 {
 private:
 	std::atomic_flag m_lock = ATOMIC_FLAG_INIT;
@@ -234,12 +261,12 @@ public:
 	///			as an argument and locks it.
 	///			When this class goes out of scope (and the object is destroyed)
 	///			the lock is released.
-	class ScopeLocker
+	class scope_locker
 	{
-		AtomicSpinLock& m_lock;
+		atomic_spinlock& m_lock;
 	public:
-		inline ScopeLocker(AtomicSpinLock& p_mux): m_lock(p_mux) { p_mux.lock(); }
-		inline ~ScopeLocker() { m_lock.unlock(); }
+		inline scope_locker(atomic_spinlock& p_mux): m_lock(p_mux) { p_mux.lock(); }
+		inline ~scope_locker() { m_lock.unlock(); }
 	};
 };
 

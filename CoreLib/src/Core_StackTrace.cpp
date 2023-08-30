@@ -472,7 +472,7 @@ namespace
 	{
 		if(!g_straceOpt.m_output_file.empty())
 		{
-			DateTime t_time;
+			date_time t_time;
 			date_time_local(t_time);	//current date
 
 			file_write o_file;		// file to be output
@@ -968,7 +968,7 @@ namespace
 			if(!g_straceOpt.m_output_file.empty())
 			{
 				file_write		o_file;						// file to be output
-				DateTime		t_time;
+				date_time		t_time;
 				date_time_local(t_time);	//current date
 
 				{
