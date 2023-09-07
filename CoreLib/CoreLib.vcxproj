@@ -76,6 +76,7 @@
   <ItemGroup>
     <ClCompile Include="src\Core_Console.cpp" />
     <ClCompile Include="src\Core_cpu.cpp" />
+    <ClCompile Include="src\core_debugger.cpp" />
     <ClCompile Include="src\Core_DLL.cpp" />
     <ClCompile Include="src\Core_File.cpp" />
     <ClCompile Include="src\core_module.cpp" />
@@ -101,6 +102,7 @@
     <ClInclude Include="include\CoreLib\Core_Alternate.hpp" />
     <ClInclude Include="include\CoreLib\Core_Console.hpp" />
     <ClInclude Include="include\CoreLib\Core_cpu.hpp" />
+    <ClInclude Include="include\CoreLib\core_debugger.hpp" />
     <ClInclude Include="include\CoreLib\Core_DLL.hpp" />
     <ClInclude Include="include\CoreLib\Core_Endian.hpp" />
     <ClInclude Include="include\CoreLib\Core_extra_compiler.hpp" />
