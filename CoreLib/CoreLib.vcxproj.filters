@@ -169,6 +169,12 @@
     <ClInclude Include="include\CoreLib\string\numeric_common.hpp">
       <Filter>Header Files\string</Filter>
     </ClInclude>
+    <ClInclude Include="include\CoreLib\core_module.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\core_debugger.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\string\core_string_misc.cpp">
@@ -230,6 +236,12 @@
     </ClCompile>
     <ClCompile Include="src\string\fp_charconv_round.cpp">
       <Filter>Source Files\string</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core_module.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core_debugger.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
