@@ -28,7 +28,8 @@
 namespace core
 {
 	//returns the base address of the calling module
-	//only works if function is statically linked 
-	void* get_module_base_addr();
+	//only works if function is statically linked
+	//and linux binary must use position independent code
+	void* get_current_module_base();
 
 } //namespace core

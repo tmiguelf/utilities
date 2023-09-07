@@ -32,14 +32,16 @@
 #include <dlfcn.h>
 #endif
 
+namespace core
+{
 #ifdef _WIN32
 
-void* get_module_base_addr()
+void* get_current_module_base()
 {
 	HMODULE mod_addr;
 	if(GetModuleHandleExW(
 		GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
-		reinterpret_cast<wchar_t*>(get_module_base_addr), &mod_addr))
+		reinterpret_cast<wchar_t*>(get_current_module_base), &mod_addr))
 	{
 		return mod_addr;
 	}
@@ -49,10 +51,10 @@ void* get_module_base_addr()
 
 #else
 
-void* get_module_base_addr()
+void* get_current_module_base()
 {
 	Dl_info t_info;
-	void const * const addr = reinterpret_cast<void const * const>(get_module_base_addr);
+	void const * const addr = reinterpret_cast<void const * const>(get_current_module_base);
 	if(dladdr(addr, &t_info) && (t_info.dli_fbase < addr))
 	{
 		return t_info.dli_fbase;
@@ -61,3 +63,4 @@ void* get_module_base_addr()
 }
 
 #endif
+} //namespace core
