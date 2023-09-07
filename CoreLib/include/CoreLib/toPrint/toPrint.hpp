@@ -300,4 +300,4 @@ namespace core::_p
 #define core_ToPrint(CharT, Sink, ...) \
 	::core::_p::toPrint_assist<CharT, ::core::_p::transform_toPrint_sink<decltype(Sink)>::type>::push_toPrint( \
 			Sink, \
-			::core::_p::tuple_toPrint_or_string_view<CharT, decltype(::std::make_tuple(__VA_ARGS__))>::type(__VA_ARGS__));
+			::core::_p::tuple_toPrint_or_string_view<CharT, decltype(::std::make_tuple(__VA_ARGS__))>::type(__VA_ARGS__))

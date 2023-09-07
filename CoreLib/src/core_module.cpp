@@ -36,7 +36,7 @@ namespace core
 {
 #ifdef _WIN32
 
-void* get_current_module_base()
+void const* get_current_module_base()
 {
 	HMODULE mod_addr;
 	if(GetModuleHandleExW(
