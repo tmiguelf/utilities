@@ -28,6 +28,8 @@
 
 #include <CoreLib/core_debugger.hpp>
 
+#ifdef _WIN32
+
 #include <vector>
 
 #include <Windows.h>
@@ -36,7 +38,7 @@
 #include <CoreLib/Core_extra_compiler.hpp>
 #include <CoreLib/string/core_string_encoding.hpp>
 
-#ifdef _WIN32
+
 
 namespace core
 {

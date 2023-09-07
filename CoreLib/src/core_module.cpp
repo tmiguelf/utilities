@@ -51,7 +51,7 @@ void const* get_current_module_base()
 
 #else
 
-void* get_current_module_base()
+void const* get_current_module_base()
 {
 	Dl_info t_info;
 	void const * const addr = reinterpret_cast<void const * const>(get_current_module_base);
