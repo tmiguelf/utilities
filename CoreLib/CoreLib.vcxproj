@@ -78,6 +78,7 @@
     <ClCompile Include="src\Core_cpu.cpp" />
     <ClCompile Include="src\Core_DLL.cpp" />
     <ClCompile Include="src\Core_File.cpp" />
+    <ClCompile Include="src\core_module.cpp" />
     <ClCompile Include="src\Core_OS.cpp" />
     <ClCompile Include="src\Core_StackTrace.cpp" />
     <ClCompile Include="src\Core_Sync.cpp" />
@@ -104,6 +105,7 @@
     <ClInclude Include="include\CoreLib\Core_Endian.hpp" />
     <ClInclude Include="include\CoreLib\Core_extra_compiler.hpp" />
     <ClInclude Include="include\CoreLib\Core_File.hpp" />
+    <ClInclude Include="include\CoreLib\core_module.hpp" />
     <ClInclude Include="include\CoreLib\Core_OS.hpp" />
     <ClInclude Include="include\CoreLib\Core_StackTrace.hpp" />
     <ClInclude Include="include\CoreLib\Core_Sync.hpp" />

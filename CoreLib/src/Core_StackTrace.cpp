@@ -1030,7 +1030,7 @@ namespace
 					//---- Moduie list
 					OUTPUT(o_file, section_seperator, "Modules:\n"sv);
 					
-					//lists all loaded modules, calls Core_EnumerateModules2File per loaded module, and then some
+					//lists all loaded modules, calls EnumerateModules2File per loaded module, and then some
 					//see: http://linux.die.net/man/3/dl_iterate_phdr
 					dl_iterate_phdr(EnumerateModules2File, &o_file);
 
