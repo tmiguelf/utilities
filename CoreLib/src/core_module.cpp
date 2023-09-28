@@ -34,9 +34,10 @@
 
 namespace core
 {
+
 #ifdef _WIN32
 
-void const* get_current_module_base()
+static void const* real_get_current_module_base()
 {
 	HMODULE mod_addr;
 	if(GetModuleHandleExW(
@@ -51,7 +52,7 @@ void const* get_current_module_base()
 
 #else
 
-void const* get_current_module_base()
+static void const* real_get_current_module_base()
 {
 	Dl_info t_info;
 	void const * const addr = reinterpret_cast<void const * const>(get_current_module_base);
@@ -63,4 +64,12 @@ void const* get_current_module_base()
 }
 
 #endif
+
+static void const* const g_module_addr = real_get_current_module_base();
+
+void const* get_current_module_base()
+{
+	return g_module_addr;
+}
+
 } //namespace core

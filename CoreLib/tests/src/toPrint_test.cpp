@@ -64,11 +64,6 @@ private:
 	uintptr_t m_size = 0;
 };
 
-
-
-
-
-
 TEST(toPrint, toPrint_interface)
 {
 	class test_sink: public core::sink_toPrint_base

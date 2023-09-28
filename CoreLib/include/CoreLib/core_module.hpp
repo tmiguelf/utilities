@@ -30,6 +30,6 @@ namespace core
 	//returns the base address of the calling module
 	//only works if function is statically linked
 	//and linux binary must use position independent code
-	void const* get_current_module_base();
+	[[nodiscard]] void const* get_current_module_base();
 
 } //namespace core
