@@ -125,7 +125,7 @@ namespace core
 			{
 				// Final IEEE exponent is larger than the maximum representable; return +/-Infinity.
 				const uint_t t_resut = sign_bit ? (fp_utils_t::sign_mask | fp_utils_t::exponent_mask) : fp_utils_t::exponent_mask;
-				return reinterpret_cast<const fp_t&>(t_resut);
+				return std::bit_cast<const fp_t>(t_resut);
 			}
 			if(e2_base < 0)
 			{
@@ -163,7 +163,7 @@ namespace core
 
 			uint_t t_resut = ieee_m2 | static_cast<uint_t>(ieee_e2) << fp_utils_t::exponent_offset;
 			if(sign_bit) t_resut |= fp_utils_t::sign_mask;
-			return reinterpret_cast<const fp_t&>(t_resut);
+			return std::bit_cast<const fp_t>(t_resut);
 		}
 
 		template<>
@@ -226,7 +226,7 @@ namespace core
 			{
 				// Final IEEE exponent is larger than the maximum representable; return +/-Infinity.
 				const uint_t t_resut = sign_bit ? (fp_utils_t::sign_mask | fp_utils_t::exponent_mask) : fp_utils_t::exponent_mask;
-				return reinterpret_cast<const fp_t&>(t_resut);
+				return std::bit_cast<const fp_t>(t_resut);
 			}
 			if(e2_base < 0)
 			{
@@ -260,7 +260,7 @@ namespace core
 
 			uint_t t_resut = ieee_m2 | static_cast<uint_t>(ieee_e2) << fp_utils_t::exponent_offset;
 			if(sign_bit) t_resut |= fp_utils_t::sign_mask;
-			return reinterpret_cast<const fp_t&>(t_resut);
+			return std::bit_cast<const fp_t>(t_resut);
 		}
 	} //namespace
 
@@ -329,7 +329,7 @@ namespace core
 			if(sig_digits == 0)
 			{
 				const uint_t t_resut = sign_bit ? fp_utils_t::sign_mask : uint_t{0};
-				return reinterpret_cast<const fp_t&>(t_resut);
+				return std::bit_cast<const fp_t>(t_resut);
 			}
 
 		$exp_parse:
@@ -358,12 +358,12 @@ namespace core
 				if(adjusted_e10 > fp_utils_t::max_scientific_exponent_10 + 1)
 				{
 					const uint_t t_resut = sign_bit ? (fp_utils_t::sign_mask | fp_utils_t::exponent_mask) : fp_utils_t::exponent_mask;
-					return reinterpret_cast<const fp_t&>(t_resut);
+					return std::bit_cast<const fp_t>(t_resut);
 				}
 				if(adjusted_e10 < fp_utils_t::min_scientific_exponent_10)
 				{
 					const uint_t t_resut = sign_bit ? (fp_utils_t::sign_mask | fp_utils_t::exponent_mask) : fp_utils_t::exponent_mask;
-					return reinterpret_cast<const fp_t&>(t_resut);
+					return std::bit_cast<const fp_t>(t_resut);
 				}
 				e10 = static_cast<exp_st>(e_temp);
 			}

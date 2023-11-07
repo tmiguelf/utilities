@@ -137,7 +137,14 @@ SYNC_Error semaphore::create(std::u8string& p_name, const uint32_t p_range)
 #ifdef __CORE_EXTENDED_ERROR__
 	if(p_range > 0x7FFFFFFF || p_name.size() > MAX_PATH) return SYNC_Error::Invalid_Argument;
 #endif
-	m_semaphore = CreateSemaphoreA(nullptr, p_range, p_range, reinterpret_cast<const char*>(p_name.c_str()));
+	SECURITY_ATTRIBUTES attb
+	{
+		.nLength = sizeof(SECURITY_ATTRIBUTES),
+		.lpSecurityDescriptor = nullptr,
+		.bInheritHandle = false
+	};
+
+	m_semaphore = CreateSemaphoreA(&attb, p_range, p_range, reinterpret_cast<const char*>(p_name.c_str()));
 	if(m_semaphore == nullptr) return SYNC_Error::Fail;
 	return SYNC_Error::NoErr;
 }
@@ -148,7 +155,14 @@ SYNC_Error semaphore::create(std::u16string& p_name, const uint32_t p_range)
 #ifdef __CORE_EXTENDED_ERROR__
 	if(p_range > 0x7FFFFFFF || p_name.size() > MAX_PATH) return SYNC_Error::Invalid_Argument;
 #endif
-	m_semaphore = CreateSemaphoreW(nullptr, p_range, p_range, reinterpret_cast<const wchar_t*>(p_name.c_str()));
+	SECURITY_ATTRIBUTES attb
+	{
+		.nLength = sizeof(SECURITY_ATTRIBUTES),
+		.lpSecurityDescriptor = nullptr,
+		.bInheritHandle = false
+	};
+
+	m_semaphore = CreateSemaphoreW(&attb, p_range, p_range, reinterpret_cast<const wchar_t*>(p_name.c_str()));
 	if(m_semaphore == nullptr) return SYNC_Error::Fail;
 	return SYNC_Error::NoErr;
 }
@@ -159,7 +173,14 @@ SYNC_Error semaphore::create(const uint32_t p_range)
 #ifdef __CORE_EXTENDED_ERROR__
 	if(p_range > 0x7FFFFFFF) return SYNC_Error::Invalid_Argument;
 #endif
-	m_semaphore = CreateSemaphoreA(nullptr, p_range, p_range, "");
+	SECURITY_ATTRIBUTES attb
+	{
+		.nLength = sizeof(SECURITY_ATTRIBUTES),
+		.lpSecurityDescriptor = nullptr,
+		.bInheritHandle = false
+	};
+
+	m_semaphore = CreateSemaphoreA(&attb, p_range, p_range, nullptr);
 	if(m_semaphore == nullptr) return SYNC_Error::Fail;
 	return SYNC_Error::NoErr;
 }
@@ -243,7 +264,13 @@ event_trap::~event_trap()
 SYNC_Error event_trap::create()
 {
 	destroy();
-	if(((m_event = CreateEventA(nullptr, TRUE, FALSE, nullptr))) != 0)
+	SECURITY_ATTRIBUTES attb
+	{
+		.nLength = sizeof(SECURITY_ATTRIBUTES),
+		.lpSecurityDescriptor = nullptr,
+		.bInheritHandle = false
+	};
+	if(((m_event = CreateEventA(&attb, TRUE, FALSE, nullptr))) != 0)
 	{
 		return SYNC_Error::NoErr;
 	}
@@ -415,7 +442,7 @@ SYNC_Error semaphore::create(std::u8string& p_name, const uint32_t p_range)
 #endif
 	is_named = true;
 
-	m_semaphore = sem_open(reinterpret_cast<const char*>(p_name.c_str()), O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH , p_range);
+	m_semaphore = sem_open(reinterpret_cast<const char*>(p_name.c_str()), O_CREAT | O_CLOEXEC, DEFFILEMODE, p_range);
 	if(m_semaphore != nullptr) return SYNC_Error::NoErr;
 	return SYNC_Error::Fail;
 }

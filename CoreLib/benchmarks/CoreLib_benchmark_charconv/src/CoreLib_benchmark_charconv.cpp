@@ -29,6 +29,7 @@
 #include <charconv>
 #include <limits>
 #include <type_traits>
+#include <bit>
 
 #include <benchmark/benchmark.h>
 
@@ -36,6 +37,10 @@
 #include <CoreLib/string/core_string_misc.hpp>
 #include <CoreLib/string/core_fp_charconv.hpp>
 #include <CoreLib/string/core_fp_to_chars_round.hpp>
+#include <CoreLib/Core_Type.hpp>
+
+using ::core::literals::operator "" _ui64;
+using ::core::literals::operator "" _ui32;
 
 //======== ======== ======== ======== Auxiliary Test case generator ======== ======== ======== ========
 
@@ -847,20 +852,15 @@ struct fp_cases<float32_t>
 	static constexpr uint16_t buff_size = 256;
 
 	static constexpr uint16_t sig_digits = 111;
-	inline static float32_t sci_case()
+	inline static constexpr float32_t sci_case()
 	{
-		float32_t test_case;// = -1.125f;
-		reinterpret_cast<uint32_t&>(test_case) = 0xFFFFFF;
-		//reinterpret_cast<uint32_t&>(test_case) = 1;
-		return test_case;
+		return std::bit_cast<float32_t>(0xFFFFFF_ui32);
 	}
 
 	static constexpr uint16_t precision_digits = 2;
-	inline static float32_t fix_case()
+	inline static constexpr float32_t fix_case()
 	{
-		float32_t test_case = 1.125f;
-		//reinterpret_cast<uint32_t&>(test_case) = 1;
-		return test_case;
+		return 1.125f;
 	}
 };
 
@@ -870,20 +870,15 @@ struct fp_cases<float64_t>
 	static constexpr uint16_t buff_size = 2048;
 
 	static constexpr uint16_t sig_digits = 766;
-	inline static float64_t sci_case()
+	inline static constexpr float64_t sci_case()
 	{
-		float64_t test_case;// = -1.125;
-		reinterpret_cast<uint64_t&>(test_case) = 0x001FFFFFFFFFFFFF;
-		//reinterpret_cast<uint64_t&>(test_case) = 1;
-		return test_case;
+		return std::bit_cast<float64_t>(0x001FFFFFFFFFFFFF_ui64);
 	}
 
 	static constexpr uint16_t precision_digits = 2;
-	inline static float64_t fix_case()
+	inline static constexpr float64_t fix_case()
 	{
-		float64_t test_case = 1.125;
-		//reinterpret_cast<uint64_t&>(test_case) = 1;
-		return test_case;
+		return 1.125;
 	}
 };
 

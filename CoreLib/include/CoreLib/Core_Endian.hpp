@@ -29,6 +29,7 @@
 #include <bit>
 #include <cstdint>
 #include <type_traits>
+#include <bit>
 
 #include "Core_Type.hpp"
 
@@ -137,7 +138,7 @@ namespace _p
 	template<> struct suitable_uint<sizeof(uint64_t), alignof(uint64_t)> { using type = uint64_t; static constexpr bool has_type = true; };
 
 	template<typename T>
-	constexpr bool is_endian_runtime_swap_suitable_v =
+	constexpr bool is_endian_swap_suitable_v =
 		(
 			endian_supported_type_v<T> ||
 			std::is_trivially_constructible_v<T> &&
@@ -147,7 +148,7 @@ namespace _p
 		suitable_uint<sizeof(T), alignof(T)>::has_type;
 
 	template<typename T>
-	constexpr bool is_endian_runtime_exclusive_v =
+	constexpr bool is_endian_alias_exclusive_v =
 		(
 			!endian_supported_type_v<T> &&
 			std::is_trivially_constructible_v<T> &&
@@ -157,13 +158,13 @@ namespace _p
 		suitable_uint<sizeof(T), alignof(T)>::has_type;
 
 	template<typename T>
-	concept is_endian_runtime_swap_suitable_c = is_endian_runtime_swap_suitable_v<T>;
+	concept is_endian_swap_suitable_c = is_endian_swap_suitable_v<T>;
 
 	template<typename T>
-	concept is_endian_runtime_exclusive_c = is_endian_runtime_exclusive_v<T>;
+	concept is_endian_alias_exclusive_c = is_endian_alias_exclusive_v<T>;
 
 
-	template<typename T> requires is_endian_runtime_swap_suitable_v<T>
+	template<typename T> requires is_endian_swap_suitable_v<T>
 	struct endianess_uint_align
 	{
 		using type = typename suitable_uint<sizeof(T), alignof(T)>::type;
@@ -203,14 +204,13 @@ template<_p::endian_supported_type_c T>
 	}
 }
 
-template<_p::is_endian_runtime_exclusive_c T>
-[[nodiscard]] inline T byte_swap(const T& p_value)
+template<_p::is_endian_alias_exclusive_c T>
+[[nodiscard]] inline constexpr T byte_swap(const T& p_value)
 {
-	const _p::endianess_uint_align_t<T> temp = byte_swap(reinterpret_cast<const _p::endianess_uint_align_t<T>&>(p_value));
-	return reinterpret_cast<const T&>(temp);
+	return std::bit_cast<const T>(byte_swap(std::bit_cast<const _p::endianess_uint_align_t<T>>(p_value)));
 }
 
-template <_p::endian_supported_type_c T>
+template <_p::is_endian_swap_suitable_c T>
 [[nodiscard]] inline constexpr T endian_host2little(T const p_in)
 {
 	if constexpr(std::endian::native == std::endian::little)
@@ -230,14 +230,13 @@ template <_p::endian_supported_type_c T>
 	}
 }
 
-template <_p::endian_supported_type_c T>
+template <_p::is_endian_swap_suitable_c T>
 [[nodiscard]] inline constexpr T endian_little2host(T const p_in)
 {
 	return endian_host2little(p_in);
 }
 
-
-template <_p::endian_supported_type_c T>
+template <_p::is_endian_swap_suitable_c T>
 [[nodiscard]] inline constexpr T endian_host2big(T const p_in)
 {
 	if constexpr(std::endian::native == std::endian::little)
@@ -257,60 +256,8 @@ template <_p::endian_supported_type_c T>
 	}
 }
 
-template <_p::endian_supported_type_c T>
+template <_p::is_endian_swap_suitable_c T>
 [[nodiscard]] inline constexpr T endian_big2host(T const p_in)
-{
-	return endian_host2big(p_in);
-}
-
-template <_p::is_endian_runtime_exclusive_c T>
-[[nodiscard]] inline T endian_host2little(T const p_in)
-{
-	if constexpr(std::endian::native == std::endian::little)
-	{
-		return p_in;
-	}
-	else if constexpr(std::endian::native == std::endian::big)
-	{
-		return byte_swap(p_in);
-	}
-	else
-	{
-		static_assert(
-			std::endian::native == std::endian::little ||
-			std::endian::native == std::endian::big,
-			"Unsuported host endianess");
-	}
-}
-
-template <_p::is_endian_runtime_exclusive_c T>
-[[nodiscard]] inline T endian_little2host(T const p_in)
-{
-	return endian_host2little(p_in);
-}
-
-template <_p::is_endian_runtime_exclusive_c T>
-[[nodiscard]] inline T endian_host2big(T const p_in)
-{
-	if constexpr(std::endian::native == std::endian::little)
-	{
-		return byte_swap(p_in);
-	}
-	else if constexpr(std::endian::native == std::endian::big)
-	{
-		return p_in;
-	}
-	else
-	{
-		static_assert(
-			std::endian::native == std::endian::little ||
-			std::endian::native == std::endian::big,
-			"Unsuported host endianess");
-	}
-}
-
-template <_p::is_endian_runtime_exclusive_c T>
-[[nodiscard]] inline T endian_big2host(T const p_in)
 {
 	return endian_host2big(p_in);
 }

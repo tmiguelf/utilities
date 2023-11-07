@@ -408,7 +408,7 @@ namespace core
 				{
 					bits |= core::fp_traits<fp_T>::sign_mask;
 				}
-				return reinterpret_cast<const fp_T&>(bits);
+				return std::bit_cast<const fp_T>(bits);
 			}
 			if(is_nan(p_str))
 			{
@@ -420,7 +420,7 @@ namespace core
 				{
 					bits |= core::fp_traits<fp_T>::sign_mask;
 				}
-				return reinterpret_cast<const fp_T&>(bits);
+				return std::bit_cast<const fp_T>(bits);
 			}
 
 			return std::errc::invalid_argument;
