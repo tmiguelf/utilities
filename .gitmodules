@@ -4,7 +4,9 @@
 	ignore = dirty
 [submodule "submodules/benchmark"]
 	path = submodules/benchmark
-	url = https://github.com/tmiguelf/benchmark.git
+	url = ../benchmark.git
+	ignore = dirty
 [submodule "submodules/googletest"]
 	path = submodules/googletest
-	url = https://github.com/tmiguelf/googletest.git
+	url = ../googletest.git
+	ignore = dirty
