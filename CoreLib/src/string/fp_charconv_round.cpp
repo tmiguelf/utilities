@@ -47,7 +47,7 @@ namespace core
 	CORE_MAKE_ENUM_ORDERABLE(fp_round)
 
 
-	struct fp_common_utils
+	struct fp_common_data_table
 	{
 		static constexpr uint64_t max_pow_10		= 10000000000000000000_ui64;
 		static constexpr uint8_t  max_pow_10_digits	= 19_ui8;
@@ -224,10 +224,10 @@ namespace core
 	};
 
 	template<_p::charconv_fp_c T>
-	struct fp_utils_pre;
+	struct fp_data_table;
 
 	template<>
-	struct fp_utils_pre<float32_t>: public fp_common_utils, public fp_traits<float32_t>
+	struct fp_data_table<float32_t>: public fp_common_data_table, public fp_utils_pre<float32_t>
 	{
 		using fp_type = float32_t;
 		using uint_t = uint32_t;
@@ -315,29 +315,13 @@ namespace core
 	};
 
 	template<>
-	struct fp_utils_pre<float64_t>: public fp_common_utils, public fp_traits<float64_t>
+	struct fp_data_table<float64_t>: public fp_common_data_table, public fp_utils_pre<float64_t>
 	{
 		using fp_type = float64_t;
 		using uint_t = uint64_t;
 		using bignum_t = fp_to_chars_round_context<fp_type>::bignum_t;
 
 		static constexpr uint8_t bignum_width = fp_to_chars_round_context<fp_type>::bignum_width;
-
-		[[nodiscard]] static inline uint_t get_mantissa(fp_type input)
-		{
-			return reinterpret_cast<const uint_t&>(input) & mantissa_mask;
-		}
-
-		[[nodiscard]] static inline uint_t get_exponent_bits(fp_type input)
-		{
-			return (reinterpret_cast<const uint_t&>(input) & exponent_mask);
-		}
-
-		[[nodiscard]] static inline bool get_sign(const fp_type input)
-		{
-			return reinterpret_cast<const uint_t&>(input) & sign_mask;
-		}
-
 
 		static constexpr std::array pow_2_hack_table
 		{
@@ -525,29 +509,13 @@ namespace core
 
 
 	template<_p::charconv_fp_c fp_type>
-	struct fp_utils: public fp_utils_pre<fp_type>
+	struct fp_utils: public fp_data_table<fp_type>
 	{
-		using fp_utils_p = fp_utils_pre<fp_type>;
+		using fp_utils_p = fp_data_table<fp_type>;
 		using uint_t = typename fp_utils_p::uint_t;
 		using bignum_t = typename fp_utils_p::bignum_t;
 		using exp_st = typename fp_utils_p::exp_st;
 		using exp_ut = typename fp_utils_p::exp_ut;
-
-
-		[[nodiscard]] static inline uint_t get_mantissa(fp_type input)
-		{
-			return reinterpret_cast<const uint_t&>(input) & fp_utils_p::mantissa_mask;
-		}
-
-		[[nodiscard]] static inline uint_t get_exponent_bits(fp_type input)
-		{
-			return (reinterpret_cast<const uint_t&>(input) & fp_utils_p::exponent_mask);
-		}
-
-		[[nodiscard]] static inline bool get_sign(const fp_type input)
-		{
-			return reinterpret_cast<const uint_t&>(input) & fp_utils_p::sign_mask;
-		}
 
 		static void mul_hack(bignum_t& p_1, const uint64_t p_2)
 		{
@@ -1056,7 +1024,7 @@ namespace core
 		const exp_ut decimal_seperator_offset = fp_utils_t::load_digits(digits, mantissa, exponent);
 
 		exp_ut last_block      = fp_utils_t::last_block(digits);
-		exp_ut last_num_digits = fp_common_utils::num_digits(digits[last_block]);
+		exp_ut last_num_digits = fp_utils_t::num_digits(digits[last_block]);
 		exp_ut num_digits      = static_cast<exp_ut>(last_block * fp_utils_t::max_pow_10_digits + last_num_digits);
 		exp_ut leading_zeros   = fp_utils_t::leading_zeros(digits);
 		exp_ut sig_digits      = static_cast<exp_ut>((num_digits - 1) - leading_zeros);
@@ -1066,7 +1034,7 @@ namespace core
 		{
 			const exp_ut round_pos = static_cast<exp_ut>((num_digits - 1) - significant_digits);
 
-			fp_common_utils::fix_rounding_mode(rounding_mode, sign_bit);
+			fp_utils_t::fix_rounding_mode(rounding_mode, sign_bit);
 
 			switch(rounding_mode)
 			{
@@ -1084,7 +1052,7 @@ namespace core
 			}
 
 			last_block      = fp_utils_t::last_block(digits);
-			last_num_digits = fp_common_utils::num_digits(digits[last_block]);
+			last_num_digits = fp_utils_t::num_digits(digits[last_block]);
 			num_digits      = static_cast<exp_ut>(last_block * fp_utils_t::max_pow_10_digits + last_num_digits);
 		lbl$leading:
 			leading_zeros   = fp_utils_t::leading_zeros(digits);
@@ -1152,7 +1120,7 @@ namespace core
 		const exp_ut decimal_seperator_offset = fp_utils_t::load_digits(digits, mantissa, exponent);
 
 		exp_ut last_block      = fp_utils_t::last_block(digits);
-		exp_ut last_num_digits = fp_common_utils::num_digits(digits[last_block]);
+		exp_ut last_num_digits = fp_utils_t::num_digits(digits[last_block]);
 		exp_ut num_digits      = static_cast<exp_ut>(last_block * fp_utils_t::max_pow_10_digits + last_num_digits);
 		exp_ut leading_zeros   = fp_utils_t::leading_zeros(digits);
 
@@ -1165,7 +1133,7 @@ namespace core
 			goto lbl$res_size;
 		}
 
-		fp_common_utils::fix_rounding_mode(rounding_mode, sign_bit);
+		fp_utils_t::fix_rounding_mode(rounding_mode, sign_bit);
 
 		if(digits_to_precision >= num_digits)
 		{ //no digits make it
@@ -1175,7 +1143,7 @@ namespace core
 			case fp_round::nearest:
 				if(digits_to_precision == num_digits)
 				{
-					if(digits[last_block] / fp_common_utils::pow_10_table[last_num_digits] < 5)
+					if(digits[last_block] / fp_utils_t::pow_10_table[last_num_digits] < 5)
 					{
 						res.classification = fp_classify::zero;
 					}
@@ -1247,7 +1215,7 @@ namespace core
 		}
 
 		last_block      = fp_utils_t::last_block(digits);
-		last_num_digits = fp_common_utils::num_digits(digits[last_block]);
+		last_num_digits = fp_utils_t::num_digits(digits[last_block]);
 		num_digits      = static_cast<exp_ut>(last_block * fp_utils_t::max_pow_10_digits + last_num_digits);
 	lbl$leading:
 		leading_zeros   = fp_utils_t::leading_zeros(digits);
@@ -1281,7 +1249,7 @@ namespace core
 		using exp_ut = fp_utils_t::exp_ut;
 
 		exp_ut last_block      = fp_utils_t::last_block(context.digits);
-		exp_ut last_num_digits = fp_common_utils::num_digits(context.digits[last_block]);
+		exp_ut last_num_digits = fp_utils_t::num_digits(context.digits[last_block]);
 		exp_ut num_digits      = static_cast<exp_ut>(last_block * fp_utils_t::max_pow_10_digits + last_num_digits);
 		exp_ut leading_zeros   = fp_utils_t::leading_zeros(context.digits);
 		exp_ut sig_digits      = static_cast<exp_ut>((num_digits - 1) - leading_zeros);
@@ -1304,7 +1272,7 @@ namespace core
 		using exp_ut = fp_utils_t::exp_ut;
 
 		exp_ut last_block      = fp_utils_t::last_block(context.digits);
-		exp_ut last_num_digits = fp_common_utils::num_digits(context.digits[last_block]);
+		exp_ut last_num_digits = fp_utils_t::num_digits(context.digits[last_block]);
 		//exp_ut num_digits      = static_cast<exp_ut>(last_block * fp_utils_t::max_pow_10_digits + last_num_digits);
 		exp_ut leading_zeros   = fp_utils_t::leading_zeros(context.digits);
 
@@ -1362,7 +1330,7 @@ namespace core
 		const exp_ut decimal_seperator_offset = fp_utils_t::load_digits(digits, mantissa, exponent);
 
 		exp_ut last_block      = fp_utils_t::last_block(digits);
-		exp_ut last_num_digits = fp_common_utils::num_digits(digits[last_block]);
+		exp_ut last_num_digits = fp_utils_t::num_digits(digits[last_block]);
 		exp_ut num_digits      = static_cast<exp_ut>(last_block * fp_utils_t::max_pow_10_digits + last_num_digits);
 		exp_ut leading_zeros   = fp_utils_t::leading_zeros(digits);
 		exp_ut sig_digits      = static_cast<exp_ut>((num_digits - 1) - leading_zeros);
@@ -1372,7 +1340,7 @@ namespace core
 		{
 			const exp_ut round_pos = static_cast<exp_ut>((num_digits - 1) - significant_digits);
 
-			fp_common_utils::fix_rounding_mode(rounding_mode, sign_bit);
+			fp_utils_t::fix_rounding_mode(rounding_mode, sign_bit);
 
 			switch(rounding_mode)
 			{
@@ -1390,7 +1358,7 @@ namespace core
 			}
 
 			last_block      = fp_utils_t::last_block(digits);
-			last_num_digits = fp_common_utils::num_digits(digits[last_block]);
+			last_num_digits = fp_utils_t::num_digits(digits[last_block]);
 			num_digits      = static_cast<exp_ut>(last_block * fp_utils_t::max_pow_10_digits + last_num_digits);
 		lbl$leading:
 			leading_zeros   = fp_utils_t::leading_zeros(digits);
@@ -1415,7 +1383,7 @@ namespace core
 		using exp_ut = fp_utils_t::exp_ut;
 
 		exp_ut last_block      = fp_utils_t::last_block(context.digits);
-		exp_ut last_num_digits = fp_common_utils::num_digits(context.digits[last_block]);
+		exp_ut last_num_digits = fp_utils_t::num_digits(context.digits[last_block]);
 		exp_ut num_digits      = static_cast<exp_ut>(last_block * fp_utils_t::max_pow_10_digits + last_num_digits);
 		exp_ut leading_zeros   = fp_utils_t::leading_zeros(context.digits);
 		exp_ut sig_digits      = static_cast<exp_ut>((num_digits - 1) - leading_zeros);
@@ -1437,7 +1405,7 @@ namespace core
 		using exp_ut = fp_utils_t::exp_ut;
 
 		exp_ut last_block      = fp_utils_t::last_block(context.digits);
-		exp_ut last_num_digits = fp_common_utils::num_digits(context.digits[last_block]);
+		exp_ut last_num_digits = fp_utils_t::num_digits(context.digits[last_block]);
 		//exp_ut num_digits      = static_cast<exp_ut>(last_block * fp_utils_t::max_pow_10_digits + last_num_digits);
 		exp_ut leading_zeros   = fp_utils_t::leading_zeros(context.digits);
 

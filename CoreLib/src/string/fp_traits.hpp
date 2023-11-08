@@ -26,6 +26,7 @@
 #include <CoreLib/string/core_fp_charconv.hpp>
 #include <CoreLib/Core_Type.hpp>
 
+#include <bit>
 
 namespace core
 {
@@ -87,19 +88,19 @@ namespace core
 		using fp_traits_t = fp_traits<fp_type>;
 		using uint_t = fp_traits_t::uint_t;
 
-		[[nodiscard]] static inline uint_t get_mantissa(fp_type input)
+		[[nodiscard]] static inline constexpr uint_t get_mantissa(const fp_type input)
 		{
-			return reinterpret_cast<const uint_t&>(input) & fp_traits_t::mantissa_mask;
+			return std::bit_cast<const uint_t>(input) & fp_traits_t::mantissa_mask;
 		}
 
-		[[nodiscard]] static inline uint_t get_exponent_bits(fp_type input)
+		[[nodiscard]] static inline constexpr uint_t get_exponent_bits(const fp_type input)
 		{
-			return (reinterpret_cast<const uint_t&>(input) & fp_traits_t::exponent_mask);
+			return (std::bit_cast<const uint_t>(input) & fp_traits_t::exponent_mask);
 		}
 
-		[[nodiscard]] static inline bool get_sign(const fp_type input)
+		[[nodiscard]] static inline constexpr bool get_sign(const fp_type input)
 		{
-			return reinterpret_cast<const uint_t&>(input) & fp_traits_t::sign_mask;
+			return std::bit_cast<const uint_t>(input) & fp_traits_t::sign_mask;
 		}
 	};
 }

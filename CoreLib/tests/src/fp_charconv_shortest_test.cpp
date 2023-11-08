@@ -29,6 +29,7 @@
 #include <array>
 #include <random>
 #include <limits>
+#include <bit>
 
 #include <CoreLib/toPrint/toPrint.hpp>
 #include <CoreLib/toPrint/toPrint_std_ostream.hpp>
@@ -92,7 +93,7 @@ TEST(fp_charconv, round_trip)
 
 	for(const uint32_t tcase : fix_cases)
 	{
-		const float32_t f_case = reinterpret_cast<const float32_t&>(tcase);
+		const float32_t f_case = std::bit_cast<const float32_t>(tcase);
 
 		const core::fp_base_classify classification = core::to_chars_shortest_classify(f_case, context);
 		const core::fp_to_chars_sci_size size = core::to_chars_shortest_sci_size(context);
@@ -115,14 +116,14 @@ TEST(fp_charconv, round_trip)
 
 		ASSERT_TRUE(result.has_value());
 
-		const uint32_t round_trip = reinterpret_cast<const uint32_t&>(result.value());
+		const uint32_t round_trip = std::bit_cast<const uint32_t>(result.value());
 		ASSERT_EQ(round_trip, tcase) << core::toPrint_hex_fix{tcase};
 	}
 
 	for(uint16_t i = 0; i < 255; ++i)
 	{
 		const uint32_t tcase = make_valid_fp(distrib(gen));
-		const float32_t f_case = reinterpret_cast<const float32_t&>(tcase);
+		const float32_t f_case = std::bit_cast<const float32_t>(tcase);
 
 		const core::fp_base_classify classification = core::to_chars_shortest_classify(f_case, context);
 		const core::fp_to_chars_sci_size size = core::to_chars_shortest_sci_size(context);
@@ -145,7 +146,7 @@ TEST(fp_charconv, round_trip)
 
 		ASSERT_TRUE(result.has_value());
 
-		const uint32_t round_trip = reinterpret_cast<const uint32_t&>(result.value());
+		const uint32_t round_trip = std::bit_cast<const uint32_t>(result.value());
 		ASSERT_EQ(round_trip, tcase) << core::toPrint(i) << core::toPrint_hex_fix{tcase};
 	}
 
