@@ -143,7 +143,7 @@ TYPED_TEST(QuaternionRotator_T, Rotator)
 				core::_p::to_chars_estimate(m_data.rotationValue);
 		}
 
-		void getPrint(char8_t* p_out) const
+		void get_print(char8_t* p_out) const
 		{
 			constexpr uintptr_t max_size = core::to_chars_dec_max_size_v<real_t>;
 

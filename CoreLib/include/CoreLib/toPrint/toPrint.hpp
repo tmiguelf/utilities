@@ -155,7 +155,7 @@ namespace core::_p
 			CharT* const			p_buff)
 		{
 			const auto& res = std::get<Pos>(p_tuple);
-			res.getPrint(p_buff);
+			res.get_print(p_buff);
 
 			if constexpr (Pos + 1 < std::tuple_size_v<Tuple>)
 			{

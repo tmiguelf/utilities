@@ -54,7 +54,7 @@ public:
 
 	constexpr uintptr_t size(const char8_t&) const { return m_size; }
 
-	void getPrint(char8_t* p_out) const //final
+	void get_print(char8_t* p_out) const //final
 	{
 		memcpy(p_out, preamble.data(), preamble.size());
 	}
@@ -141,6 +141,9 @@ TEST(toPrint, toPrint_type_support)
 	TYPE_TEST_PRINT(char16_t, u"string_view"sv);
 	TYPE_TEST_PRINT(char32_t, U"string_view"sv);
 
+	TYPE_TEST_PRINT(char8_t, core::toPrint_net{ core::IP_address{}, 25 });
+	TYPE_TEST_PRINT(char16_t, core::toPrint_net{ core::IP_address{}, 25 });
+	TYPE_TEST_PRINT(char32_t, core::toPrint_net{ core::IP_address{}, 25 });
 
 	TYPE_TEST_PRINT(char8_t , 0);
 	TYPE_TEST_PRINT(char16_t, 0);
