@@ -68,7 +68,6 @@ namespace core
 			return static_cast<uintptr_t>(pivot - p_output.data());
 		}
 
-		template<c_ipconv_char CharT>
 		uintptr_t to_chars_IPv6_estimate(std::span<const uint16_t, 8> const p_raw)
 		{
 			uint8_t size_elide = 0;

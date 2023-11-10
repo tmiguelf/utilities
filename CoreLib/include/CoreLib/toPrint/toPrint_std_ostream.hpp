@@ -62,7 +62,7 @@ namespace _p
 	template<typename C, typename T> requires is_toPrint_v<T>
 	void push_ostream_toPrint(std::basic_ostream<C>& p_sink, const T& p_data, C* const p_buff, uintptr_t const p_size)
 	{
-		p_data.getPrint(p_buff);
+		p_data.get_print(p_buff);
 		p_sink.write(p_buff, p_size);
 	}
 
@@ -90,7 +90,7 @@ namespace _p
 	template<typename T> requires is_toPrint_v<T>
 	void push_ostream_toPrint_alias(std::basic_ostream<char>& p_sink, const T& p_data, char8_t* const p_buff, uintptr_t const p_size)
 	{
-		p_data.getPrint(p_buff);
+		p_data.get_print(p_buff);
 		p_sink.write(reinterpret_cast<const char*>(p_buff), p_size);
 	}
 
@@ -118,7 +118,7 @@ namespace _p
 	template<typename T> requires is_toPrint_v<T>
 	void push_ostream_toPrint_alias(std::basic_ostream<wchar_t>& p_sink, const T& p_data, wchar_alias* const p_buff, uintptr_t const p_size)
 	{
-		p_data.getPrint(p_buff);
+		p_data.get_print(p_buff);
 		p_sink.write(reinterpret_cast<const wchar_t*>(p_buff), p_size);
 	}
 

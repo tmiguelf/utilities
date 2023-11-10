@@ -880,4 +880,3 @@ namespace core
 	template<typename T> sink_file_UCS4BE_unlocked (T&) -> sink_file_UCS4BE_unlocked <std::remove_cvref_t<T>>;
 	template<typename T> sink_file_UCS4LE_unlocked (T&) -> sink_file_UCS4LE_unlocked <std::remove_cvref_t<T>>;
 }
-

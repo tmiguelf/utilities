@@ -89,7 +89,7 @@ public:
 		return to_chars_quat_estimate(m_data);
 	}
 
-	void getPrint(char8_t* p_out) const
+	void get_print(char8_t* p_out) const
 	{
 		to_chars_quat_unsafe(m_data, p_out);
 	}
@@ -154,7 +154,7 @@ TYPED_TEST(Quaternion_T, Getters)
 				core::_p::to_chars_estimate(m_data.m_k);
 		}
 
-		void getPrint(char8_t* p_out) const
+		void get_print(char8_t* p_out) const
 		{
 			constexpr uintptr_t max_size = core::to_chars_dec_max_size_v<real_t>;
 			*(p_out++) = u8'[';
@@ -235,7 +235,7 @@ TYPED_TEST(Quaternion_T, Setters)
 				core::_p::to_chars_estimate(m_data.m_k);
 		}
 
-		void getPrint(char8_t* p_out) const
+		void get_print(char8_t* p_out) const
 		{
 			constexpr uintptr_t max_size = core::to_chars_dec_max_size_v<real_t>;
 			*(p_out++) = u8'[';
@@ -407,7 +407,7 @@ TYPED_TEST(Quaternion_T, Operator_unary_minus)
 			return to_chars_quat_estimate(m_data.m_sideA) + to_chars_quat_estimate(m_data.m_sideB) + 1;
 		}
 
-		void getPrint(char8_t* p_out) const
+		void get_print(char8_t* p_out) const
 		{
 			p_out += to_chars_quat_unsafe(m_data.m_sideA, p_out);
 			*(p_out++) = ' ';
@@ -466,7 +466,7 @@ TYPED_TEST(Quaternion_T, Operator_add)
 			return to_chars_quat_estimate(m_data.m_A) + to_chars_quat_estimate(m_data.m_B) + 1;
 		}
 
-		void getPrint(char8_t* p_out) const
+		void get_print(char8_t* p_out) const
 		{
 			p_out += to_chars_quat_unsafe(m_data.m_A, p_out);
 			*(p_out++) = ' ';
@@ -537,7 +537,7 @@ TYPED_TEST(Quaternion_T, Operator_minus)
 			return to_chars_quat_estimate(m_data.m_A) + to_chars_quat_estimate(m_data.m_B) + 1;
 		}
 
-		void getPrint(char8_t* p_out) const
+		void get_print(char8_t* p_out) const
 		{
 			p_out += to_chars_quat_unsafe(m_data.m_A, p_out);
 			*(p_out++) = ' ';
@@ -608,7 +608,7 @@ TYPED_TEST(Quaternion_T, scalar_multiply)
 			return to_chars_quat_estimate(m_data.m_quat) + core::_p::to_chars_estimate(m_data.m_scalar) + 3;
 		}
 
-		void getPrint(char8_t* p_out) const
+		void get_print(char8_t* p_out) const
 		{
 			p_out += to_chars_quat_unsafe(m_data.m_quat, p_out);
 			*(p_out++) = ' ';
@@ -673,7 +673,7 @@ TYPED_TEST(Quaternion_T, scalar_division)
 			return to_chars_quat_estimate(m_data.m_quat) + core::_p::to_chars_estimate(m_data.m_scalar) + 3;
 		}
 
-		void getPrint(char8_t* p_out) const
+		void get_print(char8_t* p_out) const
 		{
 			p_out += to_chars_quat_unsafe(m_data.m_quat, p_out);
 			*(p_out++) = ' ';
@@ -738,7 +738,7 @@ TYPED_TEST(Quaternion_T, quaternion_multiplication)
 			return to_chars_quat_estimate(m_data.m_first) + to_chars_quat_estimate(m_data.m_second) + 1;
 		}
 
-		void getPrint(char8_t* p_out) const
+		void get_print(char8_t* p_out) const
 		{
 			p_out += to_chars_quat_unsafe(m_data.m_first, p_out);
 			*(p_out++) = ' ';

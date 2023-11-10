@@ -89,7 +89,7 @@ public:
 	static inline constexpr uintptr_t size(const CharT&) { return aux_size + 2; }
 
 	template<_p::c_toPrint_char CharT>
-	void getPrint(CharT* p_out) const
+	void get_print(CharT* p_out) const
 	{
 		*(p_out++) = '0';
 		*(p_out++) = 'x';
@@ -116,7 +116,7 @@ public:
 	static inline constexpr uintptr_t size(const CharT&) { return 1; }
 
 	template<_p::c_toPrint_char CharT>
-	void getPrint(CharT* const p_out) const
+	void get_print(CharT* const p_out) const
 	{
 		*p_out = static_cast<CharT>(m_data);
 	}
@@ -148,9 +148,9 @@ public:
 	inline constexpr uintptr_t size(const char16_t&) const { return 1; }
 	inline constexpr uintptr_t size(const char32_t&) const { return 1; }
 
-	void getPrint(char8_t * const p_out) const { encode_UTF8(m_data, std::span<char8_t, 4>{p_out, 4}); }
-	void getPrint(char16_t* const p_out) const { *p_out = m_data; }
-	void getPrint(char32_t* const p_out) const { *p_out = static_cast<char32_t>(m_data); }
+	void get_print(char8_t * const p_out) const { encode_UTF8(m_data, std::span<char8_t, 4>{p_out, 4}); }
+	void get_print(char16_t* const p_out) const { *p_out = m_data; }
+	void get_print(char32_t* const p_out) const { *p_out = static_cast<char32_t>(m_data); }
 
 private:
 	const char16_t m_data;
@@ -194,7 +194,7 @@ public:
 	}
 	inline constexpr uintptr_t size(const char32_t&) const { return 1; }
 
-	void getPrint(char8_t* const p_out) const
+	void get_print(char8_t* const p_out) const
 	{
 		if(!encode_UTF8(m_data, std::span<char8_t, 4>{p_out, 4}))
 		{
@@ -202,7 +202,7 @@ public:
 		}
 	}
 
-	void getPrint(char16_t* const p_out) const
+	void get_print(char16_t* const p_out) const
 	{
 		if(!encode_UTF16(m_data, std::span<char16_t, 2>{p_out, 2}))
 		{
@@ -210,7 +210,7 @@ public:
 		}
 	}
 
-	inline void getPrint(char32_t* const p_out) const { *p_out = m_data; }
+	inline void get_print(char32_t* const p_out) const { *p_out = m_data; }
 
 private:
 	const char32_t m_data;
@@ -253,17 +253,17 @@ public:
 		return _p::UTF8_to_UCS4_faulty_estimate(m_data);
 	}
 
-	void getPrint(char8_t* const p_out) const
+	void get_print(char8_t* const p_out) const
 	{
 		memcpy(p_out, m_data.data(), m_data.size());
 	}
 
-	void getPrint(char16_t* const p_out) const
+	void get_print(char16_t* const p_out) const
 	{
 		_p::UTF8_to_UTF16_faulty_unsafe(m_data, '?', p_out);
 	}
 
-	void getPrint(char32_t* const p_out) const
+	void get_print(char32_t* const p_out) const
 	{
 		_p::UTF8_to_UCS4_faulty_unsafe(m_data, '?', p_out);
 	}
@@ -292,17 +292,17 @@ public:
 		return core::_p::UTF16_to_UCS4_faulty_estimate(m_data);
 	}
 
-	void getPrint(char8_t* const p_out) const
+	void get_print(char8_t* const p_out) const
 	{
 		core::_p::UTF16_to_UTF8_faulty_unsafe(m_data, '?', p_out);
 	}
 
-	void getPrint(char16_t* const p_out) const
+	void get_print(char16_t* const p_out) const
 	{
 		memcpy(p_out, m_data.data(), m_data.size() * sizeof(char16_t));
 	}
 
-	void getPrint(char32_t* const p_out) const
+	void get_print(char32_t* const p_out) const
 	{
 		core::_p::UTF16_to_UCS4_faulty_unsafe(m_data, '?', p_out);
 	}
@@ -335,17 +335,17 @@ public:
 		return m_data.size();
 	}
 
-	void getPrint(char8_t* const p_out) const
+	void get_print(char8_t* const p_out) const
 	{
 		core::_p::UCS4_to_UTF8_faulty_unsafe(m_data, '?', p_out);
 	}
 
-	void getPrint(char16_t* const p_out) const
+	void get_print(char16_t* const p_out) const
 	{
 		core::_p::UCS4_to_UTF16_faulty_unsafe(m_data, '?', p_out);
 	}
 
-	void getPrint(char32_t* const p_out) const
+	void get_print(char32_t* const p_out) const
 	{
 		memcpy(p_out, m_data.data(), m_data.size() * sizeof(char32_t));
 	}
@@ -437,7 +437,7 @@ public:
 	inline constexpr uintptr_t size(const CharT&) const { return m_size; }
 
 	template<_p::c_toPrint_char CharT>
-	void getPrint(CharT* p_out) const
+	void get_print(CharT* p_out) const
 	{
 		const char8_t* pivot = m_preCalc.data();
 		const char8_t* const last = pivot + m_size;
@@ -473,7 +473,7 @@ public:
 	inline uintptr_t size(const CharT&) const { return size(); }
 
 	template<_p::c_toPrint_char CharT>
-	inline void getPrint(CharT* const p_out) const
+	inline void get_print(CharT* const p_out) const
 	{
 		core::_p::to_chars_unsafe(m_data, p_out);
 	}
@@ -539,7 +539,7 @@ public:
 	inline constexpr uintptr_t size(const CharT&) const { return m_size; }
 
 	template<_p::c_toPrint_char CharT>
-	void getPrint(CharT* p_out) const
+	void get_print(CharT* p_out) const
 	{
 		const char8_t* pivot = m_preCalc.data();
 		const char8_t* const last = pivot + m_size;
@@ -578,7 +578,7 @@ public:
 	inline uintptr_t size(const CharT&) const { return size(); }
 
 	template<_p::c_toPrint_char CharT>
-	inline void getPrint(CharT* const p_out) const
+	inline void get_print(CharT* const p_out) const
 	{
 		core::_p::to_chars_hex_unsafe(m_data, p_out);
 	}
@@ -614,7 +614,7 @@ public:
 	static inline constexpr uintptr_t size(const CharT&) { return array_size; }
 
 	template<_p::c_toPrint_char CharT>
-	inline void getPrint(CharT* const p_out) const
+	inline void get_print(CharT* const p_out) const
 	{
 		core::_p::to_chars_hex_fix_unsafe(m_data, p_out);
 	}

@@ -68,7 +68,7 @@ namespace
 
 		static inline constexpr uintptr_t size(const char8_t&) { return 2; }
 
-		void getPrint(char8_t* p_out) const
+		void get_print(char8_t* p_out) const
 		{
 			if(m_data < 9)
 			{
@@ -93,7 +93,7 @@ namespace
 
 		static inline constexpr uintptr_t size(const char8_t&) { return 3; }
 
-		void getPrint(char8_t* p_out) const
+		void get_print(char8_t* p_out) const
 		{
 			if(m_data < 100)
 			{
