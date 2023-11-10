@@ -131,6 +131,7 @@
     <ClInclude Include="include\CoreLib\toPrint\toPrint.hpp" />
     <ClInclude Include="include\CoreLib\toPrint\toPrint_base.hpp" />
     <ClInclude Include="include\CoreLib\toPrint\toPrint_encoders.hpp" />
+    <ClInclude Include="include\CoreLib\toPrint\toPrint_enum.hpp" />
     <ClInclude Include="include\CoreLib\toPrint\toPrint_file.hpp" />
     <ClInclude Include="include\CoreLib\toPrint\toPrint_filesystem.hpp" />
     <ClInclude Include="include\CoreLib\toPrint\toPrint_net.hpp" />

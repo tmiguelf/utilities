@@ -31,6 +31,7 @@
 #include <CoreLib/toPrint/toPrint.hpp>
 #include <CoreLib/toPrint/toPrint_filesystem.hpp>
 #include <CoreLib/toPrint/toPrint_net.hpp>
+#include <CoreLib/toPrint/toPrint_enum.hpp>
 
 using core::literals::operator "" _ui8;
 using core::literals::operator "" _i8;
@@ -118,11 +119,49 @@ TEST(toPrint, toPrint_interface)
 
 
 
+
+
+enum class TestEnum : uint32_t
+{
+	Val0 = 0,
+	Val1 = 1,
+	Val2 = 2,
+};
+
+namespace core
+{
+	template<>
+	struct toPrint_enum_string_view_table<TestEnum>
+	{
+		inline static std::u8string_view to_string(TestEnum const p_val)
+		{
+			switch(p_val)
+			{
+			case TestEnum::Val0: return u8"Val0"sv;
+			case TestEnum::Val1: return u8"Val1"sv;
+			case TestEnum::Val2: return u8"Val2"sv;
+			}
+
+			return std::u8string_view{};
+		}
+
+		static constexpr std::u8string_view enum_name = u8"TestEnum"sv;
+	};
+
+	template<>
+	class toPrint<TestEnum> : public toPrint_enum<TestEnum>
+	{
+	public:
+		toPrint(TestEnum const p_val) : toPrint_enum(p_val) {}
+	};
+
+}
+
 template<typename char_t>
 class test_type_sink: public core::sink_toPrint_base
 {
 public:
-	void write(std::basic_string_view<char_t>) const
+	void write([[maybe_unused]] std::basic_string_view<char_t> p_str) const
 	{
 	}
 
@@ -144,6 +183,12 @@ TEST(toPrint, toPrint_type_support)
 	TYPE_TEST_PRINT(char8_t, core::toPrint_net{ core::IP_address{}, 25 });
 	TYPE_TEST_PRINT(char16_t, core::toPrint_net{ core::IP_address{}, 25 });
 	TYPE_TEST_PRINT(char32_t, core::toPrint_net{ core::IP_address{}, 25 });
+
+
+	TYPE_TEST_PRINT(char8_t, TestEnum::Val0);
+	TYPE_TEST_PRINT(char16_t, TestEnum::Val1);
+	TYPE_TEST_PRINT(char32_t, TestEnum::Val2);
+	TYPE_TEST_PRINT(char8_t, TestEnum{36});
 
 	TYPE_TEST_PRINT(char8_t , 0);
 	TYPE_TEST_PRINT(char16_t, 0);
