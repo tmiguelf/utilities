@@ -40,7 +40,7 @@ namespace core
 	struct toPrint_enum_string_view_table;
 
 	template<typename T>
-	class toPrint_enum : public toPrint_base
+	class toPrint_enum_Unicode : public toPrint_base
 	{
 	public:
 		using string_table = toPrint_enum_string_view_table<T>;
@@ -54,7 +54,7 @@ namespace core
 			"enum_name and return type of to_string, must have the same underlying basic_string_view value_type");
 
 	public:
-		toPrint_enum(enum_t const p_val)
+		toPrint_enum_Unicode(enum_t const p_val)
 			: m_decoded(string_table::to_string(p_val))
 			, m_val(static_cast<uint_t>(p_val))
 		{
@@ -86,8 +86,7 @@ namespace core
 				*(p_out++) = '(';
 				*(p_out++) = '0';
 				*(p_out++) = 'x';
-				_p::to_chars_hex_unsafe(m_val, p_out);
-				p_out += _p::to_chars_hex_estimate(m_val);
+				p_out += to_chars_hex(m_val, std::span<CharT, to_chars_hex_max_size_v<uint_t>>{p_out, to_chars_hex_max_size_v<uint_t>});
 				*(p_out) = ')';
 			}
 			else
@@ -95,6 +94,92 @@ namespace core
 				*(p_out++) = ':';
 				*(p_out++) = ':';
 				toPrint{m_decoded}.get_print(p_out);
+			}
+		}
+
+	private:
+		std::basic_string_view<char_t> m_decoded;
+		uint_t m_val;
+	};
+
+	template<typename T>
+	class toPrint_enum_ASCII : public toPrint_base
+	{
+	public:
+		using string_table = toPrint_enum_string_view_table<T>;
+		using enum_t = T;
+		using char_t = typename decltype(string_table::enum_name)::value_type;
+		using uint_t = _p::toPrint_uint_clobber_t<std::underlying_type_t<enum_t>>;
+
+		static_assert(std::is_enum_v<T>);
+		static_assert(_p::toPrint_supported_char<char_t>::value);
+		static_assert(std::is_same_v<decltype(string_table::to_string(std::declval<enum_t>())), std::basic_string_view<char_t>>,
+			"enum_name and return type of to_string, must have the same underlying basic_string_view value_type");
+
+	public:
+		toPrint_enum_ASCII(enum_t const p_val)
+			: m_decoded(string_table::to_string(p_val))
+			, m_val(static_cast<uint_t>(p_val))
+		{
+		}
+
+		inline uintptr_t size() const
+		{
+			if(m_decoded.empty())
+			{
+				return string_table::enum_name.size() + 4 + _p::to_chars_hex_estimate(m_val);
+			}
+			else
+			{
+				return string_table::enum_name.size() + 2 + m_decoded.size();
+			}
+		}
+
+		template<_p::c_toPrint_char CharT>
+		inline uintptr_t size(const CharT&) const
+		{
+			return size();
+		}
+
+		template<_p::c_toPrint_char CharT>
+		inline void get_print(CharT* p_out) const
+		{
+			if constexpr(std::is_same_v<char_t, CharT>)
+			{
+				memcpy(p_out, string_table::enum_name.data(), string_table::enum_name.size() * sizeof(char_t));
+				p_out += string_table::enum_name.size();
+			}
+			else
+			{
+				for(const char_t cp : string_table::enum_name)
+				{
+					*(p_out++) = cp;
+				}
+			}
+
+			if(m_decoded.empty())
+			{
+				*(p_out++) = '(';
+				*(p_out++) = '0';
+				*(p_out++) = 'x';
+				p_out += to_chars_hex(m_val, std::span<CharT, to_chars_hex_max_size_v<uint_t>>{p_out, to_chars_hex_max_size_v<uint_t>});
+				*(p_out) = ')';
+			}
+			else
+			{
+				*(p_out++) = ':';
+				*(p_out++) = ':';
+				if constexpr(std::is_same_v<char_t, CharT>)
+				{
+					memcpy(p_out, m_decoded.data(), m_decoded.size() * sizeof(char_t));
+				}
+				else
+				{
+					for(const char_t cp : m_decoded)
+					{
+						*(p_out++) = cp;
+					}
+				}
 			}
 		}
 

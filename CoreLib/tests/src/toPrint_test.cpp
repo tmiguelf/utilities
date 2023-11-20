@@ -149,10 +149,10 @@ namespace core
 	};
 
 	template<>
-	class toPrint<TestEnum> : public toPrint_enum<TestEnum>
+	class toPrint<TestEnum> : public toPrint_enum_ASCII<TestEnum>
 	{
 	public:
-		toPrint(TestEnum const p_val) : toPrint_enum(p_val) {}
+		toPrint(TestEnum const p_val) : toPrint_enum_ASCII(p_val) {}
 	};
 
 }
