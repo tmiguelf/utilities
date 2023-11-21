@@ -57,57 +57,74 @@ void console_out::write(std::string_view const p_out) const
 
 void console_out::write(std::wstring_view const p_out) const
 {
-	DWORD trash;
-	WriteConsoleW(m_handle, p_out.data(), static_cast<DWORD>(p_out.size()), &trash, nullptr);
+	write(std::u16string_view{reinterpret_cast<const char16_t*>(p_out.data()), p_out.size()});
 }
 
 NO_INLINE void console_out::write(std::u8string_view const p_out) const
 {
-	const uintptr_t buff_size = core::_p::UTF8_to_UTF16_faulty_estimate(p_out, '?');
-
-	if(buff_size > alloca_treshold)
+	DWORD remaining = static_cast<DWORD>(p_out.size());
+	DWORD writen = 0;
+	const char8_t* pivot = p_out.data();
+	while(true)
 	{
-		std::vector<char16_t> buff;
-		buff.resize(buff_size);
-		core::_p::UTF8_to_UTF16_faulty_unsafe(p_out, '?', buff.data());
-		write(std::u16string_view{buff.data(), buff_size});
-	}
-	else
-	{
-		char16_t* const buff = reinterpret_cast<char16_t* const>(core_alloca(buff_size * sizeof(char16_t)));
-		core::_p::UTF8_to_UTF16_faulty_unsafe(p_out, '?', buff);
-		write(std::u16string_view{buff, buff_size});
-	}
+		BOOL result = WriteFile(m_handle, pivot, remaining, &writen, nullptr);
+		if(!result || !writen)
+		{
+			break;
+		}
+		if(writen < remaining)
+		{
+			pivot += writen;
+			remaining -= writen;
+		}
+		else
+		{
+			break;
+		}
+	};
 }
 
 void console_out::write(std::u16string_view const p_out) const
 {
-	DWORD trash;
-	WriteConsoleW(m_handle, p_out.data(), static_cast<DWORD>(p_out.size()), &trash, nullptr);
+	const uintptr_t buff_size = core::_p::UTF16_to_UTF8_faulty_estimate(p_out, '?');
+
+	if(buff_size > alloca_treshold)
+	{
+		std::vector<char8_t> buff;
+		buff.resize(buff_size);
+		core::_p::UTF16_to_UTF8_faulty_unsafe(p_out, '?', buff.data());
+		write(std::u8string_view{buff.data(), buff_size});
+	}
+	else
+	{
+		char8_t* const buff = reinterpret_cast<char8_t* const>(core_alloca(buff_size));
+		core::_p::UTF16_to_UTF8_faulty_unsafe(p_out, '?', buff);
+		write(std::u8string_view{buff, buff_size});
+	}
 }
 
 NO_INLINE void console_out::write(std::u32string_view const p_out) const
 {
-	const uintptr_t buff_size = core::_p::UCS4_to_UTF16_faulty_estimate(p_out, '?');
+	const uintptr_t buff_size = core::_p::UCS4_to_UTF8_faulty_estimate(p_out, '?');
 
 	if(buff_size > alloca_treshold)
 	{
-		std::vector<char16_t> buff;
+		std::vector<char8_t> buff;
 		buff.resize(buff_size);
-		core::_p::UCS4_to_UTF16_faulty_unsafe(p_out, '?', buff.data());
-		write(std::u16string_view{buff.data(), buff_size});
+		core::_p::UCS4_to_UTF8_faulty_unsafe(p_out, '?', buff.data());
+		write(std::u8string_view{buff.data(), buff_size});
 	}
 	else
 	{
-		char16_t* const buff = reinterpret_cast<char16_t* const>(core_alloca(buff_size * sizeof(char16_t)));
-		core::_p::UCS4_to_UTF16_faulty_unsafe(p_out, '?', buff);
-		write(std::u16string_view{buff, buff_size});
+		char8_t* const buff = reinterpret_cast<char8_t* const>(core_alloca(buff_size));
+		core::_p::UCS4_to_UTF8_faulty_unsafe(p_out, '?', buff);
+		write(std::u8string_view{buff, buff_size});
 	}
 }
 
 void console_out::put(const char p_out) const
 {
-	put(static_cast<char16_t>(p_out));
+	put(static_cast<char8_t>(p_out));
 }
 
 void console_out::put(const wchar_t p_out) const
@@ -117,26 +134,35 @@ void console_out::put(const wchar_t p_out) const
 
 void console_out::put(const char8_t p_out) const
 {
-	put(static_cast<char16_t>(p_out));
+	DWORD trash;
+	WriteFile(m_handle, &p_out, 1, &trash, nullptr);
 }
 
 void console_out::put(const char16_t p_out) const
 {
-	DWORD trash;
-	WriteConsoleW(m_handle, &p_out, 1, &trash, nullptr);
+	std::array<char8_t, 4> buff;
+	const uint8_t size = encode_UTF8(static_cast<char32_t>(p_out), buff);
+	if(size)
+	{
+		write(std::u8string_view{buff.data(), size});
+	}
+	else
+	{
+		put(u8'?');
+	}
 }
 
 void console_out::put(const char32_t p_out) const
 {
-	std::array<char16_t, 2> buff;
-	const uint8_t size = encode_UTF16(p_out, buff);
+	std::array<char8_t, 4> buff;
+	const uint8_t size = encode_UTF8(p_out, buff);
 	if(size)
 	{
-		write(std::u16string_view{buff.data(), size});
+		write(std::u8string_view{buff.data(), size});
 	}
 	else
 	{
-		put(u'?');
+		put(u8'?');
 	}
 }
 
