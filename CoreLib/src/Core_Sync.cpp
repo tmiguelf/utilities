@@ -26,6 +26,7 @@
 #include <CoreLib/Core_Sync.hpp>
 
 #ifdef _WIN32
+#	include <limits>
 #	include <Windows.h>
 #else
 #	include <time.h>
@@ -37,35 +38,22 @@ namespace core
 
 #ifdef _WIN32
 mutex::mutex()
+	: m_mutex(CreateMutexW(nullptr, false, nullptr))
 {
-	m_mutex = nullptr;
 }
 
 mutex::~mutex()
 {
-	destroy();
-}
-
-SYNC_Error mutex::create()
-{
-	destroy();
-	m_mutex = CreateMutexA(nullptr, false, "");
-	if(m_mutex == nullptr) return SYNC_Error::Fail;
-	return SYNC_Error::NoErr;
-}
-
-SYNC_Error mutex::destroy()
-{
 	if(m_mutex != nullptr)
 	{
-		if(CloseHandle(m_mutex) == TRUE)
+		if(!CloseHandle(m_mutex))
 		{
-			m_mutex = nullptr;
-			return SYNC_Error::NoErr;
+			if(SetHandleInformation(m_mutex, HANDLE_FLAG_PROTECT_FROM_CLOSE, 0))
+			{
+				CloseHandle(m_mutex);
+			}
 		}
-		return SYNC_Error::Fail;
 	}
-	return SYNC_Error::NoErr;
 }
 
 SYNC_Error mutex::lock()
@@ -121,82 +109,36 @@ SYNC_Error mutex::unlock()
 }
 
 
-semaphore::semaphore()
+semaphore::semaphore(uint32_t p_range)
 {
-	m_semaphore = nullptr;
+	if(p_range > static_cast<uint32_t>(std::numeric_limits<LONG>::max())) return;
+	m_semaphore = CreateSemaphoreW(nullptr, p_range, p_range, nullptr);
+}
+
+semaphore::semaphore(std::u8string& p_name, uint32_t p_range)
+{
+	if(p_range > static_cast<uint32_t>(std::numeric_limits<LONG>::max())) return;
+	m_semaphore = CreateSemaphoreA(nullptr, p_range, p_range, reinterpret_cast<const char*>(p_name.c_str()));
+}
+
+semaphore::semaphore(std::u16string& p_name, uint32_t p_range)
+{
+	if(p_range > static_cast<uint32_t>(std::numeric_limits<LONG>::max())) return;
+	m_semaphore = CreateSemaphoreW(nullptr, p_range, p_range, reinterpret_cast<const wchar_t*>(p_name.c_str()));
 }
 
 semaphore::~semaphore()
 {
-	destroy();
-}
-
-SYNC_Error semaphore::create(std::u8string& p_name, const uint32_t p_range)
-{
-	destroy();
-#ifdef __CORE_EXTENDED_ERROR__
-	if(p_range > 0x7FFFFFFF || p_name.size() > MAX_PATH) return SYNC_Error::Invalid_Argument;
-#endif
-	SECURITY_ATTRIBUTES attb
+	if(m_semaphore)
 	{
-		.nLength = sizeof(SECURITY_ATTRIBUTES),
-		.lpSecurityDescriptor = nullptr,
-		.bInheritHandle = false
-	};
-
-	m_semaphore = CreateSemaphoreA(&attb, p_range, p_range, reinterpret_cast<const char*>(p_name.c_str()));
-	if(m_semaphore == nullptr) return SYNC_Error::Fail;
-	return SYNC_Error::NoErr;
-}
-
-SYNC_Error semaphore::create(std::u16string& p_name, const uint32_t p_range)
-{
-	destroy();
-#ifdef __CORE_EXTENDED_ERROR__
-	if(p_range > 0x7FFFFFFF || p_name.size() > MAX_PATH) return SYNC_Error::Invalid_Argument;
-#endif
-	SECURITY_ATTRIBUTES attb
-	{
-		.nLength = sizeof(SECURITY_ATTRIBUTES),
-		.lpSecurityDescriptor = nullptr,
-		.bInheritHandle = false
-	};
-
-	m_semaphore = CreateSemaphoreW(&attb, p_range, p_range, reinterpret_cast<const wchar_t*>(p_name.c_str()));
-	if(m_semaphore == nullptr) return SYNC_Error::Fail;
-	return SYNC_Error::NoErr;
-}
-
-SYNC_Error semaphore::create(const uint32_t p_range)
-{
-	destroy();
-#ifdef __CORE_EXTENDED_ERROR__
-	if(p_range > 0x7FFFFFFF) return SYNC_Error::Invalid_Argument;
-#endif
-	SECURITY_ATTRIBUTES attb
-	{
-		.nLength = sizeof(SECURITY_ATTRIBUTES),
-		.lpSecurityDescriptor = nullptr,
-		.bInheritHandle = false
-	};
-
-	m_semaphore = CreateSemaphoreA(&attb, p_range, p_range, nullptr);
-	if(m_semaphore == nullptr) return SYNC_Error::Fail;
-	return SYNC_Error::NoErr;
-}
-
-SYNC_Error semaphore::destroy()
-{
-	if(m_semaphore != nullptr)
-	{
-		if(CloseHandle(m_semaphore) == TRUE)
+		if(!CloseHandle(m_semaphore))
 		{
-			m_semaphore = nullptr;
-			return SYNC_Error::NoErr;
+			if(SetHandleInformation(m_semaphore, HANDLE_FLAG_PROTECT_FROM_CLOSE, 0))
+			{
+				CloseHandle(m_semaphore);
+			}
 		}
-		return SYNC_Error::Fail;
 	}
-	return SYNC_Error::NoErr;
 }
 
 SYNC_Error semaphore::wait()
@@ -252,37 +194,21 @@ SYNC_Error semaphore::post()
 }
 
 event_trap::event_trap()
+	: m_event(CreateEventW(nullptr, TRUE, FALSE, nullptr))
 {
-	m_event = nullptr;
 }
 
 event_trap::~event_trap()
 {
-	destroy();
-}
-
-SYNC_Error event_trap::create()
-{
-	destroy();
-	SECURITY_ATTRIBUTES attb
-	{
-		.nLength = sizeof(SECURITY_ATTRIBUTES),
-		.lpSecurityDescriptor = nullptr,
-		.bInheritHandle = false
-	};
-	if(((m_event = CreateEventA(&attb, TRUE, FALSE, nullptr))) != 0)
-	{
-		return SYNC_Error::NoErr;
-	}
-	return SYNC_Error::Fail;
-}
-
-void event_trap::destroy()
-{
 	if(m_event)
 	{
-		CloseHandle(m_event);
-		m_event = nullptr;
+		if(!CloseHandle(m_event))
+		{
+			if(SetHandleInformation(m_event, HANDLE_FLAG_PROTECT_FROM_CLOSE, 0))
+			{
+				CloseHandle(m_event);
+			}
+		}
 	}
 }
 
@@ -355,31 +281,24 @@ SYNC_Error event_trap::timed_wait(const uint32_t p_miliseconds)
 
 mutex::mutex()
 {
-	m_init = false;
+	m_init = (pthread_mutex_init(&m_mutex, nullptr) == 0);
 }
 
 mutex::~mutex()
 {
-	destroy();
-}
-
-SYNC_Error mutex::create()
-{
-	destroy();
-	if(pthread_mutex_init(&m_mutex, nullptr)) return SYNC_Error::Fail;
-	m_init = true;
-	return SYNC_Error::NoErr;
-}
-
-SYNC_Error mutex::destroy()
-{
 	if(m_init)
 	{
-		if(pthread_mutex_destroy(&m_mutex)) return SYNC_Error::Fail;
-		m_init = false;
-		return SYNC_Error::NoErr;
+		int const ret = pthread_mutex_destroy(&m_mutex);
+		if(ret)
+		{
+			//todo
+			if(ret == EBUSY)
+			{
+				lock();
+				pthread_mutex_destroy(&m_mutex);
+			}
+		}
 	}
-	return SYNC_Error::Does_Not_Exist;
 }
 
 SYNC_Error mutex::lock()
@@ -424,56 +343,34 @@ SYNC_Error mutex::unlock()
 }
 
 
-semaphore::semaphore()
+semaphore::semaphore(uint32_t p_range)
 {
-	m_semaphore = nullptr;
+	is_named = false;
+	if(!sem_init(m_semaphore, 0, p_range))
+	{
+		m_semaphore = &m_unSem;
+	}
+}
+
+semaphore::semaphore(std::u8string& p_name, uint32_t p_range)
+{
+	is_named = true;
+	m_semaphore = sem_open(reinterpret_cast<const char*>(p_name.c_str()), O_CREAT | O_CLOEXEC, DEFFILEMODE, p_range);
 }
 
 semaphore::~semaphore()
 {
-	destroy();
-}
-
-SYNC_Error semaphore::create(std::u8string& p_name, const uint32_t p_range)
-{
-	destroy();
-#ifdef __CORE_EXTENDED_ERROR__
-	if(p_name.size() > PATH_MAX) return SYNC_Invalid_Argument;
-#endif
-	is_named = true;
-
-	m_semaphore = sem_open(reinterpret_cast<const char*>(p_name.c_str()), O_CREAT | O_CLOEXEC, DEFFILEMODE, p_range);
-	if(m_semaphore != nullptr) return SYNC_Error::NoErr;
-	return SYNC_Error::Fail;
-}
-
-SYNC_Error semaphore::create(const uint32_t p_range)
-{
-	destroy();
-	is_named = false;
-	m_semaphore = &m_unSem;
-	if(sem_init(m_semaphore, 0, p_range)) return SYNC_Error::Fail;
-	return SYNC_Error::NoErr;
-}
-
-SYNC_Error semaphore::destroy()
-{
-	if(m_semaphore != nullptr)
+	if(m_semaphore)
 	{
 		if(is_named)
 		{
-			if(sem_close(m_semaphore)) return SYNC_Error::Fail;
-			m_semaphore = nullptr;
-			return SYNC_Error::NoErr;
+			sem_close(m_semaphore);
 		}
 		else
 		{
-			if(sem_destroy(m_semaphore)) return SYNC_Error::Fail;
-			m_semaphore = nullptr;
-			return SYNC_Error::NoErr;
+			sem_destroy(m_semaphore);
 		}
 	}
-	return SYNC_Error::NoErr;
 }
 
 SYNC_Error semaphore::wait()
@@ -522,42 +419,32 @@ SYNC_Error semaphore::post()
 
 event_trap::event_trap()
 {
-	m_init	= false;
-}
-
-event_trap::~event_trap()
-{
-	destroy();
-}
-
-SYNC_Error event_trap::create()
-{
-	pthread_condattr_t attr;
-	destroy();
+	m_init = false;
 	m_cond = false;
+
+	pthread_condattr_t attr;
 	pthread_condattr_init(&attr);
 	pthread_condattr_setclock(&attr, CLOCK_MONOTONIC);
+
 	if(pthread_cond_init(&m_condition, &attr))
 	{
-		return SYNC_Error::Fail;
+		return;
 	}
 
 	if(pthread_mutex_init(&m_mutex, nullptr))
 	{
 		pthread_cond_destroy(&m_condition);
-		return SYNC_Error::Fail;
+		return;
 	}
 	m_init = true;
-	return SYNC_Error::NoErr;
 }
 
-void event_trap::destroy()
+event_trap::~event_trap()
 {
 	if(m_init)
 	{
 		pthread_cond_destroy(&m_condition);
 		pthread_mutex_destroy(&m_mutex);
-		m_init = false;
 	}
 }
 

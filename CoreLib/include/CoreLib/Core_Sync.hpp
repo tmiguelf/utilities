@@ -45,7 +45,7 @@ enum class SYNC_Error: uint8_t
 	NoErr				= 0x00,
 	Fail				= 0x01,
 	Does_Not_Exist		= 0x02,
-	Invalid_Argument	= 0x03,
+	//Invalid_Argument	= 0x03,
 	PreEmptive			= 0x04,
 	Unknown				= 0xF0,
 	TimeOut				= 0xFF,
@@ -60,21 +60,15 @@ class mutex
 {
 private:
 #ifdef _WIN32
-	void* m_mutex;
+	void* m_mutex = nullptr;
 #else
-	pthread_mutex_t	m_mutex;
-	bool			m_init;
+	pthread_mutex_t	m_mutex{};
+	bool			m_init = false;
 #endif
 
 public:
 	mutex();
 	~mutex();
-
-	/// \brief Creates the mutex, required before the object is in a usable state
-	core::SYNC_Error create();
-
-	/// \brief Destroys the mutex
-	core::SYNC_Error destroy();
 	
 	core::SYNC_Error lock();
 
@@ -126,28 +120,19 @@ private:
 	void*	m_semaphore;
 #else
 	sem_t	m_unSem;
-	sem_t*	m_semaphore;
+	sem_t*	m_semaphore = nullptr;
 	bool	is_named;
 #endif
 
 public:
-	semaphore();
+	semaphore(uint32_t p_range);
+	semaphore(std::u8string& p_name, uint32_t p_range);
+#ifdef _WIN32
+	semaphore(std::u16string& p_name, uint32_t p_range);
+#endif
+
 	~semaphore();
 
-	///	\brief		Creates a named semaphore, required before the object is in a usable state
-	core::SYNC_Error create(std::u8string& p_name, uint32_t p_range);
-	
-	#ifdef _WIN32
-	///	\brief		Creates a named semaphore, required before the object is in a usable state
-	core::SYNC_Error create(std::u16string& p_name, uint32_t p_range);
-	#endif
-
-	///	\brief		Creates an unnamed semaphore, required before the object is in a usable state
-	core::SYNC_Error create(uint32_t p_range);
-
-	///	\brief		Destroys the semaphore
-	///	\return		0 on success, or an error code from \ref SYNC_Error
-	core::SYNC_Error destroy();
 
 	///	\brief	tries to acquire the semaphore in a blocking way
 	///	\return	0 on success, or an error code from \ref SYNC_Error
@@ -181,7 +166,7 @@ private:
 #else
 	pthread_cond_t	m_condition;
 	pthread_mutex_t	m_mutex;
-	bool			m_init;
+	bool			m_init = false;
 	bool			m_cond;
 #endif
 
@@ -193,12 +178,6 @@ private:
 public:
 	event_trap();
 	~event_trap();
-
-	///	\brief		Creates the trap, required before the object is in a usable state
-	core::SYNC_Error create();
-	
-	///	\brief		Destroys the trap
-	void destroy();
 
 	///	\brief		Clears the unlock flag, subsequent calls to \ref wait and \ref timed_wait will block
 	core::SYNC_Error reset();
