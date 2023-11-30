@@ -37,8 +37,10 @@ namespace core
 
 #ifdef _WIN32
 using os_char = wchar_t;
+using os_char_alias = char16_t;
 #else
 using os_char = char;
+using os_char_alias = char8_t;
 #endif // _WIN32
 
 using os_string      = std::basic_string<os_char>;
