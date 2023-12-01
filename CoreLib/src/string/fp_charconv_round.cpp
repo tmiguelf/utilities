@@ -971,7 +971,6 @@ namespace core
 				}
 			}
 		}
-
 	};
 
 	fp_to_chars_sci_result to_chars_sci_size(float32_t value, fp_to_chars_sci_context<float32_t>& context, uint16_t significant_digits, fp_round rounding_mode)

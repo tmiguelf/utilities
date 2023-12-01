@@ -43,7 +43,7 @@ namespace core
 		}
 
 		template<c_ipconv_char CharT>
-		void to_chars_IPv4_unsafe(std::span<const uint8_t, 4> const p_raw, CharT* p_out)
+		CharT* to_chars_IPv4_unsafe(std::span<const uint8_t, 4> const p_raw, CharT* p_out)
 		{
 			p_out += core::to_chars(p_raw[0], std::span<CharT, 3>{p_out, 3});
 			*(p_out++) = '.';
@@ -51,7 +51,7 @@ namespace core
 			*(p_out++) = '.';
 			p_out += core::to_chars(p_raw[2], std::span<CharT, 3>{p_out, 3});
 			*(p_out++) = '.';
-			core::_p::to_chars_unsafe(p_raw[3], p_out);
+			return core::_p::to_chars_unsafe(p_raw[3], p_out);
 		}
 
 		template<c_ipconv_char CharT>
@@ -139,7 +139,7 @@ namespace core
 		}
 
 		template<c_ipconv_char CharT>
-		void to_chars_IPv6_unsafe(std::span<const uint16_t, 8> const p_raw, CharT* p_out)
+		CharT* to_chars_IPv6_unsafe(std::span<const uint16_t, 8> const p_raw, CharT* p_out)
 		{
 			uint8_t size_elide = 0;
 			uint8_t pos_elide = 0;
@@ -191,7 +191,7 @@ namespace core
 						p_out += core::to_chars_hex(core::endian_big2host(p_raw[it]), std::span<CharT, 4>{p_out, 4});
 						*(p_out++) = ':';
 					}
-					core::_p::to_chars_hex_unsafe(core::endian_big2host(p_raw[7]), p_out);
+					p_out = core::_p::to_chars_hex_unsafe(core::endian_big2host(p_raw[7]), p_out);
 				}
 			}
 			else
@@ -201,8 +201,9 @@ namespace core
 					p_out += core::to_chars_hex(core::endian_big2host(p_raw[it]), std::span<CharT, 4>{p_out, 4});
 					*(p_out++) = ':';
 				}
-				core::_p::to_chars_hex_unsafe(core::endian_big2host(p_raw[7]), p_out);
+				p_out = core::_p::to_chars_hex_unsafe(core::endian_big2host(p_raw[7]), p_out);
 			}
+			return p_out;
 		}
 
 		template<c_ipconv_char CharT>
@@ -415,17 +416,17 @@ namespace core
 			}
 		}
 
-		template void to_chars_IPv4_unsafe<char8_t >(std::span<const uint8_t, 4>, char8_t *);
-		template void to_chars_IPv4_unsafe<char16_t>(std::span<const uint8_t, 4>, char16_t*);
-		template void to_chars_IPv4_unsafe<char32_t>(std::span<const uint8_t, 4>, char32_t*);
+		template char8_t * to_chars_IPv4_unsafe<char8_t >(std::span<const uint8_t, 4>, char8_t *);
+		template char16_t* to_chars_IPv4_unsafe<char16_t>(std::span<const uint8_t, 4>, char16_t*);
+		template char32_t* to_chars_IPv4_unsafe<char32_t>(std::span<const uint8_t, 4>, char32_t*);
 
 		template uintptr_t to_chars_IPv4<char8_t >(std::span<const uint8_t, 4>, std::span<char8_t , 15>);
 		template uintptr_t to_chars_IPv4<char16_t>(std::span<const uint8_t, 4>, std::span<char16_t, 15>);
 		template uintptr_t to_chars_IPv4<char32_t>(std::span<const uint8_t, 4>, std::span<char32_t, 15>);
 
-		template void to_chars_IPv6_unsafe<char8_t >(std::span<const uint16_t, 8>, char8_t *);
-		template void to_chars_IPv6_unsafe<char16_t>(std::span<const uint16_t, 8>, char16_t*);
-		template void to_chars_IPv6_unsafe<char32_t>(std::span<const uint16_t, 8>, char32_t*);
+		template char8_t * to_chars_IPv6_unsafe<char8_t >(std::span<const uint16_t, 8>, char8_t *);
+		template char16_t* to_chars_IPv6_unsafe<char16_t>(std::span<const uint16_t, 8>, char16_t*);
+		template char32_t* to_chars_IPv6_unsafe<char32_t>(std::span<const uint16_t, 8>, char32_t*);
 
 		template uintptr_t to_chars_IPv6<char8_t >(std::span<const uint16_t, 8>, std::span<char8_t , 39>);
 		template uintptr_t to_chars_IPv6<char16_t>(std::span<const uint16_t, 8>, std::span<char16_t, 39>);

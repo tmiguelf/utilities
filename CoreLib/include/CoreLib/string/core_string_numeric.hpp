@@ -113,13 +113,13 @@ namespace core
 		[[nodiscard]] uintptr_t to_chars_estimate(num_T p_val);
 
 		template <_p::charconv_char_c char_T, char_conv_dec_supported_c num_T>
-		void to_chars_unsafe(num_T p_val, char_T* p_out);
+		char_T* to_chars_unsafe(num_T p_val, char_T* p_out);
 
 		template <char_conv_hex_supported_c num_T>
 		[[nodiscard]] uintptr_t to_chars_hex_estimate(num_T p_val);
 
 		template <_p::charconv_char_c char_T, char_conv_hex_supported_c num_T>
-		void to_chars_hex_unsafe(num_T p_val, char_T* p_out);
+		char_T* to_chars_hex_unsafe(num_T p_val, char_T* p_out);
 
 		template <char_conv_hex_supported_c num_T>
 		[[nodiscard]] inline constexpr uintptr_t to_chars_hex_fix_estimate(num_T const) { return to_chars_hex_max_size_v<num_T>; }

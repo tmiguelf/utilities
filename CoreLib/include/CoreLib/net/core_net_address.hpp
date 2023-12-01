@@ -50,7 +50,7 @@ namespace core
 		[[nodiscard]] uintptr_t to_chars_IPv4_estimate(std::span<const uint8_t, 4> p_raw);
 
 		template<c_ipconv_char CharT>
-		void to_chars_IPv4_unsafe(std::span<const uint8_t, 4> p_raw, CharT* p_out);
+		CharT* to_chars_IPv4_unsafe(std::span<const uint8_t, 4> p_raw, CharT* p_out);
 
 		template<c_ipconv_char CharT>
 		uintptr_t to_chars_IPv4(std::span<const uint8_t, 4> p_raw, std::span<CharT, 15> p_output);
@@ -59,7 +59,7 @@ namespace core
 		[[nodiscard]] uintptr_t to_chars_IPv6_estimate(std::span<const uint16_t, 8> p_raw);
 
 		template<c_ipconv_char CharT>
-		void to_chars_IPv6_unsafe(std::span<const uint16_t, 8> p_raw, CharT* p_out);
+		CharT* to_chars_IPv6_unsafe(std::span<const uint16_t, 8> p_raw, CharT* p_out);
 
 		template<c_ipconv_char CharT>
 		uintptr_t to_chars_IPv6(std::span<const uint16_t, 8> p_raw, std::span<CharT, 39> p_out);
