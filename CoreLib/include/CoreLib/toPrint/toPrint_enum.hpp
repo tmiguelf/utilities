@@ -74,12 +74,10 @@ namespace core
 		}
 
 		template<_p::c_toPrint_char CharT>
-		inline void get_print(CharT* p_out) const
+		inline CharT* get_print(CharT* p_out) const
 		{
 			{
-				const toPrint temp = toPrint{string_table::enum_name};
-				temp.get_print(p_out);
-				p_out += temp.size(CharT{});
+				p_out = toPrint{string_table::enum_name}.get_print(p_out);
 			}
 			if(m_decoded.empty())
 			{
@@ -87,14 +85,15 @@ namespace core
 				*(p_out++) = '0';
 				*(p_out++) = 'x';
 				p_out += to_chars_hex(m_val, std::span<CharT, to_chars_hex_max_size_v<uint_t>>{p_out, to_chars_hex_max_size_v<uint_t>});
-				*(p_out) = ')';
+				*(p_out++) = ')';
 			}
 			else
 			{
 				*(p_out++) = ':';
 				*(p_out++) = ':';
-				toPrint{m_decoded}.get_print(p_out);
+				p_out = toPrint{m_decoded}.get_print(p_out);
 			}
+			return p_out;
 		}
 
 	private:
@@ -142,7 +141,7 @@ namespace core
 		}
 
 		template<_p::c_toPrint_char CharT>
-		inline void get_print(CharT* p_out) const
+		inline CharT* get_print(CharT* p_out) const
 		{
 			if constexpr(std::is_same_v<char_t, CharT>)
 			{
@@ -163,7 +162,7 @@ namespace core
 				*(p_out++) = '0';
 				*(p_out++) = 'x';
 				p_out += to_chars_hex(m_val, std::span<CharT, to_chars_hex_max_size_v<uint_t>>{p_out, to_chars_hex_max_size_v<uint_t>});
-				*(p_out) = ')';
+				*(p_out++) = ')';
 			}
 			else
 			{
@@ -172,6 +171,7 @@ namespace core
 				if constexpr(std::is_same_v<char_t, CharT>)
 				{
 					memcpy(p_out, m_decoded.data(), m_decoded.size() * sizeof(char_t));
+					p_out += m_decoded.size();
 				}
 				else
 				{
@@ -181,6 +181,7 @@ namespace core
 					}
 				}
 			}
+			return p_out;
 		}
 
 	private:
