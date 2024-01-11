@@ -26,6 +26,7 @@
 #pragma once
 
 #include <cstdint>
+#include <tuple>
 
 #if defined(_M_AMD64) || defined(__amd64__)
 #	ifdef _WIN32
@@ -92,5 +93,75 @@ namespace core
 		return _subborrow_u64(p_borrow, p_1, p_2, reinterpret_cast<unsigned long long*>(&p_out));
 	}
 #endif
+
+
+#ifdef _WIN32
+	static inline std::tuple<uint64_t, uint64_t> mul_wide(uint64_t const p_1, uint64_t const p_2)
+	{
+		uint64_t out_hi;
+		uint64_t const out_low = _umul128(p_1, p_2, &out_hi);
+		return {out_low, out_hi};
+	}
+
+	static inline std::tuple<uint64_t, uint64_t> div_wide(uint64_t const p_hi, uint64_t const p_low, uint64_t const p_denom)
+	{
+		uint64_t rem;
+		uint64_t const out = _udiv128(p_hi, p_low, p_denom, &rem);
+		return {out, rem};
+	}
+
+	static inline std::tuple<uint64_t, bool> add_carry(uint64_t const p_1, uint64_t const p_2, bool const p_carry)
+	{
+		uint64_t out;
+		bool const carry = _addcarry_u64(p_carry, p_1, p_2, &out);
+		return {out, carry};
+	}
+
+	static inline std::tuple<uint64_t, bool> sub_borrow(uint64_t const p_1, uint64_t const p_2, bool const p_borrow)
+	{
+		uint64_t out;
+		bool const borrow = _subborrow_u64(p_borrow, p_1, p_2, &out);
+		return {out, borrow};
+	}
+#else
+	static inline std::tuple<uint64_t, uint64_t> mul_wide(uint64_t p_1, uint64_t const p_2)
+	{
+		uint64_t out_hi;
+		__asm__
+		(
+			"mul %2;"
+			: "+a"(p_1), "=d"(out_hi)
+			: "Q"(p_2)
+		);
+		return {p_1, out_hi};
+	}
+
+	static inline std::tuple<uint64_t, uint64_t> div_wide(uint64_t p_hi, uint64_t p_low, const uint64_t p_denom)
+	{
+		uint64_t rem;
+		__asm__
+		(
+			"div %3;"
+			: "+a"(p_low), "=d"(rem)
+			: "d"(p_hi), "Q"(p_denom)
+		);
+		return {p_low, rem};
+	}
+
+	static inline std::tuple<uint64_t, bool> add_carry(uint64_t const p_1, uint64_t const p_2, bool const p_carry)
+	{
+		uint64_t out;
+		bool const carry = _addcarry_u64(p_carry, p_1, p_2, reinterpret_cast<unsigned long long*>(&p_out));
+		return {out, carry};
+	}
+
+	static inline std::tuple<uint64_t, bool> sub_borrow(uint64_t const p_1, uint64_t const p_2, bool const p_borrow)
+	{
+		uint64_t out;
+		bool const borrow = _subborrow_u64(p_borrow, p_1, p_2, reinterpret_cast<unsigned long long*>(&p_out));
+		return {out, borrow};
+	}
+#endif
+
 
 } //namespace core
