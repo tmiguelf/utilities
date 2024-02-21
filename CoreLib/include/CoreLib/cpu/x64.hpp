@@ -151,14 +151,14 @@ namespace core
 	static inline std::tuple<uint64_t, bool> add_carry(uint64_t const p_1, uint64_t const p_2, bool const p_carry)
 	{
 		uint64_t out;
-		bool const carry = _addcarry_u64(p_carry, p_1, p_2, reinterpret_cast<unsigned long long*>(&p_out));
+		bool const carry = _addcarry_u64(p_carry, p_1, p_2, reinterpret_cast<unsigned long long*>(&out));
 		return {out, carry};
 	}
 
 	static inline std::tuple<uint64_t, bool> sub_borrow(uint64_t const p_1, uint64_t const p_2, bool const p_borrow)
 	{
 		uint64_t out;
-		bool const borrow = _subborrow_u64(p_borrow, p_1, p_2, reinterpret_cast<unsigned long long*>(&p_out));
+		bool const borrow = _subborrow_u64(p_borrow, p_1, p_2, reinterpret_cast<unsigned long long*>(&out));
 		return {out, borrow};
 	}
 #endif
