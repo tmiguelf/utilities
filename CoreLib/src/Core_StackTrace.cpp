@@ -57,7 +57,7 @@
 namespace core
 {
 
-#define OUTPUT(Sink, ...)  core_ToPrint(char8_t, sink_file_UTF8_unlocked(Sink), __VA_ARGS__)
+#define OUTPUT(Sink, ...)  core::print<char8_t>(sink_file_UTF8_unlocked(Sink) __VA_OPT__(,) __VA_ARGS__)
 
 namespace
 {

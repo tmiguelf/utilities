@@ -42,9 +42,6 @@ concept c_tuple = is_tuple<T>::value;
 template<typename Derived, typename Base>
 constexpr bool is_derived_v = std::is_base_of_v<Base, Derived> && std::is_convertible_v<const volatile Derived*, const volatile Base*>;
 
-template<typename T>
-struct always_true: public std::true_type {};
-
 namespace literals
 {
 	constexpr uint8_t   operator "" _ui8 (unsigned long long int const p_var) { return static_cast<uint8_t  >(p_var); }

@@ -48,7 +48,7 @@ namespace _p
 	template<c_toPrint_char, typename>
 	struct toPrint_has_write : public std::false_type{};
 	
-	template<c_toPrint_char Char_t, typename Type> requires ::core::always_true<decltype(std::declval<Type>().write(std::declval<std::basic_string_view<Char_t>>()))>::value
+	template<c_toPrint_char Char_t, typename Type> requires requires(Type x) { x.write(std::declval<std::basic_string_view<Char_t>>()); }
 	struct toPrint_has_write<Char_t, Type>: public std::true_type{};
 
 	template<typename T>
@@ -56,7 +56,6 @@ namespace _p
 
 	template<c_toPrint_char Char_t, typename T>
 	constexpr bool is_valid_sink_toPrint_v = is_sink_toPrint_v<T> && toPrint_has_write<Char_t, T>::value;
-
 
 } //namespace _p
 

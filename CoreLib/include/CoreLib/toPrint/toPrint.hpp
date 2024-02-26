@@ -339,5 +339,3 @@ namespace core
 		}
 	}
 } //namespace core
-
-#define core_ToPrint(CharT, Sink, ...) core::print<CharT>(Sink __VA_OPT__(,) __VA_ARGS__)

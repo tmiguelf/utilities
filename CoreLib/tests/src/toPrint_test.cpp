@@ -85,17 +85,17 @@ TEST(toPrint, toPrint_interface)
 
 		TestStr test;
 
-		core_ToPrint(char8_t, tsink, test);
-		core_ToPrint(char8_t, tsink, 32);
-		core_ToPrint(char8_t, tsink, &test);
-		core_ToPrint(char8_t, tsink, "string_view"sv);
-		core_ToPrint(char8_t, tsink, u8"u8string_view"sv);
-		core_ToPrint(char8_t, tsink, 'A');
-		core_ToPrint(char8_t, tsink, u8'A');
-		core_ToPrint(char8_t, tsink, 5_ui8);
-		core_ToPrint(char8_t, tsink, -5_i8);
-		core_ToPrint(char8_t, tsink);
-		core_ToPrint(char8_t, tsink, "Combination "sv, 32, ' ', test);
+		core::print<char8_t>(tsink, test);
+		core::print<char8_t>(tsink, 32);
+		core::print<char8_t>(tsink, &test);
+		core::print<char8_t>(tsink, "string_view"sv);
+		core::print<char8_t>(tsink, u8"u8string_view"sv);
+		core::print<char8_t>(tsink, 'A');
+		core::print<char8_t>(tsink, u8'A');
+		core::print<char8_t>(tsink, 5_ui8);
+		core::print<char8_t>(tsink, -5_i8);
+		core::print<char8_t>(tsink);
+		core::print<char8_t>(tsink, "Combination "sv, 32, ' ', test);
 
 		ASSERT_EQ(tsink.m_print_cache.size(), 11_uip);
 		ASSERT_EQ(tsink.m_print_cache[0], u8"TestStr"sv);
@@ -170,7 +170,7 @@ public:
 
 TEST(toPrint, toPrint_type_support)
 {
-#define TYPE_TEST_PRINT(Type, ...) core_ToPrint(Type , test_type_sink<Type>{}, __VA_ARGS__)
+#define TYPE_TEST_PRINT(Type, ...) core::print<Type>(test_type_sink<Type>{} __VA_OPT__(,) __VA_ARGS__)
 
 
 	TYPE_TEST_PRINT(char8_t, "string_view"sv);
