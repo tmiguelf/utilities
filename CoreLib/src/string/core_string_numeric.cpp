@@ -30,7 +30,7 @@
 #include <CoreLib/string/core_string_numeric.hpp>
 #include <CoreLib/string/core_fp_charconv.hpp>
 
-#include <CoreLib/Core_Type.hpp>
+#include <CoreLib/core_type.hpp>
 
 #include "fp_traits.hpp"
 

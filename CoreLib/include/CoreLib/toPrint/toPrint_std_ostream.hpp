@@ -34,10 +34,10 @@
 #include "toPrint_sink.hpp"
 #include "toPrint_base.hpp"
 
-#include <CoreLib/Core_Alloca.hpp>
+#include <CoreLib/core_alloca.hpp>
 #include <CoreLib/string/core_wchar_alias.hpp>
 
-#include <CoreLib/Core_extra_compiler.hpp>
+#include <CoreLib/core_extra_compiler.hpp>
 
 namespace core
 {

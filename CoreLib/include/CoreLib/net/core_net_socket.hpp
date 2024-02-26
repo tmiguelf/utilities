@@ -27,7 +27,7 @@
 
 #include <cstdint>
 
-#include <CoreLib/Core_Type.hpp>
+#include <CoreLib/core_type.hpp>
 
 /// \n
 namespace core

@@ -33,9 +33,9 @@
 #include <tuple>
 #include <vector>
 
-#include <CoreLib/Core_extra_compiler.hpp>
-#include <CoreLib/Core_Type.hpp>
-#include <CoreLib/Core_Alloca.hpp>
+#include <CoreLib/core_extra_compiler.hpp>
+#include <CoreLib/core_type.hpp>
+#include <CoreLib/core_alloca.hpp>
 #include <CoreLib/string/core_wchar_alias.hpp>
 
 #include "toPrint_sink.hpp"

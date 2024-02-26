@@ -31,7 +31,7 @@
 #include <type_traits>
 #include <bit>
 
-#include "Core_Type.hpp"
+#include "core_type.hpp"
 
 #ifdef _WIN32
 #	include	<stdlib.h>

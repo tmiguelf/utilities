@@ -8,7 +8,7 @@
 
 #include <iostream>
 #include <vector>
-#include <CoreLib/Core_StackTrace.hpp>
+#include <CoreLib/core_stacktrace.hpp>
 
 
 volatile int var;

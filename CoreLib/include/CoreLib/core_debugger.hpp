@@ -30,6 +30,7 @@
 #ifdef _WIN32
 
 #include <string_view>
+
 #include "toPrint/toPrint_sink.hpp"
 
 namespace core

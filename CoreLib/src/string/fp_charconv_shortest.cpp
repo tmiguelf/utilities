@@ -25,7 +25,7 @@
 
 #include <CoreLib/string/core_fp_charconv.hpp>
 
-#include <CoreLib/Core_Type.hpp>
+#include <CoreLib/core_type.hpp>
 #include <algorithm>
 
 #include "ryu/common.hpp"

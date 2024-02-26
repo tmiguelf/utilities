@@ -49,44 +49,11 @@
     <ClInclude Include="include\CoreLib\string\core_string_numeric.hpp">
       <Filter>Header Files\string</Filter>
     </ClInclude>
-    <ClInclude Include="include\CoreLib\Core_Alloca.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\CoreLib\Core_DLL.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\CoreLib\Core_Endian.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\CoreLib\Core_Sync.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\CoreLib\Core_Thread.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\CoreLib\Core_Time.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\CoreLib\Core_Type.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\CoreLib\string\core_os_string.hpp">
       <Filter>Header Files\string</Filter>
     </ClInclude>
-    <ClInclude Include="include\CoreLib\Core_OS.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\CoreLib\Core_Alternate.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\CoreLib\Core_StackTrace.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\CoreLib\string\core_string_encoding.hpp">
       <Filter>Header Files\string</Filter>
-    </ClInclude>
-    <ClInclude Include="include\CoreLib\Core_Console.hpp">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\CoreLib\string\core_wchar_alias.hpp">
       <Filter>Header Files\string</Filter>
@@ -130,17 +97,8 @@
     <ClInclude Include="include\CoreLib\net\core_net_UDP.hpp">
       <Filter>Header Files\net</Filter>
     </ClInclude>
-    <ClInclude Include="include\CoreLib\Core_File.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\CoreLib\toPrint\toPrint_file.hpp">
       <Filter>Header Files\toPrint</Filter>
-    </ClInclude>
-    <ClInclude Include="include\CoreLib\Core_extra_compiler.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\CoreLib\Core_cpu.hpp">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\CoreLib\cpu\x64.hpp">
       <Filter>Header Files\cpu</Filter>
@@ -178,6 +136,51 @@
     <ClInclude Include="include\CoreLib\toPrint\toPrint_enum.hpp">
       <Filter>Header Files\toPrint</Filter>
     </ClInclude>
+    <ClInclude Include="include\CoreLib\core_alloca.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\core_alternate.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\core_console.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\core_cpu.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\core_dll.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\core_endian.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\core_extra_compiler.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\core_file.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\core_os.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\core_pack.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\core_stacktrace.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\core_sync.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\core_thread.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\core_time.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoreLib\core_type.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\string\core_string_misc.cpp">
@@ -186,32 +189,11 @@
     <ClCompile Include="src\string\core_string_numeric.cpp">
       <Filter>Source Files\string</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core_DLL.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core_Sync.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core_Thread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core_Time.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core_OS.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core_StackTrace.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\string\core_string_encoding.cpp">
       <Filter>Source Files\string</Filter>
     </ClCompile>
     <ClCompile Include="src\string\core_os_string.cpp">
       <Filter>Source Files\string</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core_Console.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\net\core_net_address.cpp">
       <Filter>Source Files\net</Filter>
@@ -221,12 +203,6 @@
     </ClCompile>
     <ClCompile Include="src\net\core_net_init.cpp">
       <Filter>Source Files\net</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core_File.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core_cpu.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\string\fp_charconv_from_chars.cpp">
       <Filter>Source Files\string</Filter>
@@ -244,6 +220,33 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\core_debugger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core_console.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core_cpu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core_dll.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core_file.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core_os.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core_stacktrace.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core_sync.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core_thread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core_time.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

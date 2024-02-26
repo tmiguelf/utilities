@@ -26,7 +26,7 @@
 #include <utility>
 #include <type_traits>
 
-#include <CoreLib/Core_Endian.hpp>
+#include <CoreLib/core_endian.hpp>
 
 #include <gtest/gtest.h>
 

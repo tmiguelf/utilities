@@ -23,13 +23,13 @@
 ///		SOFTWARE.
 //======== ======== ======== ======== ======== ======== ======== ========
 
-#include <CoreLib/Core_cpu.hpp>
+#include <CoreLib/core_cpu.hpp>
 
 #include <array>
 #include <bitset>
 #include <cstdint>
 
-#include <CoreLib/Core_Type.hpp>
+#include <CoreLib/core_type.hpp>
 
 
 #if defined(_M_AMD64) || defined(__amd64__)
