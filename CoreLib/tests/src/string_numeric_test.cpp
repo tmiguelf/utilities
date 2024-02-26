@@ -33,7 +33,7 @@
 #include <type_traits>
 #include <string_view>
 
-#include <CoreLib/Core_Type.hpp>
+#include <CoreLib/core_type.hpp>
 
 using ::core::literals::operator "" _ui64;
 

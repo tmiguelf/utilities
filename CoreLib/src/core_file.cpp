@@ -30,7 +30,7 @@
 #include <unistd.h>
 #endif
 
-#include <CoreLib/Core_File.hpp>
+#include <CoreLib/core_file.hpp>
 #include <cstdio>
 #include <fcntl.h>
 

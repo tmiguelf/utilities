@@ -36,7 +36,7 @@
 #include <CoreLib/string/core_fp_charconv.hpp>
 
 
-#include <CoreLib/Core_Type.hpp>
+#include <CoreLib/core_type.hpp>
 
 using ::core::literals::operator "" _ui32;
 

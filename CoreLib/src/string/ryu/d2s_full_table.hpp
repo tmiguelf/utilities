@@ -21,7 +21,8 @@
 
 #include <cstdint>
 #include <array>
-#include <CoreLib/Core_Type.hpp>
+
+#include <CoreLib/core_type.hpp>
 
 using ::core::literals::operator "" _ui64;
 

@@ -74,17 +74,17 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Core_Console.cpp" />
-    <ClCompile Include="src\Core_cpu.cpp" />
+    <ClCompile Include="src\core_console.cpp" />
+    <ClCompile Include="src\core_cpu.cpp" />
     <ClCompile Include="src\core_debugger.cpp" />
-    <ClCompile Include="src\Core_DLL.cpp" />
-    <ClCompile Include="src\Core_File.cpp" />
+    <ClCompile Include="src\core_dll.cpp" />
+    <ClCompile Include="src\core_file.cpp" />
     <ClCompile Include="src\core_module.cpp" />
-    <ClCompile Include="src\Core_OS.cpp" />
-    <ClCompile Include="src\Core_StackTrace.cpp" />
-    <ClCompile Include="src\Core_Sync.cpp" />
-    <ClCompile Include="src\Core_Thread.cpp" />
-    <ClCompile Include="src\Core_Time.cpp" />
+    <ClCompile Include="src\core_os.cpp" />
+    <ClCompile Include="src\core_stacktrace.cpp" />
+    <ClCompile Include="src\core_sync.cpp" />
+    <ClCompile Include="src\core_thread.cpp" />
+    <ClCompile Include="src\core_time.cpp" />
     <ClCompile Include="src\net\core_net.cpp" />
     <ClCompile Include="src\net\core_net_address.cpp" />
     <ClCompile Include="src\net\core_net_init.cpp" />
@@ -98,22 +98,23 @@
     <ClCompile Include="src\string\fp_charconv_shortest.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\CoreLib\Core_Alloca.hpp" />
-    <ClInclude Include="include\CoreLib\Core_Alternate.hpp" />
-    <ClInclude Include="include\CoreLib\Core_Console.hpp" />
-    <ClInclude Include="include\CoreLib\Core_cpu.hpp" />
+    <ClInclude Include="include\CoreLib\core_alloca.hpp" />
+    <ClInclude Include="include\CoreLib\core_alternate.hpp" />
+    <ClInclude Include="include\CoreLib\core_console.hpp" />
+    <ClInclude Include="include\CoreLib\core_cpu.hpp" />
     <ClInclude Include="include\CoreLib\core_debugger.hpp" />
-    <ClInclude Include="include\CoreLib\Core_DLL.hpp" />
-    <ClInclude Include="include\CoreLib\Core_Endian.hpp" />
-    <ClInclude Include="include\CoreLib\Core_extra_compiler.hpp" />
-    <ClInclude Include="include\CoreLib\Core_File.hpp" />
+    <ClInclude Include="include\CoreLib\core_dll.hpp" />
+    <ClInclude Include="include\CoreLib\core_endian.hpp" />
+    <ClInclude Include="include\CoreLib\core_extra_compiler.hpp" />
+    <ClInclude Include="include\CoreLib\core_file.hpp" />
     <ClInclude Include="include\CoreLib\core_module.hpp" />
-    <ClInclude Include="include\CoreLib\Core_OS.hpp" />
-    <ClInclude Include="include\CoreLib\Core_StackTrace.hpp" />
-    <ClInclude Include="include\CoreLib\Core_Sync.hpp" />
-    <ClInclude Include="include\CoreLib\Core_Thread.hpp" />
-    <ClInclude Include="include\CoreLib\Core_Time.hpp" />
-    <ClInclude Include="include\CoreLib\Core_Type.hpp" />
+    <ClInclude Include="include\CoreLib\core_os.hpp" />
+    <ClInclude Include="include\CoreLib\core_pack.hpp" />
+    <ClInclude Include="include\CoreLib\core_stacktrace.hpp" />
+    <ClInclude Include="include\CoreLib\core_sync.hpp" />
+    <ClInclude Include="include\CoreLib\core_thread.hpp" />
+    <ClInclude Include="include\CoreLib\core_time.hpp" />
+    <ClInclude Include="include\CoreLib\core_type.hpp" />
     <ClInclude Include="include\CoreLib\cpu\x64.hpp" />
     <ClInclude Include="include\CoreLib\net\core_net_address.hpp" />
     <ClInclude Include="include\CoreLib\net\core_net_init.hpp" />

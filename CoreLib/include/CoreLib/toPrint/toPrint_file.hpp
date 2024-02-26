@@ -32,10 +32,10 @@
 
 #include "toPrint_sink.hpp"
 
-#include <CoreLib/Core_extra_compiler.hpp>
-#include <CoreLib/Core_File.hpp>
-#include <CoreLib/Core_Alloca.hpp>
-#include <CoreLib/Core_Endian.hpp>
+#include <CoreLib/core_extra_compiler.hpp>
+#include <CoreLib/core_file.hpp>
+#include <CoreLib/core_alloca.hpp>
+#include <CoreLib/core_endian.hpp>
 #include <CoreLib/string/core_wchar_alias.hpp>
 #include <CoreLib/string/core_string_encoding.hpp>
 

@@ -23,9 +23,9 @@
 ///		SOFTWARE.
 //======== ======== ======== ======== ======== ======== ======== ========
 
-#include <CoreLib/Core_Console.hpp>
+#include <CoreLib/core_console.hpp>
 
-#include <CoreLib/Core_extra_compiler.hpp>
+#include <CoreLib/core_extra_compiler.hpp>
 
 #include <cstdint>
 #include <array>

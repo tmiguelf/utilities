@@ -23,7 +23,7 @@
 ///		SOFTWARE.
 //======== ======== ======== ======== ======== ======== ======== ========
 
-#include <CoreLib/Core_OS.hpp>
+#include <CoreLib/core_os.hpp>
 
 #include <array>
 

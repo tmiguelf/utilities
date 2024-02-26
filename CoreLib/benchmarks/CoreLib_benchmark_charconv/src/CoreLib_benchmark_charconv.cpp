@@ -37,7 +37,7 @@
 #include <CoreLib/string/core_string_misc.hpp>
 #include <CoreLib/string/core_fp_charconv.hpp>
 #include <CoreLib/string/core_fp_to_chars_round.hpp>
-#include <CoreLib/Core_Type.hpp>
+#include <CoreLib/core_type.hpp>
 
 using ::core::literals::operator "" _ui64;
 using ::core::literals::operator "" _ui32;

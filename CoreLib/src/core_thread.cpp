@@ -26,7 +26,7 @@
 //======== ======== ======== ======== Header ======== ======== ======== ========
 //======== ======== ======== Include ======== ======== ========
 //---- User Libraries ----
-#include <CoreLib/Core_Thread.hpp>
+#include <CoreLib/core_thread.hpp>
 
 #include <algorithm>
 

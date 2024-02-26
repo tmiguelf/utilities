@@ -23,9 +23,9 @@
 ///		SOFTWARE.
 //======== ======== ======== ======== ======== ======== ======== ========
 
-#include <CoreLib/Core_Time.hpp>
+#include <CoreLib/core_time.hpp>
 
-#include <CoreLib/Core_Type.hpp>
+#include <CoreLib/core_type.hpp>
 
 #ifdef _WIN32
 #include <sys/timeb.h>

@@ -23,8 +23,8 @@
 ///		SOFTWARE.
 //======== ======== ======== ======== ======== ======== ======== ========
 
-#include <CoreLib/Core_DLL.hpp>
-#include <CoreLib/Core_Alloca.hpp>
+#include <CoreLib/core_dll.hpp>
+#include <CoreLib/core_alloca.hpp>
 
 #ifdef _WIN32
 #	include <windows.h>

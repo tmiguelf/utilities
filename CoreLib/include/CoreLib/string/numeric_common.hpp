@@ -28,7 +28,7 @@
 
 #include <system_error>
 #include <type_traits>
-#include <CoreLib/Core_Alternate.hpp>
+#include <CoreLib/core_alternate.hpp>
 
 #if 0
 #include <stdfloat>

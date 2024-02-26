@@ -34,7 +34,7 @@
 #include <span>
 #include <optional>
 
-#include <CoreLib/Core_Alternate.hpp>
+#include <CoreLib/core_alternate.hpp>
 
 //BOM
 //	UTF8:		EF BB BF

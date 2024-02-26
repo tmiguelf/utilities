@@ -23,6 +23,7 @@
 #include <cstdint>
 
 #include <CoreLib/cpu/x64.hpp>
+
 #ifdef _WIN32
 #include <intrin.h>
 #endif // _WIN32

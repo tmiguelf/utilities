@@ -25,7 +25,7 @@
 
 #include <gtest/gtest.h>
 
-#include <CoreLib/Core_File.hpp>
+#include <CoreLib/core_file.hpp>
 
 #include <filesystem>
 #include <fstream>

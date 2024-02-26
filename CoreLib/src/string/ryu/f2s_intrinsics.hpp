@@ -22,6 +22,7 @@
 #include <limits>
 
 #include "d2s_full_table.hpp"
+
 constexpr uint16_t FLOAT_POW5_INV_BITCOUNT = (DOUBLE_POW5_INV_BITCOUNT - 64);
 constexpr uint16_t FLOAT_POW5_BITCOUNT     = (DOUBLE_POW5_BITCOUNT - 64);
 

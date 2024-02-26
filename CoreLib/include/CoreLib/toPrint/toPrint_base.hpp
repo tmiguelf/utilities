@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include <CoreLib/Core_Type.hpp>
+#include <CoreLib/core_type.hpp>
 
 #include "toPrint_support.hpp"
 
