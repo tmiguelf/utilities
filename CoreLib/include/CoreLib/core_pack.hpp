@@ -66,7 +66,13 @@ namespace core
 	constexpr uintptr_t pack_count_v = pack_count<T>::value;
 
 	template<c_pack T>
-	constexpr bool is_pack_empty_v = (pack_count_v<T> == 0);
+	struct is_pack_empty: std::false_type {};
+
+	template<>
+	struct is_pack_empty<pack<>>: std::true_type {};
+
+	template<c_pack T>
+	constexpr bool is_pack_empty_v = is_pack_empty<T>::value;
 
 
 	/// \brief Retrieves a specific element from a pack
