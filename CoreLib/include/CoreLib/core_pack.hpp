@@ -128,6 +128,33 @@ namespace core
 	using sub_pack_t = typename sub_pack<Pack_t, StartIndex, Size>::type;
 
 
+
+	/// \brief Gets a pack with only the members that satisfy a preicate
+	/// \tparam Pack_t - source pack
+	/// \tparam Predicate - Predicate template with a value that evaluates to true when to keep, and false when to discard
+	template<c_pack Pack_t, template <typename> typename Predicate>
+	struct pack_filter
+	{
+	private:
+		template <class IndexSequence>
+		struct conv_filter;
+
+		template <std::uintptr_t... indices>
+		struct conv_filter<std::index_sequence<indices...>>
+		{
+			
+			using type = pack_cat_t<
+				std::conditional_t<Predicate<pack_get_t<Pack_t, indices>>::value, pack<pack_get_t<Pack_t, indices>>, pack<>>...
+			>;
+		};
+
+	public:
+		using type = typename conv_filter<std::make_index_sequence<pack_count_v<Pack_t>>>::type;
+	};
+
+	template<c_pack Pack_t, template <typename> typename Predicate>
+	using pack_filter_t = typename pack_filter<Pack_t, Predicate>::type;
+
 	/// \brief Transforms all types in a pack in acordance to a transformation template
 	/// \tparam Pack_t - pack to transform
 	/// \tparam Transformation - Transformation template
@@ -135,8 +162,6 @@ namespace core
 	struct pack_transform
 	{
 	private:
-		static constexpr uintptr_t pack_size = pack_count_v<Pack_t>;
-
 		template <class IndexSequence>
 		struct conv_pack;
 
@@ -147,7 +172,7 @@ namespace core
 		};
 
 	public:
-		using type = typename conv_pack<std::make_index_sequence<pack_size>>::type;
+		using type = typename conv_pack<std::make_index_sequence<pack_count_v<Pack_t>>>::type;
 	};
 
 	template<c_pack Pack_t, template <typename> typename Transformation>
@@ -207,7 +232,7 @@ namespace core
 	{
 	private:
 		template<uintptr_t Index = StartIndex>
-		static constexpr bool check()
+		static consteval bool check()
 		{
 			if constexpr (Index < EndIndex)
 			{
@@ -240,8 +265,6 @@ namespace core
 	struct pack_element_swap
 	{
 	private:
-		static constexpr uintptr_t pack_size = pack_count_v<Pack_t>;
-
 		template <class IndexSequence>
 		struct pack_element_swap_impl;
 
@@ -252,7 +275,7 @@ namespace core
 		};
 
 	public:
-		using type = typename pack_element_swap_impl<std::make_index_sequence<pack_size>>::type;
+		using type = typename pack_element_swap_impl<std::make_index_sequence<pack_count_v<Pack_t>>>::type;
 	};
 
 	template <c_pack Pack_t, std::uintptr_t I, std::uintptr_t J>

@@ -67,6 +67,19 @@ TEST(core_pack, sub_pack)
 
 
 template<typename T>
+struct filter_test_t: std::false_type {};
+
+template<typename T> requires std::is_integral_v<T>
+struct filter_test_t<T>: std::true_type {};
+
+TEST(core_pack, pack_filter)
+{
+	using test_t = core::pack<uint32_t, float, void*, void, const int64_t, double, uint32_t&>;
+	static_assert(std::is_same_v<core::pack_filter_t<test_t, filter_test_t>, core::pack<uint32_t, const int64_t>>);
+}
+
+
+template<typename T>
 struct transform_test_t { using type = T; };
 
 template<typename T> requires std::is_integral_v<T>
