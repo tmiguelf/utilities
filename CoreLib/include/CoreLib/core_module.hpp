@@ -24,6 +24,7 @@
 //======== ======== ======== ======== ======== ======== ======== ========
 
 #pragma once
+#include <CoreLib/string/core_os_string.hpp>
 
 namespace core
 {
@@ -31,5 +32,6 @@ namespace core
 	//only works if function is statically linked
 	//and linux binary must use position independent code
 	[[nodiscard]] void const* get_current_module_base();
-
+	[[nodiscard]] os_string_view get_current_module_name();
+	[[nodiscard]] os_string_view get_current_module_short_name();
 } //namespace core
