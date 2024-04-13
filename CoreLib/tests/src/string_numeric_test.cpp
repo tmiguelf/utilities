@@ -535,21 +535,6 @@ TYPED_TEST(charconv_Decimal_T, from_chars_bad)
 	}
 }
 
-TYPED_TEST(charconv_Decimal_T, to_chars)
-{
-	using num_T = typename TypeParam::first_type;
-	using char_T = typename TypeParam::second_type;
-
-	const std::vector<std::pair<num_T, std::basic_string<char_T>>>& goodCases = get_goodCases<num_T, char_T>();
-
-	for(const std::pair<num_T, std::basic_string<char_T>>& testCase: goodCases)
-	{
-		const std::basic_string<char_T>& result = core::to_chars<char_T>(testCase.first);
-
-		ASSERT_EQ(result, testCase.second) << "Case " << testCase.second;
-	}
-}
-
 
 //======== ======== ======== Hex test Cases ======== ======== ========
 
@@ -720,45 +705,6 @@ TYPED_TEST(charconv_Hex_T, from_string_bad)
 		ASSERT_FALSE(result.has_value()) << "Case " << testCase;
 	}
 }
-
-TYPED_TEST(charconv_Hex_T, to_string)
-{
-	using num_T = typename TypeParam::first_type;
-	using char_T = typename TypeParam::second_type;
-
-	const std::vector<std::pair<num_T, std::basic_string<char_T>>>& goodCases = get_goodCases_hex<num_T, char_T>();
-	for(const std::pair<num_T, std::basic_string<char_T>>& testCase: goodCases)
-	{
-		const std::basic_string<char_T>& result = core::to_chars_hex<char_T>(testCase.first);
-
-		ASSERT_EQ(result, testCase.second) << "Case " << testCase.second;
-	}
-}
-
-TYPED_TEST(charconv_Hex_T, to_string_fix)
-{
-	using num_T = typename TypeParam::first_type;
-	using char_T = typename TypeParam::second_type;
-
-	const std::vector<std::pair<num_T, std::basic_string<char_T>>>& goodCases = get_goodCases_hex<num_T, char_T>();
-	for(const std::pair<num_T, std::basic_string<char_T>>& testCase: goodCases)
-	{
-		const std::basic_string<char_T>& result = core::to_chars_hex_fix<char_T>(testCase.first);
-
-		std::basic_string<char_T> comp;
-
-		while(testCase.second.size() + comp.size() < sizeof(num_T) * 2)
-		{
-			comp.push_back(char_T{'0'});
-		}
-
-		comp += testCase.second;
-
-		ASSERT_EQ(result, comp) << "Case " << testCase.second;
-	}
-}
-
-
 
 
 //======== ======== ======== Simple is Number test Suit ======== ======== ========

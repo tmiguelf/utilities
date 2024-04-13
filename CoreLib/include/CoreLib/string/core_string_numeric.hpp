@@ -50,6 +50,9 @@ namespace core
 	concept char_conv_hex_supported_c = _p::charconv_uint_c<T>;
 
 
+	template <typename T>
+	concept char_conv_bin_supported_c = _p::charconv_uint_c<T>;
+
 	//======== Type properties ========
 	template<typename T>
 	struct to_chars_dec_max_size;
@@ -106,29 +109,51 @@ namespace core
 	constexpr uintptr_t to_chars_hex_max_size_v = to_chars_hex_max_size<T>::value;
 
 
+	template<char_conv_bin_supported_c T>
+	struct to_chars_bin_max_size
+	{
+		static constexpr uintptr_t value = sizeof(T) * 8;
+	};
+
+	template<char_conv_bin_supported_c T>
+	constexpr uintptr_t to_chars_bin_max_size_v = to_chars_bin_max_size<T>::value;
+
+
 	//======== Functions ========
 
 	
-	namespace _p
-	{
-		template <char_conv_dec_supported_c num_T>
-		[[nodiscard]] uintptr_t to_chars_estimate(num_T p_val);
 
-		template <_p::charconv_char_c char_T, char_conv_dec_supported_c num_T>
-		char_T* to_chars_unsafe(num_T p_val, char_T* p_out);
+	template <char_conv_dec_supported_c num_T>
+	[[nodiscard]] uintptr_t to_chars_size(num_T p_val);
 
-		template <char_conv_hex_supported_c num_T>
-		[[nodiscard]] uintptr_t to_chars_hex_estimate(num_T p_val);
+	template <_p::charconv_char_c char_T, char_conv_dec_supported_c num_T>
+	char_T* to_chars_unsafe(num_T p_val, char_T* p_out);
 
-		template <_p::charconv_char_c char_T, char_conv_hex_supported_c num_T>
-		char_T* to_chars_hex_unsafe(num_T p_val, char_T* p_out);
+	template <char_conv_hex_supported_c num_T>
+	[[nodiscard]] uintptr_t to_chars_hex_size(num_T p_val);
 
-		template <char_conv_hex_supported_c num_T>
-		[[nodiscard]] inline constexpr uintptr_t to_chars_hex_fix_estimate(num_T const) { return to_chars_hex_max_size_v<num_T>; }
+	template <_p::charconv_char_c char_T, char_conv_hex_supported_c num_T>
+	char_T* to_chars_hex_unsafe(num_T p_val, char_T* p_out);
 
-		template <_p::charconv_char_c char_T, char_conv_hex_supported_c num_T>
-		void to_chars_hex_fix_unsafe(num_T p_val, char_T* p_out);
-	} //namespace _p
+	template <char_conv_hex_supported_c num_T>
+	[[nodiscard]] inline constexpr uintptr_t to_chars_hex_fix_size(num_T const) { return to_chars_hex_max_size_v<num_T>; }
+
+	template <_p::charconv_char_c char_T, char_conv_hex_supported_c num_T>
+	void to_chars_hex_fix_unsafe(num_T p_val, char_T* p_out);
+
+	template <char_conv_bin_supported_c num_T>
+	[[nodiscard]] uintptr_t to_chars_bin_size(num_T p_val);
+
+	template <_p::charconv_char_c char_T, char_conv_bin_supported_c num_T>
+	char_T* to_chars_bin_unsafe(num_T p_val, char_T* p_out);
+
+	template <char_conv_bin_supported_c num_T>
+	[[nodiscard]] inline constexpr uintptr_t to_chars_bin_fix_size(num_T const) { return to_chars_bin_max_size_v<num_T>; }
+
+	template <_p::charconv_char_c char_T, char_conv_bin_supported_c num_T>
+	void to_chars_bin_fix_unsafe(num_T p_val, char_T* p_out);
+
+
 
 	//======== Low level ========
 
@@ -137,6 +162,9 @@ namespace core
 
 	template <_p::charconv_char_extended_c T>
 	[[nodiscard]] inline constexpr bool is_xdigit(const T p_char) { return is_digit(p_char) || (p_char >= 'A' && p_char <= 'F') || (p_char >= 'a' && p_char <= 'f'); }
+
+	template <_p::charconv_char_extended_c T>
+	[[nodiscard]] inline constexpr bool is_bdigit(const T p_char) { return (p_char == '0' || p_char == '1'); }
 
 	namespace _p
 	{
@@ -149,11 +177,17 @@ namespace core
 		template <_p::charconv_char_c T>
 		[[nodiscard]] bool is_hex(std::basic_string_view<T> p_str);
 
+		template <_p::charconv_char_c T>
+		[[nodiscard]] bool is_bin(std::basic_string_view<T> p_str);
+
 		template<char_conv_dec_supported_c num_T, _p::charconv_char_c char_T>
 		[[nodiscard]] from_chars_result<num_T> from_chars(std::basic_string_view<char_T> p_str);
 
 		template<char_conv_hex_supported_c num_T, _p::charconv_char_c char_T>
 		[[nodiscard]] from_chars_result<num_T> from_chars_hex(std::basic_string_view<char_T> p_str);
+
+		template<char_conv_bin_supported_c num_T, _p::charconv_char_c char_T>
+		[[nodiscard]] from_chars_result<num_T> from_chars_bin(std::basic_string_view<char_T> p_str);
 
 		template <_p::charconv_char_c char_T, char_conv_dec_supported_c num_T>
 		[[nodiscard]] uintptr_t to_chars(num_T p_val, std::span<char_T, to_chars_dec_max_size_v<num_T>> p_str);
@@ -163,22 +197,26 @@ namespace core
 
 		template <_p::charconv_char_c char_T, char_conv_hex_supported_c num_T>
 		void to_chars_hex_fix(num_T p_val, std::span<char_T, to_chars_hex_max_size_v<num_T>> p_str);
+
+		template <_p::charconv_char_c char_T, char_conv_bin_supported_c num_T>
+		[[nodiscard]] uintptr_t to_chars_bin(num_T p_val, std::span<char_T, to_chars_bin_max_size_v<num_T>> p_str);
+
+		template <_p::charconv_char_c char_T, char_conv_bin_supported_c num_T>
+		void to_chars_bin_fix(num_T p_val, std::span<char_T, to_chars_bin_max_size_v<num_T>> p_str);
 	}
 
 
 	//======== High level ========
-
 	[[nodiscard]] inline bool is_uint(std::basic_string_view<char8_t > const p_str) { return _p::is_uint(p_str); }
 	[[nodiscard]] inline bool is_uint(std::basic_string_view<char16_t> const p_str) { return _p::is_uint(p_str); }
 	[[nodiscard]] inline bool is_uint(std::basic_string_view<char32_t> const p_str) { return _p::is_uint(p_str); }
-
 	[[nodiscard]] inline bool is_uint(std::basic_string_view<char    > const p_str)
 	{
-		return _p::is_uint(std::u8string_view{reinterpret_cast<const char8_t*>(p_str.data()), p_str.size()});
+		return _p::is_uint<char8_t>(std::u8string_view{reinterpret_cast<const char8_t*>(p_str.data()), p_str.size()});
 	}
 	[[nodiscard]] inline bool is_uint(std::basic_string_view<wchar_t > const p_str)
 	{
-		return _p::is_uint(std::basic_string_view<wchar_alias>{reinterpret_cast<const wchar_alias*>(p_str.data()), p_str.size()});
+		return _p::is_uint<wchar_alias>(std::basic_string_view<wchar_alias>{reinterpret_cast<const wchar_alias*>(p_str.data()), p_str.size()});
 	}
 
 	[[nodiscard]] inline bool is_int(std::basic_string_view<char8_t > const p_str) { return _p::is_int(p_str); }
@@ -209,6 +247,20 @@ namespace core
 		return _p::is_hex(std::basic_string_view<wchar_alias>{reinterpret_cast<const wchar_alias*>(p_str.data()), p_str.size()});
 	}
 
+	[[nodiscard]] inline bool is_bin(std::basic_string_view<char8_t > const p_str) { return _p::is_bin(p_str); }
+	[[nodiscard]] inline bool is_bin(std::basic_string_view<char16_t> const p_str) { return _p::is_bin(p_str); }
+	[[nodiscard]] inline bool is_bin(std::basic_string_view<char32_t> const p_str) { return _p::is_bin(p_str); }
+
+	[[nodiscard]] inline bool is_bin(std::basic_string_view<char    > const p_str)
+	{
+		return _p::is_bin(std::u8string_view{ reinterpret_cast<const char8_t*>(p_str.data()), p_str.size() });
+	}
+
+	[[nodiscard]] inline bool is_bin(std::basic_string_view<wchar_t > const p_str)
+	{
+		return _p::is_bin(std::basic_string_view<wchar_alias>{reinterpret_cast<const wchar_alias*>(p_str.data()), p_str.size()});
+	}
+
 
 	template<char_conv_dec_supported_c num_T>
 	[[nodiscard]] inline from_chars_result<num_T> from_chars(std::basic_string_view<char8_t > const p_str) { return _p::from_chars<num_T>(p_str); }
@@ -233,25 +285,48 @@ namespace core
 
 
 	template<char_conv_hex_supported_c num_T>
-	[[nodiscard]] from_chars_result<num_T> from_chars_hex(std::basic_string_view<char8_t > const p_str) { return _p::from_chars_hex<num_T>(p_str); }
+	[[nodiscard]] inline from_chars_result<num_T> from_chars_hex(std::basic_string_view<char8_t > const p_str) { return _p::from_chars_hex<num_T>(p_str); }
 
 	template<char_conv_hex_supported_c num_T>
-	[[nodiscard]] from_chars_result<num_T> from_chars_hex(std::basic_string_view<char16_t> const p_str) { return _p::from_chars_hex<num_T>(p_str); }
+	[[nodiscard]] inline from_chars_result<num_T> from_chars_hex(std::basic_string_view<char16_t> const p_str) { return _p::from_chars_hex<num_T>(p_str); }
 
 	template<char_conv_hex_supported_c num_T>
-	[[nodiscard]] from_chars_result<num_T> from_chars_hex(std::basic_string_view<char32_t> const p_str) { return _p::from_chars_hex<num_T>(p_str); }
+	[[nodiscard]] inline from_chars_result<num_T> from_chars_hex(std::basic_string_view<char32_t> const p_str) { return _p::from_chars_hex<num_T>(p_str); }
 
 	template<char_conv_hex_supported_c num_T>
-	[[nodiscard]] from_chars_result<num_T> from_chars_hex(std::basic_string_view<char    > const p_str)
+	[[nodiscard]] inline from_chars_result<num_T> from_chars_hex(std::basic_string_view<char    > const p_str)
 	{
 		return _p::from_chars_hex<num_T>(std::u8string_view{reinterpret_cast<const char8_t*>(p_str.data()), p_str.size()});
 	}
 
 	template<char_conv_hex_supported_c num_T>
-	[[nodiscard]] from_chars_result<num_T> from_chars_hex(std::basic_string_view<wchar_t > const p_str)
+	[[nodiscard]] inline from_chars_result<num_T> from_chars_hex(std::basic_string_view<wchar_t > const p_str)
 	{
 		return _p::from_chars_hex<num_T>(std::basic_string_view<wchar_alias>{reinterpret_cast<const wchar_alias*>(p_str.data()), p_str.size()});
 	}
+
+
+	template<char_conv_bin_supported_c num_T>
+	[[nodiscard]] inline from_chars_result<num_T> from_chars_bin(std::basic_string_view<char8_t > const p_str) { return _p::from_chars_bin<num_T>(p_str); }
+
+	template<char_conv_bin_supported_c num_T>
+	[[nodiscard]] inline from_chars_result<num_T> from_chars_bin(std::basic_string_view<char16_t> const p_str) { return _p::from_chars_bin<num_T>(p_str); }
+
+	template<char_conv_bin_supported_c num_T>
+	[[nodiscard]] inline from_chars_result<num_T> from_chars_bin(std::basic_string_view<char32_t> const p_str) { return _p::from_chars_bin<num_T>(p_str); }
+
+	template<char_conv_bin_supported_c num_T>
+	[[nodiscard]] inline from_chars_result<num_T> from_chars_bin(std::basic_string_view<char    > const p_str)
+	{
+		return _p::from_chars_bin<num_T>(std::u8string_view{ reinterpret_cast<const char8_t*>(p_str.data()), p_str.size() });
+	}
+
+	template<char_conv_bin_supported_c num_T>
+	[[nodiscard]] inline from_chars_result<num_T> from_chars_bin(std::basic_string_view<wchar_t > const p_str)
+	{
+		return _p::from_chars_bin<num_T>(std::basic_string_view<wchar_alias>{reinterpret_cast<const wchar_alias*>(p_str.data()), p_str.size()});
+	}
+
 
 	template <char_conv_dec_supported_c num_T>
 	[[nodiscard]] inline uintptr_t to_chars(num_T const p_val, std::span<char8_t , to_chars_dec_max_size_v<num_T>> const p_str) { return _p::to_chars(p_val, p_str); }
@@ -313,42 +388,63 @@ namespace core
 	template <char_conv_hex_supported_c num_T>
 	inline void to_chars_hex_fix(num_T const p_val, std::span<char    , to_chars_hex_max_size_v<num_T>> const p_str)
 	{
-		constexpr uintptr_t size = to_chars_dec_max_size_v<num_T>;
+		constexpr uintptr_t size = to_chars_hex_max_size_v<num_T>;
 		_p::to_chars_hex_fix(p_val, std::span<char8_t, size>{reinterpret_cast<char8_t*>(p_str.data()), size});
 	}
 
 	template <char_conv_hex_supported_c num_T>
 	inline void to_chars_hex_fix(num_T const p_val, std::span<wchar_t , to_chars_hex_max_size_v<num_T>> const p_str)
 	{
-		constexpr uintptr_t size = to_chars_dec_max_size_v<num_T>;
+		constexpr uintptr_t size = to_chars_hex_max_size_v<num_T>;
 		_p::to_chars_hex_fix(p_val, std::span<wchar_alias, size>{reinterpret_cast<wchar_alias*>(p_str.data()), size});
 	}
 
 
-	template <_p::charconv_char_extended_c char_T, char_conv_dec_supported_c num_T>
-	[[nodiscard]] inline std::basic_string<char_T> to_chars(num_T const p_val)
+	template <char_conv_bin_supported_c num_T>
+	[[nodiscard]] inline uintptr_t to_chars_bin(num_T const p_val, std::span<char8_t , to_chars_bin_max_size_v<num_T>> const p_str) { return _p::to_chars_bin(p_val, p_str); }
+
+	template <char_conv_bin_supported_c num_T>
+	[[nodiscard]] inline uintptr_t to_chars_bin(num_T const p_val, std::span<char16_t, to_chars_bin_max_size_v<num_T>> const p_str) { return _p::to_chars_bin(p_val, p_str); }
+
+	template <char_conv_bin_supported_c num_T>
+	[[nodiscard]] inline uintptr_t to_chars_bin(num_T const p_val, std::span<char32_t, to_chars_bin_max_size_v<num_T>> const p_str) { return _p::to_chars_bin(p_val, p_str); }
+
+	template <char_conv_bin_supported_c num_T>
+	[[nodiscard]] inline uintptr_t to_chars_bin(num_T const p_val, std::span<char, to_chars_bin_max_size_v<num_T>> const p_str)
 	{
-		constexpr uintptr_t size = to_chars_dec_max_size_v<num_T>;
-		std::array<char_T, size> buff;
-		return {buff.data(), _p::to_chars(p_val, std::span<char_T, size>{buff})};
+		constexpr uintptr_t size = to_chars_bin_max_size_v<num_T>;
+		return _p::to_chars_bin(p_val, std::span<char8_t, size>{reinterpret_cast<char8_t*>(p_str.data()), size});
 	}
 
-	template <_p::charconv_char_extended_c char_T, char_conv_hex_supported_c num_T>
-	[[nodiscard]] inline std::basic_string<char_T> to_chars_hex(num_T const p_val)
+	template <char_conv_bin_supported_c num_T>
+	[[nodiscard]] inline uintptr_t to_chars_bin(num_T const p_val, std::span<wchar_t, to_chars_bin_max_size_v<num_T>> const p_str)
 	{
-		constexpr uintptr_t size = to_chars_hex_max_size_v<num_T>;
-		std::array<char_T, size> buff;
-		return {buff.data(), _p::to_chars_hex(p_val, std::span<char_T, size>{buff})};
+		constexpr uintptr_t size = to_chars_bin_max_size_v<num_T>;
+		return _p::to_chars_bin(p_val, std::span<wchar_alias, size>{reinterpret_cast<wchar_alias*>(p_str.data()), size});
 	}
 
-	template <_p::charconv_char_extended_c char_T, char_conv_hex_supported_c num_T>
-	[[nodiscard]] inline std::basic_string<char_T> to_chars_hex_fix(num_T const p_val)
+
+	template <char_conv_bin_supported_c num_T>
+	inline void to_chars_bin_fix(num_T const p_val, std::span<char8_t , to_chars_bin_max_size_v<num_T>> const p_str) { _p::to_chars_bin_fix(p_val, p_str); }
+
+	template <char_conv_bin_supported_c num_T>
+	inline void to_chars_bin_fix(num_T const p_val, std::span<char16_t, to_chars_bin_max_size_v<num_T>> const p_str) { _p::to_chars_bin_fix(p_val, p_str); }
+
+	template <char_conv_bin_supported_c num_T>
+	inline void to_chars_bin_fix(num_T const p_val, std::span<char32_t, to_chars_bin_max_size_v<num_T>> const p_str) { _p::to_chars_bin_fix(p_val, p_str); }
+
+	template <char_conv_bin_supported_c num_T>
+	inline void to_chars_bin_fix(num_T const p_val, std::span<char    , to_chars_bin_max_size_v<num_T>> const p_str)
 	{
-		constexpr uintptr_t size = to_chars_hex_max_size_v<num_T>;
-		std::basic_string<char_T> buff;
-		buff.resize(size);
-		_p::to_chars_hex_fix(p_val, std::span<char_T, size>{buff.data(), size});
-		return buff;
+		constexpr uintptr_t size = to_chars_bin_max_size_v<num_T>;
+		_p::to_chars_bin_fix(p_val, std::span<char8_t, size>{reinterpret_cast<char8_t*>(p_str.data()), size});
+	}
+
+	template <char_conv_bin_supported_c num_T>
+	inline void to_chars_bin_fix(num_T const p_val, std::span<wchar_t , to_chars_bin_max_size_v<num_T>> const p_str)
+	{
+		constexpr uintptr_t size = to_chars_bin_max_size_v<num_T>;
+		_p::to_chars_bin_fix(p_val, std::span<wchar_alias, size>{reinterpret_cast<wchar_alias*>(p_str.data()), size});
 	}
 
 }	//namespace core

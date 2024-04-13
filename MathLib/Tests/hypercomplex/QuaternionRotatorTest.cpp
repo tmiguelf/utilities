@@ -139,10 +139,10 @@ TYPED_TEST(QuaternionRotator_T, Rotator)
 
 			return
 				filler.size() +
-				core::_p::to_chars_estimate(m_data.rotationAxis[0]) +
-				core::_p::to_chars_estimate(m_data.rotationAxis[1]) +
-				core::_p::to_chars_estimate(m_data.rotationAxis[2]) +
-				core::_p::to_chars_estimate(m_data.rotationValue);
+				core::to_chars_size(m_data.rotationAxis[0]) +
+				core::to_chars_size(m_data.rotationAxis[1]) +
+				core::to_chars_size(m_data.rotationAxis[2]) +
+				core::to_chars_size(m_data.rotationValue);
 		}
 
 		void get_print(char8_t* p_out) const
@@ -165,7 +165,7 @@ TYPED_TEST(QuaternionRotator_T, Rotator)
 			*(p_out++) = u8'A';
 			*(p_out++) = u8':';
 			*(p_out++) = u8' ';
-			core::_p::to_chars_unsafe(m_data.rotationValue, p_out);
+			core::to_chars_unsafe(m_data.rotationValue, p_out);
 		}
 
 		const TestCase& m_data;

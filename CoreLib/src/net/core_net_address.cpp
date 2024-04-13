@@ -35,27 +35,6 @@ namespace core
 
 	namespace _p
 	{
-		[[nodiscard]] uintptr_t to_chars_IPv4_estimate(std::span<const uint8_t, 4> const p_raw)
-		{
-			return
-				to_chars_estimate(p_raw[0]) +
-				to_chars_estimate(p_raw[1]) +
-				to_chars_estimate(p_raw[2]) +
-				to_chars_estimate(p_raw[3]) + 3;
-		}
-
-		template<c_ipconv_char CharT>
-		CharT* to_chars_IPv4_unsafe(std::span<const uint8_t, 4> const p_raw, CharT* p_out)
-		{
-			p_out += core::to_chars(p_raw[0], std::span<CharT, 3>{p_out, 3});
-			*(p_out++) = '.';
-			p_out += core::to_chars(p_raw[1], std::span<CharT, 3>{p_out, 3});
-			*(p_out++) = '.';
-			p_out += core::to_chars(p_raw[2], std::span<CharT, 3>{p_out, 3});
-			*(p_out++) = '.';
-			return core::_p::to_chars_unsafe(p_raw[3], p_out);
-		}
-
 		template<c_ipconv_char CharT>
 		uintptr_t to_chars_IPv4(std::span<const uint8_t, 4> const p_raw, std::span<CharT, 15> const p_output)
 		{
@@ -68,144 +47,6 @@ namespace core
 			*(pivot++) = '.';
 			pivot += core::to_chars(p_raw[3], std::span<CharT, 3>{pivot, 3});
 			return static_cast<uintptr_t>(pivot - p_output.data());
-		}
-
-		uintptr_t to_chars_IPv6_estimate(std::span<const uint16_t, 8> const p_raw)
-		{
-			uint8_t size_elide = 0;
-			uint8_t pos_elide = 0;
-			{
-				for(uint8_t it = 0; it < 8;)
-				{
-					if(p_raw[it] == 0)
-					{
-						const uint8_t curret_pos = it;
-						uint8_t curret_size = 1;
-						while(++it < 8 && p_raw[it] == 0)
-						{
-							++curret_size;
-						}
-						if(curret_size > size_elide)
-						{
-							size_elide = curret_size;
-							pos_elide  = curret_pos;
-						}
-					}
-					else
-					{
-						++it;
-					}
-				}
-			}
-
-			if(size_elide > 1)
-			{
-				uintptr_t res_size = 8 - size_elide;
-				if(pos_elide)
-				{
-					for(uint8_t it = 0; it < pos_elide; ++it)
-					{
-						res_size += to_chars_hex_estimate(endian_big2host(p_raw[it]));
-					}
-				}
-				else
-				{
-					++res_size;
-				}
-				uint8_t it = pos_elide + size_elide;
-				if(it < 8)
-				{
-					for(; it < 8; ++it)
-					{
-						res_size += to_chars_hex_estimate(endian_big2host(p_raw[it]));
-					}
-				}
-				else
-				{
-					++res_size;
-				}
-				return res_size;
-			}
-			else
-			{
-				return
-					to_chars_hex_estimate(endian_big2host(p_raw[0])) +
-					to_chars_hex_estimate(endian_big2host(p_raw[1])) +
-					to_chars_hex_estimate(endian_big2host(p_raw[2])) +
-					to_chars_hex_estimate(endian_big2host(p_raw[3])) +
-					to_chars_hex_estimate(endian_big2host(p_raw[4])) +
-					to_chars_hex_estimate(endian_big2host(p_raw[5])) +
-					to_chars_hex_estimate(endian_big2host(p_raw[6])) +
-					to_chars_hex_estimate(endian_big2host(p_raw[7])) + 7;
-			}
-		}
-
-		template<c_ipconv_char CharT>
-		CharT* to_chars_IPv6_unsafe(std::span<const uint16_t, 8> const p_raw, CharT* p_out)
-		{
-			uint8_t size_elide = 0;
-			uint8_t pos_elide = 0;
-			{
-				for(uint8_t it = 0; it < 8;)
-				{
-					if(p_raw[it] == 0)
-					{
-						const uint8_t curret_pos = it;
-						uint8_t curret_size = 1;
-						while(++it < 8 && p_raw[it] == 0)
-						{
-							++curret_size;
-						}
-						if(curret_size > size_elide)
-						{
-							size_elide = curret_size;
-							pos_elide  = curret_pos;
-						}
-					}
-					else
-					{
-						++it;
-					}
-				}
-			}
-
-			if(size_elide > 1)
-			{
-				if(pos_elide)
-				{
-					for(uint8_t it = 0; it < pos_elide; ++it)
-					{
-						p_out += core::to_chars_hex(core::endian_big2host(p_raw[it]), std::span<CharT, 4>{p_out, 4});
-						*(p_out++) = ':';
-					}
-				}
-				else
-				{
-					*(p_out++) = ':';
-				}
-				*(p_out++) = ':';
-
-				uint8_t it = pos_elide + size_elide;
-				if(it < 8)
-				{
-					for(; it < 7; ++it)
-					{
-						p_out += core::to_chars_hex(core::endian_big2host(p_raw[it]), std::span<CharT, 4>{p_out, 4});
-						*(p_out++) = ':';
-					}
-					p_out = core::_p::to_chars_hex_unsafe(core::endian_big2host(p_raw[7]), p_out);
-				}
-			}
-			else
-			{
-				for(uint8_t it = 0; it < 7; ++it)
-				{
-					p_out += core::to_chars_hex(core::endian_big2host(p_raw[it]), std::span<CharT, 4>{p_out, 4});
-					*(p_out++) = ':';
-				}
-				p_out = core::_p::to_chars_hex_unsafe(core::endian_big2host(p_raw[7]), p_out);
-			}
-			return p_out;
 		}
 
 		template<c_ipconv_char CharT>
@@ -418,23 +259,185 @@ namespace core
 			}
 		}
 
-		template char8_t * to_chars_IPv4_unsafe<char8_t >(std::span<const uint8_t, 4>, char8_t *);
-		template char16_t* to_chars_IPv4_unsafe<char16_t>(std::span<const uint8_t, 4>, char16_t*);
-		template char32_t* to_chars_IPv4_unsafe<char32_t>(std::span<const uint8_t, 4>, char32_t*);
+
 
 		template uintptr_t to_chars_IPv4<char8_t >(std::span<const uint8_t, 4>, std::span<char8_t , 15>);
 		template uintptr_t to_chars_IPv4<char16_t>(std::span<const uint8_t, 4>, std::span<char16_t, 15>);
 		template uintptr_t to_chars_IPv4<char32_t>(std::span<const uint8_t, 4>, std::span<char32_t, 15>);
-
-		template char8_t * to_chars_IPv6_unsafe<char8_t >(std::span<const uint16_t, 8>, char8_t *);
-		template char16_t* to_chars_IPv6_unsafe<char16_t>(std::span<const uint16_t, 8>, char16_t*);
-		template char32_t* to_chars_IPv6_unsafe<char32_t>(std::span<const uint16_t, 8>, char32_t*);
 
 		template uintptr_t to_chars_IPv6<char8_t >(std::span<const uint16_t, 8>, std::span<char8_t , 39>);
 		template uintptr_t to_chars_IPv6<char16_t>(std::span<const uint16_t, 8>, std::span<char16_t, 39>);
 		template uintptr_t to_chars_IPv6<char32_t>(std::span<const uint16_t, 8>, std::span<char32_t, 39>);
 
 	} //namespace _p
+
+[[nodiscard]] uintptr_t to_chars_IPv4_size(std::span<const uint8_t, 4> const p_raw)
+{
+	return
+		to_chars_size(p_raw[0]) +
+		to_chars_size(p_raw[1]) +
+		to_chars_size(p_raw[2]) +
+		to_chars_size(p_raw[3]) + 3;
+}
+
+template<_p::c_ipconv_char CharT>
+CharT* to_chars_IPv4_unsafe(std::span<const uint8_t, 4> const p_raw, CharT* p_out)
+{
+	p_out += core::to_chars(p_raw[0], std::span<CharT, 3>{p_out, 3});
+	*(p_out++) = '.';
+	p_out += core::to_chars(p_raw[1], std::span<CharT, 3>{p_out, 3});
+	*(p_out++) = '.';
+	p_out += core::to_chars(p_raw[2], std::span<CharT, 3>{p_out, 3});
+	*(p_out++) = '.';
+	return core::to_chars_unsafe(p_raw[3], p_out);
+}
+
+
+uintptr_t to_chars_IPv6_size(std::span<const uint16_t, 8> const p_raw)
+{
+	uint8_t size_elide = 0;
+	uint8_t pos_elide = 0;
+	{
+		for(uint8_t it = 0; it < 8;)
+		{
+			if(p_raw[it] == 0)
+			{
+				const uint8_t curret_pos = it;
+				uint8_t curret_size = 1;
+				while(++it < 8 && p_raw[it] == 0)
+				{
+					++curret_size;
+				}
+				if(curret_size > size_elide)
+				{
+					size_elide = curret_size;
+					pos_elide  = curret_pos;
+				}
+			}
+			else
+			{
+				++it;
+			}
+		}
+	}
+
+	if(size_elide > 1)
+	{
+		uintptr_t res_size = 8 - size_elide;
+		if(pos_elide)
+		{
+			for(uint8_t it = 0; it < pos_elide; ++it)
+			{
+				res_size += to_chars_hex_size(endian_big2host(p_raw[it]));
+			}
+		}
+		else
+		{
+			++res_size;
+		}
+		uint8_t it = pos_elide + size_elide;
+		if(it < 8)
+		{
+			for(; it < 8; ++it)
+			{
+				res_size += to_chars_hex_size(endian_big2host(p_raw[it]));
+			}
+		}
+		else
+		{
+			++res_size;
+		}
+		return res_size;
+	}
+	else
+	{
+		return
+			to_chars_hex_size(endian_big2host(p_raw[0])) +
+			to_chars_hex_size(endian_big2host(p_raw[1])) +
+			to_chars_hex_size(endian_big2host(p_raw[2])) +
+			to_chars_hex_size(endian_big2host(p_raw[3])) +
+			to_chars_hex_size(endian_big2host(p_raw[4])) +
+			to_chars_hex_size(endian_big2host(p_raw[5])) +
+			to_chars_hex_size(endian_big2host(p_raw[6])) +
+			to_chars_hex_size(endian_big2host(p_raw[7])) + 7;
+	}
+}
+
+template<_p::c_ipconv_char CharT>
+CharT* to_chars_IPv6_unsafe(std::span<const uint16_t, 8> const p_raw, CharT* p_out)
+{
+	uint8_t size_elide = 0;
+	uint8_t pos_elide = 0;
+	{
+		for(uint8_t it = 0; it < 8;)
+		{
+			if(p_raw[it] == 0)
+			{
+				const uint8_t curret_pos = it;
+				uint8_t curret_size = 1;
+				while(++it < 8 && p_raw[it] == 0)
+				{
+					++curret_size;
+				}
+				if(curret_size > size_elide)
+				{
+					size_elide = curret_size;
+					pos_elide  = curret_pos;
+				}
+			}
+			else
+			{
+				++it;
+			}
+		}
+	}
+
+	if(size_elide > 1)
+	{
+		if(pos_elide)
+		{
+			for(uint8_t it = 0; it < pos_elide; ++it)
+			{
+				p_out += core::to_chars_hex(core::endian_big2host(p_raw[it]), std::span<CharT, 4>{p_out, 4});
+				*(p_out++) = ':';
+			}
+		}
+		else
+		{
+			*(p_out++) = ':';
+		}
+		*(p_out++) = ':';
+
+		uint8_t it = pos_elide + size_elide;
+		if(it < 8)
+		{
+			for(; it < 7; ++it)
+			{
+				p_out += core::to_chars_hex(core::endian_big2host(p_raw[it]), std::span<CharT, 4>{p_out, 4});
+				*(p_out++) = ':';
+			}
+			p_out = core::to_chars_hex_unsafe(core::endian_big2host(p_raw[7]), p_out);
+		}
+	}
+	else
+	{
+		for(uint8_t it = 0; it < 7; ++it)
+		{
+			p_out += core::to_chars_hex(core::endian_big2host(p_raw[it]), std::span<CharT, 4>{p_out, 4});
+			*(p_out++) = ':';
+		}
+		p_out = core::to_chars_hex_unsafe(core::endian_big2host(p_raw[7]), p_out);
+	}
+	return p_out;
+}
+
+template char8_t * to_chars_IPv4_unsafe<char8_t >(std::span<const uint8_t, 4>, char8_t *);
+template char16_t* to_chars_IPv4_unsafe<char16_t>(std::span<const uint8_t, 4>, char16_t*);
+template char32_t* to_chars_IPv4_unsafe<char32_t>(std::span<const uint8_t, 4>, char32_t*);
+
+template char8_t * to_chars_IPv6_unsafe<char8_t >(std::span<const uint16_t, 8>, char8_t *);
+template char16_t* to_chars_IPv6_unsafe<char16_t>(std::span<const uint16_t, 8>, char16_t*);
+template char32_t* to_chars_IPv6_unsafe<char32_t>(std::span<const uint16_t, 8>, char32_t*);
 
 //========= ======== ======== IP_address ========= ======== ========
 IP_address::IP_address()

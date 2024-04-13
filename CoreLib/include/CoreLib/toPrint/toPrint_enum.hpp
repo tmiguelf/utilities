@@ -66,7 +66,7 @@ namespace core
 		{
 			if(m_decoded.empty())
 			{
-				return toPrint{string_table::enum_name}.size(temp) + 4 + _p::to_chars_hex_estimate(m_val);
+				return toPrint{string_table::enum_name}.size(temp) + 4 + to_chars_hex_size(m_val);
 			}
 			else
 			{
@@ -127,7 +127,7 @@ namespace core
 		{
 			if(m_decoded.empty())
 			{
-				return string_table::enum_name.size() + 4 + _p::to_chars_hex_estimate(m_val);
+				return string_table::enum_name.size() + 4 + to_chars_hex_size(m_val);
 			}
 			else
 			{
