@@ -49,19 +49,10 @@ namespace core
 		template<typename T>
 		concept c_ipconv_char = is_supported_IPconv_c<T>::value;
 
-		[[nodiscard]] uintptr_t to_chars_IPv4_estimate(std::span<const uint8_t, 4> p_raw);
-
-		template<c_ipconv_char CharT>
-		CharT* to_chars_IPv4_unsafe(std::span<const uint8_t, 4> p_raw, CharT* p_out);
-
 		template<c_ipconv_char CharT>
 		uintptr_t to_chars_IPv4(std::span<const uint8_t, 4> p_raw, std::span<CharT, 15> p_output);
 
 
-		[[nodiscard]] uintptr_t to_chars_IPv6_estimate(std::span<const uint16_t, 8> p_raw);
-
-		template<c_ipconv_char CharT>
-		CharT* to_chars_IPv6_unsafe(std::span<const uint16_t, 8> p_raw, CharT* p_out);
 
 		template<c_ipconv_char CharT>
 		uintptr_t to_chars_IPv6(std::span<const uint16_t, 8> p_raw, std::span<CharT, 39> p_out);
@@ -73,6 +64,17 @@ namespace core
 		template<c_ipconv_char CharT>
 		bool from_chars_IPv6(std::basic_string_view<CharT> p_address, std::span<uint16_t, 8> p_out);
 	} //namespace _p
+
+
+[[nodiscard]] uintptr_t to_chars_IPv4_size(std::span<const uint8_t, 4> p_raw);
+
+template<_p::c_ipconv_char CharT>
+CharT* to_chars_IPv4_unsafe(std::span<const uint8_t, 4> p_raw, CharT* p_out);
+
+[[nodiscard]] uintptr_t to_chars_IPv6_size(std::span<const uint16_t, 8> p_raw);
+
+template<_p::c_ipconv_char CharT>
+CharT* to_chars_IPv6_unsafe(std::span<const uint16_t, 8> p_raw, CharT* p_out);
 
 /// \brief provides a wrapper for a IP v4 and v6 addresses
 struct IP_address

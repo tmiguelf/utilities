@@ -48,10 +48,10 @@ static uintptr_t to_chars_quat_estimate(const mathlib::Quaternion<T>& p_data)
 
 	return
 		filler.size() +
-		core::_p::to_chars_estimate(p_data.r()) +
-		core::_p::to_chars_estimate(p_data.i()) +
-		core::_p::to_chars_estimate(p_data.j()) +
-		core::_p::to_chars_estimate(p_data.k());
+		core::to_chars_size(p_data.r()) +
+		core::to_chars_size(p_data.i()) +
+		core::to_chars_size(p_data.j()) +
+		core::to_chars_size(p_data.k());
 }
 
 template<typename T>
@@ -150,10 +150,10 @@ TYPED_TEST(Quaternion_T, Getters)
 
 			return
 				filler.size() +
-				core::_p::to_chars_estimate(m_data.m_r) +
-				core::_p::to_chars_estimate(m_data.m_i) +
-				core::_p::to_chars_estimate(m_data.m_j) +
-				core::_p::to_chars_estimate(m_data.m_k);
+				core::to_chars_size(m_data.m_r) +
+				core::to_chars_size(m_data.m_i) +
+				core::to_chars_size(m_data.m_j) +
+				core::to_chars_size(m_data.m_k);
 		}
 
 		void get_print(char8_t* p_out) const
@@ -231,10 +231,10 @@ TYPED_TEST(Quaternion_T, Setters)
 
 			return
 				filler.size() +
-				core::_p::to_chars_estimate(m_data.m_r) +
-				core::_p::to_chars_estimate(m_data.m_i) +
-				core::_p::to_chars_estimate(m_data.m_j) +
-				core::_p::to_chars_estimate(m_data.m_k);
+				core::to_chars_size(m_data.m_r) +
+				core::to_chars_size(m_data.m_i) +
+				core::to_chars_size(m_data.m_j) +
+				core::to_chars_size(m_data.m_k);
 		}
 
 		void get_print(char8_t* p_out) const
@@ -607,7 +607,7 @@ TYPED_TEST(Quaternion_T, scalar_multiply)
 
 		uintptr_t size(const char8_t&) const
 		{
-			return to_chars_quat_estimate(m_data.m_quat) + core::_p::to_chars_estimate(m_data.m_scalar) + 3;
+			return to_chars_quat_estimate(m_data.m_quat) + core::to_chars_size(m_data.m_scalar) + 3;
 		}
 
 		void get_print(char8_t* p_out) const
@@ -616,7 +616,7 @@ TYPED_TEST(Quaternion_T, scalar_multiply)
 			*(p_out++) = ' ';
 			*(p_out++) = 'x';
 			*(p_out++) = ' ';
-			core::_p::to_chars_unsafe(m_data.m_scalar, p_out);
+			core::to_chars_unsafe(m_data.m_scalar, p_out);
 		}
 	private:
 		const TestCase& m_data;
@@ -672,7 +672,7 @@ TYPED_TEST(Quaternion_T, scalar_division)
 
 		uintptr_t size(const char8_t&) const
 		{
-			return to_chars_quat_estimate(m_data.m_quat) + core::_p::to_chars_estimate(m_data.m_scalar) + 3;
+			return to_chars_quat_estimate(m_data.m_quat) + core::to_chars_size(m_data.m_scalar) + 3;
 		}
 
 		void get_print(char8_t* p_out) const
@@ -681,7 +681,7 @@ TYPED_TEST(Quaternion_T, scalar_division)
 			*(p_out++) = ' ';
 			*(p_out++) = '/';
 			*(p_out++) = ' ';
-			core::_p::to_chars_unsafe(m_data.m_scalar, p_out);
+			core::to_chars_unsafe(m_data.m_scalar, p_out);
 		}
 	private:
 		const TestCase& m_data;

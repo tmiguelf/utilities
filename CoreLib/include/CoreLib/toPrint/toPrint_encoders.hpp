@@ -497,7 +497,7 @@ public:
 
 	inline uintptr_t size() const
 	{
-		return core::_p::to_chars_estimate(m_data);
+		return core::to_chars_size(m_data);
 	}
 
 	template<_p::c_toPrint_char CharT>
@@ -506,7 +506,7 @@ public:
 	template<_p::c_toPrint_char CharT>
 	inline CharT* get_print(CharT* const p_out) const
 	{
-		return core::_p::to_chars_unsafe(m_data, p_out);
+		return core::to_chars_unsafe(m_data, p_out);
 	}
 
 private:
@@ -595,16 +595,13 @@ template <typename T> toPrint_hex(T) -> toPrint_hex<std::remove_cvref_t<T>>;
 template<core::char_conv_hex_supported_c Num_T>
 class toPrint_hex<Num_T>: public toPrint_base
 {
-private:
-	using array_t = std::array<char8_t, core::to_chars_hex_max_size_v<Num_T>>;
-
 public:
 	constexpr toPrint_hex(Num_T const p_data)
 		: m_data(p_data)
 	{
 	}
 
-	inline uintptr_t size() const { return core::_p::to_chars_hex_estimate(m_data); }
+	inline uintptr_t size() const { return core::to_chars_hex_size(m_data); }
 
 	template<_p::c_toPrint_char CharT>
 	inline uintptr_t size(const CharT&) const { return size(); }
@@ -612,7 +609,7 @@ public:
 	template<_p::c_toPrint_char CharT>
 	inline CharT* get_print(CharT* const p_out) const
 	{
-		return core::_p::to_chars_hex_unsafe(m_data, p_out);
+		return core::to_chars_hex_unsafe(m_data, p_out);
 	}
 
 private:
@@ -648,7 +645,7 @@ public:
 	template<_p::c_toPrint_char CharT>
 	inline CharT* get_print(CharT* const p_out) const
 	{
-		core::_p::to_chars_hex_fix_unsafe(m_data, p_out);
+		core::to_chars_hex_fix_unsafe(m_data, p_out);
 		return p_out + core::to_chars_hex_max_size_v<Num_T>;
 	}
 
@@ -663,5 +660,84 @@ class toPrint_hex_fix<Num_T>: public toPrint_hex_fix<_p::toPrint_uint_clobber_t<
 public:
 	constexpr toPrint_hex_fix(Num_T const p_data): toPrint_hex_fix<alias_t>(static_cast<alias_t const>(p_data)) {}
 };
+
+
+//-------- Binary -------- 
+template<typename>
+class toPrint_bin;
+template <typename T> toPrint_bin(T) -> toPrint_bin<std::remove_cvref_t<T>>;
+
+template<core::char_conv_bin_supported_c Num_T>
+class toPrint_bin<Num_T>: public toPrint_base
+{
+private:
+	using array_t = std::array<char8_t, core::to_chars_bin_max_size_v<Num_T>>;
+
+public:
+	constexpr toPrint_bin(Num_T const p_data)
+		: m_data(p_data)
+	{
+	}
+
+	inline uintptr_t size() const { return core::to_chars_bin_size(m_data); }
+
+	template<_p::c_toPrint_char CharT>
+	inline uintptr_t size(const CharT&) const { return size(); }
+
+	template<_p::c_toPrint_char CharT>
+	inline CharT* get_print(CharT* const p_out) const
+	{
+		return core::to_chars_bin_unsafe(m_data, p_out);
+	}
+
+private:
+	const Num_T m_data;
+};
+
+template<typename Num_T> requires (std::integral<Num_T> && !core::char_conv_bin_supported_c<Num_T>)
+class toPrint_bin<Num_T>: public toPrint_bin<_p::toPrint_uint_clobber_t<Num_T>>
+{
+	using alias_t = _p::toPrint_uint_clobber_t<Num_T>;
+public:
+	constexpr toPrint_bin(Num_T const p_data): toPrint_bin<alias_t>(static_cast<alias_t>(p_data)) {}
+};
+
+//-------- Hexadecimal fixed size -------- 
+
+template<typename>
+class toPrint_bin_fix;
+template <typename T> toPrint_bin_fix(T) -> toPrint_bin_fix<std::remove_cvref_t<T>>;
+
+template<core::char_conv_bin_supported_c Num_T>
+class toPrint_bin_fix<Num_T>: public toPrint_base
+{
+private:
+	static constexpr uintptr_t array_size = core::to_chars_bin_max_size_v<Num_T>;
+
+public:
+	constexpr toPrint_bin_fix(Num_T const p_data): m_data{p_data} {}
+
+	template<_p::c_toPrint_char CharT>
+	static inline constexpr uintptr_t size(const CharT&) { return array_size; }
+
+	template<_p::c_toPrint_char CharT>
+	inline CharT* get_print(CharT* const p_out) const
+	{
+		core::to_chars_bin_fix_unsafe(m_data, p_out);
+		return p_out + core::to_chars_bin_max_size_v<Num_T>;
+	}
+
+private:
+	const Num_T m_data;
+};
+
+template<typename Num_T> requires (std::integral<Num_T> && !core::char_conv_bin_supported_c<Num_T>)
+class toPrint_bin_fix<Num_T>: public toPrint_bin_fix<_p::toPrint_uint_clobber_t<Num_T>>
+{
+	using alias_t = _p::toPrint_uint_clobber_t<Num_T>;
+public:
+	constexpr toPrint_bin_fix(Num_T const p_data): toPrint_bin_fix<alias_t>(static_cast<alias_t const>(p_data)) {}
+};
+
 
 } //namespace core

@@ -295,6 +295,34 @@ const std::vector<std::string> hexBadCases_s =
 	"123 ",
 };
 
+const std::vector<std::string> binBadCases_s =
+{
+	"",
+	"false",
+	"true",
+	"0G",
+	"0f",
+	"120",
+	"2",
+	"A",
+	"a",
+	"T",
+	"G",
+	"g",
+	"!",
+	" ",
+	"-.E-",
+	"-",
+	"+",
+	".",
+	"E",
+	std::string{"\0", 1},
+	"10 1",
+	" 101",
+	"101 ",
+};
+
+
 template <typename num_T>
 struct one_past_end;
 
@@ -322,6 +350,16 @@ template <> struct one_past_end_hex<uint8_t >{ static constexpr std::string_view
 template <> struct one_past_end_hex<uint16_t>{ static constexpr std::string_view str = "10000";};
 template <> struct one_past_end_hex<uint32_t>{ static constexpr std::string_view str = "100000000";};
 template <> struct one_past_end_hex<uint64_t>{ static constexpr std::string_view str = "10000000000000000";};
+
+template <typename num_T>
+struct one_past_end_bin;
+
+template <> struct one_past_end_bin<uint8_t >{ static constexpr std::string_view str = "100000000"; };
+template <> struct one_past_end_bin<uint16_t>{ static constexpr std::string_view str = "10000000000000000";};
+template <> struct one_past_end_bin<uint32_t>{ static constexpr std::string_view str = "100000000000000000000000000000000";};
+template <> struct one_past_end_bin<uint64_t>{ static constexpr std::string_view str = "10000000000000000000000000000000000000000000000000000000000000000";};
+
+
 
 template <typename num_T, typename char_T>
 std::vector<std::basic_string<char_T>> get_goodStr()
@@ -442,6 +480,29 @@ std::vector<std::basic_string<char_T>> get_goodStr_hex()
 	return out;
 }
 
+
+template <typename num_T, typename char_T>
+std::vector<std::basic_string<char_T>> get_goodStr_bin()
+{
+	std::vector<std::basic_string<char_T>> out;
+	constexpr num_T max = std::numeric_limits<num_T>::max();
+	std::array<char, 64> buff;
+	char* const first = buff.data();
+	char* const last = first + buff.size();
+
+	for(const uint64_t num : hex_numbers)
+	{
+		if(num <= max)
+		{
+			const std::to_chars_result res = std::to_chars(first, last, num, 2);
+			out.push_back(str2_Tstring<char_T>(std::string_view{first, static_cast<uintptr_t>(res.ptr - first)}));
+		}
+		else break;
+	}
+
+	return out;
+}
+
 template <typename num_T, typename char_T>
 std::vector<std::basic_string<char_T>> get_badStr_hex()
 {
@@ -453,6 +514,21 @@ std::vector<std::basic_string<char_T>> get_badStr_hex()
 	}
 
 	out.emplace_back(str2_Tstring<char_T>(one_past_end_hex<num_T>::str));
+
+	return out;
+}
+
+template <typename num_T, typename char_T>
+std::vector<std::basic_string<char_T>> get_badStr_bin()
+{
+	std::vector<std::basic_string<char_T>> out;
+
+	for(const std::string& t_str : binBadCases_s)
+	{
+		out.emplace_back(str2_Tstring<char_T>(t_str));
+	}
+
+	out.emplace_back(str2_Tstring<char_T>(one_past_end_bin<num_T>::str));
 
 	return out;
 }
@@ -496,7 +572,7 @@ static void std_from_chars_good(benchmark::State& state)
 		benchmark::DoNotOptimize(result);
 		benchmark::DoNotOptimize(ok);
 
-		if(index >= testList.size()) index = 0;
+		if(++index >= testList.size()) index = 0;
 	}
 }
 
@@ -516,7 +592,7 @@ static void core_from_chars_good(benchmark::State& state)
 		benchmark::DoNotOptimize(result.value());
 		benchmark::DoNotOptimize(ok);
 
-		if(index >= testList.size()) index = 0;
+		if(++index >= testList.size()) index = 0;
 	}
 }
 
@@ -539,7 +615,7 @@ static void std_from_chars_bad(benchmark::State& state)
 
 		benchmark::DoNotOptimize(ok);
 
-		if(index >= testList.size()) index = 0;
+		if(++index >= testList.size()) index = 0;
 	}
 }
 
@@ -558,12 +634,12 @@ static void core_from_chars_bad(benchmark::State& state)
 
 		benchmark::DoNotOptimize(ok);
 
-		if(index >= testList.size()) index = 0;
+		if(++index >= testList.size()) index = 0;
 	}
 }
 
 template<typename num_T>
-static void std_from_hex_chars_good(benchmark::State& state)
+static void std_from_chars_hex_good(benchmark::State& state)
 {
 	const std::vector<std::u8string>& testList = get_goodStr_hex<num_T, char8_t>();
 	uintptr_t index = 0;
@@ -581,12 +657,12 @@ static void std_from_hex_chars_good(benchmark::State& state)
 		benchmark::DoNotOptimize(result);
 		benchmark::DoNotOptimize(ok);
 
-		if(index >= testList.size()) index = 0;
+		if(++index >= testList.size()) index = 0;
 	}
 }
 
 template<typename num_T>
-static void core_from_hex_chars_good(benchmark::State& state)
+static void core_from_chars_hex_good(benchmark::State& state)
 {
 	const std::vector<std::u8string>& testList = get_goodStr_hex<num_T, char8_t>();
 	uintptr_t index = 0;
@@ -601,13 +677,13 @@ static void core_from_hex_chars_good(benchmark::State& state)
 		benchmark::DoNotOptimize(result.value());
 		benchmark::DoNotOptimize(ok);
 
-		if(index >= testList.size()) index = 0;
+		if(++index >= testList.size()) index = 0;
 	}
 }
 
 
 template<typename num_T>
-static void std_from_hex_chars_bad(benchmark::State& state)
+static void std_from_chars_hex_bad(benchmark::State& state)
 {
 	const std::vector<std::u8string>& testList = get_badStr_hex<num_T, char8_t>();
 	uintptr_t index = 0;
@@ -624,12 +700,12 @@ static void std_from_hex_chars_bad(benchmark::State& state)
 
 		benchmark::DoNotOptimize(ok);
 
-		if(index >= testList.size()) index = 0;
+		if(++index >= testList.size()) index = 0;
 	}
 }
 
 template<typename num_T>
-static void core_from_hex_chars_bad(benchmark::State& state)
+static void core_from_chars_hex_bad(benchmark::State& state)
 {
 	const std::vector<std::u8string>& testList = get_badStr_hex<num_T, char8_t>();
 	uintptr_t index = 0;
@@ -643,7 +719,93 @@ static void core_from_hex_chars_bad(benchmark::State& state)
 
 		benchmark::DoNotOptimize(ok);
 
-		if(index >= testList.size()) index = 0;
+		if(++index >= testList.size()) index = 0;
+	}
+}
+
+
+template<typename num_T>
+static void std_from_chars_bin_good(benchmark::State& state)
+{
+	const std::vector<std::u8string>& testList = get_goodStr_bin<num_T, char8_t>();
+	uintptr_t index = 0;
+
+	for (auto _ : state)
+	{
+		const std::u8string& testCase = testList[index];
+		const char* const first = reinterpret_cast<const char*>(testCase.data());
+		const char* const last = first + testCase.size();
+		num_T result;
+		const std::from_chars_result res = std::from_chars(first, last, result, 2);
+
+		const bool ok = (res.ec == std::error_code{} && res.ptr == last);
+
+		benchmark::DoNotOptimize(result);
+		benchmark::DoNotOptimize(ok);
+
+		if(++index >= testList.size()) index = 0;
+	}
+}
+
+template<typename num_T>
+static void core_from_chars_bin_good(benchmark::State& state)
+{
+	const std::vector<std::u8string>& testList = get_goodStr_bin<num_T, char8_t>();
+	uintptr_t index = 0;
+
+	for (auto _ : state)
+	{
+		const std::u8string& testCase = testList[index];
+		const core::from_chars_result<num_T> result = core::from_chars_bin<num_T>(testCase);
+
+		const bool ok = result.has_value();
+
+		benchmark::DoNotOptimize(result.value());
+		benchmark::DoNotOptimize(ok);
+
+		if(++index >= testList.size()) index = 0;
+	}
+}
+
+
+template<typename num_T>
+static void std_from_chars_bin_bad(benchmark::State& state)
+{
+	const std::vector<std::u8string>& testList = get_badStr_bin<num_T, char8_t>();
+	uintptr_t index = 0;
+
+	for (auto _ : state)
+	{
+		const std::u8string& testCase = testList[index];
+		const char* const first = reinterpret_cast<const char*>(testCase.data());
+		const char* const last = first + testCase.size();
+		num_T result;
+		const std::from_chars_result res = std::from_chars(first, last, result, 2);
+
+		const bool ok = (res.ec == std::error_code{} && res.ptr == last);
+
+		benchmark::DoNotOptimize(ok);
+
+		if(++index >= testList.size()) index = 0;
+	}
+}
+
+template<typename num_T>
+static void core_from_chars_bin_bad(benchmark::State& state)
+{
+	const std::vector<std::u8string>& testList = get_badStr_bin<num_T, char8_t>();
+	uintptr_t index = 0;
+
+	for (auto _ : state)
+	{
+		const std::u8string& testCase = testList[index];
+		const core::from_chars_result<num_T> result = core::from_chars_bin<num_T>(testCase);
+
+		const bool ok = result.has_value();
+
+		benchmark::DoNotOptimize(ok);
+
+		if(++index >= testList.size()) index = 0;
 	}
 }
 
@@ -667,9 +829,10 @@ static void std_to_chars(benchmark::State& state)
 		const std::u8string_view result {buffer.data(), static_cast<uintptr_t>(res.ptr - first)};
 
 		benchmark::DoNotOptimize(result);
-		if(index >= testList.size()) index = 0;
+		if(++index >= testList.size()) index = 0;
 	}
 }
+
 
 template<typename num_T>
 static void core_to_chars(benchmark::State& state)
@@ -688,18 +851,35 @@ static void core_to_chars(benchmark::State& state)
 		const std::u8string_view result {buffer.data(), res_size};
 
 		benchmark::DoNotOptimize(result);
-		if(index >= testList.size()) index = 0;
+		if(++index >= testList.size()) index = 0;
+	}
+}
+
+template<typename num_T>
+static void core_to_chars_size(benchmark::State& state)
+{
+	const std::vector<num_T>& testList = get_num<num_T>();
+	uintptr_t index = 0;
+
+	for (auto _ : state)
+	{
+		const num_T testCase = testList[index];
+		const uintptr_t res_size = core::to_chars_size(testCase);
+
+		benchmark::DoNotOptimize(res_size);
+		if (++index >= testList.size()) index = 0;
 	}
 }
 
 
+
 template<typename num_T>
-static void std_to_hex_chars(benchmark::State& state)
+static void std_to_chars_hex(benchmark::State& state)
 {
 	const std::vector<num_T>& testList = get_num_hex<num_T>();
 	uintptr_t index = 0;
 
-	constexpr uintptr_t buffSize = core::to_chars_dec_max_size_v<num_T>;
+	constexpr uintptr_t buffSize = core::to_chars_hex_max_size_v<num_T>;
 	std::array<char8_t, buffSize> buffer;
 
 	for (auto _ : state)
@@ -712,12 +892,12 @@ static void std_to_hex_chars(benchmark::State& state)
 		const std::u8string_view result {buffer.data(), static_cast<uintptr_t>(res.ptr - first)};
 
 		benchmark::DoNotOptimize(result);
-		if(index >= testList.size()) index = 0;
+		if(++index >= testList.size()) index = 0;
 	}
 }
 
 template<typename num_T>
-static void core_to_hex_chars(benchmark::State& state)
+static void core_to_chars_hex(benchmark::State& state)
 {
 	const std::vector<num_T>& testList = get_num_hex<num_T>();
 	uintptr_t index = 0;
@@ -733,12 +913,12 @@ static void core_to_hex_chars(benchmark::State& state)
 		const std::u8string_view result {buffer.data(), res_size};
 
 		benchmark::DoNotOptimize(result);
-		if(index >= testList.size()) index = 0;
+		if(++index >= testList.size()) index = 0;
 	}
 }
 
 template<typename num_T>
-static void core_to_hex_chars_fix(benchmark::State& state)
+static void core_to_chars_hex_fix(benchmark::State& state)
 {
 	const std::vector<num_T>& testList = get_num_hex<num_T>();
 	uintptr_t index = 0;
@@ -754,7 +934,109 @@ static void core_to_hex_chars_fix(benchmark::State& state)
 		const std::u8string_view result {buffer.data(), buffSize};
 
 		benchmark::DoNotOptimize(result);
-		if(index >= testList.size()) index = 0;
+		if(++index >= testList.size()) index = 0;
+	}
+}
+
+template<typename num_T>
+static void core_to_chars_hex_size(benchmark::State& state)
+{
+	const std::vector<num_T>& testList = get_num_hex<num_T>();
+	uintptr_t index = 0;
+
+	for (auto _ : state)
+	{
+		const num_T testCase = testList[index];
+		const uintptr_t res_size = core::to_chars_hex_size(testCase);
+
+		benchmark::DoNotOptimize(res_size);
+		if (++index >= testList.size()) index = 0;
+	}
+}
+
+
+
+
+
+template<typename num_T>
+static void std_to_chars_bin(benchmark::State& state)
+{
+	const std::vector<num_T>& testList = get_num_hex<num_T>();
+	uintptr_t index = 0;
+
+	constexpr uintptr_t buffSize = core::to_chars_bin_max_size_v<num_T>;
+	std::array<char8_t, buffSize> buffer;
+
+	for (auto _ : state)
+	{
+		const num_T testCase = testList[index];
+		char* const first = reinterpret_cast<char*>(buffer.data());
+		char* const last = first + buffer.size();
+		const std::to_chars_result res = std::to_chars(first, last, testCase, 2);
+
+		const std::u8string_view result {buffer.data(), static_cast<uintptr_t>(res.ptr - first)};
+
+		benchmark::DoNotOptimize(result);
+		if(++index >= testList.size()) index = 0;
+	}
+}
+
+
+template<typename num_T>
+static void core_to_chars_bin(benchmark::State& state)
+{
+	const std::vector<num_T>& testList = get_num_hex<num_T>();
+	uintptr_t index = 0;
+
+	constexpr uintptr_t buffSize = core::to_chars_bin_max_size_v<num_T>;
+	std::array<char8_t, buffSize> buffer;
+
+	for (auto _ : state)
+	{
+		const num_T testCase = testList[index];
+		const uintptr_t res_size = core::to_chars_bin(testCase, std::span<char8_t, buffSize>(buffer));
+
+		const std::u8string_view result {buffer.data(), res_size};
+
+		benchmark::DoNotOptimize(result);
+		if(++index >= testList.size()) index = 0;
+	}
+}
+
+template<typename num_T>
+static void core_to_chars_bin_fix(benchmark::State& state)
+{
+	const std::vector<num_T>& testList = get_num_hex<num_T>();
+	uintptr_t index = 0;
+
+	constexpr uintptr_t buffSize = core::to_chars_bin_max_size_v<num_T>;
+	std::array<char8_t, buffSize> buffer;
+
+	for (auto _ : state)
+	{
+		const num_T testCase = testList[index];
+		core::to_chars_bin_fix(testCase, std::span<char8_t, buffSize>(buffer));
+
+		const std::u8string_view result {buffer.data(), buffSize};
+
+		benchmark::DoNotOptimize(result);
+		if(++index >= testList.size()) index = 0;
+	}
+}
+
+template<typename num_T>
+static void core_to_chars_bin_size(benchmark::State& state)
+{
+	const std::vector<num_T>& testList = get_num_hex<num_T>();
+	uintptr_t index = 0;
+
+	for (auto _ : state)
+	{
+		const num_T testCase = testList[index];
+		const uintptr_t res_size = core::to_chars_bin_size(testCase);
+
+		benchmark::DoNotOptimize(res_size);
+		if (++index >= testList.size()) index = 0;
 	}
 }
 
@@ -794,25 +1076,41 @@ BENCHMARK_TEMPLATE(core_from_chars_bad, int32_t );
 BENCHMARK_TEMPLATE( std_from_chars_bad, int64_t );
 BENCHMARK_TEMPLATE(core_from_chars_bad, int64_t );
 
+BENCHMARK_TEMPLATE( std_from_chars_hex_good, uint8_t );
+BENCHMARK_TEMPLATE(core_from_chars_hex_good, uint8_t );
+BENCHMARK_TEMPLATE( std_from_chars_hex_good, uint16_t);
+BENCHMARK_TEMPLATE(core_from_chars_hex_good, uint16_t);
+BENCHMARK_TEMPLATE( std_from_chars_hex_good, uint32_t);
+BENCHMARK_TEMPLATE(core_from_chars_hex_good, uint32_t);
+BENCHMARK_TEMPLATE( std_from_chars_hex_good, uint64_t);
+BENCHMARK_TEMPLATE(core_from_chars_hex_good, uint64_t);
 
-BENCHMARK_TEMPLATE( std_from_hex_chars_good, uint8_t );
-BENCHMARK_TEMPLATE(core_from_hex_chars_good, uint8_t );
-BENCHMARK_TEMPLATE( std_from_hex_chars_good, uint16_t);
-BENCHMARK_TEMPLATE(core_from_hex_chars_good, uint16_t);
-BENCHMARK_TEMPLATE( std_from_hex_chars_good, uint32_t);
-BENCHMARK_TEMPLATE(core_from_hex_chars_good, uint32_t);
-BENCHMARK_TEMPLATE( std_from_hex_chars_good, uint64_t);
-BENCHMARK_TEMPLATE(core_from_hex_chars_good, uint64_t);
+BENCHMARK_TEMPLATE( std_from_chars_hex_bad, uint8_t );
+BENCHMARK_TEMPLATE(core_from_chars_hex_bad, uint8_t );
+BENCHMARK_TEMPLATE( std_from_chars_hex_bad, uint16_t);
+BENCHMARK_TEMPLATE(core_from_chars_hex_bad, uint16_t);
+BENCHMARK_TEMPLATE( std_from_chars_hex_bad, uint32_t);
+BENCHMARK_TEMPLATE(core_from_chars_hex_bad, uint32_t);
+BENCHMARK_TEMPLATE( std_from_chars_hex_bad, uint64_t);
+BENCHMARK_TEMPLATE(core_from_chars_hex_bad, uint64_t);
 
-BENCHMARK_TEMPLATE( std_from_hex_chars_bad, uint8_t );
-BENCHMARK_TEMPLATE(core_from_hex_chars_bad, uint8_t );
-BENCHMARK_TEMPLATE( std_from_hex_chars_bad, uint16_t);
-BENCHMARK_TEMPLATE(core_from_hex_chars_bad, uint16_t);
-BENCHMARK_TEMPLATE( std_from_hex_chars_bad, uint32_t);
-BENCHMARK_TEMPLATE(core_from_hex_chars_bad, uint32_t);
-BENCHMARK_TEMPLATE( std_from_hex_chars_bad, uint64_t);
-BENCHMARK_TEMPLATE(core_from_hex_chars_bad, uint64_t);
+BENCHMARK_TEMPLATE( std_from_chars_bin_good, uint8_t );
+BENCHMARK_TEMPLATE(core_from_chars_bin_good, uint8_t );
+BENCHMARK_TEMPLATE( std_from_chars_bin_good, uint16_t);
+BENCHMARK_TEMPLATE(core_from_chars_bin_good, uint16_t);
+BENCHMARK_TEMPLATE( std_from_chars_bin_good, uint32_t);
+BENCHMARK_TEMPLATE(core_from_chars_bin_good, uint32_t);
+BENCHMARK_TEMPLATE( std_from_chars_bin_good, uint64_t);
+BENCHMARK_TEMPLATE(core_from_chars_bin_good, uint64_t);
 
+BENCHMARK_TEMPLATE( std_from_chars_bin_bad, uint8_t );
+BENCHMARK_TEMPLATE(core_from_chars_bin_bad, uint8_t );
+BENCHMARK_TEMPLATE( std_from_chars_bin_bad, uint16_t);
+BENCHMARK_TEMPLATE(core_from_chars_bin_bad, uint16_t);
+BENCHMARK_TEMPLATE( std_from_chars_bin_bad, uint32_t);
+BENCHMARK_TEMPLATE(core_from_chars_bin_bad, uint32_t);
+BENCHMARK_TEMPLATE( std_from_chars_bin_bad, uint64_t);
+BENCHMARK_TEMPLATE(core_from_chars_bin_bad, uint64_t);
 
 BENCHMARK_TEMPLATE( std_to_chars, uint8_t );
 BENCHMARK_TEMPLATE(core_to_chars, uint8_t );
@@ -831,19 +1129,46 @@ BENCHMARK_TEMPLATE(core_to_chars, int32_t );
 BENCHMARK_TEMPLATE( std_to_chars, int64_t );
 BENCHMARK_TEMPLATE(core_to_chars, int64_t );
 
-BENCHMARK_TEMPLATE( std_to_hex_chars,     uint8_t );
-BENCHMARK_TEMPLATE(core_to_hex_chars,     uint8_t );
-BENCHMARK_TEMPLATE(core_to_hex_chars_fix, uint8_t );
-BENCHMARK_TEMPLATE( std_to_hex_chars,     uint16_t);
-BENCHMARK_TEMPLATE(core_to_hex_chars,     uint16_t);
-BENCHMARK_TEMPLATE(core_to_hex_chars_fix, uint16_t);
-BENCHMARK_TEMPLATE( std_to_hex_chars,     uint32_t);
-BENCHMARK_TEMPLATE(core_to_hex_chars,     uint32_t);
-BENCHMARK_TEMPLATE(core_to_hex_chars_fix, uint32_t);
-BENCHMARK_TEMPLATE( std_to_hex_chars,     uint64_t);
-BENCHMARK_TEMPLATE(core_to_hex_chars,     uint64_t);
-BENCHMARK_TEMPLATE(core_to_hex_chars_fix, uint64_t);
+BENCHMARK_TEMPLATE(core_to_chars_size, uint8_t);
+BENCHMARK_TEMPLATE(core_to_chars_size, uint16_t);
+BENCHMARK_TEMPLATE(core_to_chars_size, uint32_t);
+BENCHMARK_TEMPLATE(core_to_chars_size, uint64_t);
 
+BENCHMARK_TEMPLATE( std_to_chars_hex,     uint8_t );
+BENCHMARK_TEMPLATE(core_to_chars_hex,     uint8_t );
+BENCHMARK_TEMPLATE(core_to_chars_hex_fix, uint8_t );
+BENCHMARK_TEMPLATE( std_to_chars_hex,     uint16_t);
+BENCHMARK_TEMPLATE(core_to_chars_hex,     uint16_t);
+BENCHMARK_TEMPLATE(core_to_chars_hex_fix, uint16_t);
+BENCHMARK_TEMPLATE( std_to_chars_hex,     uint32_t);
+BENCHMARK_TEMPLATE(core_to_chars_hex,     uint32_t);
+BENCHMARK_TEMPLATE(core_to_chars_hex_fix, uint32_t);
+BENCHMARK_TEMPLATE( std_to_chars_hex,     uint64_t);
+BENCHMARK_TEMPLATE(core_to_chars_hex,     uint64_t);
+BENCHMARK_TEMPLATE(core_to_chars_hex_fix, uint64_t);
+
+BENCHMARK_TEMPLATE(core_to_chars_hex_size, uint8_t);
+BENCHMARK_TEMPLATE(core_to_chars_hex_size, uint16_t);
+BENCHMARK_TEMPLATE(core_to_chars_hex_size, uint32_t);
+BENCHMARK_TEMPLATE(core_to_chars_hex_size, uint64_t);
+
+BENCHMARK_TEMPLATE( std_to_chars_bin,     uint8_t );
+BENCHMARK_TEMPLATE(core_to_chars_bin,     uint8_t );
+BENCHMARK_TEMPLATE(core_to_chars_bin_fix, uint8_t );
+BENCHMARK_TEMPLATE( std_to_chars_bin,     uint16_t);
+BENCHMARK_TEMPLATE(core_to_chars_bin,     uint16_t);
+BENCHMARK_TEMPLATE(core_to_chars_bin_fix, uint16_t);
+BENCHMARK_TEMPLATE( std_to_chars_bin,     uint32_t);
+BENCHMARK_TEMPLATE(core_to_chars_bin,     uint32_t);
+BENCHMARK_TEMPLATE(core_to_chars_bin_fix, uint32_t);
+BENCHMARK_TEMPLATE( std_to_chars_bin,     uint64_t);
+BENCHMARK_TEMPLATE(core_to_chars_bin,     uint64_t);
+BENCHMARK_TEMPLATE(core_to_chars_bin_fix, uint64_t);
+
+BENCHMARK_TEMPLATE(core_to_chars_bin_size, uint8_t);
+BENCHMARK_TEMPLATE(core_to_chars_bin_size, uint16_t);
+BENCHMARK_TEMPLATE(core_to_chars_bin_size, uint32_t);
+BENCHMARK_TEMPLATE(core_to_chars_bin_size, uint64_t);
 
 template<typename T>
 struct fp_cases;
@@ -1186,22 +1511,20 @@ static inline void core_to_chars_shortest_convert(benchmark::State& state)
 BENCHMARK_TEMPLATE(std_to_chars_short, float32_t);
 BENCHMARK_TEMPLATE(std_to_chars_short, float64_t);
 
-BENCHMARK_TEMPLATE(core_to_chars_shortest, float32_t , char8_t);
+BENCHMARK_TEMPLATE(core_to_chars_shortest, float32_t, char8_t);
 BENCHMARK_TEMPLATE(core_to_chars_shortest, float64_t, char8_t);
-BENCHMARK_TEMPLATE(core_to_chars_shortest, float32_t , char16_t);
+BENCHMARK_TEMPLATE(core_to_chars_shortest, float32_t, char16_t);
 BENCHMARK_TEMPLATE(core_to_chars_shortest, float64_t, char16_t);
-BENCHMARK_TEMPLATE(core_to_chars_shortest, float32_t , char32_t);
+BENCHMARK_TEMPLATE(core_to_chars_shortest, float32_t, char32_t);
 BENCHMARK_TEMPLATE(core_to_chars_shortest, float64_t, char32_t);
 
 BENCHMARK_TEMPLATE(core_to_chars_shortest_classify, float32_t);
 BENCHMARK_TEMPLATE(core_to_chars_shortest_classify, float64_t);
 
-
-
 BENCHMARK_TEMPLATE(core_to_chars_shortest_size, float32_t);
 BENCHMARK_TEMPLATE(core_to_chars_shortest_size, float64_t);
 
-BENCHMARK_TEMPLATE(core_to_chars_shortest_convert, float32_t , char8_t);
+BENCHMARK_TEMPLATE(core_to_chars_shortest_convert, float32_t, char8_t);
 BENCHMARK_TEMPLATE(core_to_chars_shortest_convert, float64_t, char8_t);
 
 
@@ -1216,8 +1539,6 @@ BENCHMARK_TEMPLATE(core_to_chars_shortest_convert, float64_t, char8_t);
 //BENCHMARK_TEMPLATE(core_to_chars_sci, float32_t);
 //BENCHMARK_TEMPLATE(core_to_chars_fix, float32_t);
 //BENCHMARK_TEMPLATE(core_to_chars_sci, float64_t);
-
-
 
 
 static void no_op(benchmark::State& state)
