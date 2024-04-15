@@ -81,7 +81,7 @@ namespace core
 	namespace _p
 	{
 		///	\brief	Converts a base 10 encoded string to unsigned integer.
-		template <typename uint_T, typename char_T>
+		template <charconv_uint_c uint_T, charconv_char_c char_T>
 		[[nodiscard]] static inline from_chars_result<uint_T> dec2uint(std::basic_string_view<char_T> const p_str)
 		{
 			if(p_str.empty())
@@ -92,11 +92,11 @@ namespace core
 			uint_T r_val = 0;
 			for(const char_T tchar: p_str)
 			{
-				if(!is_digit(tchar))
+				const uint8_t t_val = static_cast<uint8_t>(tchar - '0');
+				if(t_val > 9)
 				{
 					return std::errc::invalid_argument;
 				}
-				const uint8_t t_val = static_cast<uint8_t>(tchar - '0');
 
 				if(r_val >= dec_unsigned_help<uint_T>::threshold_val)
 				{
@@ -113,7 +113,7 @@ namespace core
 		}
 
 		///	\brief		Converts a base 10 encoded string to signed integer.
-		template <typename int_T, typename char_T>
+		template <charconv_sint_c int_T, charconv_char_c char_T>
 		[[nodiscard]] static inline from_chars_result<int_T> dec2int(std::basic_string_view<char_T> const p_str)
 		{
 			const uintptr_t size = p_str.size();
@@ -125,10 +125,9 @@ namespace core
 			const char_T* pivot	= p_str.data();
 			const char_T* end = pivot + size;
 
-			int_T	r_val = 0;
-			int8_t	t_val;
+			int_T r_val = 0;
 
-			if((*pivot == '-')) //negative handling
+			if(*pivot == '-') //negative handling
 			{
 				if(++pivot >= end)
 				{
@@ -137,12 +136,12 @@ namespace core
 
 				do
 				{
-					if(!is_digit(*pivot))
+					uint8_t const t_val = static_cast<uint8_t>(*pivot - '0');
+					if(t_val > 9)
 					{
 						return std::errc::invalid_argument;
 					}
 
-					t_val = static_cast<uint8_t>(*pivot - '0');
 
 					if(r_val <= dec_signed_help<int_T>::min_threshold_val)
 					{
@@ -155,24 +154,22 @@ namespace core
 				}
 				while(++pivot < end);
 			}
-			else		//positive handling
+			else	//positive handling
 			{
-				if((*pivot == '+'))
+				if(*pivot == '+')
 				{
 					if(++pivot >= end)
 					{
 						return std::errc::invalid_argument;
 					}
 				}
-
 				do
 				{
-					if(!is_digit(*pivot))
+					uint8_t const t_val = static_cast<uint8_t>(*pivot - '0');
+					if(t_val > 9)
 					{
 						return std::errc::invalid_argument;
 					}
-
-					t_val = static_cast<uint8_t>(*pivot - '0');
 
 					if(r_val >= dec_signed_help<int_T>::max_threshold_val)
 					{
@@ -190,9 +187,12 @@ namespace core
 		}
 
 		///	\brief		Converts a base 16 encoded string to unsigned integer.
-		template <typename uint_T, typename char_T>
+		template <charconv_uint_c uint_T, charconv_char_c char_T>
 		[[nodiscard]] static inline from_chars_result<uint_T> hex2uint(std::basic_string_view<char_T> const p_str)
 		{
+			constexpr char_T num_A_offset = static_cast<char_T>('A' - '9' - 1);
+			constexpr char_T A_a_offset = static_cast<char_T>('a' - 'A');
+
 			if(p_str.empty())
 			{
 				return std::errc::invalid_argument;
@@ -206,21 +206,23 @@ namespace core
 					return {};
 				}
 
-				if(is_digit(t_val))
+				t_val -= '0';
+				if(t_val > 9)
 				{
-					t_val -= '0';
-				}
-				else if(t_val >= 'a' && t_val < 'g')
-				{
-					t_val -= 'a' - 10;
-				}
-				else if(t_val >= 'A' && t_val < 'G')
-				{
-					t_val -= 'A' - 10;
-				}
-				else
-				{
-					return std::errc::invalid_argument;
+					t_val -= num_A_offset;
+
+					if(t_val > 15)
+					{
+						t_val -= A_a_offset;
+						if(t_val < 10 || t_val > 15)
+						{
+							return std::errc::invalid_argument;
+						}
+					}
+					else if(t_val < 10)
+					{
+						return std::errc::invalid_argument;
+					}
 				}
 
 				r_val <<= 4;
@@ -230,7 +232,7 @@ namespace core
 		}
 
 
-		template <typename uint_T, typename char_T>
+		template <charconv_uint_c uint_T, charconv_char_c char_T>
 		[[nodiscard]] static inline from_chars_result<uint_T> bin2uint(std::basic_string_view<char_T> const p_str)
 		{
 			if(p_str.empty())
@@ -260,7 +262,7 @@ namespace core
 		}
 
 
-		template<_p::charconv_char_extended_c char_T>
+		template<charconv_char_c char_T>
 		static bool is_inf(std::basic_string_view<char_T> p_str)
 		{
 			if(p_str.size() == 3)
@@ -335,7 +337,7 @@ namespace core
 			return false;
 		}
 
-		template<_p::charconv_char_extended_c char_T>
+		template<_p::charconv_char_c char_T>
 		static bool is_nan(std::basic_string_view<char_T> p_str)
 		{
 			if(p_str.size() == 3)
@@ -369,7 +371,7 @@ namespace core
 		}
 
 
-		template<typename fp_T, _p::charconv_char_extended_c char_T>
+		template<charconv_fp_c fp_T, charconv_char_c char_T>
 		[[nodiscard]] static from_chars_result<fp_T> dec2fp(std::basic_string_view<char_T> p_str)
 		{
 			if(p_str.empty())
@@ -487,7 +489,7 @@ namespace core
 		}
 
 #if 1
-		template <typename num_T>
+		template <charconv_uint_c num_T>
 		[[nodiscard]] static constexpr uintptr_t uint2dec_estimate(num_T);
 
 		template <>
@@ -618,7 +620,7 @@ namespace core
 			19_uip,
 		};
 
-		template<typename T>
+		template<charconv_uint_c T>
 		struct count_helper;
 
 		template<>
@@ -778,7 +780,7 @@ namespace core
 		};
 
 
-		template <typename num_T>
+		template <charconv_uint_c num_T>
 		[[nodiscard]] static constexpr uintptr_t uint2dec_estimate(num_T const p_val)
 		{
 			constexpr uintptr_t num_bits = sizeof(num_T) * 8;
@@ -787,7 +789,7 @@ namespace core
 		}
 #endif
 
-		template <typename num_T>
+		template <charconv_sint_c num_T>
 		[[nodiscard]] inline constexpr uintptr_t int2dec_estimate(num_T const p_val)
 		{
 			using unsigned_t = std::make_unsigned_t<num_T>;
@@ -799,7 +801,7 @@ namespace core
 			return uint2dec_estimate<unsigned_t>(static_cast<unsigned_t>(p_val));
 		}
 
-		template<typename Fp_t>
+		template<charconv_fp_c Fp_t>
 		[[nodiscard]] static inline uintptr_t fp2dec_estimate(Fp_t const p_val)
 		{
 
@@ -856,7 +858,7 @@ namespace core
 			return min_size;
 		}
 
-		template <typename num_T>
+		template <charconv_uint_c num_T>
 		[[nodiscard]] static inline constexpr uintptr_t uint2hex_estimate(num_T const p_val)
 		{
 			if(p_val)
@@ -868,7 +870,7 @@ namespace core
 			return 1;
 		}
 
-		template <typename num_T>
+		template <charconv_uint_c num_T>
 		[[nodiscard]] static inline constexpr uintptr_t uint2bin_estimate(num_T const p_val)
 		{
 			if (p_val)
@@ -886,7 +888,7 @@ namespace core
 			return x2NibTable[p_val & 0x0F];
 		}
 
-		template <typename char_T, typename num_T>
+		template <charconv_char_c char_T, charconv_uint_c num_T>
 		static inline char_T* uint2dec(num_T p_val, char_T* p_str)
 		{
 			p_str += uint2dec_estimate(p_val);
@@ -900,7 +902,7 @@ namespace core
 			return p_str;
 		}
 
-		template <typename char_T, typename num_T>
+		template <charconv_char_c char_T, charconv_sint_c num_T>
 		static inline char_T* int2dec(const num_T p_val, char_T* const p_str)
 		{
 			using unsigned_t = std::make_unsigned_t<num_T>;
@@ -914,7 +916,7 @@ namespace core
 			return uint2dec<char_T, unsigned_t>(static_cast<unsigned_t>(p_val), p_str);
 		}
 
-		template <typename char_T, typename num_T>
+		template <charconv_char_c char_T, charconv_uint_c num_T>
 		static inline char_T* uint2hex(num_T const p_val, char_T* pivot)
 		{
 			if(!p_val)
@@ -935,7 +937,7 @@ namespace core
 			return pivot;
 		}
 
-		template <typename char_T, typename num_T>
+		template <charconv_char_c char_T, charconv_uint_c num_T>
 		static inline char_T* uint2bin(num_T const p_val, char_T* pivot)
 		{
 			if (!p_val)
@@ -956,14 +958,14 @@ namespace core
 			return pivot;
 		}
 
-		template <typename T>
+		template <charconv_char_c T>
 		static inline void uint2hex_fix(const uint8_t p_val, T* p_str)
 		{
 			*p_str   = _p::Hex2Nible(p_val >> 4);
 			*++p_str = _p::Hex2Nible(p_val);
 		}
 
-		template <typename T>
+		template <charconv_char_c T>
 		static inline void uint2hex_fix(const uint16_t p_val, T* p_str)
 		{
 			*p_str   = _p::Hex2Nible(p_val >> 12);
@@ -972,7 +974,7 @@ namespace core
 			*++p_str = _p::Hex2Nible(p_val);
 		}
 
-		template <typename T>
+		template <charconv_char_c T>
 		static inline void uint2hex_fix(const uint32_t p_val, T* p_str)
 		{
 			*p_str   = _p::Hex2Nible(p_val >> 28);
@@ -985,7 +987,7 @@ namespace core
 			*++p_str = _p::Hex2Nible(p_val);
 		}
 
-		template <typename T>
+		template <charconv_char_c T>
 		static inline void uint2hex_fix(const uint64_t p_val, T* p_str)
 		{
 			*p_str   = _p::Hex2Nible(p_val >> 60);
@@ -1006,7 +1008,7 @@ namespace core
 			*++p_str = _p::Hex2Nible(p_val);
 		}
 
-		//template <typename T, typename NUM_T>
+		//template <charconv_char_c T, charconv_uint_c NUM_T>
 		//static inline void uint2hex_fix(NUM_T const p_val, T* p_str)
 		//{
 		//	for(uint8_t offset = static_cast<uint8_t>(sizeof(NUM_T)*8); offset -= 4;)
@@ -1016,7 +1018,7 @@ namespace core
 		//	*(p_str) = _p::Hex2Nible(p_val);
 		//}
 
-		template <typename T>
+		template <charconv_char_c T>
 		static inline void uint2bin_fix(const uint8_t p_val, T* p_str)
 		{
 			*p_str   = ((p_val >> 7) & 1) ? '1' : '0';
@@ -1029,7 +1031,7 @@ namespace core
 			*++p_str = ( p_val       & 1) ? '1' : '0';
 		}
 
-		template <typename T>
+		template <charconv_char_c T>
 		static inline void uint2bin_fix(const uint16_t p_val, T* p_str)
 		{
 			*p_str   = ((p_val >> 15) & 1) ? '1' : '0';
@@ -1050,7 +1052,7 @@ namespace core
 			*++p_str = ( p_val        & 1) ? '1' : '0';
 		}
 
-		template <typename T>
+		template <charconv_char_c T>
 		static inline void uint2bin_fix(const uint32_t p_val, T* p_str)
 		{
 			*p_str   = ((p_val >> 31) & 1) ? '1' : '0';
@@ -1087,7 +1089,7 @@ namespace core
 			*++p_str = ( p_val        & 1) ? '1' : '0';
 		}
 
-		template <typename T>
+		template <charconv_char_c T>
 		static inline void uint2bin_fix(const uint64_t p_val, T* p_str)
 		{
 			*p_str   = ((p_val >> 63) & 1) ? '1' : '0';
@@ -1156,7 +1158,7 @@ namespace core
 			*++p_str = ( p_val        & 1) ? '1' : '0';
 		}
 
-		//template <typename T, typename NUM_T>
+		//template <charconv_char_c T, charconv_uint_c NUM_T>
 		//static inline void uint2bin_fix(NUM_T const p_val, T* p_str)
 		//{
 		//	for(uint8_t offset = static_cast<uint8_t>(sizeof(NUM_T)*8); --offset;)
@@ -1167,9 +1169,7 @@ namespace core
 		//}
 
 
-
-
-		template<typename char_T, typename Fp_t>
+		template<charconv_char_c char_T, charconv_fp_c Fp_t>
 		static inline char_T* fp2dec(const Fp_t p_val, char_T* pivot)
 		{
 			fp_to_chars_shortest_context<Fp_t> context;
@@ -1287,7 +1287,7 @@ namespace core
 			template<typename>
 			struct help_char_conv;
 
-			template<std::floating_point num_T>
+			template<charconv_fp_c num_T>
 			struct help_char_conv<num_T>
 			{
 				template<typename char_T>
@@ -1308,7 +1308,7 @@ namespace core
 				}
 			};
 
-			template<std::signed_integral num_T>
+			template<charconv_sint_c num_T>
 			struct help_char_conv<num_T>
 			{
 				template<typename char_T>
@@ -1329,7 +1329,7 @@ namespace core
 				}
 			};
 
-			template<std::unsigned_integral num_T>
+			template<charconv_uint_c num_T>
 			struct help_char_conv<num_T>
 			{
 				template<typename char_T>

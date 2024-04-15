@@ -275,6 +275,8 @@ static const std::vector<uint64_t> u_numbers =
 const std::vector<std::string> badCases_s =
 {
 	"",
+	"/",
+	":",
 	"false",
 	"true",
 	"0G",
@@ -594,6 +596,10 @@ static const std::vector<uint64_t> hex_numbers =
 const std::vector<std::string> hexBadCases_s =
 {
 	"",
+	"/",
+	":",
+	"@",
+	"`",
 	"false",
 	"true",
 	"0G",
