@@ -42,7 +42,7 @@ namespace core
 ///	\param[in] p_file - Where to output the file
 ///	\return 0 on success, other for otherwise.
 ///	\note Windows only
-uint8_t generate_minidump(const std::filesystem::path& p_file);
+uint8_t generate_minidump(std::filesystem::path const& p_file);
 #else
 ///	\brief Generates a core dump that can be used for debugging. Requires core dumps to be configured correctly on the OS side.
 ///	\return 0 if triggered (no guarantee of success), other for otherwise.
@@ -60,7 +60,7 @@ uint8_t generate_coredump();
 ///	\return true if stack trace was registered successfully
 ///
 ///	\bug invalid arguments passed to C runtime function are known to not be captured by this
-bool register_crash_trace(const std::filesystem::path& p_output_file);
+bool register_crash_trace(std::filesystem::path const& p_output_file);
 
 ///	\brief Pairs module name and base address
 struct ModuleAddr

@@ -52,66 +52,66 @@ namespace core
 
 	void console_out::write(std::string_view const p_out) const
 	{
-		write(std::u8string_view{reinterpret_cast<const char8_t*>(p_out.data()), p_out.size()});
+		write(std::u8string_view{reinterpret_cast<char8_t const*>(p_out.data()), p_out.size()});
 	}
 
 	void console_out::write(std::wstring_view const p_out) const
 	{
-		write(std::basic_string_view<wchar_alias>{reinterpret_cast<const wchar_alias*>(p_out.data()), p_out.size()});
+		write(std::basic_string_view<wchar_alias>{reinterpret_cast<wchar_alias const*>(p_out.data()), p_out.size()});
 	}
 
 	NO_INLINE void console_out::write(std::u16string_view const p_out) const
 	{
-		const uintptr_t buff_size = core::_p::UTF16_to_UTF8_faulty_estimate(p_out, '?');
+		uintptr_t const buff_size = UTF16_to_UTF8_faulty_size(p_out, '?');
 
 		if(buff_size > alloca_treshold)
 		{
 			std::vector<char8_t> buff;
 			buff.resize(buff_size);
-			core::_p::UTF16_to_UTF8_faulty_unsafe(p_out, '?', buff.data());
+			UTF16_to_UTF8_faulty_unsafe(p_out, '?', buff.data());
 			write(std::u8string_view{buff.data(), buff_size});
 		}
 		else
 		{
 			char8_t* const buff = reinterpret_cast<char8_t* const>(core_alloca(buff_size));
-			core::_p::UTF16_to_UTF8_faulty_unsafe(p_out, '?', buff);
+			UTF16_to_UTF8_faulty_unsafe(p_out, '?', buff);
 			write(std::u8string_view{buff, buff_size});
 		}
 	}
 
 	NO_INLINE void console_out::write(std::u32string_view const p_out) const
 	{
-		const uintptr_t buff_size = core::_p::UCS4_to_UTF8_faulty_estimate(p_out, '?');
+		uintptr_t const buff_size = UCS4_to_UTF8_faulty_size(p_out, '?');
 
 		if(buff_size > alloca_treshold)
 		{
 			std::vector<char8_t> buff;
 			buff.resize(buff_size);
-			core::_p::UCS4_to_UTF8_faulty_unsafe(p_out, '?', buff.data());
+			UCS4_to_UTF8_faulty_unsafe(p_out, '?', buff.data());
 			write(std::u8string_view{buff.data(), buff_size});
 		}
 		else
 		{
 			char8_t* const buff = reinterpret_cast<char8_t* const>(core_alloca(buff_size));
-			core::_p::UCS4_to_UTF8_faulty_unsafe(p_out, '?', buff);
+			UCS4_to_UTF8_faulty_unsafe(p_out, '?', buff);
 			write(std::u8string_view{buff, buff_size});
 		}
 	}
 
-	void console_out::put(const char p_out) const
+	void console_out::put(char const p_out) const
 	{
 		put(static_cast<char8_t>(p_out));
 	}
 
-	void console_out::put(const wchar_t p_out) const
+	void console_out::put(wchar_t const p_out) const
 	{
 		put(static_cast<wchar_alias>(p_out));
 	}
 
-	void console_out::put(const char16_t p_out) const
+	void console_out::put(char16_t const p_out) const
 	{
 		std::array<char8_t, 4> buff;
-		const uint8_t size = encode_UTF8(static_cast<char32_t>(p_out), buff);
+		uint8_t const size = encode_UTF8(static_cast<char32_t>(p_out), buff);
 		if(size)
 		{
 			write(std::u8string_view{buff.data(), size});
@@ -122,10 +122,10 @@ namespace core
 		}
 	}
 
-	void console_out::put(const char32_t p_out) const
+	void console_out::put(char32_t const p_out) const
 	{
 		std::array<char8_t, 4> buff;
-		const uint8_t size = encode_UTF8(p_out, buff);
+		uint8_t const size = encode_UTF8(p_out, buff);
 		if(size)
 		{
 			write(std::u8string_view{buff.data(), size});
@@ -153,7 +153,7 @@ NO_INLINE void console_out::write(std::u8string_view const p_out) const
 	}
 	DWORD remaining = static_cast<DWORD>(p_out.size());
 	DWORD writen = 0;
-	const char8_t* pivot = p_out.data();
+	char8_t const* pivot = p_out.data();
 	while(true)
 	{
 		BOOL const result = WriteFile(m_handle, pivot, remaining, &writen, nullptr);
@@ -173,14 +173,14 @@ NO_INLINE void console_out::write(std::u8string_view const p_out) const
 	};
 }
 
-void console_out::put(const char8_t p_out) const
+void console_out::put(char8_t const p_out) const
 {
 	DWORD trash;
 	WriteFile(m_handle, &p_out, 1, &trash, nullptr);
 }
 
-const console_out cout{GetStdHandle(STD_OUTPUT_HANDLE)};
-const console_out cerr{GetStdHandle(STD_ERROR_HANDLE )};
+console_out const cout{GetStdHandle(STD_OUTPUT_HANDLE)};
+console_out const cerr{GetStdHandle(STD_ERROR_HANDLE )};
 
 #elif defined(__unix__)
 
@@ -191,7 +191,7 @@ void console_out::write(std::u8string_view const p_out) const
 		return;
 	}
 	size_t remaining = static_cast<size_t>(p_out.size());
-	const char8_t* pivot = p_out.data();
+	char8_t const* pivot = p_out.data();
 	while(true)
 	{
 		ssize_t const writen = ::write(m_handle, pivot, remaining);
@@ -211,13 +211,13 @@ void console_out::write(std::u8string_view const p_out) const
 	}
 }
 
-void console_out::put(const char8_t p_out) const
+void console_out::put(char8_t const p_out) const
 {
 	[[maybe_unused]] ssize_t ret = ::write(m_handle, &p_out, 1);
 }
 
-const console_out cout{1};
-const console_out cerr{2};
+console_out const cout{1};
+console_out const cerr{2};
 
 #endif
 

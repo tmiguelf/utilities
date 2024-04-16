@@ -128,9 +128,9 @@ private:
 
 public:
 	semaphore(uint32_t p_range);
-	semaphore(std::u8string& p_name, uint32_t p_range);
+	semaphore(std::u8string const& p_name, uint32_t p_range);
 #ifdef _WIN32
-	semaphore(std::u16string& p_name, uint32_t p_range);
+	semaphore(std::u16string const& p_name, uint32_t p_range);
 #endif
 
 	~semaphore();

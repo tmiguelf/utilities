@@ -88,9 +88,9 @@ namespace core
 			using exp_st = typename fp_utils_p::exp_st;
 			using exp_ut = typename fp_utils_p::exp_ut;
 
-			[[nodiscard]] static inline constexpr fp_to_chars_sci_size sci_size(const uint8_t sig_digits, const exp_st ryu_exp)
+			[[nodiscard]] static inline constexpr fp_to_chars_sci_size sci_size(uint8_t const sig_digits, exp_st const ryu_exp)
 			{
-				const exp_st sci_exp = static_cast<exp_st>(sig_digits + ryu_exp - 1);
+				exp_st const sci_exp = static_cast<exp_st>(sig_digits + ryu_exp - 1);
 				return fp_to_chars_sci_size
 				{
 					.mantissa_decimal_size = static_cast<uint16_t>(sig_digits -1),
@@ -99,7 +99,7 @@ namespace core
 				};
 			}
 
-			[[nodiscard]] static inline constexpr fp_to_chars_fix_size fix_size(const uint8_t sig_digits, const exp_st ryu_exp)
+			[[nodiscard]] static inline constexpr fp_to_chars_fix_size fix_size(uint8_t const sig_digits, exp_st const ryu_exp)
 			{
 				if(ryu_exp >= 0)
 				{
@@ -124,7 +124,7 @@ namespace core
 
 
 	template<>
-	[[nodiscard]] fp_to_chars_sci_size to_chars_shortest_sci_size<float32_t>(fp_to_chars_shortest_context<float32_t> context)
+	[[nodiscard]] fp_to_chars_sci_size to_chars_shortest_sci_size<float32_t>(fp_to_chars_shortest_context<float32_t> const context)
 	{
 		using fp_type = float32_t;
 		using fp_utils_t = fp_utils<fp_type>;
@@ -132,7 +132,7 @@ namespace core
 	}
 
 	template<>
-	[[nodiscard]] fp_to_chars_sci_size to_chars_shortest_sci_size<float64_t>(fp_to_chars_shortest_context<float64_t> context)
+	[[nodiscard]] fp_to_chars_sci_size to_chars_shortest_sci_size<float64_t>(fp_to_chars_shortest_context<float64_t> const context)
 	{
 		using fp_type = float64_t;
 		using fp_utils_t = fp_utils<fp_type>;
@@ -141,7 +141,7 @@ namespace core
 
 
 	template<>
-	[[nodiscard]] fp_to_chars_fix_size to_chars_shortest_fix_size<float32_t>(fp_to_chars_shortest_context<float32_t> context)
+	[[nodiscard]] fp_to_chars_fix_size to_chars_shortest_fix_size<float32_t>(fp_to_chars_shortest_context<float32_t> const context)
 	{
 		using fp_type = float32_t;
 		using fp_utils_t = fp_utils<fp_type>;
@@ -149,7 +149,7 @@ namespace core
 	}
 
 	template<>
-	[[nodiscard]] fp_to_chars_fix_size to_chars_shortest_fix_size<float64_t>(fp_to_chars_shortest_context<float64_t> context)
+	[[nodiscard]] fp_to_chars_fix_size to_chars_shortest_fix_size<float64_t>(fp_to_chars_shortest_context<float64_t> const context)
 	{
 		using fp_type = float64_t;
 		using fp_utils_t = fp_utils<fp_type>;
@@ -158,7 +158,7 @@ namespace core
 
 
 	template<_p::charconv_fp_c fp_t, _p::charconv_char_c char_t>
-	void to_chars_shortest_sci_unsafe(fp_to_chars_shortest_context<fp_t> context, char_t* unit_char, char_t* decimal_chars)
+	void to_chars_shortest_sci_unsafe(fp_to_chars_shortest_context<fp_t> const context, char_t* unit_char, char_t* decimal_chars)
 	{
 		using fp_utils_t = fp_utils<fp_t>;
 		using uint_t = fp_utils_t::uint_t;
@@ -176,13 +176,13 @@ namespace core
 	}
 
 	template<_p::charconv_fp_c fp_t, _p::charconv_char_c char_t>
-	void to_chars_shortest_sci_exp_unsafe(fp_to_chars_shortest_context<fp_t> context, char_t* exp_chars)
+	void to_chars_shortest_sci_exp_unsafe(fp_to_chars_shortest_context<fp_t> const context, char_t* exp_chars)
 	{
 		using fp_props_p = fp_utils<fp_t>;
 		using exp_st = typename fp_props_p::exp_st;
 		using exp_ut = typename fp_props_p::exp_ut;
 
-		const exp_st sci_exp = static_cast<exp_st>(context.sig_digits + context.exponent - 1);
+		exp_st const sci_exp = static_cast<exp_st>(context.sig_digits + context.exponent - 1);
 		exp_ut exp = static_cast<exp_ut>((sci_exp < 0) ? -sci_exp: sci_exp);
 
 		exp_ut digits_size = fp_props_p::exp_digits_size(exp);
@@ -196,7 +196,7 @@ namespace core
 	}
 
 	template<_p::charconv_fp_c fp_t, _p::charconv_char_c char_t>
-	void to_chars_shortest_fix_unsafe(fp_to_chars_shortest_context<fp_t> context, char_t* unit_chars, char_t* decimal_chars)
+	void to_chars_shortest_fix_unsafe(fp_to_chars_shortest_context<fp_t> const context, char_t* unit_chars, char_t* decimal_chars)
 	{
 		using fp_props_p = fp_utils<fp_t>;
 		using exp_st = typename fp_props_p::exp_st;

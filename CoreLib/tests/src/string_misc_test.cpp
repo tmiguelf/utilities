@@ -49,7 +49,7 @@ TEST(string_misc, toLowerCaseX)
 		{u8"Some RandOM text! wiTh miSC ChaRaCTErs aNd !34#$%", u8"some random text! with misc characters and !34#$%"},
 	};
 
-	for(const std::pair<std::u8string, std::u8string>& tcase : testCases)
+	for(std::pair<std::u8string, std::u8string> const& tcase : testCases)
 	{
 		std::u8string result = core::toLowerCaseX(tcase.first);
 		ASSERT_EQ(result, tcase.second) << "Case \"" << toPrint{tcase.second} << '\"';
@@ -64,7 +64,7 @@ TEST(string_misc, toUpperCaseX)
 		{u8"Some RandOM text! wiTh miSC ChaRaCTErs aNd !34#$%", u8"SOME RANDOM TEXT! WITH MISC CHARACTERS AND !34#$%"},
 	};
 
-	for(const std::pair<std::u8string, std::u8string>& tcase : testCases)
+	for(std::pair<std::u8string, std::u8string> const& tcase : testCases)
 	{
 		std::u8string result = core::toUpperCaseX(tcase.first);
 		ASSERT_EQ(result, tcase.second) << "Case \"" << toPrint{tcase.second} << '\"';
@@ -85,14 +85,14 @@ TEST(string_misc, compareNoCase)
 	};
 
 	uintptr_t auxI = 0;
-	for(const std::pair<std::u8string, std::u8string>& tcase : goodCases)
+	for(std::pair<std::u8string, std::u8string> const& tcase : goodCases)
 	{
 		ASSERT_TRUE(core::compareNoCase(tcase.first, tcase.second)) << "Case " << auxI;
 		++auxI;
 	}
 
 	auxI = 0;
-	for(const std::pair<std::u8string, std::u8string>& tcase : badCases)
+	for(std::pair<std::u8string, std::u8string> const& tcase : badCases)
 	{
 		ASSERT_FALSE(core::compareNoCase(tcase.first, tcase.second)) << "Case " << auxI;
 		++auxI;
@@ -122,17 +122,17 @@ TEST(string_misc, string_star_match)
 	};
 
 
-	for(const std::pair<std::u8string, std::vector<std::u8string>>& pattern : goodCases)
+	for(std::pair<std::u8string, std::vector<std::u8string>> const& pattern : goodCases)
 	{
-		for(const std::u8string& tcase : pattern.second)
+		for(std::u8string const& tcase : pattern.second)
 		{
 			ASSERT_TRUE(core::string_star_match(tcase, pattern.first)) << "Case \"" << toPrint{pattern.first} << "\" and \"" << toPrint{tcase} << "\"";
 		}
 	}
 
-	for(const std::pair<std::u8string, std::vector<std::u8string>>& pattern : badCases)
+	for(std::pair<std::u8string, std::vector<std::u8string>> const& pattern : badCases)
 	{
-		for(const std::u8string& tcase : pattern.second)
+		for(std::u8string const& tcase : pattern.second)
 		{
 			ASSERT_FALSE(core::string_star_match(tcase, pattern.first)) << "Case \"" << toPrint{pattern.first} << "\" and \"" << toPrint{tcase} << "\"";
 		}

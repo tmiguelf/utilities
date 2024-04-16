@@ -117,16 +117,16 @@ semaphore::semaphore(uint32_t p_range)
 	m_semaphore = CreateSemaphoreW(nullptr, p_range, p_range, nullptr);
 }
 
-semaphore::semaphore(std::u8string& p_name, uint32_t p_range)
+semaphore::semaphore(std::u8string const& p_name, uint32_t p_range)
 {
 	if(p_range > static_cast<uint32_t>(std::numeric_limits<LONG>::max())) return;
-	m_semaphore = CreateSemaphoreA(nullptr, p_range, p_range, reinterpret_cast<const char*>(p_name.c_str()));
+	m_semaphore = CreateSemaphoreA(nullptr, p_range, p_range, reinterpret_cast<char const*>(p_name.c_str()));
 }
 
-semaphore::semaphore(std::u16string& p_name, uint32_t p_range)
+semaphore::semaphore(std::u16string const& p_name, uint32_t p_range)
 {
 	if(p_range > static_cast<uint32_t>(std::numeric_limits<LONG>::max())) return;
-	m_semaphore = CreateSemaphoreW(nullptr, p_range, p_range, reinterpret_cast<const wchar_t*>(p_name.c_str()));
+	m_semaphore = CreateSemaphoreW(nullptr, p_range, p_range, reinterpret_cast<wchar_t const*>(p_name.c_str()));
 }
 
 semaphore::~semaphore()
@@ -256,7 +256,7 @@ SYNC_Error event_trap::wait()
 	return SYNC_Error::Fail;
 }
 
-SYNC_Error event_trap::timed_wait(const uint32_t p_miliseconds)
+SYNC_Error event_trap::timed_wait(uint32_t const p_miliseconds)
 {
 	switch(WaitForSingleObjectEx(m_event, p_miliseconds, TRUE))
 	{
@@ -354,10 +354,10 @@ semaphore::semaphore(uint32_t p_range)
 	}
 }
 
-semaphore::semaphore(std::u8string& p_name, uint32_t p_range)
+semaphore::semaphore(std::u8string const& p_name, uint32_t p_range)
 {
 	is_named = true;
-	m_semaphore = sem_open(reinterpret_cast<const char*>(p_name.c_str()), O_CREAT | O_CLOEXEC, DEFFILEMODE, p_range);
+	m_semaphore = sem_open(reinterpret_cast<char const*>(p_name.c_str()), O_CREAT | O_CLOEXEC, DEFFILEMODE, p_range);
 }
 
 semaphore::~semaphore()
@@ -519,7 +519,7 @@ SYNC_Error event_trap::wait()
 	return SYNC_Error::PreEmptive;
 }
 
-SYNC_Error event_trap::timed_wait(const uint32_t p_miliseconds)
+SYNC_Error event_trap::timed_wait(uint32_t const p_miliseconds)
 {
 	struct timespec end;
 	uint64_t counter;

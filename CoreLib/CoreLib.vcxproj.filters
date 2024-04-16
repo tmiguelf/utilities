@@ -33,6 +33,9 @@
     <Filter Include="Source Files\string\ryu">
       <UniqueIdentifier>{e2536726-8ff2-4e91-b498-63f4d321c6d4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\toPrint">
+      <UniqueIdentifier>{c9fec4d6-a2c3-4bba-b14c-0a117dae515c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="CoreLib.include.props">
@@ -248,6 +251,9 @@
     </ClCompile>
     <ClCompile Include="src\core_time.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\toPrint\toPrint_fp.cpp">
+      <Filter>Source Files\toPrint</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

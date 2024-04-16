@@ -35,10 +35,10 @@
 template<typename T1, typename T2, typename TR>
 struct testCase_t
 {
-	const T1 m_arg1;
-	const T2 m_arg2;
-	const TR m_result;
-	testCase_t(const T1& p_1, const T2& p_2, const TR& p_r): m_arg1(p_1), m_arg2(p_2), m_result(p_r) {}
+	T1 const m_arg1;
+	T2 const m_arg2;
+	TR const m_result;
+	testCase_t(T1 const& p_1, T2 const& p_2, TR const& p_r): m_arg1(p_1), m_arg2(p_2), m_result(p_r) {}
 };
 
 template<typename T1, typename T2, typename TR>
@@ -53,7 +53,7 @@ TEST(LinearAlgebra_Vector, MultiplicationByScalar)
 	using thisCase_t = testCase_t<T1, T2, TR>;
 	using thisTest_t = testList_t<T1, T2, TR>;
 	
-	const thisTest_t TestCases =
+	thisTest_t const TestCases =
 		{
 			{T1{1.0,   2.0, 3.0},   0.0 , TR{   0.0 ,   0.0,    0.0 }},
 			{T1{1.0,   2.0, 3.0},   1.0 , TR{   1.0 ,   2.0,    3.0 }},
@@ -64,9 +64,9 @@ TEST(LinearAlgebra_Vector, MultiplicationByScalar)
 
 	uintptr_t testNum = 0;
 
-	for(const thisCase_t& testCase : TestCases)
+	for(thisCase_t const& testCase : TestCases)
 	{
-		const TR result = testCase.m_arg1 * testCase.m_arg2;
+		TR const result = testCase.m_arg1 * testCase.m_arg2;
 		EXPECT_EQ(result, testCase.m_result) << "Failed case " << testNum;
 		++testNum;
 	}
@@ -80,7 +80,7 @@ TEST(LinearAlgebra_Vector, DivisionByScalar)
 	using thisCase_t = testCase_t<T1, T2, TR>;
 	using thisTest_t = testList_t<T1, T2, TR>;
 	
-	const thisTest_t TestCases =
+	thisTest_t const TestCases =
 		{
 			{T1{ 1.0,   2.0,  3.0},   1.0 , TR{  1.0 ,   2.0  ,   3.0 }},
 			{T1{ 1.0,   2.0,  3.0},   4.0 , TR{  0.25,   0.5  ,   0.75}},
@@ -91,9 +91,9 @@ TEST(LinearAlgebra_Vector, DivisionByScalar)
 
 	uintptr_t testNum = 0;
 
-	for(const thisCase_t& testCase : TestCases)
+	for(thisCase_t const& testCase : TestCases)
 	{
-		const TR result = testCase.m_arg1 / testCase.m_arg2;
+		TR const result = testCase.m_arg1 / testCase.m_arg2;
 		EXPECT_EQ(result, testCase.m_result) << "Failed case " << testNum;
 		++testNum;
 	}
@@ -107,7 +107,7 @@ TEST(LinearAlgebra_Vector, Addition)
 	using thisCase_t = testCase_t<T1, T2, TR>;
 	using thisTest_t = testList_t<T1, T2, TR>;
 	
-	const thisTest_t TestCases =
+	thisTest_t const TestCases =
 		{
 			{T1{1.0, 2.0, 3.0}, T2{-1.0, -2.0, -3.0}, TR{ 0.0,  0.0,  0.0}},
 			{T1{1.0, 2.0, 3.0}, T2{ 1.0,  2.0,  3.0}, TR{ 2.0,  4.0,  6.0}},
@@ -118,9 +118,9 @@ TEST(LinearAlgebra_Vector, Addition)
 
 	uintptr_t testNum = 0;
 
-	for(const thisCase_t& testCase : TestCases)
+	for(thisCase_t const& testCase : TestCases)
 	{
-		const TR result = testCase.m_arg1 + testCase.m_arg2;
+		TR const result = testCase.m_arg1 + testCase.m_arg2;
 		EXPECT_EQ(result, testCase.m_result) << "Failed case " << testNum;
 		++testNum;
 	}
@@ -134,7 +134,7 @@ TEST(LinearAlgebra_Vector, Subtraction)
 	using thisCase_t = testCase_t<T1, T2, TR>;
 	using thisTest_t = testList_t<T1, T2, TR>;
 	
-	const thisTest_t TestCases =
+	thisTest_t const TestCases =
 		{
 			{T1{1.0, 2.0, 3.0}, T2{-1.0, -2.0, -3.0}, TR{ 2.0,  4.0,  6.0}},
 			{T1{1.0, 2.0, 3.0}, T2{ 1.0,  2.0,  3.0}, TR{ 0.0,  0.0,  0.0}},
@@ -145,9 +145,9 @@ TEST(LinearAlgebra_Vector, Subtraction)
 
 	uintptr_t testNum = 0;
 
-	for(const thisCase_t& testCase : TestCases)
+	for(thisCase_t const& testCase : TestCases)
 	{
-		const TR result = testCase.m_arg1 - testCase.m_arg2;
+		TR const result = testCase.m_arg1 - testCase.m_arg2;
 		EXPECT_EQ(result, testCase.m_result) << "Failed case " << testNum;
 		++testNum;
 	}
@@ -162,7 +162,7 @@ TEST(LinearAlgebra_Vector, InternalProduct)
 	using thisCase_t = testCase_t<T1, T2, TR>;
 	using thisTest_t = testList_t<T1, T2, TR>;
 
-	const thisTest_t TestCases =
+	thisTest_t const TestCases =
 		{
 			{T1{1.0, 2.0, 3.0}, T2{-1.0, -2.0, -3.0}, -14.0},
 			{T1{1.0, 2.0, 3.0}, T2{ 1.0,  2.0,  3.0},  14.0},
@@ -172,9 +172,9 @@ TEST(LinearAlgebra_Vector, InternalProduct)
 
 	uintptr_t testNum = 0;
 
-	for(const thisCase_t& testCase : TestCases)
+	for(thisCase_t const& testCase : TestCases)
 	{
-		const TR result = testCase.m_arg1 * testCase.m_arg2;
+		TR const result = testCase.m_arg1 * testCase.m_arg2;
 		EXPECT_EQ(result, testCase.m_result) << "Failed case " << testNum;
 		++testNum;
 	}
@@ -188,7 +188,7 @@ TEST(LinearAlgebra_Vector, CrossProduct)
 	using thisCase_t = testCase_t<T1, T2, TR>;
 	using thisTest_t = testList_t<T1, T2, TR>;
 
-	const thisTest_t TestCases =
+	thisTest_t const TestCases =
 		{
 			{T1{1.0, 0.0, 0.0}, T2{ 0.0,  1.0,  0.0}, TR{ 0.0,  0.0,  1.0}},
 			{T1{0.0, 1.0, 0.0}, T2{ 0.0,  0.0,  1.0}, TR{ 1.0,  0.0,  0.0}},
@@ -198,9 +198,9 @@ TEST(LinearAlgebra_Vector, CrossProduct)
 
 	uintptr_t testNum = 0;
 
-	for(const thisCase_t& testCase : TestCases)
+	for(thisCase_t const& testCase : TestCases)
 	{
-		const TR result = crossProduct(testCase.m_arg1, testCase.m_arg2);
+		TR const result = crossProduct(testCase.m_arg1, testCase.m_arg2);
 		EXPECT_EQ(result, testCase.m_result) << "Failed case " << testNum;
 		++testNum;
 	}
@@ -285,14 +285,14 @@ TEST(LinearAlgebra_Matrix, ScalarMultiplication)
 	using thisCase_t = testCase_t<T1, T2, TR>;
 	using thisTest_t = testList_t<T1, T2, TR>;
 
-	const mathlib::Matrix<double, 3, 3> mat
+	mathlib::Matrix<double, 3, 3> const mat
 		{{
 			1.0, 2.0, 3.0,
 			4.0, 5.0, 6.0,
 			7.0, 8.0, 9.0
 		}};
 
-	const thisTest_t TestCases =
+	thisTest_t const TestCases =
 		{
 			{mat, 0.0 , TR{{ 0.0,  0.0,   0.0,	  0.0,   0.0, 0.0,		  0.0,   0.0,   0.0		}} },
 			{mat, 1.0 , TR{{ 1.0,  2.0,   3.0,	  4.0,   5.0, 6.0,		  7.0,   8.0,   9.0		}} },
@@ -303,9 +303,9 @@ TEST(LinearAlgebra_Matrix, ScalarMultiplication)
 
 	uintptr_t testNum = 0;
 
-	for(const thisCase_t& testCase : TestCases)
+	for(thisCase_t const& testCase : TestCases)
 	{
-		const TR result = testCase.m_arg1 * testCase.m_arg2;
+		TR const result = testCase.m_arg1 * testCase.m_arg2;
 		EXPECT_EQ(result, testCase.m_result) << "Failed case " << testNum;
 		++testNum;
 	}
@@ -319,14 +319,14 @@ TEST(LinearAlgebra_Matrix, ScalarDivision)
 	using thisCase_t = testCase_t<T1, T2, TR>;
 	using thisTest_t = testList_t<T1, T2, TR>;
 
-	const mathlib::Matrix<double, 3, 3> mat
+	mathlib::Matrix<double, 3, 3> const mat
 		{{
 			1.0, 2.0, 3.0,
 			4.0, 5.0, 6.0,
 			7.0, 8.0, 9.0
 		}};
 
-	const thisTest_t TestCases =
+	thisTest_t const TestCases =
 		{
 			{mat, 1.0 , TR{{ 1.0,   2.0,   3.0,		  4.0,   5.0,    6.0,	  7.0,    8.0,   9.0	}} },
 			{mat, 4.0 , TR{{ 0.25,  0.5,   0.75,	  1.0,   1.25,   1.5,	  1.75,   2.0,   2.25	}} },
@@ -336,9 +336,9 @@ TEST(LinearAlgebra_Matrix, ScalarDivision)
 
 	uintptr_t testNum = 0;
 
-	for(const thisCase_t& testCase : TestCases)
+	for(thisCase_t const& testCase : TestCases)
 	{
-		const TR result = testCase.m_arg1 / testCase.m_arg2;
+		TR const result = testCase.m_arg1 / testCase.m_arg2;
 		EXPECT_EQ(result, testCase.m_result) << "Failed case " << testNum;
 		++testNum;
 	}
@@ -346,84 +346,84 @@ TEST(LinearAlgebra_Matrix, ScalarDivision)
 
 TEST(LinearAlgebra_Matrix, Transpose)
 {
-	const mathlib::Matrix<double, 3, 2> mat
+	mathlib::Matrix<double, 3, 2> const mat
 		{{
 			1.0, 2.0,
 			3.0, 4.0,
 			5.0, 6.0
 		}};
 
-	const mathlib::Matrix<double, 2, 3> expect 
+	mathlib::Matrix<double, 2, 3> const expect 
 		{{
 			1.0, 3.0, 5.0,
 			2.0, 4.0, 6.0
 		}};
 
-	const mathlib::Matrix<double, 2, 3> result = mat.transpose();
+	mathlib::Matrix<double, 2, 3> const result = mat.transpose();
 
 	EXPECT_EQ(result, expect);
 }
 
 TEST(LinearAlgebra_Matrix, Trace)
 {
-	const mathlib::Matrix<double, 3, 3> mat
+	mathlib::Matrix<double, 3, 3> const mat
 		{{
 			1.0, 2.0, 3.0,
 			4.0, 5.0, 6.0,
 			7.0, 8.0, 9.0
 		}};
 
-	const double expect = 15.0;
-	const double result = mathlib::trace(mat);
+	double const expect = 15.0;
+	double const result = mathlib::trace(mat);
 
 	EXPECT_EQ(result, expect);
 }
 
 TEST(LinearAlgebra_Matrix, Addition)
 {
-	const mathlib::Matrix<double, 3, 3> mat1 
+	mathlib::Matrix<double, 3, 3> const mat1 
 		{{
 			1.0, 2.0, 3.0,
 			4.0, 5.0, 6.0,
 			7.0, 8.0, 9.0
 		}};
 
-	const mathlib::Matrix<double, 3, 3> mat2
+	mathlib::Matrix<double, 3, 3> const mat2
 		{{
 			10.0, 11.0, 12.0,
 			13.0, 14.0, 15.0,
 			16.0, 17.0, 18.0
 		}};
 
-	const mathlib::Matrix<double, 3, 3> expect
+	mathlib::Matrix<double, 3, 3> const expect
 		{{
 			11.0, 13.0, 15.0,
 			17.0, 19.0, 21.0,
 			23.0, 25.0, 27.0
 		}};
 
-	const mathlib::Matrix<double, 3, 3> result = mat1 + mat2;
+	mathlib::Matrix<double, 3, 3> const result = mat1 + mat2;
 
 	EXPECT_EQ(result, expect);
 }
 
 TEST(LinearAlgebra_Matrix, Subtraction)
 {
-	const mathlib::Matrix<double, 3, 3> mat1
+	mathlib::Matrix<double, 3, 3> const mat1
 		{{
 			1.0, 2.0, 3.0,
 			4.0, 5.0, 6.0,
 			7.0, 8.0, 9.0
 		}};
 
-	const mathlib::Matrix<double, 3, 3> mat2
+	mathlib::Matrix<double, 3, 3> const mat2
 		{{
 			9.0, 8.0, 7.0,
 			6.0, 5.0, 4.0,
 			3.0, 2.0, 1.0
 		}};
 
-	const mathlib::Matrix<double, 3, 3> expect
+	mathlib::Matrix<double, 3, 3> const expect
 		{{
 			-8.0, -6.0, -4.0,
 			-2.0,  0.0,  2.0,
@@ -438,7 +438,7 @@ TEST(LinearAlgebra_Matrix, Subtraction)
 
 TEST(LinearAlgebra_Matrix, Assign)
 {
-	const mathlib::Matrix<double, 3, 3> mat1
+	mathlib::Matrix<double, 3, 3> const mat1
 		{{
 			1.0, 2.0, 3.0,
 			4.0, 5.0, 6.0,
@@ -454,21 +454,21 @@ TEST(LinearAlgebra_Matrix, Assign)
 
 TEST(LinearAlgebra_Matrix, CompareEqual)
 {
-	const mathlib::Matrix<double, 3, 3> mat1
+	mathlib::Matrix<double, 3, 3> const mat1
 		{{
 			1.0, 2.0, 3.0,
 			4.0, 5.0, 6.0,
 			7.0, 8.0, 9.0
 		}};
 
-	const mathlib::Matrix<double, 3, 3> mat2
+	mathlib::Matrix<double, 3, 3> const mat2
 		{{
 			1.0, 2.0, 3.0,
 			4.0, 5.0, 6.0,
 			7.0, 8.0, 9.0
 		}};
 
-	const mathlib::Matrix<double, 3, 3> mat3
+	mathlib::Matrix<double, 3, 3> const mat3
 		{{
 			9.0, 8.0, 7.0,
 			6.0, 5.0, 4.0,
@@ -481,21 +481,21 @@ TEST(LinearAlgebra_Matrix, CompareEqual)
 
 TEST(LinearAlgebra_Matrix, CompareDifferent)
 {
-	const mathlib::Matrix<double, 3, 3> mat1
+	mathlib::Matrix<double, 3, 3> const mat1
 		{{
 			1.0, 2.0, 3.0,
 			4.0, 5.0, 6.0,
 			7.0, 8.0, 9.0
 		}};
 
-	const mathlib::Matrix<double, 3, 3> mat2
+	mathlib::Matrix<double, 3, 3> const mat2
 		{{
 			1.0, 2.0, 3.0,
 			4.0, 5.0, 6.0,
 			7.0, 8.0, 9.0
 		}};
 
-	const mathlib::Matrix<double, 3, 3> mat3
+	mathlib::Matrix<double, 3, 3> const mat3
 		{{
 			9.0, 8.0, 7.0,
 			6.0, 5.0, 4.0,

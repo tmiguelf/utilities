@@ -79,7 +79,7 @@ public:
 	///	\note
 	///		- On Windows it encapsulates LoadLibraryExW and LoadLibraryW
 	///		- On Linux it encapsulates dlopen
-	Error load(const std::filesystem::path& p_path, native_attr* p_attr = nullptr);
+	Error load(std::filesystem::path const& p_path, native_attr* p_attr = nullptr);
 
 	///	\brief	unloads a module previously loaded by this object
 	void unload();

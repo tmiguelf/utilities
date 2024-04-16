@@ -36,7 +36,7 @@ namespace core
 	namespace _p
 	{
 		template<c_ipconv_char CharT>
-		uintptr_t to_chars_IPv4(std::span<const uint8_t, 4> const p_raw, std::span<CharT, 15> const p_output)
+		uintptr_t to_chars_IPv4(std::span<uint8_t const, 4> const p_raw, std::span<CharT, 15> const p_output)
 		{
 			CharT* pivot = p_output.data();
 			pivot += core::to_chars(p_raw[0], std::span<CharT, 3>{pivot, 3});
@@ -50,7 +50,7 @@ namespace core
 		}
 
 		template<c_ipconv_char CharT>
-		uintptr_t to_chars_IPv6(std::span<const uint16_t, 8> const p_raw, std::span<CharT, 39> const p_out)
+		uintptr_t to_chars_IPv6(std::span<uint16_t const, 8> const p_raw, std::span<CharT, 39> const p_out)
 		{
 			uint8_t size_elide = 0;
 			uint8_t pos_elide = 0;
@@ -59,7 +59,7 @@ namespace core
 				{
 					if(p_raw[it] == 0)
 					{
-						const uint8_t curret_pos = it;
+						uint8_t const curret_pos = it;
 						uint8_t curret_size = 1;
 						while(++it < 8 && p_raw[it] == 0)
 						{
@@ -122,7 +122,7 @@ namespace core
 		template<c_ipconv_char CharT>
 		bool from_chars_IPv4(std::basic_string_view<CharT> const p_address, std::span<uint8_t, 4> const p_out)
 		{
-			const uintptr_t size = p_address.size();
+			uintptr_t const size = p_address.size();
 
 			if(size < 7 || size > 15)
 			{
@@ -132,10 +132,10 @@ namespace core
 			uintptr_t pos2 = 0;
 			for(uintptr_t i = 0; i < 3; ++i)
 			{
-				const uintptr_t pos1 = p_address.find(CharT{'.'}, pos2);
+				uintptr_t const pos1 = p_address.find(CharT{'.'}, pos2);
 				if(pos1 - pos2 > 3 || pos1 == pos2) return false;
 
-				const from_chars_result<uint8_t> auxRet = from_chars<uint8_t>(p_address.substr(pos2, pos1 - pos2));
+				from_chars_result<uint8_t> const auxRet = from_chars<uint8_t>(p_address.substr(pos2, pos1 - pos2));
 				if(!auxRet.has_value()) return false;
 
 				p_out[i] = auxRet.value();
@@ -144,7 +144,7 @@ namespace core
 
 			if(size - pos2 > 3 || size == pos2) return false;
 
-			const from_chars_result<uint8_t> auxRet = from_chars<uint8_t>(p_address.substr(pos2, size - pos2));
+			from_chars_result<uint8_t> const auxRet = from_chars<uint8_t>(p_address.substr(pos2, size - pos2));
 			if(!auxRet.has_value()) return false;
 			p_out[3] = auxRet.value();
 			return true;
@@ -153,7 +153,7 @@ namespace core
 		template<c_ipconv_char CharT>
 		bool from_chars_IPv6(std::basic_string_view<CharT> const p_address, std::span<uint16_t, 8> const p_out)
 		{
-			const uintptr_t size = p_address.size();
+			uintptr_t const size = p_address.size();
 			if(size < 2 || size > 39) return false;
 
 			bool b_has_elide = false;
@@ -178,7 +178,7 @@ namespace core
 			uint8_t pre_elide_size = 0;
 			uint8_t post_elide_size = 0;
 
-			const CharT* tdata = p_address.data();
+			CharT const* tdata = p_address.data();
 			uintptr_t pos1 = 0;
 			for(; count < 8; ++count)
 			{
@@ -194,7 +194,7 @@ namespace core
 					{
 						return false;
 					}
-					const uint16_t auxI = core::endian_host2big(auxRet.value());
+					uint16_t const auxI = core::endian_host2big(auxRet.value());
 
 					if(b_has_elide)	post_elide[post_elide_size++] = auxI;
 					else			pre_elide [pre_elide_size++ ] = auxI;
@@ -217,7 +217,7 @@ namespace core
 					return false;
 				}
 
-				const uint16_t auxI = core::endian_host2big(auxRet.value());
+				uint16_t const auxI = core::endian_host2big(auxRet.value());
 
 				if(b_has_elide)	post_elide[post_elide_size++] = auxI;
 				else			pre_elide [pre_elide_size++ ] = auxI;
@@ -230,7 +230,7 @@ namespace core
 
 			if(b_has_elide)
 			{
-				const uintptr_t post_elid_start = 8 - post_elide_size;
+				uintptr_t const post_elid_start = 8 - post_elide_size;
 
 				uint16_t* pivot = p_out.data();
 				{
@@ -261,17 +261,17 @@ namespace core
 
 
 
-		template uintptr_t to_chars_IPv4<char8_t >(std::span<const uint8_t, 4>, std::span<char8_t , 15>);
-		template uintptr_t to_chars_IPv4<char16_t>(std::span<const uint8_t, 4>, std::span<char16_t, 15>);
-		template uintptr_t to_chars_IPv4<char32_t>(std::span<const uint8_t, 4>, std::span<char32_t, 15>);
+		template uintptr_t to_chars_IPv4<char8_t >(std::span<uint8_t const, 4>, std::span<char8_t , 15>);
+		template uintptr_t to_chars_IPv4<char16_t>(std::span<uint8_t const, 4>, std::span<char16_t, 15>);
+		template uintptr_t to_chars_IPv4<char32_t>(std::span<uint8_t const, 4>, std::span<char32_t, 15>);
 
-		template uintptr_t to_chars_IPv6<char8_t >(std::span<const uint16_t, 8>, std::span<char8_t , 39>);
-		template uintptr_t to_chars_IPv6<char16_t>(std::span<const uint16_t, 8>, std::span<char16_t, 39>);
-		template uintptr_t to_chars_IPv6<char32_t>(std::span<const uint16_t, 8>, std::span<char32_t, 39>);
+		template uintptr_t to_chars_IPv6<char8_t >(std::span<uint16_t const, 8>, std::span<char8_t , 39>);
+		template uintptr_t to_chars_IPv6<char16_t>(std::span<uint16_t const, 8>, std::span<char16_t, 39>);
+		template uintptr_t to_chars_IPv6<char32_t>(std::span<uint16_t const, 8>, std::span<char32_t, 39>);
 
 	} //namespace _p
 
-[[nodiscard]] uintptr_t to_chars_IPv4_size(std::span<const uint8_t, 4> const p_raw)
+[[nodiscard]] uintptr_t to_chars_IPv4_size(std::span<uint8_t const, 4> const p_raw)
 {
 	return
 		to_chars_size(p_raw[0]) +
@@ -281,7 +281,7 @@ namespace core
 }
 
 template<_p::c_ipconv_char CharT>
-CharT* to_chars_IPv4_unsafe(std::span<const uint8_t, 4> const p_raw, CharT* p_out)
+CharT* to_chars_IPv4_unsafe(std::span<uint8_t const, 4> const p_raw, CharT* p_out)
 {
 	p_out += core::to_chars(p_raw[0], std::span<CharT, 3>{p_out, 3});
 	*(p_out++) = '.';
@@ -293,7 +293,7 @@ CharT* to_chars_IPv4_unsafe(std::span<const uint8_t, 4> const p_raw, CharT* p_ou
 }
 
 
-uintptr_t to_chars_IPv6_size(std::span<const uint16_t, 8> const p_raw)
+uintptr_t to_chars_IPv6_size(std::span<uint16_t const, 8> const p_raw)
 {
 	uint8_t size_elide = 0;
 	uint8_t pos_elide = 0;
@@ -302,7 +302,7 @@ uintptr_t to_chars_IPv6_size(std::span<const uint16_t, 8> const p_raw)
 		{
 			if(p_raw[it] == 0)
 			{
-				const uint8_t curret_pos = it;
+				uint8_t const curret_pos = it;
 				uint8_t curret_size = 1;
 				while(++it < 8 && p_raw[it] == 0)
 				{
@@ -364,7 +364,7 @@ uintptr_t to_chars_IPv6_size(std::span<const uint16_t, 8> const p_raw)
 }
 
 template<_p::c_ipconv_char CharT>
-CharT* to_chars_IPv6_unsafe(std::span<const uint16_t, 8> const p_raw, CharT* p_out)
+CharT* to_chars_IPv6_unsafe(std::span<uint16_t const, 8> const p_raw, CharT* p_out)
 {
 	uint8_t size_elide = 0;
 	uint8_t pos_elide = 0;
@@ -373,7 +373,7 @@ CharT* to_chars_IPv6_unsafe(std::span<const uint16_t, 8> const p_raw, CharT* p_o
 		{
 			if(p_raw[it] == 0)
 			{
-				const uint8_t curret_pos = it;
+				uint8_t const curret_pos = it;
 				uint8_t curret_size = 1;
 				while(++it < 8 && p_raw[it] == 0)
 				{
@@ -431,20 +431,20 @@ CharT* to_chars_IPv6_unsafe(std::span<const uint16_t, 8> const p_raw, CharT* p_o
 	return p_out;
 }
 
-template char8_t * to_chars_IPv4_unsafe<char8_t >(std::span<const uint8_t, 4>, char8_t *);
-template char16_t* to_chars_IPv4_unsafe<char16_t>(std::span<const uint8_t, 4>, char16_t*);
-template char32_t* to_chars_IPv4_unsafe<char32_t>(std::span<const uint8_t, 4>, char32_t*);
+template char8_t * to_chars_IPv4_unsafe<char8_t >(std::span<uint8_t const, 4>, char8_t *);
+template char16_t* to_chars_IPv4_unsafe<char16_t>(std::span<uint8_t const, 4>, char16_t*);
+template char32_t* to_chars_IPv4_unsafe<char32_t>(std::span<uint8_t const, 4>, char32_t*);
 
-template char8_t * to_chars_IPv6_unsafe<char8_t >(std::span<const uint16_t, 8>, char8_t *);
-template char16_t* to_chars_IPv6_unsafe<char16_t>(std::span<const uint16_t, 8>, char16_t*);
-template char32_t* to_chars_IPv6_unsafe<char32_t>(std::span<const uint16_t, 8>, char32_t*);
+template char8_t * to_chars_IPv6_unsafe<char8_t >(std::span<uint16_t const, 8>, char8_t *);
+template char16_t* to_chars_IPv6_unsafe<char16_t>(std::span<uint16_t const, 8>, char16_t*);
+template char32_t* to_chars_IPv6_unsafe<char32_t>(std::span<uint16_t const, 8>, char32_t*);
 
 //========= ======== ======== IP_address ========= ======== ========
 IP_address::IP_address()
 {
 }
 
-IP_address::IP_address(std::span<const uint8_t, 4> const p_init)
+IP_address::IP_address(std::span<uint8_t const, 4> const p_init)
 	: m_ipv(IPv::IPv_4)
 {
 	v4.byteField[0] = p_init[0];
@@ -453,7 +453,7 @@ IP_address::IP_address(std::span<const uint8_t, 4> const p_init)
 	v4.byteField[3] = p_init[3];
 }
 
-IP_address::IP_address(std::span<const uint16_t, 8> const p_init)
+IP_address::IP_address(std::span<uint16_t const, 8> const p_init)
 	: m_ipv(IPv::IPv_6)
 {
 	v6.doubletField[0] = p_init[0];
@@ -673,40 +673,40 @@ bool IP_address::is_valid() const
 	return (m_ipv == IPv::IPv_4) || (m_ipv == IPv::IPv_6);
 }
 
-IP_address& IP_address::operator |= (const IP_address& p_other)
+IP_address& IP_address::operator |= (IP_address const& p_other)
 {
 	v6.ui64Type[0] |= p_other.v6.ui64Type[0];
 	v6.ui64Type[1] |= p_other.v6.ui64Type[1];
 	return *this;
 }
 
-IP_address& IP_address::operator &= (const IP_address& p_other)
+IP_address& IP_address::operator &= (IP_address const& p_other)
 {
 	v6.ui64Type[0] &= p_other.v6.ui64Type[0];
 	v6.ui64Type[1] &= p_other.v6.ui64Type[1];
 	return *this;
 }
 
-IP_address& IP_address::operator ^= (const IP_address& p_other)
+IP_address& IP_address::operator ^= (IP_address const& p_other)
 {
 	v6.ui64Type[0] ^= p_other.v6.ui64Type[0];
 	v6.ui64Type[1] ^= p_other.v6.ui64Type[1];
 	return *this;
 }
 
-IP_address IP_address::operator | (const IP_address& p_other) const
+IP_address IP_address::operator | (IP_address const& p_other) const
 {
 	IP_address ret(*this);
 	return ret |= p_other;
 }
 
-IP_address IP_address::operator & (const IP_address& p_other) const
+IP_address IP_address::operator & (IP_address const& p_other) const
 {
 	IP_address ret(*this);
 	return ret &= p_other;
 }
 
-IP_address IP_address::operator ^ (const IP_address& p_other) const
+IP_address IP_address::operator ^ (IP_address const& p_other) const
 {
 	IP_address ret(*this);
 	return ret ^= p_other;
@@ -721,7 +721,7 @@ IP_address IP_address::operator ~ () const
 	return out;
 }
 
-bool IP_address::operator == (const IP_address& p_other) const
+bool IP_address::operator == (IP_address const& p_other) const
 {
 	if(m_ipv == p_other.m_ipv)
 	{
@@ -734,7 +734,7 @@ bool IP_address::operator == (const IP_address& p_other) const
 	return false;
 }
 
-bool IP_address::operator != (const IP_address& p_other) const
+bool IP_address::operator != (IP_address const& p_other) const
 {
 	if(m_ipv == p_other.m_ipv)
 	{
@@ -747,7 +747,7 @@ bool IP_address::operator != (const IP_address& p_other) const
 	return true;
 }
 
-bool IP_address::operator < (const IP_address& p_other) const
+bool IP_address::operator < (IP_address const& p_other) const
 {
 	if(m_ipv < p_other.m_ipv) return true;
 	if(m_ipv == IPv::IPv_4)
@@ -802,7 +802,7 @@ std::u8string IPv4_address::to_string() const
 
 //========= ======== ======== IPv6_address ========= ======== ========
 
-IPv6_address::IPv6_address(std::span<const uint16_t, 8> const p_init)
+IPv6_address::IPv6_address(std::span<uint16_t const, 8> const p_init)
 {
 	memcpy(doubletField, p_init.data(), 16);
 }
@@ -852,35 +852,35 @@ void IPv6_address::swap(IPv6_address& p_other)
 	std::swap(ui64Type[1], p_other.ui64Type[1]);
 }
 
-IPv6_address& IPv6_address::operator = (const IPv6_address& p_other)
+IPv6_address& IPv6_address::operator = (IPv6_address const& p_other)
 {
 	ui64Type[0] = p_other.ui64Type[0];
 	ui64Type[1] = p_other.ui64Type[1];
 	return *this;
 }
 
-IPv6_address& IPv6_address::operator |= (const IPv6_address& p_other)
+IPv6_address& IPv6_address::operator |= (IPv6_address const& p_other)
 {
 	ui64Type[0] |= p_other.ui64Type[0];
 	ui64Type[1] |= p_other.ui64Type[1];
 	return *this;
 }
 
-IPv6_address& IPv6_address::operator &= (const IPv6_address& p_other)
+IPv6_address& IPv6_address::operator &= (IPv6_address const& p_other)
 {
 	ui64Type[0] &= p_other.ui64Type[0];
 	ui64Type[1] &= p_other.ui64Type[1];
 	return *this;
 }
 
-IPv6_address& IPv6_address::operator ^= (const IPv6_address& p_other)
+IPv6_address& IPv6_address::operator ^= (IPv6_address const& p_other)
 {
 	ui64Type[0] ^= p_other.ui64Type[0];
 	ui64Type[1] ^= p_other.ui64Type[1];
 	return *this;
 }
 
-IPv6_address IPv6_address::operator | (const IPv6_address& p_other) const
+IPv6_address IPv6_address::operator | (IPv6_address const& p_other) const
 {
 	IPv6_address out;
 	out.ui64Type[0] = ui64Type[0] | p_other.ui64Type[0];
@@ -888,7 +888,7 @@ IPv6_address IPv6_address::operator | (const IPv6_address& p_other) const
 	return out;
 }
 
-IPv6_address IPv6_address::operator & (const IPv6_address& p_other) const
+IPv6_address IPv6_address::operator & (IPv6_address const& p_other) const
 {
 	IPv6_address out;
 	out.ui64Type[0] = ui64Type[0] & p_other.ui64Type[0];
@@ -896,7 +896,7 @@ IPv6_address IPv6_address::operator & (const IPv6_address& p_other) const
 	return out;
 }
 
-IPv6_address IPv6_address::operator ^ (const IPv6_address& p_other) const
+IPv6_address IPv6_address::operator ^ (IPv6_address const& p_other) const
 {
 	IPv6_address out;
 	out.ui64Type[0] = ui64Type[0] ^ p_other.ui64Type[0];
@@ -912,17 +912,17 @@ IPv6_address IPv6_address::operator ~ () const
 	return out;
 }
 
-bool IPv6_address::operator == (const IPv6_address& p_other) const
+bool IPv6_address::operator == (IPv6_address const& p_other) const
 {
 	return memcmp(byteField, p_other.byteField, 16) == 0;
 }
 
-bool IPv6_address::operator != (const IPv6_address& p_other) const
+bool IPv6_address::operator != (IPv6_address const& p_other) const
 {
 	return memcmp(byteField, p_other.byteField, 16) != 0;
 }
 
-bool IPv6_address::operator < (const IPv6_address& p_other) const
+bool IPv6_address::operator < (IPv6_address const& p_other) const
 {
 	if(ui64Type[0] == p_other.ui64Type[0])
 	{

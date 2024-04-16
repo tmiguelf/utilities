@@ -41,19 +41,19 @@ namespace core
 {
 
 #ifdef _WIN32
-bool env_exists(const core::os_string& p_key)
+bool env_exists(core::os_string const& p_key)
 {
 	return GetEnvironmentVariableW(p_key.c_str(), nullptr, 0) != 0;
 }
 
-bool set_env(const core::os_string& p_key, const core::os_string& p_value)
+bool set_env(core::os_string const& p_key, core::os_string const& p_value)
 {
 	return (SetEnvironmentVariableW(p_key.c_str(), p_value.c_str()) != FALSE);
 }
 
-std::optional<core::os_string> get_env(const core::os_string& p_key)
+std::optional<core::os_string> get_env(core::os_string const& p_key)
 {
-	const DWORD size = GetEnvironmentVariableW(p_key.c_str(), nullptr, 0);
+	DWORD const size = GetEnvironmentVariableW(p_key.c_str(), nullptr, 0);
 	if(size == 0)
 	{
 		return {};
@@ -67,9 +67,9 @@ std::optional<core::os_string> get_env(const core::os_string& p_key)
 	return {};
 }
 
-bool delete_env(const core::os_string& p_key)
+bool delete_env(core::os_string const& p_key)
 {
-	return SetEnvironmentVariableW(reinterpret_cast<const wchar_t*>(p_key.c_str()), L"") != FALSE;
+	return SetEnvironmentVariableW(reinterpret_cast<wchar_t const*>(p_key.c_str()), L"") != FALSE;
 }
 
 std::optional<core::os_string> machine_name()
@@ -107,19 +107,19 @@ void disable_critical_invalid_c_param()
 }
 
 #else
-bool env_exists(const core::os_string& p_key)
+bool env_exists(core::os_string const& p_key)
 {
 	return getenv(p_key.c_str()) != nullptr;
 }
 
-bool set_env(const core::os_string& p_key, const core::os_string& p_value)
+bool set_env(core::os_string const& p_key, core::os_string const& p_value)
 {
 	return setenv(p_key.c_str(), p_value.c_str(), 1) == 0;
 }
 
-std::optional<core::os_string> get_env(const core::os_string& p_key)
+std::optional<core::os_string> get_env(core::os_string const& p_key)
 {
-	const char* const retvar = getenv(p_key.c_str());
+	char const* const retvar = getenv(p_key.c_str());
 	if(retvar == nullptr)
 	{
 		return {};
@@ -127,7 +127,7 @@ std::optional<core::os_string> get_env(const core::os_string& p_key)
 	return core::os_string{retvar};
 }
 
-bool delete_env(const core::os_string& p_key)
+bool delete_env(core::os_string const& p_key)
 {
 	return unsetenv(p_key.c_str()) == 0;
 }

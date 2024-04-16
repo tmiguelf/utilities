@@ -50,12 +50,12 @@ template<>
 class core::toPrint<TestStr>: public core::toPrint_base
 {
 public:
-	toPrint(const TestStr&)
+	toPrint(TestStr const&)
 	{
 		m_size = preamble.size();
 	}
 
-	constexpr uintptr_t size(const char8_t&) const { return m_size; }
+	constexpr uintptr_t size(char8_t const&) const { return m_size; }
 
 	void get_print(char8_t* p_out) const //final
 	{
@@ -118,8 +118,6 @@ TEST(toPrint, toPrint_interface)
 		ASSERT_EQ(tsink.m_print_cache[10], u8"Combination 32 TestStr"sv);
 	}
 }
-
-
 
 
 
@@ -202,6 +200,6 @@ TEST(toPrint, toPrint_type_support)
 
 #undef TYPE_TEST_PRINT
 
-	[[maybe_unused]] constexpr bool test_derived = core::_p::is_sink_toPrint_v<const test_type_sink<wchar_t>>;
+	[[maybe_unused]] constexpr bool test_derived = core::_p::is_sink_toPrint_v<test_type_sink<wchar_t> const>;
 
 }

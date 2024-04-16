@@ -59,7 +59,7 @@ namespace core
 			///	\brief Sets the socket into listening mode
 			///	\param[in] p_max_connections - Number of connections allowed to be pending on the socket before starting to refuse them
 			///	\return \ref core::NET_Error
-			NET_Error listen(const int p_max_connections);
+			NET_Error listen(int p_max_connections);
 		};
 
 		///	\brief Private class to implement generic TCP client functionality
@@ -117,7 +117,7 @@ namespace core
 			///		\ref p_context becomes 0 again.
 			///		If an error is returned \ref p_context is left unchanged, so if this is 0 before calling,
 			///		and remains 0 after the call but an error is returned, this means that no data was sent.
-			NET_Error send_context(const void* p_buffer, const uintptr_t p_size, uintptr_t& p_context);
+			NET_Error send_context(void const* p_buffer, uintptr_t p_size, uintptr_t& p_context);
 
 			///	\brief Sends data over the socket using a size tracking algorithm to handle unsent data
 			///
@@ -137,7 +137,7 @@ namespace core
 			///		With a size type algorithm the user is responsible for keeping track of the data that was already
 			///		sent and adjust the buffer for the next send call.
 			///		If an error is returned \ref p_sent is left unchanged.
-			NET_Error send_size(const void* p_buffer, const uintptr_t p_size, uintptr_t& p_sent);
+			NET_Error send_size(void const* p_buffer, uintptr_t p_size, uintptr_t& p_sent);
 
 			///	\brief Receives data pending on the socket using a context algorithm to handle unreceived data
 			///	\param[in] p_buffer - p_buffer to receive the data
@@ -172,7 +172,7 @@ namespace core
 			///		if on this call all remaing 300B are received, then \ref p_context becomes 0 again.
 			///		If an error is returned \ref p_context is left unchanged, so if this is 0 before calling,
 			///		and remains 0 after the call but an error is returned, this means that no data was received.
-			NET_Error receive_context(void* p_buffer, const uintptr_t p_size, uintptr_t& p_context);
+			NET_Error receive_context(void* p_buffer, uintptr_t p_size, uintptr_t& p_context);
 
 			///	\brief Receives data pending on the socket using a size tracking algorithm to handle unreceived data
 			///	\param[in] p_buffer - p_buffer to receive the data
@@ -192,7 +192,7 @@ namespace core
 			///		With a size type algorithm the user is responsible for keeping track of the data that was already
 			///		received and adjust the buffer for the next send call.
 			///		If an error is returned \ref p_received is left unchanged.
-			NET_Error receive_size(void* p_buffer, const uintptr_t p_size, uintptr_t& p_received);
+			NET_Error receive_size(void* p_buffer, uintptr_t p_size, uintptr_t& p_received);
 
 			///	\brief Turns on or off the Nagle's algorithm on the socket. By default the Nagle's algorithm is on.
 			///	\param[in] p_useNagle - If true turns on the Nagle's algorithm, if false turns off the Nagle's algorithm
@@ -203,7 +203,7 @@ namespace core
 			///		more data to send, allowing the system to concatenate messages togheter in the same packet thus reducing
 			///		network traffic, but at the cost of a time delay.
 			///		Please see: https://en.wikipedia.org/wiki/Nagle%27s_algorithm
-			NET_Error set_nagle(const bool p_useNagle);
+			NET_Error set_nagle(bool p_useNagle);
 
 			///	\brief Turns on or off 'Keep Alive' packets on a tcp connection
 			///	\param[in] p_keepAlive - If true truns On Keep Alive, if false turns it off
@@ -219,7 +219,7 @@ namespace core
 			///			https://docs.microsoft.com/en-us/windows/win32/winsock/so-keepalive
 			///			https://linux.die.net/man/7/tcp
 			///		for more information.
-			NET_Error set_keep_alive(const bool p_keepAlive, const uint32_t p_probePeriod, const uint32_t p_maxProbes);
+			NET_Error set_keep_alive(bool p_keepAlive, uint32_t p_probePeriod, uint32_t p_maxProbes);
 		};
 	} //namesapce _p
 
@@ -243,13 +243,13 @@ namespace core
 		///	\brief Creates the socket
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
-		NET_Error open(const bool p_blocking = true);
+		NET_Error open(bool p_blocking = true);
 
 		///	\brief Binds a previously created socket with \ref open to a specific network interface
 		///	\param[in] p_IP - IP address of the interface to bind too. If 0.0.0.0 is used, then the socket is bound to any address
 		///	\param[in] p_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\return \ref core::NET_Error
-		NET_Error bind(const IPv4_address& p_IP, const uint16_t p_Port);
+		NET_Error bind(IPv4_address const& p_IP, uint16_t p_Port);
 
 		///	\brief performs both a \ref open and \ref bind
 		///	\param[in] p_IP - IP address of the interface to bind too. If 0.0.0.0 is used, then the socket is bound to any address
@@ -257,7 +257,7 @@ namespace core
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
 		//
-		NET_Error open_bind(const IPv4_address& p_IP, const uint16_t p_Port, bool p_blocking = true);
+		NET_Error open_bind(IPv4_address const& p_IP, uint16_t p_Port, bool p_blocking = true);
 
 		///	\brief performs a \ref open, \ref bind, and \ref listen in one method
 		///	\param[in] p_IP - IP address of the interface to bind too. If 0.0.0.0 is used, then the socket is bound to any address
@@ -265,13 +265,13 @@ namespace core
 		///	\param[in] p_max_connections - Number of connections allowed to be pending on the socket before starting to refuse them
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
-		NET_Error open_bind_listen(const IPv4_address& p_IP, const uint16_t p_Port, const int p_max_connections, const bool p_blocking = true);
+		NET_Error open_bind_listen(IPv4_address const& p_IP, uint16_t p_Port, int p_max_connections, bool p_blocking = true);
 
 		///	\brief Accepts a connection request pending on the socket.
 		///	\param[out] p_Client - A client object that will manage the client communication. Object must be unused.
 		///	\param[in] p_blocking - Determines if the new socket should be a blocking or non-blocking
 		///	\return \ref core::NET_Error
-		NET_Error accept(NetTCP_C_V4& p_Client, const bool p_blocking = true);
+		NET_Error accept(NetTCP_C_V4& p_Client, bool p_blocking = true);
 
 		///	\brief Accepts a connection request pending on the socket.
 		///	\param[out] p_Client - A client object that will manage the client communication. Object must be unused.
@@ -279,7 +279,7 @@ namespace core
 		///	\param[out] p_other_port - The peer's port number
 		///	\param[in] p_blocking - Determines if the new socket should be a blocking or non-blocking
 		///	\return \ref core::NET_Error
-		NET_Error accept(NetTCP_C_V4& p_Client, IPv4_address& p_other_IP, uint16_t& p_other_port, const bool p_blocking = true);
+		NET_Error accept(NetTCP_C_V4& p_Client, IPv4_address& p_other_IP, uint16_t& p_other_port, bool p_blocking = true);
 
 		///	\brief Gets the address information of the interface. Usefull if \ref bind is used without specifying the address.
 		///	\param[in] p_IP - receives the IP address
@@ -306,20 +306,20 @@ namespace core
 		///	\brief Creates the socket
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
-		NET_Error open(const bool p_blocking = true);
+		NET_Error open(bool p_blocking = true);
 
 		///	\brief Binds a previously created socket with \ref open to a specific network interface
 		///	\param[in] p_IP - IP address of the interface to bind too. If ::0 is used, then the socket is bound to any address
 		///	\param[in] p_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\return \ref core::NET_Error
-		NET_Error bind(const IPv6_address& p_IP, const uint16_t p_Port);
+		NET_Error bind(IPv6_address const& p_IP, uint16_t const p_Port);
 
 		///	\brief performs both a \ref open and \ref bind
 		///	\param[in] p_IP - IP address of the interface to bind too. If ::0 is used, then the socket is bound to any address
 		///	\param[in] p_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
-		NET_Error open_bind(const IPv6_address& p_IP, const uint16_t p_Port, bool p_blocking = true);
+		NET_Error open_bind(IPv6_address const& p_IP, uint16_t p_Port, bool p_blocking = true);
 
 		///	\brief performs a \ref open, \ref bind, and \ref listen in one method
 		///	\param[in] p_IP - IP address of the interface to bind too. If ::0 is used, then the socket is bound to any address
@@ -327,7 +327,7 @@ namespace core
 		///	\param[in] p_max_connections - Number of connections allowed to be pending on the socket before starting to refuse them
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
-		NET_Error open_bind_listen(const IPv6_address& p_IP, const uint16_t p_Port, const int p_max_connections, const bool p_blocking = true);
+		NET_Error open_bind_listen(IPv6_address const& p_IP, uint16_t p_Port, int p_max_connections, bool p_blocking = true);
 
 		///	\brief Accepts a connection request pending on the socket.
 		///	\param[out] p_Client - A client object that will manage the client communication. Object must be unused.
@@ -336,7 +336,7 @@ namespace core
 		///	\remarks
 		///		On blocking sockets, this call will block until a clients is pending to connect.
 		///		On a non-blocking socket this can return \ref core::NET_Error::WouldBlock if no client is pending.
-		NET_Error accept(NetTCP_C_V6& p_Client, const bool p_blocking = true);
+		NET_Error accept(NetTCP_C_V6& p_Client, bool p_blocking = true);
 
 		///	\brief Accepts a connection request pending on the socket.
 		///	\param[out] p_Client - A client object that will manage the client communication. Object must be unused.
@@ -347,7 +347,7 @@ namespace core
 		///	\remarks
 		///		On blocking sockets, this call will block until a clients is pending to connect.
 		///		On a non-blocking socket this can return \ref core::NET_Error::WouldBlock if no client is pending.
-		NET_Error accept(NetTCP_C_V6& p_Client, IPv6_address& p_other_IP, uint16_t& p_other_port, const bool p_blocking = true);
+		NET_Error accept(NetTCP_C_V6& p_Client, IPv6_address& p_other_IP, uint16_t& p_other_port, bool p_blocking = true);
 
 		///	\brief Gets the address information of the interface. Usefull if \ref bind is used without specifying the address.
 		///	\param[in] p_IP - receives the IP address
@@ -389,20 +389,20 @@ namespace core
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
 		///	\remarks System should not mix IPv4 and IPv6 protocols
-		NET_Error open(const IPv p_ipV, const bool p_blocking = true);
+		NET_Error open(IPv p_ipV, bool p_blocking = true);
 
 		///	\brief Binds a previously created socket with \ref open to a specific network interface
 		///	\param[in] p_IP - IP address of the interface to bind too. If 0.0.0.0 (on IPv4) or ::0 (on IPv6) is used, then the socket is bound to any address
 		///	\param[in] p_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\return \ref core::NET_Error
-		NET_Error bind(const IP_address& p_IP, const uint16_t p_Port);
+		NET_Error bind(IP_address const& p_IP, uint16_t p_Port);
 
 		///	\brief performs both a \ref open and \ref bind
 		///	\param[in] p_IP - IP address of the interface to bind too. If 0.0.0.0 (on IPv4) or ::0 (on IPv6) is used, then the socket is bound to any address
 		///	\param[in] p_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
-		NET_Error open_bind(const IP_address& p_IP, const uint16_t p_Port, const bool p_blocking = true);
+		NET_Error open_bind(IP_address const& p_IP, uint16_t p_Port, bool p_blocking = true);
 
 		///	\brief performs a \ref open, \ref bind, and \ref listen in one method
 		///	\param[in] p_IP - IP address of the interface to bind too. If 0.0.0.0 (on IPv4) or ::0 (on IPv6) is used, then the socket is bound to any address
@@ -410,13 +410,13 @@ namespace core
 		///	\param[in] p_max_connections - Number of connections allowed to be pending on the socket before starting to refuse them
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
-		NET_Error open_bind_listen(const IP_address& p_IP, const uint16_t p_Port, const int p_max_connections, const bool p_blocking = true);
+		NET_Error open_bind_listen(IP_address const& p_IP, uint16_t p_Port, int p_max_connections, bool p_blocking = true);
 
 		///	\brief Accepts a connection request pending on the socket.
 		///	\param[out] p_Client - A client object that will manage the client communication. Object must be unused.
 		///	\param[in] p_blocking - Determines if the new socket should be a blocking or non-blocking
 		///	\return \ref core::NET_Error
-		NET_Error accept(NetTCP_C& p_Client, const bool p_blocking = true);
+		NET_Error accept(NetTCP_C& p_Client, bool p_blocking = true);
 
 		///	\brief Accepts a connection request pending on the socket.
 		///	\param[out] p_Client - A client object that will manage the client communication. Object must be unused.
@@ -424,7 +424,7 @@ namespace core
 		///	\param[out] p_other_port - The peer's port number
 		///	\param[in] p_blocking - Determines if the new socket should be a blocking or non-blocking
 		///	\return \ref core::NET_Error
-		NET_Error accept(NetTCP_C& p_Client, IP_address& p_other_IP, uint16_t& p_other_port, const bool p_blocking = true);
+		NET_Error accept(NetTCP_C& p_Client, IP_address& p_other_IP, uint16_t& p_other_port, bool p_blocking = true);
 
 		///	\brief Gets the address information of the interface. Usefull if \ref bind is used without specifying the address.
 		///	\param[in] p_IP - receives the IP address
@@ -460,13 +460,13 @@ namespace core
 		///	\brief Creates the socket
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
-		NET_Error open(const bool p_blocking = true);
+		NET_Error open(bool p_blocking = true);
 
 		///	\brief Binds a previously created socket with \ref open to a specific network interface
 		///	\param[in] p_IP - IP address of the interface to bind too. If 0.0.0.0 is used, then the socket is bound to any address
 		///	\param[in] p_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\return \ref core::NET_Error
-		NET_Error bind(const IPv4_address& my_IP, const uint16_t my_Port);
+		NET_Error bind(IPv4_address const& my_IP, uint16_t my_Port);
 
 		///	\brief Connects a previously created socket with \ref open to a server.
 		///	\param[in] dest_IP - IP address of the server to connect too.
@@ -478,14 +478,14 @@ namespace core
 		///		On a non-blocking socket this can return \ref core::NET_Error::WouldBlock if the connection
 		///		could not be completed immediately. The user must then use \ref NonBlock_Connect_state to check
 		///		when the connections is actually established.
-		NET_Error connect(const IPv4_address& dest_IP, const uint16_t dest_Port);
+		NET_Error connect(IPv4_address const& dest_IP, uint16_t dest_Port);
 
 		///	\brief performs both a \ref open and \ref bind
 		///	\param[in] my_IP - IP address of the interface to bind too. If 0.0.0.0 is used, then the socket is bound to any address
 		///	\param[in] my_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
-		NET_Error open_bind(const IPv4_address& my_IP, const uint16_t my_Port, bool p_blocking = true);
+		NET_Error open_bind(IPv4_address const& my_IP, uint16_t my_Port, bool p_blocking = true);
 
 		///	\brief performs a \ref open, \ref bind, and \ref connect in one method
 		///	\param[in] my_IP - IP address of the interface to bind too. If 0.0.0.0 is used, then the socket is bound to any address
@@ -500,7 +500,7 @@ namespace core
 		///		On a non-blocking socket this can return \ref core::NET_Error::WouldBlock if the connection
 		///		could not be completed immediately. The user must then use \ref NonBlock_Connect_state to check
 		///		when the connections is actually established.
-		NET_Error open_bind_connect(const IPv4_address& my_IP, const uint16_t my_Port, const IPv4_address& dest_IP, const uint16_t dest_Port, const bool p_blocking = true);
+		NET_Error open_bind_connect(IPv4_address const& my_IP, uint16_t my_Port, IPv4_address const& dest_IP, uint16_t dest_Port, bool p_blocking = true);
 
 		///	\brief Gets the address information of the interface. Usefull if \ref bind is used without specifying the address.
 		///	\param[in] p_IP - receives the IP address
@@ -535,13 +535,13 @@ namespace core
 		///	\brief Creates the socket
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
-		NET_Error open(const bool p_blocking = true);
+		NET_Error open(bool p_blocking = true);
 
 		///	\brief Binds a previously created socket with \ref open to a specific network interface
 		///	\param[in] p_IP - IP address of the interface to bind too. If ::0 is used, then the socket is bound to any address
 		///	\param[in] p_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\return \ref core::NET_Error
-		NET_Error bind(const IPv6_address& my_IP, const uint16_t my_Port);
+		NET_Error bind(IPv6_address const& my_IP, uint16_t my_Port);
 
 		///	\brief Connects a previously created socket with \ref open to a server.
 		///	\param[in] dest_IP - IP address of the server to connect too.
@@ -553,14 +553,14 @@ namespace core
 		///		On a non-blocking socket this can return \ref core::NET_Error::WouldBlock if the connection
 		///		could not be completed immediately. The user must then use \ref NonBlock_Connect_state to check
 		///		when the connections is actually established.
-		NET_Error connect (const IPv6_address& dest_IP, const uint16_t dest_Port);
+		NET_Error connect (IPv6_address const& dest_IP, uint16_t dest_Port);
 
 		///	\brief performs both a \ref open and \ref bind
 		///	\param[in] my_IP - IP address of the interface to bind too. If ::0 is used, then the socket is bound to any address
 		///	\param[in] my_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
-		NET_Error open_bind(const IPv6_address& my_IP, const uint16_t my_Port, bool p_blocking = true);
+		NET_Error open_bind(IPv6_address const& my_IP, uint16_t my_Port, bool p_blocking = true);
 
 		///	\brief performs a \ref open, \ref bind, and \ref connect in one method
 		///	\param[in] my_IP - IP address of the interface to bind too. If ::0 is used, then the socket is bound to any address
@@ -575,7 +575,7 @@ namespace core
 		///		On a non-blocking socket this can return \ref core::NET_Error::WouldBlock if the connection
 		///		could not be completed immediately. The user must then use \ref NonBlock_Connect_state to check
 		///		when the connections is actually established.
-		NET_Error open_bind_connect(const IPv6_address& my_IP, const uint16_t my_Port, const IPv6_address& dest_IP, const uint16_t dest_Port, const bool p_blocking = true);
+		NET_Error open_bind_connect(IPv6_address const& my_IP, uint16_t my_Port, IPv6_address const& dest_IP, uint16_t dest_Port, bool p_blocking = true);
 
 		///	\brief Gets the address information of the interface. Usefull if \ref bind is used without specifying the address.
 		///	\param[in] p_IP - receives the IP address
@@ -623,13 +623,13 @@ namespace core
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
 		///	\remarks System should not mix IPv4 and IPv6 protocols
-		NET_Error open(const IPv p_ipV, const bool p_blocking = true);
+		NET_Error open(IPv p_ipV, bool p_blocking = true);
 
 		///	\brief Binds a previously created socket with \ref open to a specific network interface
 		///	\param[in] p_IP - IP address of the interface to bind too. If 0.0.0.0 (on IPv4) or ::0 (on IPv6) is used, then the socket is bound to any address
 		///	\param[in] p_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\return \ref core::NET_Error
-		NET_Error bind(const IP_address& my_IP, const uint16_t my_Port);
+		NET_Error bind(IP_address const& my_IP, uint16_t my_Port);
 
 		///	\brief Connects a previously created socket with \ref open to a server.
 		///	\param[in] dest_IP - IP address of the server to connect too.
@@ -641,14 +641,14 @@ namespace core
 		///		On a non-blocking socket this can return \ref core::NET_Error::WouldBlock if the connection
 		///		could not be completed immediately. The user must then use \ref NonBlock_Connect_state to check
 		///		when the connections is actually established.
-		NET_Error connect(const IP_address& dest_IP, const uint16_t dest_Port);
+		NET_Error connect(IP_address const& dest_IP, uint16_t dest_Port);
 
 		///	\brief performs both a \ref open and \ref bind
 		///	\param[in] p_IP - IP address of the interface to bind too. If 0.0.0.0 (on IPv4) or ::0 (on IPv6) is used, then the socket is bound to any address
 		///	\param[in] p_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
-		NET_Error open_bind(const IP_address& my_IP, const uint16_t my_Port, const bool p_blocking = true);
+		NET_Error open_bind(IP_address const& my_IP, uint16_t my_Port, bool p_blocking = true);
 
 		///	\brief performs a \ref open, \ref bind, and \ref connect in one method
 		///	\param[in] my_IP - IP address of the interface to bind too.  If 0.0.0.0 (on IPv4) or ::0 (on IPv6) is used, then the socket is bound to any address
@@ -663,7 +663,7 @@ namespace core
 		///		On a non-blocking socket this can return \ref core::NET_Error::WouldBlock if the connection
 		///		could not be completed immediately. The user must then use \ref NonBlock_Connect_state to check
 		///		when the connections is actually established.
-		NET_Error open_bind_connect(const IP_address& my_IP, const uint16_t my_Port, const IP_address& dest_IP, const uint16_t dest_Port, const bool p_blocking = true);
+		NET_Error open_bind_connect(IP_address const& my_IP, uint16_t my_Port, IP_address const& dest_IP, uint16_t dest_Port, bool p_blocking = true);
 
 		///	\brief Gets the address information of the interface. Usefull if \ref bind is used without specifying the address.
 		///	\param[in] p_IP - receives the IP address

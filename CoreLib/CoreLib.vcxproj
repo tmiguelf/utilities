@@ -96,6 +96,7 @@
     <ClCompile Include="src\string\fp_charconv_round.cpp" />
     <ClCompile Include="src\string\fp_charconv_ryu.cpp" />
     <ClCompile Include="src\string\fp_charconv_shortest.cpp" />
+    <ClCompile Include="src\toPrint\toPrint_fp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\CoreLib\core_alloca.hpp" />

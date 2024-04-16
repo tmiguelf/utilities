@@ -47,12 +47,12 @@ namespace _p
 {
 	//template<c_toPrint_char, typename, typename = void>
 	//struct toPrint_has_size : public std::false_type{};
-	//template<c_toPrint_char Char_t, typename Type> requires std::is_same_v<uintptr_t, decltype(std::declval<const Type>().size(std::declval<Char_t>()))>
+	//template<c_toPrint_char Char_t, typename Type> requires std::is_same_v<uintptr_t, decltype(std::declval<Type const>().size(std::declval<Char_t>()))>
 	//struct toPrint_has_size<Char_t, Type, void>: public std::true_type{};
 	//
 	//template<c_toPrint_char, typename, typename = void>
 	//struct toPrint_has_get : public std::false_type{};
-	//template<c_toPrint_char Char_t, typename Type> requires std::is_same_v<void, decltype(std::declval<const Type>().get_print(std::declval<Char_t*>()))>
+	//template<c_toPrint_char Char_t, typename Type> requires std::is_same_v<void, decltype(std::declval<Type const>().get_print(std::declval<Char_t*>()))>
 	//struct toPrint_has_get<Char_t, Type, void>: public std::true_type{};
 
 	template<typename T>

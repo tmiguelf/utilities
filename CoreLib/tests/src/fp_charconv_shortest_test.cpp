@@ -65,9 +65,6 @@ static uint32_t make_valid_fp(uint32_t tcase)
 }
 
 
-
-
-
 TEST(fp_charconv, round_trip)
 {
 	std::random_device rd;  //Will be used to obtain a seed for the random number engine
@@ -93,23 +90,23 @@ TEST(fp_charconv, round_trip)
 	std::array<char8_t, 1024> buff;
 
 
-	for(const uint32_t tcase : fix_cases)
+	for(uint32_t const tcase : fix_cases)
 	{
-		const float32_t f_case = std::bit_cast<const float32_t>(tcase);
+		float32_t const f_case = std::bit_cast<float32_t const>(tcase);
 
-		const core::fp_base_classify classification = core::to_chars_shortest_classify(f_case, context);
-		const core::fp_to_chars_sci_size size = core::to_chars_shortest_sci_size(context);
+		core::fp_base_classify const classification = core::to_chars_shortest_classify(f_case, context);
+		core::fp_to_chars_sci_size const size = core::to_chars_shortest_sci_size(context);
 
 		char8_t* const units = buff.data();
 		char8_t* const decimal = units + 1;
-		const uint16_t decimal_size = size.mantissa_decimal_size;
+		uint16_t const decimal_size = size.mantissa_decimal_size;
 		char8_t* const exp = decimal + decimal_size;
-		const uint16_t exp_size = size.exponent_size;
+		uint16_t const exp_size = size.exponent_size;
 
 		core::to_chars_shortest_sci_unsafe(context, units, decimal);
 		core::to_chars_shortest_sci_exp_unsafe(context, exp);
 
-		const core::from_chars_result<float32_t> result = core::from_chars_fp<float32_t>(
+		core::from_chars_result<float32_t> const result = core::from_chars_fp<float32_t>(
 			classification.is_negative,
 			std::u8string_view(units, 1),
 			std::u8string_view(decimal, decimal_size),
@@ -118,28 +115,28 @@ TEST(fp_charconv, round_trip)
 
 		ASSERT_TRUE(result.has_value());
 
-		const uint32_t round_trip = std::bit_cast<const uint32_t>(result.value());
+		uint32_t const round_trip = std::bit_cast<uint32_t const>(result.value());
 		ASSERT_EQ(round_trip, tcase) << core::toPrint_hex_fix{tcase};
 	}
 
 	for(uint16_t i = 0; i < 255; ++i)
 	{
-		const uint32_t tcase = make_valid_fp(distrib(gen));
-		const float32_t f_case = std::bit_cast<const float32_t>(tcase);
+		uint32_t const tcase = make_valid_fp(distrib(gen));
+		float32_t const f_case = std::bit_cast<float32_t const>(tcase);
 
-		const core::fp_base_classify classification = core::to_chars_shortest_classify(f_case, context);
-		const core::fp_to_chars_sci_size size = core::to_chars_shortest_sci_size(context);
+		core::fp_base_classify classification = core::to_chars_shortest_classify(f_case, context);
+		core::fp_to_chars_sci_size size = core::to_chars_shortest_sci_size(context);
 
 		char8_t* const units = buff.data();
 		char8_t* const decimal = units + 1;
-		const uint16_t decimal_size = size.mantissa_decimal_size;
+		uint16_t const decimal_size = size.mantissa_decimal_size;
 		char8_t* const exp = decimal + decimal_size;
-		const uint16_t exp_size = size.exponent_size;
+		uint16_t const exp_size = size.exponent_size;
 
 		core::to_chars_shortest_sci_unsafe(context, units, decimal);
 		core::to_chars_shortest_sci_exp_unsafe(context, exp);
 
-		const core::from_chars_result<float32_t> result = core::from_chars_fp<float32_t>(
+		core::from_chars_result<float32_t> const result = core::from_chars_fp<float32_t>(
 			classification.is_negative,
 			std::u8string_view(units, 1),
 			std::u8string_view(decimal, decimal_size),
@@ -148,7 +145,7 @@ TEST(fp_charconv, round_trip)
 
 		ASSERT_TRUE(result.has_value());
 
-		const uint32_t round_trip = std::bit_cast<const uint32_t>(result.value());
+		uint32_t const round_trip = std::bit_cast<uint32_t const>(result.value());
 		ASSERT_EQ(round_trip, tcase) << core::toPrint(i) << core::toPrint_hex_fix{tcase};
 	}
 

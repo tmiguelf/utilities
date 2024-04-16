@@ -35,58 +35,58 @@
 template<typename T> requires (sizeof(T) == sizeof(uint8_t))
 consteval std::pair<T, T> getTestCase_const()
 {
-	return {static_cast<const T>(uint8_t{0x01}), static_cast<const T>(uint8_t{0x01})};
+	return {static_cast<T const>(uint8_t{0x01}), static_cast<T const>(uint8_t{0x01})};
 }
 
 template<typename T> requires (sizeof(T) == sizeof(uint16_t))
 consteval std::pair<T, T> getTestCase_const()
 {
-	return {static_cast<const T>(uint16_t{0x0123}), static_cast<const T>(uint16_t{0x2301})};
+	return {static_cast<T const>(uint16_t{0x0123}), static_cast<T const>(uint16_t{0x2301})};
 }
 
 template<typename T> requires (sizeof(T) == sizeof(uint32_t))
 consteval std::pair<T, T> getTestCase_const()
 {
-	return {static_cast<const T>(uint32_t{0x01234567}), static_cast<const T>(uint32_t{0x67452301})};
+	return {static_cast<T const>(uint32_t{0x01234567}), static_cast<T const>(uint32_t{0x67452301})};
 }
 
 template<typename T> requires (sizeof(T) == sizeof(uint64_t))
 consteval std::pair<T, T> getTestCase_const()
 {
-	return {static_cast<const T>(uint64_t{0x01456789ABCDEF23}), static_cast<const T>(uint64_t{0x23EFCDAB89674501})};
+	return {static_cast<T const>(uint64_t{0x01456789ABCDEF23}), static_cast<T const>(uint64_t{0x23EFCDAB89674501})};
 }
 
 
 template<typename T> requires (sizeof(T) == sizeof(uint8_t))
 std::pair<T, T> getTestCase()
 {
-	const uint8_t var1{0x01};
-	const uint8_t var2{0x01};
-	return { std::bit_cast<const T>(var1), std::bit_cast<const T>(var2)};
+	uint8_t const var1{0x01};
+	uint8_t const var2{0x01};
+	return { std::bit_cast<T const>(var1), std::bit_cast<T const>(var2)};
 }
 
 template<typename T> requires (sizeof(T) == sizeof(uint16_t))
 std::pair<T, T> getTestCase()
 {
-	const uint16_t var1{0x0123};
-	const uint16_t var2{0x2301};
-	return { std::bit_cast<const T>(var1), std::bit_cast<const T>(var2)};
+	uint16_t const var1{0x0123};
+	uint16_t const var2{0x2301};
+	return { std::bit_cast<T const>(var1), std::bit_cast<T const>(var2)};
 }
 
 template<typename T> requires (sizeof(T) == sizeof(uint32_t))
 std::pair<T, T> getTestCase()
 {
-	const uint32_t var1{0x01234567};
-	const uint32_t var2{0x67452301};
-	return { std::bit_cast<const T>(var1), std::bit_cast<const T>(var2)};
+	uint32_t const var1{0x01234567};
+	uint32_t const var2{0x67452301};
+	return { std::bit_cast<T const>(var1), std::bit_cast<T const>(var2)};
 }
 
 template<typename T> requires (sizeof(T) == sizeof(uint64_t))
 std::pair<T, T> getTestCase()
 {
-	const uint64_t var1{0x0123456789ABCDEF};
-	const uint64_t var2{0xEFCDAB8967452301};
-	return { std::bit_cast<const T>(var1), std::bit_cast<const T>(var2)};
+	uint64_t const var1{0x0123456789ABCDEF};
+	uint64_t const var2{0xEFCDAB8967452301};
+	return { std::bit_cast<T const>(var1), std::bit_cast<T const>(var2)};
 }
 
 enum class enumu8 : uint8_t {};

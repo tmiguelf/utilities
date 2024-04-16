@@ -42,19 +42,19 @@ template <_p::is_non_const_floating_point T>
 class QuaternionRotator
 {
 public:
-	constexpr QuaternionRotator(const QuaternionRotator&) = default;
+	constexpr QuaternionRotator(QuaternionRotator const&) = default;
 
 	constexpr QuaternionRotator()
 		: m_identity{1.0, 0.0, 0.0, 0.0}
 	{
 	}
 
-	constexpr QuaternionRotator(const Quaternion<T>& p_quat)
+	constexpr QuaternionRotator(Quaternion<T> const& p_quat)
 		: m_identity{p_quat.renormalized().value_or(Quaternion<T>{1.0, 0.0, 0.0, 0.0})}
 	{
 	}
 
-	QuaternionRotator(const Vector3<T> p_axis_angle)
+	QuaternionRotator(Vector3<T> const p_axis_angle)
 	{
 		T vx = p_axis_angle[0];
 		T vy = p_axis_angle[1];
@@ -74,17 +74,17 @@ public:
 		}
 	}
 
-	QuaternionRotator(const Vector3<T> p_vector, const T p_rotation)
+	QuaternionRotator(Vector3<T> const p_vector, T const p_rotation)
 	{
-		const T vx = p_vector[0];
-		const T vy = p_vector[1];
-		const T vz = p_vector[2];
-		const T norm = std::hypot(vx, vy, vz);
+		T const vx = p_vector[0];
+		T const vy = p_vector[1];
+		T const vz = p_vector[2];
+		T const norm = std::hypot(vx, vy, vz);
 
 		if(norm >= 0.0)
 		{
-			const T S = std::sin(p_rotation / T{2.0});
-			const T C = std::cos(p_rotation / T{2.0});
+			T const S = std::sin(p_rotation / T{2.0});
+			T const C = std::cos(p_rotation / T{2.0});
 
 			m_identity = Quaternion<T>{C, (vx / norm) * S, (vy / norm) * S, (vz / norm) * S};
 		}
@@ -94,24 +94,24 @@ public:
 		}
 	}
 
-	constexpr bool operator == (const QuaternionRotator& p_other) const 
+	constexpr bool operator == (QuaternionRotator const& p_other) const 
 	{
 		return m_identity == p_other.m_identity;
 	}
 
-	QuaternionRotator& operator = (const QuaternionRotator&) = default;
+	QuaternionRotator& operator = (QuaternionRotator const&) = default;
 
-	inline QuaternionRotator& operator *= (const QuaternionRotator& p_other)
+	inline QuaternionRotator& operator *= (QuaternionRotator const& p_other)
 	{
 		return operator = (operator * (p_other));
 	}
 
-	constexpr QuaternionRotator operator * (const QuaternionRotator& p_other) const
+	constexpr QuaternionRotator operator * (QuaternionRotator const& p_other) const
 	{
 		return {m_identity * p_other.m_identity};
 	}
 
-	constexpr Vector3<T> rotate(const Vector3<T> p_vector) const
+	constexpr Vector3<T> rotate(Vector3<T> const p_vector) const
 	{
 		//technically the last multiplication should be the inverse of the rotation identity
 		//but because the identity quaternion is unitary, the inverse and the conjugate are the same
@@ -125,12 +125,12 @@ public:
 
 	Vector3<T> axis_angle() const
 	{
-		const T r = m_identity.r();
-		const T i = m_identity.i();
-		const T j = m_identity.j();
-		const T k = m_identity.k();
+		T const r = m_identity.r();
+		T const i = m_identity.i();
+		T const j = m_identity.j();
+		T const k = m_identity.k();
 
-		const T norm  = std::sqrt(1 - r * r);
+		T const norm  = std::sqrt(1 - r * r);
 
 		if(norm == T{0.0})
 		{
@@ -152,22 +152,22 @@ public:
 
 	Matrix3<T> matrix() const
 	{
-		const T r = m_identity.r();
-		const T i = m_identity.i();
-		const T j = m_identity.j();
-		const T k = m_identity.k();
+		T const r = m_identity.r();
+		T const i = m_identity.i();
+		T const j = m_identity.j();
+		T const k = m_identity.k();
 
-		const T pr2 = r * r;
-		const T pi2 = i * i;
-		const T pj2 = j * j;
-		const T pk2 = k * k;
+		T const pr2 = r * r;
+		T const pi2 = i * i;
+		T const pj2 = j * j;
+		T const pk2 = k * k;
 
-		const T pri = r * i;
-		const T prj = r * j;
-		const T prk = r * k;
-		const T pij = i * j;
-		const T pik = i * k;
-		const T pjk = j * k;
+		T const pri = r * i;
+		T const prj = r * j;
+		T const prk = r * k;
+		T const pij = i * j;
+		T const pik = i * k;
+		T const pjk = j * k;
 
 		using line_t = typename Matrix3<T>::line_t;
 		using init_t = typename Matrix3<T>::init_t;

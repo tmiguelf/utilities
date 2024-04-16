@@ -48,7 +48,7 @@
 using core::toPrint;
 
 template<typename T>
-static std::ostream& operator << (std::ostream& p_stream, const mathlib::Vector3<T>& p_data)
+static std::ostream& operator << (std::ostream& p_stream, mathlib::Vector3<T> const& p_data)
 {
 	p_stream
 		<< "["
@@ -131,9 +131,9 @@ TYPED_TEST(QuaternionRotator_T, Rotator)
 
 	struct case_toPrint: public core::toPrint_base
 	{
-		case_toPrint(const TestCase& p_data): m_data{p_data} {}
+		case_toPrint(TestCase const& p_data): m_data{p_data} {}
 
-		uintptr_t size(const char8_t&) const
+		uintptr_t size(char8_t const&) const
 		{
 			constexpr std::string_view filler = "R: [; ; ] A: ";
 
@@ -168,7 +168,7 @@ TYPED_TEST(QuaternionRotator_T, Rotator)
 			core::to_chars_unsafe(m_data.rotationValue, p_out);
 		}
 
-		const TestCase& m_data;
+		TestCase const& m_data;
 	};
 
 
@@ -228,7 +228,7 @@ TYPED_TEST(QuaternionRotator_T, Rotator)
 			do
 			{
 				QuaternionRotator<real_t> rotator{tcase.rotationAxis, tcase.rotationValue};
-				for(const testVect& vect : tcase.tests)
+				for(testVect const& vect : tcase.tests)
 				{
 					Vector3<real_t> res = rotator.rotate(vect.vect);
 
@@ -258,13 +258,13 @@ TYPED_TEST(QuaternionRotator_T, fromVector)
 		Quaternion<real_t>	result;
 	};
 
-	const real_t cos_1_2 = std::cos(real_t{1.0} / real_t{2.0});
-	const real_t sin_1_2 = std::sin(real_t{1.0} / real_t{2.0});
+	real_t const cos_1_2 = std::cos(real_t{1.0} / real_t{2.0});
+	real_t const sin_1_2 = std::sin(real_t{1.0} / real_t{2.0});
 
-	const real_t sqrt_14	= std::sqrt(real_t{14.0});
-	const real_t cos_s14_2	= std::cos(sqrt_14 / real_t{2.0});
-	const real_t sin_s14_2	= std::sin(sqrt_14 / real_t{2.0});
-	const real_t div_1_s14	= real_t{1.0} / sqrt_14;
+	real_t const sqrt_14	= std::sqrt(real_t{14.0});
+	real_t const cos_s14_2	= std::cos(sqrt_14 / real_t{2.0});
+	real_t const sin_s14_2	= std::sin(sqrt_14 / real_t{2.0});
+	real_t const div_1_s14	= real_t{1.0} / sqrt_14;
 
 #define VECT(X,Y,Z) Vector3<real_t>{real_t{X}, real_t{Y}, real_t{Z}}
 #define QUAT(R, I, J, K) Quaternion<real_t>{real_t{R}, real_t{I}, real_t{J}, real_t{K}}
@@ -291,7 +291,7 @@ TYPED_TEST(QuaternionRotator_T, fromVector)
 #undef QUAT
 
 #define HELP_NEAR(A, B, C) ASSERT_NEAR(static_cast<double>(A), static_cast<double>(B), static_cast<double>(C))
-	for(const TestCase& tcase: testData)
+	for(TestCase const& tcase: testData)
 	{
 		Quaternion<real_t> res = QuaternionRotator<real_t>{tcase.vect}.identity();
 		HELP_NEAR(res.r(), tcase.result.r(), epsilon) << tcase.vect;
@@ -339,7 +339,7 @@ TYPED_TEST(QuaternionRotator_T, to_axis_angle)
 #undef VECT
 
 #define HELP_NEAR(A, B, C) ASSERT_NEAR(static_cast<double>(A), static_cast<double>(B), static_cast<double>(C))
-	for(const TestCase& tcase: testData)
+	for(TestCase const& tcase: testData)
 	{
 		QuaternionRotator<real_t> quat{tcase.vect};
 		Vector3<real_t> res = quat.axis_angle();
@@ -373,12 +373,12 @@ TYPED_TEST(QuaternionRotator_T, toMatrix)
 #undef VECT
 
 #define HELP_NEAR(A, B, C) ASSERT_NEAR(static_cast<double>(A), static_cast<double>(B), static_cast<double>(C))
-	for(const Vector3<real_t>& tcase: testCases)
+	for(Vector3<real_t> const& tcase: testCases)
 	{
 		QuaternionRotator<real_t> quat{tcase};
 		Matrix3<real_t> res = quat.matrix();
 		
-		for(const Vector3<real_t>& tdata: testData)
+		for(Vector3<real_t> const& tdata: testData)
 		{
 			Vector3<real_t> mode1 = quat.rotate(tdata);
 			Vector3<real_t> mode2 = res * tdata;

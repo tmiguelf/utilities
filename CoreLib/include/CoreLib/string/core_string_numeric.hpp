@@ -158,13 +158,13 @@ namespace core
 	//======== Low level ========
 
 	template <_p::charconv_char_extended_c T>
-	[[nodiscard]] inline constexpr bool is_digit(const T p_char) { return (p_char >= '0' && p_char <= '9'); }
+	[[nodiscard]] inline constexpr bool is_digit(T const p_char) { return (p_char >= '0' && p_char <= '9'); }
 
 	template <_p::charconv_char_extended_c T>
-	[[nodiscard]] inline constexpr bool is_xdigit(const T p_char) { return is_digit(p_char) || (p_char >= 'A' && p_char <= 'F') || (p_char >= 'a' && p_char <= 'f'); }
+	[[nodiscard]] inline constexpr bool is_xdigit(T const p_char) { return is_digit(p_char) || (p_char >= 'A' && p_char <= 'F') || (p_char >= 'a' && p_char <= 'f'); }
 
 	template <_p::charconv_char_extended_c T>
-	[[nodiscard]] inline constexpr bool is_bdigit(const T p_char) { return (p_char == '0' || p_char == '1'); }
+	[[nodiscard]] inline constexpr bool is_bdigit(T const p_char) { return (p_char == '0' || p_char == '1'); }
 
 	namespace _p
 	{
@@ -212,11 +212,11 @@ namespace core
 	[[nodiscard]] inline bool is_uint(std::basic_string_view<char32_t> const p_str) { return _p::is_uint(p_str); }
 	[[nodiscard]] inline bool is_uint(std::basic_string_view<char    > const p_str)
 	{
-		return _p::is_uint<char8_t>(std::u8string_view{reinterpret_cast<const char8_t*>(p_str.data()), p_str.size()});
+		return _p::is_uint<char8_t>(std::u8string_view{reinterpret_cast<char8_t const*>(p_str.data()), p_str.size()});
 	}
-	[[nodiscard]] inline bool is_uint(std::basic_string_view<wchar_t > const p_str)
+	[[nodiscard]] inline bool is_uint(std::basic_string_view<wchar_t> const p_str)
 	{
-		return _p::is_uint<wchar_alias>(std::basic_string_view<wchar_alias>{reinterpret_cast<const wchar_alias*>(p_str.data()), p_str.size()});
+		return _p::is_uint<wchar_alias>(std::basic_string_view<wchar_alias>{reinterpret_cast<wchar_alias const*>(p_str.data()), p_str.size()});
 	}
 
 	[[nodiscard]] inline bool is_int(std::basic_string_view<char8_t > const p_str) { return _p::is_int(p_str); }
@@ -225,12 +225,12 @@ namespace core
 
 	[[nodiscard]] inline bool is_int(std::basic_string_view<char    > const p_str)
 	{
-		return _p::is_int(std::u8string_view{reinterpret_cast<const char8_t*>(p_str.data()), p_str.size()});
+		return _p::is_int(std::u8string_view{reinterpret_cast<char8_t const*>(p_str.data()), p_str.size()});
 	}
 
-	[[nodiscard]] inline bool is_int(std::basic_string_view<wchar_t > const p_str)
+	[[nodiscard]] inline bool is_int(std::basic_string_view<wchar_t> const p_str)
 	{
-		return _p::is_int(std::basic_string_view<wchar_alias>{reinterpret_cast<const wchar_alias*>(p_str.data()), p_str.size()});
+		return _p::is_int(std::basic_string_view<wchar_alias>{reinterpret_cast<wchar_alias const*>(p_str.data()), p_str.size()});
 	}
 
 	[[nodiscard]] inline bool is_hex(std::basic_string_view<char8_t > const p_str) { return _p::is_hex(p_str); }
@@ -239,12 +239,12 @@ namespace core
 
 	[[nodiscard]] inline bool is_hex(std::basic_string_view<char    > const p_str)
 	{
-		return _p::is_hex(std::u8string_view{reinterpret_cast<const char8_t*>(p_str.data()), p_str.size()});
+		return _p::is_hex(std::u8string_view{reinterpret_cast<char8_t const*>(p_str.data()), p_str.size()});
 	}
 
-	[[nodiscard]] inline bool is_hex(std::basic_string_view<wchar_t > const p_str)
+	[[nodiscard]] inline bool is_hex(std::basic_string_view<wchar_t> const p_str)
 	{
-		return _p::is_hex(std::basic_string_view<wchar_alias>{reinterpret_cast<const wchar_alias*>(p_str.data()), p_str.size()});
+		return _p::is_hex(std::basic_string_view<wchar_alias>{reinterpret_cast<wchar_alias const*>(p_str.data()), p_str.size()});
 	}
 
 	[[nodiscard]] inline bool is_bin(std::basic_string_view<char8_t > const p_str) { return _p::is_bin(p_str); }
@@ -253,12 +253,12 @@ namespace core
 
 	[[nodiscard]] inline bool is_bin(std::basic_string_view<char    > const p_str)
 	{
-		return _p::is_bin(std::u8string_view{ reinterpret_cast<const char8_t*>(p_str.data()), p_str.size() });
+		return _p::is_bin(std::u8string_view{ reinterpret_cast<char8_t const*>(p_str.data()), p_str.size() });
 	}
 
-	[[nodiscard]] inline bool is_bin(std::basic_string_view<wchar_t > const p_str)
+	[[nodiscard]] inline bool is_bin(std::basic_string_view<wchar_t> const p_str)
 	{
-		return _p::is_bin(std::basic_string_view<wchar_alias>{reinterpret_cast<const wchar_alias*>(p_str.data()), p_str.size()});
+		return _p::is_bin(std::basic_string_view<wchar_alias>{reinterpret_cast<wchar_alias const*>(p_str.data()), p_str.size()});
 	}
 
 
@@ -274,13 +274,13 @@ namespace core
 	template<char_conv_dec_supported_c num_T>
 	[[nodiscard]] inline from_chars_result<num_T> from_chars(std::basic_string_view<char    > const p_str)
 	{
-		return _p::from_chars<num_T>(std::u8string_view{reinterpret_cast<const char8_t*>(p_str.data()), p_str.size()});
+		return _p::from_chars<num_T>(std::u8string_view{reinterpret_cast<char8_t const*>(p_str.data()), p_str.size()});
 	}
 
 	template<char_conv_dec_supported_c num_T>
 	[[nodiscard]] inline from_chars_result<num_T> from_chars(std::basic_string_view<wchar_t > const p_str)
 	{
-		return _p::from_chars<num_T>(std::basic_string_view<wchar_alias>{reinterpret_cast<const wchar_alias*>(p_str.data()), p_str.size()});
+		return _p::from_chars<num_T>(std::basic_string_view<wchar_alias>{reinterpret_cast<wchar_alias const*>(p_str.data()), p_str.size()});
 	}
 
 
@@ -296,13 +296,13 @@ namespace core
 	template<char_conv_hex_supported_c num_T>
 	[[nodiscard]] inline from_chars_result<num_T> from_chars_hex(std::basic_string_view<char    > const p_str)
 	{
-		return _p::from_chars_hex<num_T>(std::u8string_view{reinterpret_cast<const char8_t*>(p_str.data()), p_str.size()});
+		return _p::from_chars_hex<num_T>(std::u8string_view{reinterpret_cast<char8_t const*>(p_str.data()), p_str.size()});
 	}
 
 	template<char_conv_hex_supported_c num_T>
 	[[nodiscard]] inline from_chars_result<num_T> from_chars_hex(std::basic_string_view<wchar_t > const p_str)
 	{
-		return _p::from_chars_hex<num_T>(std::basic_string_view<wchar_alias>{reinterpret_cast<const wchar_alias*>(p_str.data()), p_str.size()});
+		return _p::from_chars_hex<num_T>(std::basic_string_view<wchar_alias>{reinterpret_cast<wchar_alias const*>(p_str.data()), p_str.size()});
 	}
 
 
@@ -318,13 +318,13 @@ namespace core
 	template<char_conv_bin_supported_c num_T>
 	[[nodiscard]] inline from_chars_result<num_T> from_chars_bin(std::basic_string_view<char    > const p_str)
 	{
-		return _p::from_chars_bin<num_T>(std::u8string_view{ reinterpret_cast<const char8_t*>(p_str.data()), p_str.size() });
+		return _p::from_chars_bin<num_T>(std::u8string_view{ reinterpret_cast<char8_t const*>(p_str.data()), p_str.size() });
 	}
 
 	template<char_conv_bin_supported_c num_T>
 	[[nodiscard]] inline from_chars_result<num_T> from_chars_bin(std::basic_string_view<wchar_t > const p_str)
 	{
-		return _p::from_chars_bin<num_T>(std::basic_string_view<wchar_alias>{reinterpret_cast<const wchar_alias*>(p_str.data()), p_str.size()});
+		return _p::from_chars_bin<num_T>(std::basic_string_view<wchar_alias>{reinterpret_cast<wchar_alias const*>(p_str.data()), p_str.size()});
 	}
 
 

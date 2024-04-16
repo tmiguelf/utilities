@@ -66,9 +66,9 @@ namespace
 	class toPrint_fix_2: public toPrint_base
 	{
 	public:
-		toPrint_fix_2(const uint8_t p_data): m_data(p_data) {}
+		toPrint_fix_2(uint8_t const p_data): m_data(p_data) {}
 
-		static inline constexpr uintptr_t size(const char8_t&) { return 2; }
+		static inline constexpr uintptr_t size(char8_t const&) { return 2; }
 
 		void get_print(char8_t* p_out) const
 		{
@@ -85,15 +85,15 @@ namespace
 		}
 
 	private:
-		const uint8_t m_data;
+		uint8_t const m_data;
 	};
 
 	class toPrint_fix_3: public toPrint_base
 	{
 	public:
-		toPrint_fix_3(const uint16_t p_data): m_data(p_data) {}
+		toPrint_fix_3(uint16_t const p_data): m_data(p_data) {}
 
-		static inline constexpr uintptr_t size(const char8_t&) { return 3; }
+		static inline constexpr uintptr_t size(char8_t const&) { return 3; }
 
 		void get_print(char8_t* p_out) const
 		{
@@ -114,14 +114,14 @@ namespace
 			else
 			{
 				*(p_out++) = static_cast<char8_t>(u8'0' + m_data / 100);
-				const char8_t rem = static_cast<char8_t>(m_data % 100);
+				char8_t const rem = static_cast<char8_t>(m_data % 100);
 				*(p_out++) = u8'0' + rem / 10;
 				*(p_out) = u8'0' + rem % 10;
 			}
 		}
 
 	private:
-		const uint16_t m_data;
+		uint16_t const m_data;
 	};
 
 
@@ -130,7 +130,7 @@ namespace
 #if defined(_M_AMD64) || defined(__amd64__)
 		OUTPUT(p_file, "CPU: AMD64\n"sv);
 		core::amd64::EX_Reg reg = core::amd64::CPU_feature_su::Fn0();
-		const uint32_t maxId = reg.eax;
+		uint32_t const maxId = reg.eax;
 		OUTPUT(p_file, "FN0: "sv, toPrint_hex_fix{reg.eax}, ' ', toPrint_hex_fix{reg.ebx}, ' ', toPrint_hex_fix{reg.ecx}, ' ', toPrint_hex_fix{reg.edx}, '\n');
 
 		if(maxId > 0)
@@ -179,14 +179,14 @@ namespace
 	///	\brief Used to pass the process handle and the file we are outputting to to the module enumeration call back.
 	struct enumerate2file_context
 	{
-		const HANDLE	m_proc;	//!< Process handle
+		HANDLE const	m_proc;	//!< Process handle
 		file_write*		m_file;	//!< Output file
 	};
 
 	///	\brief Used to pass the process handle and the list we are outputting to to the module enumeration call back.
 	struct enumerate2list_context
 	{
-		const HANDLE			m_proc;	//!< Process handle
+		HANDLE const			m_proc;	//!< Process handle
 		std::list<ModuleAddr>*	m_list;	//!< output list
 	};
 
@@ -305,7 +305,7 @@ namespace
 	static void PrintEnv(file_write& p_file)
 	{
 		wchar_t* const t_base = GetEnvironmentStringsW();
-		const wchar_t* t_pivot = t_base;
+		wchar_t const* t_pivot = t_base;
 		if(t_base)
 		{
 			while(*t_pivot)
@@ -319,7 +319,7 @@ namespace
 	}
 
 	/// \brief Auxiliary function used to enumerate modules and print onto file
-	static BOOL CALLBACK EnumerateModules2File(PCWSTR const ModuleName, const DWORD64 BaseOfDll, const ULONG ModuleSize, PVOID const UserContext)
+	static BOOL CALLBACK EnumerateModules2File(PCWSTR const ModuleName, DWORD64 const BaseOfDll, ULONG const ModuleSize, PVOID const UserContext)
 	{
 		OUTPUT(*(reinterpret_cast<enumerate2file_context*>(UserContext)->m_file),
 			"0x"sv, toPrint_hex_fix{BaseOfDll}, " 0x"sv, toPrint_hex_fix{BaseOfDll + ModuleSize},
@@ -329,7 +329,7 @@ namespace
 
 	/// \brief Auxiliary function used to enumerate modules onto list
 	//
-	static BOOL CALLBACK EnumerateModules2List(PCWSTR const ModuleName, const DWORD64 BaseOfDll, const ULONG ModuleSize, PVOID const UserContext)
+	static BOOL CALLBACK EnumerateModules2List(PCWSTR const ModuleName, DWORD64 const BaseOfDll, ULONG const ModuleSize, PVOID const UserContext)
 	{
 		ModuleAddr t_entry;
 		enumerate2list_context* const t_context = reinterpret_cast<enumerate2list_context*>(UserContext);
@@ -419,7 +419,7 @@ namespace
 		//Note: It is common for most of the symbols names not to be found on release builds, the .pdb file helps with that
 		if(SymGetSymFromAddr64(p_proc, p_addr, &displacement, reinterpret_cast<IMAGEHLP_SYMBOL64*>(&t_symb)))
 		{
-			t_info.m_name = reinterpret_cast<const char8_t*>(t_symb.Name);
+			t_info.m_name = reinterpret_cast<char8_t const*>(t_symb.Name);
 		}
 		//======== END ======== 
 
@@ -430,7 +430,7 @@ namespace
 	///	\warning Function names may not necessarily be correct. \n
 	///		Name is determined based on last know name prior to current address, which is not necessarily the same function as the one the address belongs to.
 	///		Use .map files to confirm names.
-	static void AppendStackAddr2List(HANDLE const p_proc, const uint64_t p_addr, std::list<StackInfo>& p_list)
+	static void AppendStackAddr2List(HANDLE const p_proc, uint64_t const p_addr, std::list<StackInfo>& p_list)
 	{
 		StackInfo t_info;
 	
@@ -449,7 +449,7 @@ namespace
 		//Note: It is common for most of the symbols names not to be found on release builds, the .pdb file helps with that
 		if(SymGetSymFromAddr64(p_proc, p_addr, &displacement, reinterpret_cast<IMAGEHLP_SYMBOL64*>(&t_symb)))
 		{
-			t_info.m_name = reinterpret_cast<const char8_t*>(t_symb.Name);
+			t_info.m_name = reinterpret_cast<char8_t const*>(t_symb.Name);
 		}
 		//======== END ======== 
 		
@@ -606,7 +606,7 @@ namespace
 				PrintOS(o_file);
 
 				{
-					const std::optional<core::os_string>& res = machine_name();
+					std::optional<core::os_string> const& res = machine_name();
 					if(res.has_value())
 					{
 						OUTPUT(o_file, "Machine:     \""sv, res.value(), "\"\n"sv);
@@ -633,7 +633,7 @@ namespace
 	}
 } //namesapce
 
-bool register_crash_trace(const std::filesystem::path& p_output_file)
+bool register_crash_trace(std::filesystem::path const& p_output_file)
 {
 
 	if(p_output_file.is_absolute())
@@ -726,7 +726,7 @@ uint8_t stack_trace(std::list<StackInfo>& p_trace)
 {
 	void* t_trace[64];
 	p_trace.clear();
-	const USHORT t_numReturned = RtlCaptureStackBackTrace(0, 64, t_trace, nullptr);
+	USHORT const t_numReturned = RtlCaptureStackBackTrace(0, 64, t_trace, nullptr);
 	if(t_numReturned)
 	{
 		HANDLE t_proc = GetCurrentProcess();
@@ -746,7 +746,7 @@ uint8_t stack_trace(std::list<uintptr_t>& p_trace)
 {
 	void* t_trace[64];
 	p_trace.clear();
-	const USHORT t_numReturned = RtlCaptureStackBackTrace(0, 64, t_trace, nullptr);
+	USHORT const t_numReturned = RtlCaptureStackBackTrace(0, 64, t_trace, nullptr);
 	if(t_numReturned)
 	{
 		for(USHORT i = 0; i < t_numReturned; ++i)
@@ -760,14 +760,14 @@ uint8_t stack_trace(std::list<uintptr_t>& p_trace)
 
 uint8_t generate_minidump(const std::filesystem::path& p_file)
 {
-	HANDLE	const t_proc	= GetCurrentProcess		();
-	DWORD	const t_pId		= GetCurrentProcessId	();
-	HANDLE	const t_file	= CreateFileW(p_file.c_str(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr,
+	HANDLE const t_proc = GetCurrentProcess		();
+	DWORD  const t_pId  = GetCurrentProcessId	();
+	HANDLE const t_file = CreateFileW(p_file.c_str(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr,
 						 CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 
 	if(t_file == INVALID_HANDLE_VALUE) return 1;
 
-	const BOOL ret = MiniDumpWriteDump(t_proc, t_pId, t_file, GenerateMinidumpFlags(), nullptr, nullptr, nullptr);
+	BOOL const ret = MiniDumpWriteDump(t_proc, t_pId, t_file, GenerateMinidumpFlags(), nullptr, nullptr, nullptr);
 
 	CloseHandle(t_file);
 	return ret ? 0 : 2;
@@ -847,12 +847,12 @@ namespace
 			}
 
 			OUTPUT(p_file, "Arguments:\n"sv);
-			const char8_t* pivot = res.data();
-			const char8_t* const last = pivot + res.size();
+			char8_t const* pivot = res.data();
+			char8_t const* const last = pivot + res.size();
 			uint32_t count = 0;
 			while(pivot != last)
 			{
-				const char8_t* pos = reinterpret_cast<const char8_t*>(memchr(pivot, 0, last - pivot));
+				char8_t const* pos = reinterpret_cast<char8_t const*>(memchr(pivot, 0, last - pivot));
 				if(pos)
 				{
 					OUTPUT(p_file, '\t', count, ": "sv, std::u8string_view{pivot, static_cast<uintptr_t>(pos - pivot)}, '\n');
@@ -951,7 +951,7 @@ namespace
 	///			- Machine name
 	///			- Environment variables
 	///	\note Linux version
-	static void Linux_exception_handler(const int sig, siginfo_t* const siginfo, void* const context)
+	static void Linux_exception_handler(int const sig, siginfo_t* const siginfo, void* const context)
 	{
 		static bool b_has_sig = false;
 		//because of the way the signal mechanism works, for example signals can be raised while processing signals
@@ -1121,7 +1121,7 @@ namespace
 					PrintCMD(o_file);	//Prints the commands that were passed to the application
 					PrintOS(o_file);
 					{
-						const std::optional<core::os_string>& res = machine_name();
+						std::optional<core::os_string> const& res = machine_name();
 						if(res.has_value())
 						{
 							OUTPUT(o_file, "Machine: \""sv, res.value(), "\"\n"sv);
@@ -1149,7 +1149,7 @@ namespace
 	}
 } //namespace
 
-bool register_crash_trace(const std::filesystem::path& p_output_file)
+bool register_crash_trace(std::filesystem::path const& p_output_file)
 {
 	if(p_output_file.is_absolute())
 	{
@@ -1217,7 +1217,7 @@ uint8_t stack_trace(StackTrace_FullInfo& p_trace)
 				{
 					StackBaseInfo t_info;
 					t_info.m_addr = reinterpret_cast<uintptr_t>(trace[i]);
-					t_info.m_name = reinterpret_cast<const char8_t*>(t_symb[i]);
+					t_info.m_name = reinterpret_cast<char8_t const*>(t_symb[i]);
 					Dl_info t_dlinfo;
 					if(dladdr(trace[i], &t_dlinfo) && (t_dlinfo.dli_fbase < trace[i]))
 					{
@@ -1278,7 +1278,7 @@ uint8_t stack_trace(std::list<StackBaseInfo>& p_trace)
 				{
 					StackBaseInfo t_info;
 					t_info.m_addr = reinterpret_cast<uintptr_t>(trace[i]);
-					t_info.m_name = reinterpret_cast<const char8_t*>(t_symb[i]);
+					t_info.m_name = reinterpret_cast<char8_t const*>(t_symb[i]);
 					Dl_info t_dlinfo;
 					if(dladdr(trace[i], &t_dlinfo) && (t_dlinfo.dli_fbase < trace[i]))
 					{
@@ -1339,7 +1339,7 @@ uint8_t stack_trace(std::list<StackInfo>& p_trace)
 				{
 					StackInfo t_info;
 					t_info.m_addr = reinterpret_cast<uintptr_t>(trace[i]);
-					t_info.m_name = reinterpret_cast<const char8_t*>(t_symb[i]);
+					t_info.m_name = reinterpret_cast<char8_t const*>(t_symb[i]);
 					p_trace.push_back(t_info);
 				}
 			}

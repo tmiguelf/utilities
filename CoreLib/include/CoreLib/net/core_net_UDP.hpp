@@ -53,7 +53,7 @@ namespace core
 			///	\brief Sets/Unsets the broadcast mode on the socket
 			///	\param[in] p_broadcast - if true turns the broadcast mode on, if false turns it of
 			///	\return \ref core::NET_Error
-			NET_Error set_broadcasting(const bool p_broadcast);
+			NET_Error set_broadcasting(bool p_broadcast);
 
 			///	\brief Reads data ready to be received on the socket
 			///	\param[out] p_data - pointer to buffer that receives the data
@@ -98,33 +98,33 @@ namespace core
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
 		//
-		NET_Error open(const bool p_blocking = true);
+		NET_Error open(bool p_blocking = true);
 
 		///	\brief Binds a previously created socket with \ref open to a specific network interface
 		///	\param[in] p_IP - IP address of the interface to bind too. If 0.0.0.0 is used, then the socket is bound to any address
 		///	\param[in] p_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\return \ref core::NET_Error
-		NET_Error bind(const IPv4_address& p_IP, const uint16_t p_Port);
+		NET_Error bind(IPv4_address const& p_IP, uint16_t p_Port);
 
 		///	\brief performs both a \ref open and \ref bind
 		///	\param[in] p_IP - IP address of the interface to bind too. If 0.0.0.0 is used, then the socket is bound to any address
 		///	\param[in] p_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
-		NET_Error open_bind(const IPv4_address& p_IP, const uint16_t p_Port, bool p_blocking = true);
+		NET_Error open_bind(IPv4_address const& p_IP, uint16_t p_Port, bool p_blocking = true);
 
 		///	\brief Joins a multicast group
 		///	\param[in] p_group - address of the multicast group
 		///	\param[in] p_interface - address of the interface to use (in raw form). If 0 is used, then the socket uses the default interface.
 		///	\return \ref core::NET_Error
 		///	\remarks Must be called after a socket has been created (\ref open), but before it is bound (\ref bind)
-		NET_Error join_multicast_group(const IPv4_address& p_group, const uint32_t p_interface);
+		NET_Error join_multicast_group(IPv4_address const& p_group, uint32_t p_interface);
 
 		///	\brief leaves a multicast group
 		///	\param[in] p_group - address of the multicast group
 		///	\param[in] p_interface - address of the interface to use (in raw form). If 0 is used, then the socket uses the default interface.
 		///	\return \ref core::NET_Error
-		NET_Error leave_multicast_group(const IPv4_address& p_group, const uint32_t p_interface);
+		NET_Error leave_multicast_group(IPv4_address const& p_group, uint32_t p_interface);
 
 		///	\brief Gets the address information of the interface. Usefull if an implicit binding is used.
 		///	\param[in] p_IP - receives the IP address
@@ -144,7 +144,7 @@ namespace core
 		///		On blocking sockets, this call will block until the data has been sent.
 		///		On a non-blocking socket this can return \ref core::NET_Error::WouldBlock
 		///		if data could not be sent at tthe time without blocking.
-		NET_Error send(const void* p_data, const uintptr_t p_size, const IPv4_address& p_IP, const uint16_t p_Port, const uint8_t p_repeat = 0);
+		NET_Error send(void const* p_data, uintptr_t p_size, IPv4_address const& p_IP, uint16_t p_Port, uint8_t p_repeat = 0);
 
 		///	\brief Collects the data pending on the socket, and retrieves address of the sender
 		///	\param[out] p_data - pointer to buffer that receives the data
@@ -179,7 +179,7 @@ namespace core
 		///
 		///	\remarks
 		///		Has the same properties as \ref send, except the data payload is managed internally by the method.
-		NET_Error WakeOnLan(std::span<const uint8_t, 6> p_MacAddress, const IPv4_address& p_subNet, const uint16_t p_port);
+		NET_Error WakeOnLan(std::span<uint8_t const, 6> p_MacAddress, IPv4_address const& p_subNet, uint16_t p_port);
 
 		///	\brief Sends a magic packet commonly used for Wake On Lan on systems with password
 		///	\param[in] p_MacAddress - The MAC address of the interface to wake up
@@ -191,7 +191,7 @@ namespace core
 		///
 		///	\remarks
 		///		Has the same properties as \ref send, except the data payload is managed internally by the method.
-		NET_Error WakeOnLan_password(std::span<const uint8_t, 6> p_MacAddress, const IPv4_address& p_subNet, const uint16_t p_port, const void* p_password = nullptr, const uint16_t p_password_size = 0);
+		NET_Error WakeOnLan_password(std::span<uint8_t const, 6> p_MacAddress, IPv4_address const& p_subNet, uint16_t p_port, void const* p_password = nullptr, uint16_t p_password_size = 0);
 
 		///	\brief Swaps this socket with another
 		void swap(NetUDP_V4& p_other);
@@ -214,33 +214,33 @@ namespace core
 		///	\brief Creates the socket
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
-		NET_Error open(const bool p_blocking = true);
+		NET_Error open(bool p_blocking = true);
 
 		///	\brief Binds a previously created socket with \ref open to a specific network interface
 		///	\param[in] p_IP - IP address of the interface to bind too. If ::0 is used, then the socket is bound to any address
 		///	\param[in] p_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\return \ref core::NET_Error
-		NET_Error bind(const IPv6_address& p_IP, const uint16_t p_Port);
+		NET_Error bind(IPv6_address const& p_IP, uint16_t p_Port);
 
 		///	\brief performs both a \ref open and \ref bind
 		///	\param[in] p_IP - IP address of the interface to bind too. If ::0 is used, then the socket is bound to any address
 		///	\param[in] p_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
-		NET_Error open_bind(const IPv6_address& p_IP, const uint16_t p_Port, const bool p_blocking = true);
+		NET_Error open_bind(IPv6_address const& p_IP, uint16_t p_Port, bool p_blocking = true);
 
 		///	\brief Joins a multicast group
 		///	\param[in] p_group - address of the multicast group
 		///	\param[in] p_interface - Interface index to use. If 0 is used, then the socket picks up the default.
 		///	\return \ref core::NET_Error
 		///	\remarks Must be called after a socket has been created (\ref open), but before it is bound (\ref bind)
-		NET_Error join_multicast_group(const IPv6_address& p_group, const uint32_t p_interface);
+		NET_Error join_multicast_group(IPv6_address const& p_group, uint32_t p_interface);
 
 		///	\brief Leavess a multicast group
 		///	\param[in] p_group - address of the multicast group
 		///	\param[in] p_interface - Interface index to use. If 0 is used, then the socket picks up the default.
 		///	\return \ref core::NET_Error
-		NET_Error leave_multicast_group(const IPv6_address& p_group, const uint32_t p_interface);
+		NET_Error leave_multicast_group(IPv6_address const& p_group, uint32_t p_interface);
 
 		///	\brief Gets the address information of the interface. Usefull if an implicit binding is used.
 		///	\param[in] p_IP - receives the IP address
@@ -260,7 +260,7 @@ namespace core
 		///		On blocking sockets, this call will block until the data has been sent.
 		///		On a non-blocking socket this can return \ref core::NET_Error::WouldBlock
 		///		if data could not be sent at tthe time without blocking.
-		NET_Error send(const void* p_data, const uintptr_t p_size, const IPv6_address& p_IP, const uint16_t p_Port, const uint8_t p_repeat = 0);
+		NET_Error send(void const* p_data, uintptr_t p_size, IPv6_address const& p_IP, uint16_t p_Port, uint8_t p_repeat = 0);
 
 		///	\brief Collects the data pending on the socket, and retrieves address of the sender
 		///	\param[out] p_data - pointer to buffer that receives the data
@@ -295,7 +295,7 @@ namespace core
 		///
 		///	\remarks
 		///		Has the same properties as \ref send, except the data payload is managed internally by the method.
-		NET_Error WakeOnLan(std::span<const uint8_t, 6> p_MacAddress, const IPv6_address& p_subNet, const uint16_t p_port);
+		NET_Error WakeOnLan(std::span<uint8_t const, 6> p_MacAddress, IPv6_address const& p_subNet, uint16_t p_port);
 
 		///	\brief Sends a magic packet commonly used for Wake On Lan on systems with password
 		///	\param[in] p_MacAddress - The MAC address of the interface to wake up
@@ -308,7 +308,7 @@ namespace core
 		///
 		///	\remarks
 		///		Has the same properties as \ref send, except the data payload is managed internally by the method.
-		NET_Error WakeOnLan_password(std::span<const uint8_t, 6> p_MacAddress, const IPv6_address& p_subNet, const uint16_t p_port, const void* p_password = nullptr, const uint16_t p_password_size = 0);
+		NET_Error WakeOnLan_password(std::span<uint8_t const, 6> p_MacAddress, IPv6_address const& p_subNet, uint16_t p_port, void const* p_password = nullptr, uint16_t p_password_size = 0);
 
 		///	\brief Swaps this socket with another
 		void swap(NetUDP_V6& p_other);
@@ -346,33 +346,33 @@ namespace core
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
 		///	\remarks System should not mix IPv4 and IPv6 protocols
-		NET_Error open(const IPv p_ipV, const bool p_blocking = true);
+		NET_Error open(IPv p_ipV, bool p_blocking = true);
 
 		///	\brief Binds a previously created socket with \ref open to a specific network interface
 		///	\param[in] p_IP - IP address of the interface to bind too. If 0.0.0.0 (on IPv4) or ::0 (on IPv6) is used, then the socket is bound to any address
 		///	\param[in] p_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\return \ref core::NET_Error
-		NET_Error bind(const IP_address& p_IP, const uint16_t p_Port);
+		NET_Error bind(IP_address const& p_IP, uint16_t p_Port);
 
 		///	\brief performs both a \ref open and \ref bind
 		///	\param[in] p_IP - IP address of the interface to bind too. If 0.0.0.0 (on IPv4) or ::0 (on IPv6) is used, then the socket is bound to any address
 		///	\param[in] p_Port - Port number to bind too. If 0 the system will automatically pickup an available free port number.
 		///	\param[in] p_blocking - If true the socket is a blocking socket, if false the socket is non-blocking
 		///	\return \ref core::NET_Error
-		NET_Error open_bind(const IP_address& p_IP, const uint16_t p_Port, const bool p_blocking = true);
+		NET_Error open_bind(IP_address const& p_IP, uint16_t p_Port, bool p_blocking = true);
 
 		///	\brief Joins a multicast group
 		///	\param[in] p_group - address of the multicast group
 		///	\param[in] p_interface - On IPv4 it represents the RAW address of the interface in integer form, on IPv6 it represents the interface index. If 0 is used, then the socket uses the default interface.
 		///	\return \ref core::NET_Error
 		///	\remarks Must be called after a socket has been created (\ref open), but before it is bound (\ref bind)
-		NET_Error join_multicast_group(const IP_address& p_group, const uint32_t p_interface);
+		NET_Error join_multicast_group(IP_address const& p_group, uint32_t p_interface);
 
 		///	\brief Leaves a multicast group
 		///	\param[in] p_group - address of the multicast group
 		///	\param[in] p_interface - On IPv4 it represents the RAW address of the interface in integer form, on IPv6 it represents the interface index. If 0 is used, then the socket uses the default interface.
 		///	\return \ref core::NET_Error
-		NET_Error leave_multicast_group(const IP_address& p_group, const uint32_t p_interface);
+		NET_Error leave_multicast_group(IP_address const& p_group, uint32_t p_interface);
 
 		///	\brief Gets the address information of the interface. Usefull if an implicit binding is used.
 		///	\param[in] p_IP - receives the IP address
@@ -393,7 +393,7 @@ namespace core
 		///		On a non-blocking socket this can return \ref core::NET_Error::WouldBlock
 		///		if data could not be sent at tthe time without blocking.
 		///		IPv4 sockets can not send to IPv6 networks and vice-versa.
-		NET_Error send(const void* p_data, const uintptr_t p_size, const IP_address& p_IP, const uint16_t p_Port, const uint8_t p_repeat = 0);
+		NET_Error send(void const* p_data, uintptr_t p_size, IP_address const& p_IP, uint16_t p_Port, uint8_t p_repeat = 0);
 
 		///	\brief Collects the data pending on the socket, and retrieves address of the sender
 		///	\param[out] p_data - pointer to buffer that receives the data
@@ -428,7 +428,7 @@ namespace core
 		///
 		///	\remarks
 		///		Has the same properties as \ref send, except the data payload is managed internally by the method.
-		NET_Error WakeOnLan(std::span<const uint8_t, 6> p_MacAddress, const IP_address& p_subNet, const uint16_t p_port);
+		NET_Error WakeOnLan(std::span<uint8_t const, 6> p_MacAddress, IP_address const& p_subNet, uint16_t p_port);
 
 		///	\brief Sends a magic packet commonly used for Wake On Lan on systems with password
 		///	\param[in] p_MacAddress - The MAC address of the interface to wake up
@@ -441,7 +441,7 @@ namespace core
 		///
 		///	\remarks
 		///		Has the same properties as \ref send, except the data payload is managed internally by the method.
-		NET_Error WakeOnLan_password(std::span<const uint8_t, 6> p_MacAddress, const IP_address& p_subNet, const uint16_t p_port, const void* p_password = nullptr, const uint16_t p_password_size = 0);
+		NET_Error WakeOnLan_password(std::span<uint8_t const, 6> p_MacAddress, IP_address const& p_subNet, uint16_t p_port, void const* p_password = nullptr, uint16_t p_password_size = 0);
 
 		///	\brief Retrieves the Internet Protocol version currently used on this socket.
 		///	\return \ref IPv

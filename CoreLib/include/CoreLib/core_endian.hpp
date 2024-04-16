@@ -177,7 +177,7 @@ namespace _p
 } //namespace _p
 
 template<_p::endian_supported_type_c T>
-[[nodiscard]] inline constexpr T byte_swap(const T& p_value)
+[[nodiscard]] inline constexpr T byte_swap(T const& p_value)
 {
 	if constexpr(std::is_same_v<uint8_t, _p::endianess_uint_align_t<T>>)
 	{
@@ -185,15 +185,15 @@ template<_p::endian_supported_type_c T>
 	}
 	else if constexpr(std::is_same_v<uint16_t, _p::endianess_uint_align_t<T>>)
 	{
-		return static_cast<const T>(_p::byte_swap_16(static_cast<const uint16_t>(p_value)));
+		return static_cast<T const>(_p::byte_swap_16(static_cast<uint16_t const>(p_value)));
 	}
 	else if constexpr(std::is_same_v<uint32_t, _p::endianess_uint_align_t<T>>)
 	{
-		return static_cast<const T>(_p::byte_swap_32(static_cast<const uint32_t>(p_value)));
+		return static_cast<T const>(_p::byte_swap_32(static_cast<uint32_t const>(p_value)));
 	}
 	else if constexpr(std::is_same_v<uint64_t, _p::endianess_uint_align_t<T>>)
 	{
-		return static_cast<const T>(_p::byte_swap_64(static_cast<const uint64_t>(p_value)));
+		return static_cast<T const>(_p::byte_swap_64(static_cast<uint64_t const>(p_value)));
 	}
 	else
 	{
@@ -207,9 +207,9 @@ template<_p::endian_supported_type_c T>
 }
 
 template<_p::is_endian_alias_exclusive_c T>
-[[nodiscard]] inline constexpr T byte_swap(const T& p_value)
+[[nodiscard]] inline constexpr T byte_swap(T const& p_value)
 {
-	return std::bit_cast<const T>(byte_swap(std::bit_cast<const _p::endianess_uint_align_t<T>>(p_value)));
+	return std::bit_cast<const T>(byte_swap(std::bit_cast<_p::endianess_uint_align_t<T> const>(p_value)));
 }
 
 template <_p::is_endian_swap_suitable_c T>

@@ -36,7 +36,7 @@ constexpr uint16_t DOUBLE_POW5_TABLE_SIZE     = 326;
 
 using twin_t = std::array<uint64_t, 2>;
 
-static const std::array<twin_t, DOUBLE_POW5_INV_TABLE_SIZE> DOUBLE_POW5_INV_SPLIT
+static std::array<twin_t, DOUBLE_POW5_INV_TABLE_SIZE> const DOUBLE_POW5_INV_SPLIT
 {
 	twin_t{                    1_ui64, 2305843009213693952_ui64 }, twin_t{ 11068046444225730970_ui64, 1844674407370955161_ui64 },
 	twin_t{  5165088340638674453_ui64, 1475739525896764129_ui64 }, twin_t{  7821419487252849886_ui64, 1180591620717411303_ui64 },
@@ -211,7 +211,7 @@ static const std::array<twin_t, DOUBLE_POW5_INV_TABLE_SIZE> DOUBLE_POW5_INV_SPLI
 	twin_t{ 14677010862395735754_ui64, 1681492134412670958_ui64 }, twin_t{   673562245690857633_ui64, 1345193707530136767_ui64 }
 };
 
-static const std::array<twin_t, DOUBLE_POW5_TABLE_SIZE> DOUBLE_POW5_SPLIT
+static std::array<twin_t, DOUBLE_POW5_TABLE_SIZE> const DOUBLE_POW5_SPLIT
 {
 	twin_t{                    0_ui64, 1152921504606846976_ui64 }, twin_t{                    0_ui64, 1441151880758558720_ui64 },
 	twin_t{                    0_ui64, 1801439850948198400_ui64 }, twin_t{                    0_ui64, 2251799813685248000_ui64 },

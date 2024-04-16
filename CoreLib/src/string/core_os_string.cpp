@@ -40,7 +40,7 @@ namespace core
 	{
 		uintptr_t count = 0;
 
-		for(const char32_t tchar : p_string)
+		for(char32_t const tchar : p_string)
 		{
 			if(tchar > 0xFFFF)
 			{
@@ -61,15 +61,15 @@ namespace core
 	static uintptr_t from_os_natural_size(std::u16string_view const p_string)
 	{
 		uintptr_t count = 0;
-		const char16_t* pos = p_string.data();
-		const char16_t* const end = pos + p_string.size();
+		char16_t const* pos = p_string.data();
+		char16_t const* const end = pos + p_string.size();
 
 		for(; pos < end; ++pos, ++count)
 		{
-			const char16_t tchar = *pos;
+			char16_t const tchar = *pos;
 			if((tchar & 0xFC00) == 0xD800)
 			{
-				const char16_t* pos_next = pos + 1;
+				char16_t const* pos_next = pos + 1;
 				if(pos_next < end && ((*pos_next) & 0xFC00) == 0xDC00)
 				{
 					++pos;
@@ -98,7 +98,7 @@ namespace core
 
 	std::basic_string<os_char> to_os_natural_convert(std::u32string_view const p_string)
 	{
-		const uintptr_t reqSize = to_os_natural_size(p_string);
+		uintptr_t const reqSize = to_os_natural_size(p_string);
 		if(reqSize == 0) return {};
 
 		std::wstring buff;
@@ -106,7 +106,7 @@ namespace core
 
 		char16_t* pivot = reinterpret_cast<char16_t*>(buff.data());
 
-		for(const char32_t tchar : p_string)
+		for(char32_t const tchar : p_string)
 		{
 			pivot += encode_UTF16(tchar, std::span<char16_t, 2>{pivot, 2});
 		}
@@ -116,23 +116,23 @@ namespace core
 
 	std::u32string from_os_natural_convert(std::basic_string_view<os_char> const p_string)
 	{
-		std::u16string_view const t_string{reinterpret_cast<const char16_t*>(p_string.data()), p_string.size()};
-		const uintptr_t reqSize = from_os_natural_size(t_string);
+		std::u16string_view const t_string{reinterpret_cast<char16_t const*>(p_string.data()), p_string.size()};
+		uintptr_t const reqSize = from_os_natural_size(t_string);
 		if(reqSize == 0) return {};
 
 		std::u32string buff;
 		buff.resize(reqSize);
 		char32_t* pivot = buff.data();
 
-		const char16_t* pos = t_string.data();
-		const char16_t* const end = pos + t_string.size();
+		char16_t const* pos = t_string.data();
+		char16_t const* const end = pos + t_string.size();
 
 		for(; pos < end; ++pos)
 		{
-			const char16_t tchar = *pos;
+			char16_t const tchar = *pos;
 			if((tchar & 0xFC00) == 0xD800)
 			{
-				const char16_t* pos_next = pos + 1;
+				char16_t const* pos_next = pos + 1;
 				if(pos_next < end && ((*pos_next) & 0xFC00) == 0xDC00)
 				{
 					*(pivot++) = static_cast<char32_t>((((tchar & 0x03FF) << 10) | (*pos_next & 0x03FF)) + 0x10000);
