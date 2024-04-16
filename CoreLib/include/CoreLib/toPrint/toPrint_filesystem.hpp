@@ -42,7 +42,7 @@ template<>
 class toPrint<std::filesystem::path>: public toPrint<std::basic_string_view<core::os_char>>
 {
 public:
-	toPrint(const std::filesystem::path& p_data): toPrint<std::basic_string_view<core::os_char>>(p_data.native()){}
+	toPrint(std::filesystem::path const& p_data): toPrint<std::basic_string_view<core::os_char>>(p_data.native()){}
 };
 
 } //namespace core

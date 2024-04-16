@@ -47,11 +47,11 @@ using ::core::literals::operator "" _ui32;
 //======== ======== ======== ======== Auxiliary Test case generator ======== ======== ======== ========
 
 template <typename char_T>
-std::basic_string<char_T> str2_Tstring(std::string_view p_str)
+std::basic_string<char_T> str2_Tstring(std::string_view const p_str)
 {
 	std::basic_string<char_T> out;
-	const char* first = p_str.data();
-	const char* last = first + p_str.size();
+	char const* first = p_str.data();
+	char const* last = first + p_str.size();
 
 	out.resize(p_str.size());
 
@@ -65,7 +65,7 @@ std::basic_string<char_T> str2_Tstring(std::string_view p_str)
 }
 
 //======== ======== ======== Decimal Int test Cases ======== ======== ========
-static const std::vector<int64_t> s_numbers =
+static std::vector<int64_t> const s_numbers =
 {
 	-0,
 	-1,
@@ -141,7 +141,7 @@ static const std::vector<int64_t> s_numbers =
 	-9223372036854775807,
 };
 
-static const std::vector<uint64_t> u_numbers =
+static std::vector<uint64_t> const u_numbers =
 {
 	0,
 	1,
@@ -217,7 +217,7 @@ static const std::vector<uint64_t> u_numbers =
 	18446744073709551615ull
 };
 
-static const std::vector<uint64_t> hex_numbers =
+static std::vector<uint64_t> const hex_numbers =
 {
 	0x0,
 	0x1,
@@ -252,7 +252,7 @@ static const std::vector<uint64_t> hex_numbers =
 	0xFFFFFFFFFFFFFFFF,
 };
 
-const std::vector<std::string> badCases_s =
+std::vector<std::string> const badCases_s =
 {
 	"",
 	"false",
@@ -277,7 +277,7 @@ const std::vector<std::string> badCases_s =
 	"123 ",
 };
 
-const std::vector<std::string> hexBadCases_s =
+std::vector<std::string> const hexBadCases_s =
 {
 	"",
 	"false",
@@ -295,7 +295,7 @@ const std::vector<std::string> hexBadCases_s =
 	"123 ",
 };
 
-const std::vector<std::string> binBadCases_s =
+std::vector<std::string> const binBadCases_s =
 {
 	"",
 	"false",
@@ -376,7 +376,7 @@ std::vector<std::basic_string<char_T>> get_goodStr()
 	{
 		if(num <= max)
 		{
-			const std::to_chars_result res = std::to_chars(first, last, num);
+			std::to_chars_result const res = std::to_chars(first, last, num);
 			out.push_back(str2_Tstring<char_T>(std::string_view{first, static_cast<uintptr_t>(res.ptr - first)}));
 		}
 		else break;
@@ -389,7 +389,7 @@ std::vector<std::basic_string<char_T>> get_goodStr()
 		{
 			if(num >= min)
 			{
-				const std::to_chars_result res = std::to_chars(first, last, num);
+				std::to_chars_result const res = std::to_chars(first, last, num);
 				out.push_back(str2_Tstring<char_T>(std::string_view{first, static_cast<uintptr_t>(res.ptr - first)}));
 			}
 			else break;
@@ -403,7 +403,7 @@ std::vector<std::basic_string<char_T>> get_badStr()
 {
 	std::vector<std::basic_string<char_T>> out;
 
-	for(const std::string& t_str : badCases_s)
+	for(std::string const& t_str : badCases_s)
 	{
 		out.emplace_back(str2_Tstring<char_T>(t_str));
 	}
@@ -433,11 +433,11 @@ std::vector<num_T> get_num()
 	std::vector<num_T> out;
 	constexpr num_T max = std::numeric_limits<num_T>::max();
 
-	for(const uint64_t num : u_numbers)
+	for(uint64_t const num : u_numbers)
 	{
 		if(num <= max)
 		{
-			out.push_back(static_cast<const num_T>(num));
+			out.push_back(static_cast<num_T const>(num));
 		}
 		else break;
 	}
@@ -445,11 +445,11 @@ std::vector<num_T> get_num()
 	if constexpr(std::is_signed_v<num_T>)
 	{
 		constexpr num_T min = std::numeric_limits<num_T>::min();
-		for(const int64_t num : s_numbers)
+		for(int64_t const num : s_numbers)
 		{
 			if(num >= min)
 			{
-				out.push_back(static_cast<const num_T>(num));
+				out.push_back(static_cast<num_T const>(num));
 			}
 			else break;
 		}
@@ -466,11 +466,11 @@ std::vector<std::basic_string<char_T>> get_goodStr_hex()
 	char* const first = buff.data();
 	char* const last = first + buff.size();
 
-	for(const uint64_t num : hex_numbers)
+	for(uint64_t const num : hex_numbers)
 	{
 		if(num <= max)
 		{
-			const std::to_chars_result res = std::to_chars(first, last, num, 16);
+			std::to_chars_result const res = std::to_chars(first, last, num, 16);
 			core::toUpperCase(std::span<char8_t>{reinterpret_cast<char8_t*>(first), static_cast<uintptr_t>(res.ptr - first)});
 			out.push_back(str2_Tstring<char_T>(std::string_view{first, static_cast<uintptr_t>(res.ptr - first)}));
 		}
@@ -490,11 +490,11 @@ std::vector<std::basic_string<char_T>> get_goodStr_bin()
 	char* const first = buff.data();
 	char* const last = first + buff.size();
 
-	for(const uint64_t num : hex_numbers)
+	for(uint64_t const num : hex_numbers)
 	{
 		if(num <= max)
 		{
-			const std::to_chars_result res = std::to_chars(first, last, num, 2);
+			std::to_chars_result const res = std::to_chars(first, last, num, 2);
 			out.push_back(str2_Tstring<char_T>(std::string_view{first, static_cast<uintptr_t>(res.ptr - first)}));
 		}
 		else break;
@@ -508,7 +508,7 @@ std::vector<std::basic_string<char_T>> get_badStr_hex()
 {
 	std::vector<std::basic_string<char_T>> out;
 
-	for(const std::string& t_str : hexBadCases_s)
+	for(std::string const& t_str : hexBadCases_s)
 	{
 		out.emplace_back(str2_Tstring<char_T>(t_str));
 	}
@@ -523,7 +523,7 @@ std::vector<std::basic_string<char_T>> get_badStr_bin()
 {
 	std::vector<std::basic_string<char_T>> out;
 
-	for(const std::string& t_str : binBadCases_s)
+	for(std::string const& t_str : binBadCases_s)
 	{
 		out.emplace_back(str2_Tstring<char_T>(t_str));
 	}
@@ -539,11 +539,11 @@ std::vector<num_T> get_num_hex()
 	std::vector<num_T> out;
 	constexpr num_T max = std::numeric_limits<num_T>::max();
 
-	for(const uint64_t num : hex_numbers)
+	for(uint64_t const num : hex_numbers)
 	{
 		if(num <= max)
 		{
-			out.push_back(static_cast<const num_T>(num));
+			out.push_back(static_cast<num_T const>(num));
 		}
 		else break;
 	}
@@ -556,18 +556,18 @@ std::vector<num_T> get_num_hex()
 template<typename num_T>
 static void std_from_chars_good(benchmark::State& state)
 {
-	const std::vector<std::u8string>& testList = get_goodStr<num_T, char8_t>();
+	std::vector<std::u8string> const& testList = get_goodStr<num_T, char8_t>();
 	uintptr_t index = 0;
 
 	for (auto _ : state)
 	{
-		const std::u8string& testCase = testList[index];
-		const char* const first = reinterpret_cast<const char*>(testCase.data());
-		const char* const last = first + testCase.size();
+		std::u8string const& testCase = testList[index];
+		char const* const first = reinterpret_cast<char const*>(testCase.data());
+		char const* const last = first + testCase.size();
 		num_T result;
-		const std::from_chars_result res = std::from_chars(first, last, result);
+		std::from_chars_result const res = std::from_chars(first, last, result);
 
-		const bool ok = (res.ec == std::error_code{} && res.ptr == last);
+		bool const ok = (res.ec == std::error_code{} && res.ptr == last);
 
 		benchmark::DoNotOptimize(result);
 		benchmark::DoNotOptimize(ok);
@@ -579,15 +579,15 @@ static void std_from_chars_good(benchmark::State& state)
 template<typename num_T>
 static void core_from_chars_good(benchmark::State& state)
 {
-	const std::vector<std::u8string>& testList = get_goodStr<num_T, char8_t>();
+	std::vector<std::u8string> const& testList = get_goodStr<num_T, char8_t>();
 	uintptr_t index = 0;
 
 	for (auto _ : state)
 	{
-		const std::u8string& testCase = testList[index];
-		const core::from_chars_result<num_T> result = core::from_chars<num_T>(testCase);
+		std::u8string const& testCase = testList[index];
+		core::from_chars_result<num_T> const result = core::from_chars<num_T>(testCase);
 
-		const bool ok = result.has_value();
+		bool const ok = result.has_value();
 
 		benchmark::DoNotOptimize(result.value());
 		benchmark::DoNotOptimize(ok);
@@ -600,18 +600,18 @@ static void core_from_chars_good(benchmark::State& state)
 template<typename num_T>
 static void std_from_chars_bad(benchmark::State& state)
 {
-	const std::vector<std::u8string>& testList = get_badStr<num_T, char8_t>();
+	std::vector<std::u8string> const& testList = get_badStr<num_T, char8_t>();
 	uintptr_t index = 0;
 
 	for (auto _ : state)
 	{
-		const std::u8string& testCase = testList[index];
-		const char* const first = reinterpret_cast<const char*>(testCase.data());
-		const char* const last = first + testCase.size();
+		std::u8string const& testCase = testList[index];
+		char const* const first = reinterpret_cast<char const*>(testCase.data());
+		char const* const last = first + testCase.size();
 		num_T result;
-		const std::from_chars_result res = std::from_chars(first, last, result);
+		std::from_chars_result const res = std::from_chars(first, last, result);
 
-		const bool ok = (res.ec == std::error_code{} && res.ptr == last);
+		bool const ok = (res.ec == std::error_code{} && res.ptr == last);
 
 		benchmark::DoNotOptimize(ok);
 
@@ -622,15 +622,15 @@ static void std_from_chars_bad(benchmark::State& state)
 template<typename num_T>
 static void core_from_chars_bad(benchmark::State& state)
 {
-	const std::vector<std::u8string>& testList = get_badStr<num_T, char8_t>();
+	std::vector<std::u8string> const& testList = get_badStr<num_T, char8_t>();
 	uintptr_t index = 0;
 
 	for (auto _ : state)
 	{
-		const std::u8string& testCase = testList[index];
-		const core::from_chars_result<num_T> result = core::from_chars<num_T>(testCase);
+		std::u8string const& testCase = testList[index];
+		core::from_chars_result<num_T> const result = core::from_chars<num_T>(testCase);
 
-		const bool ok = result.has_value();
+		bool const ok = result.has_value();
 
 		benchmark::DoNotOptimize(ok);
 
@@ -641,18 +641,18 @@ static void core_from_chars_bad(benchmark::State& state)
 template<typename num_T>
 static void std_from_chars_hex_good(benchmark::State& state)
 {
-	const std::vector<std::u8string>& testList = get_goodStr_hex<num_T, char8_t>();
+	std::vector<std::u8string> const& testList = get_goodStr_hex<num_T, char8_t>();
 	uintptr_t index = 0;
 
 	for (auto _ : state)
 	{
-		const std::u8string& testCase = testList[index];
-		const char* const first = reinterpret_cast<const char*>(testCase.data());
-		const char* const last = first + testCase.size();
+		std::u8string const& testCase = testList[index];
+		char const* const first = reinterpret_cast<char const*>(testCase.data());
+		char const* const last = first + testCase.size();
 		num_T result;
-		const std::from_chars_result res = std::from_chars(first, last, result, 16);
+		std::from_chars_result const res = std::from_chars(first, last, result, 16);
 
-		const bool ok = (res.ec == std::error_code{} && res.ptr == last);
+		bool const ok = (res.ec == std::error_code{} && res.ptr == last);
 
 		benchmark::DoNotOptimize(result);
 		benchmark::DoNotOptimize(ok);
@@ -664,15 +664,15 @@ static void std_from_chars_hex_good(benchmark::State& state)
 template<typename num_T>
 static void core_from_chars_hex_good(benchmark::State& state)
 {
-	const std::vector<std::u8string>& testList = get_goodStr_hex<num_T, char8_t>();
+	std::vector<std::u8string> const& testList = get_goodStr_hex<num_T, char8_t>();
 	uintptr_t index = 0;
 
 	for (auto _ : state)
 	{
-		const std::u8string& testCase = testList[index];
-		const core::from_chars_result<num_T> result = core::from_chars_hex<num_T>(testCase);
+		std::u8string const& testCase = testList[index];
+		core::from_chars_result<num_T> const result = core::from_chars_hex<num_T>(testCase);
 
-		const bool ok = result.has_value();
+		bool const ok = result.has_value();
 
 		benchmark::DoNotOptimize(result.value());
 		benchmark::DoNotOptimize(ok);
@@ -685,18 +685,18 @@ static void core_from_chars_hex_good(benchmark::State& state)
 template<typename num_T>
 static void std_from_chars_hex_bad(benchmark::State& state)
 {
-	const std::vector<std::u8string>& testList = get_badStr_hex<num_T, char8_t>();
+	std::vector<std::u8string> const& testList = get_badStr_hex<num_T, char8_t>();
 	uintptr_t index = 0;
 
 	for (auto _ : state)
 	{
-		const std::u8string& testCase = testList[index];
-		const char* const first = reinterpret_cast<const char*>(testCase.data());
-		const char* const last = first + testCase.size();
+		std::u8string const& testCase = testList[index];
+		char const* const first = reinterpret_cast<char const*>(testCase.data());
+		char const* const last = first + testCase.size();
 		num_T result;
-		const std::from_chars_result res = std::from_chars(first, last, result, 16);
+		std::from_chars_result const res = std::from_chars(first, last, result, 16);
 
-		const bool ok = (res.ec == std::error_code{} && res.ptr == last);
+		bool const ok = (res.ec == std::error_code{} && res.ptr == last);
 
 		benchmark::DoNotOptimize(ok);
 
@@ -707,15 +707,15 @@ static void std_from_chars_hex_bad(benchmark::State& state)
 template<typename num_T>
 static void core_from_chars_hex_bad(benchmark::State& state)
 {
-	const std::vector<std::u8string>& testList = get_badStr_hex<num_T, char8_t>();
+	std::vector<std::u8string> const& testList = get_badStr_hex<num_T, char8_t>();
 	uintptr_t index = 0;
 
 	for (auto _ : state)
 	{
-		const std::u8string& testCase = testList[index];
-		const core::from_chars_result<num_T> result = core::from_chars_hex<num_T>(testCase);
+		std::u8string const& testCase = testList[index];
+		core::from_chars_result<num_T> const result = core::from_chars_hex<num_T>(testCase);
 
-		const bool ok = result.has_value();
+		bool const ok = result.has_value();
 
 		benchmark::DoNotOptimize(ok);
 
@@ -727,18 +727,18 @@ static void core_from_chars_hex_bad(benchmark::State& state)
 template<typename num_T>
 static void std_from_chars_bin_good(benchmark::State& state)
 {
-	const std::vector<std::u8string>& testList = get_goodStr_bin<num_T, char8_t>();
+	std::vector<std::u8string> const& testList = get_goodStr_bin<num_T, char8_t>();
 	uintptr_t index = 0;
 
 	for (auto _ : state)
 	{
-		const std::u8string& testCase = testList[index];
-		const char* const first = reinterpret_cast<const char*>(testCase.data());
-		const char* const last = first + testCase.size();
+		std::u8string const& testCase = testList[index];
+		char const* const first = reinterpret_cast<char const*>(testCase.data());
+		char const* const last = first + testCase.size();
 		num_T result;
-		const std::from_chars_result res = std::from_chars(first, last, result, 2);
+		std::from_chars_result const res = std::from_chars(first, last, result, 2);
 
-		const bool ok = (res.ec == std::error_code{} && res.ptr == last);
+		bool const ok = (res.ec == std::error_code{} && res.ptr == last);
 
 		benchmark::DoNotOptimize(result);
 		benchmark::DoNotOptimize(ok);
@@ -750,15 +750,15 @@ static void std_from_chars_bin_good(benchmark::State& state)
 template<typename num_T>
 static void core_from_chars_bin_good(benchmark::State& state)
 {
-	const std::vector<std::u8string>& testList = get_goodStr_bin<num_T, char8_t>();
+	std::vector<std::u8string> const& testList = get_goodStr_bin<num_T, char8_t>();
 	uintptr_t index = 0;
 
 	for (auto _ : state)
 	{
-		const std::u8string& testCase = testList[index];
-		const core::from_chars_result<num_T> result = core::from_chars_bin<num_T>(testCase);
+		std::u8string const& testCase = testList[index];
+		core::from_chars_result<num_T> const result = core::from_chars_bin<num_T>(testCase);
 
-		const bool ok = result.has_value();
+		bool const ok = result.has_value();
 
 		benchmark::DoNotOptimize(result.value());
 		benchmark::DoNotOptimize(ok);
@@ -771,18 +771,18 @@ static void core_from_chars_bin_good(benchmark::State& state)
 template<typename num_T>
 static void std_from_chars_bin_bad(benchmark::State& state)
 {
-	const std::vector<std::u8string>& testList = get_badStr_bin<num_T, char8_t>();
+	std::vector<std::u8string> const& testList = get_badStr_bin<num_T, char8_t>();
 	uintptr_t index = 0;
 
 	for (auto _ : state)
 	{
-		const std::u8string& testCase = testList[index];
-		const char* const first = reinterpret_cast<const char*>(testCase.data());
-		const char* const last = first + testCase.size();
+		std::u8string const& testCase = testList[index];
+		char const* const first = reinterpret_cast<char const*>(testCase.data());
+		char const* const last = first + testCase.size();
 		num_T result;
-		const std::from_chars_result res = std::from_chars(first, last, result, 2);
+		std::from_chars_result const res = std::from_chars(first, last, result, 2);
 
-		const bool ok = (res.ec == std::error_code{} && res.ptr == last);
+		bool const ok = (res.ec == std::error_code{} && res.ptr == last);
 
 		benchmark::DoNotOptimize(ok);
 
@@ -793,15 +793,15 @@ static void std_from_chars_bin_bad(benchmark::State& state)
 template<typename num_T>
 static void core_from_chars_bin_bad(benchmark::State& state)
 {
-	const std::vector<std::u8string>& testList = get_badStr_bin<num_T, char8_t>();
+	std::vector<std::u8string> const& testList = get_badStr_bin<num_T, char8_t>();
 	uintptr_t index = 0;
 
 	for (auto _ : state)
 	{
-		const std::u8string& testCase = testList[index];
-		const core::from_chars_result<num_T> result = core::from_chars_bin<num_T>(testCase);
+		std::u8string const& testCase = testList[index];
+		core::from_chars_result<num_T> const result = core::from_chars_bin<num_T>(testCase);
 
-		const bool ok = result.has_value();
+		bool const ok = result.has_value();
 
 		benchmark::DoNotOptimize(ok);
 
@@ -813,7 +813,7 @@ static void core_from_chars_bin_bad(benchmark::State& state)
 template<typename num_T>
 static void std_to_chars(benchmark::State& state)
 {
-	const std::vector<num_T>& testList = get_num<num_T>();
+	std::vector<num_T> const& testList = get_num<num_T>();
 	uintptr_t index = 0;
 
 	constexpr uintptr_t buffSize = core::to_chars_dec_max_size_v<num_T>;
@@ -821,12 +821,12 @@ static void std_to_chars(benchmark::State& state)
 
 	for (auto _ : state)
 	{
-		const num_T testCase = testList[index];
+		num_T const testCase = testList[index];
 		char* const first = reinterpret_cast<char*>(buffer.data());
 		char* const last = first + buffer.size();
-		const std::to_chars_result res = std::to_chars(first, last, testCase);
+		std::to_chars_result const res = std::to_chars(first, last, testCase);
 
-		const std::u8string_view result {buffer.data(), static_cast<uintptr_t>(res.ptr - first)};
+		std::u8string_view const result {buffer.data(), static_cast<uintptr_t>(res.ptr - first)};
 
 		benchmark::DoNotOptimize(result);
 		if(++index >= testList.size()) index = 0;
@@ -837,7 +837,7 @@ static void std_to_chars(benchmark::State& state)
 template<typename num_T>
 static void core_to_chars(benchmark::State& state)
 {
-	const std::vector<num_T>& testList = get_num<num_T>();
+	std::vector<num_T> const& testList = get_num<num_T>();
 	uintptr_t index = 0;
 
 	constexpr uintptr_t buffSize = core::to_chars_dec_max_size_v<num_T>;
@@ -845,10 +845,10 @@ static void core_to_chars(benchmark::State& state)
 
 	for (auto _ : state)
 	{
-		const num_T testCase = testList[index];
-		const uintptr_t res_size = core::to_chars(testCase, std::span<char8_t, buffSize>(buffer));
+		num_T const testCase = testList[index];
+		uintptr_t const res_size = core::to_chars(testCase, std::span<char8_t, buffSize>(buffer));
 
-		const std::u8string_view result {buffer.data(), res_size};
+		std::u8string_view const result {buffer.data(), res_size};
 
 		benchmark::DoNotOptimize(result);
 		if(++index >= testList.size()) index = 0;
@@ -858,13 +858,13 @@ static void core_to_chars(benchmark::State& state)
 template<typename num_T>
 static void core_to_chars_size(benchmark::State& state)
 {
-	const std::vector<num_T>& testList = get_num<num_T>();
+	std::vector<num_T> const& testList = get_num<num_T>();
 	uintptr_t index = 0;
 
 	for (auto _ : state)
 	{
-		const num_T testCase = testList[index];
-		const uintptr_t res_size = core::to_chars_size(testCase);
+		num_T const testCase = testList[index];
+		uintptr_t const res_size = core::to_chars_size(testCase);
 
 		benchmark::DoNotOptimize(res_size);
 		if (++index >= testList.size()) index = 0;
@@ -876,7 +876,7 @@ static void core_to_chars_size(benchmark::State& state)
 template<typename num_T>
 static void std_to_chars_hex(benchmark::State& state)
 {
-	const std::vector<num_T>& testList = get_num_hex<num_T>();
+	std::vector<num_T> const& testList = get_num_hex<num_T>();
 	uintptr_t index = 0;
 
 	constexpr uintptr_t buffSize = core::to_chars_hex_max_size_v<num_T>;
@@ -884,12 +884,12 @@ static void std_to_chars_hex(benchmark::State& state)
 
 	for (auto _ : state)
 	{
-		const num_T testCase = testList[index];
+		num_T const testCase = testList[index];
 		char* const first = reinterpret_cast<char*>(buffer.data());
 		char* const last = first + buffer.size();
-		const std::to_chars_result res = std::to_chars(first, last, testCase, 16);
+		std::to_chars_result const res = std::to_chars(first, last, testCase, 16);
 
-		const std::u8string_view result {buffer.data(), static_cast<uintptr_t>(res.ptr - first)};
+		std::u8string_view const result {buffer.data(), static_cast<uintptr_t>(res.ptr - first)};
 
 		benchmark::DoNotOptimize(result);
 		if(++index >= testList.size()) index = 0;
@@ -899,7 +899,7 @@ static void std_to_chars_hex(benchmark::State& state)
 template<typename num_T>
 static void core_to_chars_hex(benchmark::State& state)
 {
-	const std::vector<num_T>& testList = get_num_hex<num_T>();
+	std::vector<num_T> const& testList = get_num_hex<num_T>();
 	uintptr_t index = 0;
 
 	constexpr uintptr_t buffSize = core::to_chars_hex_max_size_v<num_T>;
@@ -907,10 +907,10 @@ static void core_to_chars_hex(benchmark::State& state)
 
 	for (auto _ : state)
 	{
-		const num_T testCase = testList[index];
-		const uintptr_t res_size = core::to_chars_hex(testCase, std::span<char8_t, buffSize>(buffer));
+		num_T const testCase = testList[index];
+		uintptr_t const res_size = core::to_chars_hex(testCase, std::span<char8_t, buffSize>(buffer));
 
-		const std::u8string_view result {buffer.data(), res_size};
+		std::u8string_view const result {buffer.data(), res_size};
 
 		benchmark::DoNotOptimize(result);
 		if(++index >= testList.size()) index = 0;
@@ -920,7 +920,7 @@ static void core_to_chars_hex(benchmark::State& state)
 template<typename num_T>
 static void core_to_chars_hex_fix(benchmark::State& state)
 {
-	const std::vector<num_T>& testList = get_num_hex<num_T>();
+	std::vector<num_T> const& testList = get_num_hex<num_T>();
 	uintptr_t index = 0;
 
 	constexpr uintptr_t buffSize = core::to_chars_hex_max_size_v<num_T>;
@@ -928,10 +928,10 @@ static void core_to_chars_hex_fix(benchmark::State& state)
 
 	for (auto _ : state)
 	{
-		const num_T testCase = testList[index];
+		num_T const testCase = testList[index];
 		core::to_chars_hex_fix(testCase, std::span<char8_t, buffSize>(buffer));
 
-		const std::u8string_view result {buffer.data(), buffSize};
+		std::u8string_view const result {buffer.data(), buffSize};
 
 		benchmark::DoNotOptimize(result);
 		if(++index >= testList.size()) index = 0;
@@ -941,13 +941,13 @@ static void core_to_chars_hex_fix(benchmark::State& state)
 template<typename num_T>
 static void core_to_chars_hex_size(benchmark::State& state)
 {
-	const std::vector<num_T>& testList = get_num_hex<num_T>();
+	std::vector<num_T> const& testList = get_num_hex<num_T>();
 	uintptr_t index = 0;
 
 	for (auto _ : state)
 	{
-		const num_T testCase = testList[index];
-		const uintptr_t res_size = core::to_chars_hex_size(testCase);
+		num_T const testCase = testList[index];
+		uintptr_t const res_size = core::to_chars_hex_size(testCase);
 
 		benchmark::DoNotOptimize(res_size);
 		if (++index >= testList.size()) index = 0;
@@ -961,7 +961,7 @@ static void core_to_chars_hex_size(benchmark::State& state)
 template<typename num_T>
 static void std_to_chars_bin(benchmark::State& state)
 {
-	const std::vector<num_T>& testList = get_num_hex<num_T>();
+	std::vector<num_T> const& testList = get_num_hex<num_T>();
 	uintptr_t index = 0;
 
 	constexpr uintptr_t buffSize = core::to_chars_bin_max_size_v<num_T>;
@@ -969,12 +969,12 @@ static void std_to_chars_bin(benchmark::State& state)
 
 	for (auto _ : state)
 	{
-		const num_T testCase = testList[index];
+		num_T const testCase = testList[index];
 		char* const first = reinterpret_cast<char*>(buffer.data());
 		char* const last = first + buffer.size();
-		const std::to_chars_result res = std::to_chars(first, last, testCase, 2);
+		std::to_chars_result const res = std::to_chars(first, last, testCase, 2);
 
-		const std::u8string_view result {buffer.data(), static_cast<uintptr_t>(res.ptr - first)};
+		std::u8string_view const result {buffer.data(), static_cast<uintptr_t>(res.ptr - first)};
 
 		benchmark::DoNotOptimize(result);
 		if(++index >= testList.size()) index = 0;
@@ -985,7 +985,7 @@ static void std_to_chars_bin(benchmark::State& state)
 template<typename num_T>
 static void core_to_chars_bin(benchmark::State& state)
 {
-	const std::vector<num_T>& testList = get_num_hex<num_T>();
+	std::vector<num_T> const& testList = get_num_hex<num_T>();
 	uintptr_t index = 0;
 
 	constexpr uintptr_t buffSize = core::to_chars_bin_max_size_v<num_T>;
@@ -993,10 +993,10 @@ static void core_to_chars_bin(benchmark::State& state)
 
 	for (auto _ : state)
 	{
-		const num_T testCase = testList[index];
-		const uintptr_t res_size = core::to_chars_bin(testCase, std::span<char8_t, buffSize>(buffer));
+		num_T const testCase = testList[index];
+		uintptr_t const res_size = core::to_chars_bin(testCase, std::span<char8_t, buffSize>(buffer));
 
-		const std::u8string_view result {buffer.data(), res_size};
+		std::u8string_view const result {buffer.data(), res_size};
 
 		benchmark::DoNotOptimize(result);
 		if(++index >= testList.size()) index = 0;
@@ -1006,7 +1006,7 @@ static void core_to_chars_bin(benchmark::State& state)
 template<typename num_T>
 static void core_to_chars_bin_fix(benchmark::State& state)
 {
-	const std::vector<num_T>& testList = get_num_hex<num_T>();
+	std::vector<num_T> const& testList = get_num_hex<num_T>();
 	uintptr_t index = 0;
 
 	constexpr uintptr_t buffSize = core::to_chars_bin_max_size_v<num_T>;
@@ -1014,10 +1014,10 @@ static void core_to_chars_bin_fix(benchmark::State& state)
 
 	for (auto _ : state)
 	{
-		const num_T testCase = testList[index];
+		num_T const testCase = testList[index];
 		core::to_chars_bin_fix(testCase, std::span<char8_t, buffSize>(buffer));
 
-		const std::u8string_view result {buffer.data(), buffSize};
+		std::u8string_view const result {buffer.data(), buffSize};
 
 		benchmark::DoNotOptimize(result);
 		if(++index >= testList.size()) index = 0;
@@ -1027,13 +1027,13 @@ static void core_to_chars_bin_fix(benchmark::State& state)
 template<typename num_T>
 static void core_to_chars_bin_size(benchmark::State& state)
 {
-	const std::vector<num_T>& testList = get_num_hex<num_T>();
+	std::vector<num_T> const& testList = get_num_hex<num_T>();
 	uintptr_t index = 0;
 
 	for (auto _ : state)
 	{
-		const num_T testCase = testList[index];
-		const uintptr_t res_size = core::to_chars_bin_size(testCase);
+		num_T const testCase = testList[index];
+		uintptr_t const res_size = core::to_chars_bin_size(testCase);
 
 		benchmark::DoNotOptimize(res_size);
 		if (++index >= testList.size()) index = 0;
@@ -1215,8 +1215,8 @@ static inline void std_to_chars_sci(benchmark::State& state)
 {
 	using fp_case_t = fp_cases<fp_t>;
 
-	const fp_t test_case = fp_case_t::sci_case();
-	const uint16_t sig_digits = fp_case_t::sig_digits;
+	fp_t const test_case = fp_case_t::sci_case();
+	uint16_t const sig_digits = fp_case_t::sig_digits;
 
 	std::array<char, fp_case_t::buff_size> buff;
 	for (auto _ : state)
@@ -1232,8 +1232,8 @@ static inline void std_to_chars_fix(benchmark::State& state)
 {
 	using fp_case_t = fp_cases<fp_t>;
 
-	const fp_t test_case = fp_case_t::fix_case();
-	const uint16_t precision_digits = fp_case_t::precision_digits;
+	fp_t const test_case = fp_case_t::fix_case();
+	uint16_t const precision_digits = fp_case_t::precision_digits;
 
 	std::array<char, fp_case_t::buff_size> buff;
 	for (auto _ : state)
@@ -1247,7 +1247,7 @@ template<typename fp_t>
 static inline void std_to_chars_short(benchmark::State& state)
 {
 	using fp_case_t = fp_cases<fp_t>;
-	const fp_t test_case = fp_case_t::sci_case();
+	fp_t const test_case = fp_case_t::sci_case();
 
 	std::array<char, fp_case_t::buff_size> buff;
 	for (auto _ : state)
@@ -1263,7 +1263,7 @@ template<typename fp_t, typename char_t>
 static inline void core_to_chars2(benchmark::State& state)
 {
 	using fp_case_t = fp_cases<fp_t>;
-	const fp_t test_case = fp_case_t::sci_case();
+	fp_t const test_case = fp_case_t::sci_case();
 
 	std::array<char_t, fp_case_t::buff_size> buff;
 
@@ -1283,8 +1283,8 @@ static inline void core_to_chars_sci(benchmark::State& state)
 {
 	using fp_case_t = fp_cases<fp_t>;
 
-	const fp_t test_case = fp_case_t::sci_case();
-	const uint16_t sig_digits = fp_case_t::sig_digits;
+	fp_t const test_case = fp_case_t::sci_case();
+	uint16_t const sig_digits = fp_case_t::sig_digits;
 
 	std::array<char8_t, fp_case_t::buff_size> buff;
 
@@ -1333,8 +1333,8 @@ static inline void core_to_chars_fix(benchmark::State& state)
 {
 	using fp_case_t = fp_cases<fp_t>;
 
-	const fp_t test_case = fp_case_t::fix_case();
-	const uint16_t precision_digits = fp_case_t::precision_digits;
+	fp_t const test_case = fp_case_t::fix_case();
+	uint16_t const precision_digits = fp_case_t::precision_digits;
 
 	//std::array<char, fp_case_t::buff_size> buff;
 
@@ -1352,7 +1352,7 @@ static inline void core_to_chars_shortest(benchmark::State& state)
 {
 	using fp_case_t = fp_cases<fp_t>;
 
-	const fp_t test_case = fp_case_t::sci_case();
+	fp_t const test_case = fp_case_t::sci_case();
 
 	std::array<char_t, fp_case_t::buff_size> buff;
 
@@ -1367,8 +1367,8 @@ static inline void core_to_chars_shortest(benchmark::State& state)
 			core::fp_to_chars_sci_size sci_size = core::to_chars_shortest_sci_size(context);
 			core::fp_to_chars_fix_size fix_size = core::to_chars_shortest_fix_size(context);
 
-			const uint8_t sci_total_size = static_cast<uint8_t>(sci_size.exponent_size + sci_size.mantissa_decimal_size + sci_size.is_exp_negative + 3);
-			const uint8_t fix_total_size = static_cast<uint8_t>(fix_size.unit_size + fix_size.decimal_size + 1);
+			uint8_t const sci_total_size = static_cast<uint8_t>(sci_size.exponent_size + sci_size.mantissa_decimal_size + sci_size.is_exp_negative + 3);
+			uint8_t const fix_total_size = static_cast<uint8_t>(fix_size.unit_size + fix_size.decimal_size + 1);
 
 			char_t* pivot = buff.data();
 			if(res.is_negative)
@@ -1410,7 +1410,7 @@ template<typename fp_t>
 static inline void core_to_chars_shortest_classify(benchmark::State& state)
 {
 	using fp_case_t = fp_cases<fp_t>;
-	const fp_t test_case = fp_case_t::sci_case();
+	fp_t const test_case = fp_case_t::sci_case();
 
 	for (auto _ : state)
 	{
@@ -1427,7 +1427,7 @@ static inline void core_to_chars_shortest_size(benchmark::State& state)
 {
 	using fp_case_t = fp_cases<fp_t>;
 
-	const fp_t test_case = fp_case_t::sci_case();
+	fp_t const test_case = fp_case_t::sci_case();
 
 	core::fp_to_chars_shortest_context<fp_t> context;
 	core::fp_base_classify res =
@@ -1440,8 +1440,8 @@ static inline void core_to_chars_shortest_size(benchmark::State& state)
 			core::fp_to_chars_sci_size sci_size = core::to_chars_shortest_sci_size(context);
 			core::fp_to_chars_fix_size fix_size = core::to_chars_shortest_fix_size(context);
 
-			const uint8_t sci_total_size = static_cast<uint8_t>(sci_size.exponent_size + sci_size.mantissa_decimal_size + sci_size.is_exp_negative + 3);
-			const uint8_t fix_total_size = static_cast<uint8_t>(fix_size.unit_size + fix_size.decimal_size + 1);
+			uint8_t const sci_total_size = static_cast<uint8_t>(sci_size.exponent_size + sci_size.mantissa_decimal_size + sci_size.is_exp_negative + 3);
+			uint8_t const fix_total_size = static_cast<uint8_t>(fix_size.unit_size + fix_size.decimal_size + 1);
 			benchmark::DoNotOptimize(sci_total_size);
 			benchmark::DoNotOptimize(fix_total_size);
 		}
@@ -1453,7 +1453,7 @@ static inline void core_to_chars_shortest_convert(benchmark::State& state)
 {
 	using fp_case_t = fp_cases<fp_t>;
 
-	const fp_t test_case = fp_case_t::sci_case();
+	fp_t const test_case = fp_case_t::sci_case();
 
 	std::array<char_t, fp_case_t::buff_size> buff;
 
@@ -1464,8 +1464,8 @@ static inline void core_to_chars_shortest_convert(benchmark::State& state)
 	core::fp_to_chars_sci_size sci_size = core::to_chars_shortest_sci_size(context);
 	core::fp_to_chars_fix_size fix_size = core::to_chars_shortest_fix_size(context);
 
-	const uint8_t sci_total_size = static_cast<uint8_t>(sci_size.exponent_size + sci_size.mantissa_decimal_size + sci_size.is_exp_negative + 3);
-	const uint8_t fix_total_size = static_cast<uint8_t>(fix_size.unit_size + fix_size.decimal_size + 1);
+	uint8_t const sci_total_size = static_cast<uint8_t>(sci_size.exponent_size + sci_size.mantissa_decimal_size + sci_size.is_exp_negative + 3);
+	uint8_t const fix_total_size = static_cast<uint8_t>(fix_size.unit_size + fix_size.decimal_size + 1);
 
 
 	for (auto _ : state)
@@ -1543,9 +1543,9 @@ BENCHMARK_TEMPLATE(core_to_chars_shortest_convert, float64_t, char8_t);
 
 static void no_op(benchmark::State& state)
 {
+	bool const volatile ok = false;
 	for(auto _ : state)
 	{
-		const volatile bool ok = false;
 		benchmark::DoNotOptimize(ok);
 	}
 }

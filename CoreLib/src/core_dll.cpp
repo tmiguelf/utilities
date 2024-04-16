@@ -47,7 +47,7 @@ dll::~dll()
 	}
 }
 
-dll::Error dll::load(const std::filesystem::path& p_path, dll::native_attr* const p_attr)
+dll::Error dll::load(std::filesystem::path const& p_path, dll::native_attr* const p_attr)
 {
 	unload();
 
@@ -83,7 +83,7 @@ void* dll::resolve(std::u8string_view const p_name) const
 		//null terminated string are bad, but this function requires one
 		//hopefully symbol names are small enough to fit on the stack
 		//if they are not, then sorry my friend, you have bigger problems
-		const uintptr_t size = p_name.size();
+		uintptr_t const size = p_name.size();
 		char* const buff = reinterpret_cast<char*>(core_alloca(size + 1));
 		memcpy(buff, p_name.data(), size);
 		buff[size] = 0;
@@ -101,7 +101,7 @@ dll::~dll()
 	}
 }
 
-dll::Error dll::load(const std::filesystem::path& p_path, dll::native_attr* const p_attr)
+dll::Error dll::load(std::filesystem::path const& p_path, dll::native_attr* const p_attr)
 {
 	unload();
 
@@ -154,7 +154,7 @@ void* dll::resolve(std::u8string_view const p_name) const
 		//null terminated string are bad, but this function requires one
 		//hopefully symbol names are small enough to fit on the stack
 		//if they are not, then sorry my friend, you have bigger problems
-		const uintptr_t size = p_name.size();
+		uintptr_t const size = p_name.size();
 		char* const buff = reinterpret_cast<char*>(core_alloca(size + 1));
 		memcpy(buff, p_name.data(), size);
 		buff[size] = 0;

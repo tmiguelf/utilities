@@ -62,7 +62,7 @@ namespace core
 		}
 
 		template<_p::c_toPrint_char CharT>
-		inline uintptr_t size(const CharT& temp) const
+		inline uintptr_t size(CharT const& temp) const
 		{
 			if(m_decoded.empty())
 			{
@@ -98,8 +98,8 @@ namespace core
 		}
 
 	private:
-		std::basic_string_view<char_t> m_decoded;
-		uint_t m_val;
+		std::basic_string_view<char_t> const m_decoded;
+		uint_t const m_val;
 	};
 
 	template<typename T>
@@ -136,7 +136,7 @@ namespace core
 		}
 
 		template<_p::c_toPrint_char CharT>
-		inline uintptr_t size(const CharT&) const
+		inline uintptr_t size(CharT const&) const
 		{
 			return size();
 		}
@@ -151,7 +151,7 @@ namespace core
 			}
 			else
 			{
-				for(const char_t cp : string_table::enum_name)
+				for(char_t const cp : string_table::enum_name)
 				{
 					*(p_out++) = cp;
 				}
@@ -176,7 +176,7 @@ namespace core
 				}
 				else
 				{
-					for(const char_t cp : m_decoded)
+					for(char_t const cp : m_decoded)
 					{
 						*(p_out++) = cp;
 					}
@@ -186,8 +186,8 @@ namespace core
 		}
 
 	private:
-		std::basic_string_view<char_t> m_decoded;
-		uint_t m_val;
+		std::basic_string_view<char_t> const m_decoded;
+		uint_t const m_val;
 	};
 }
 

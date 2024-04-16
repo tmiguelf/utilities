@@ -50,20 +50,20 @@ public:
 
 	using container_t::operator [];
 
-	inline this_t& operator = (const this_t& p_other) = default;
+	inline this_t& operator = (this_t const& p_other) = default;
 
 
-	[[nodiscard]] inline bool operator == (const this_t& p_other) const
+	[[nodiscard]] inline bool operator == (this_t const& p_other) const
 	{
-		return static_cast<const container_t&>(*this) == static_cast<const container_t&>(p_other);
+		return static_cast<container_t const&>(*this) == static_cast<container_t const&>(p_other);
 	}
 
-	[[nodiscard]] inline bool operator != (const this_t& p_other) const
+	[[nodiscard]] inline bool operator != (this_t const& p_other) const
 	{
 		return !operator == (p_other);
 	}
 
-	inline this_t& operator += (const this_t& p_other)
+	inline this_t& operator += (this_t const& p_other)
 	{
 		(*this)[0] += p_other[0];
 		(*this)[1] += p_other[1];
@@ -71,7 +71,7 @@ public:
 		return *this;
 	}
 
-	inline this_t& operator -= (const this_t& p_other)
+	inline this_t& operator -= (this_t const& p_other)
 	{
 		(*this)[0] -= p_other[0];
 		(*this)[1] -= p_other[1];
@@ -80,7 +80,7 @@ public:
 	}
 
 	template <_p::is_arithmetic O_T>
-	inline this_t& operator *= (const O_T p_scalar)
+	inline this_t& operator *= (O_T const p_scalar)
 	{
 		(*this)[0] *= p_scalar;
 		(*this)[1] *= p_scalar;
@@ -89,7 +89,7 @@ public:
 	}
 
 	template <_p::is_arithmetic O_T>
-	inline this_t& operator /= (const O_T p_scalar)
+	inline this_t& operator /= (O_T const p_scalar)
 	{
 		(*this)[0] /= p_scalar;
 		(*this)[1] /= p_scalar;
@@ -97,12 +97,12 @@ public:
 		return *this;
 	}
 
-	[[nodiscard]] inline constexpr this_t operator + (const this_t& p_other) const
+	[[nodiscard]] inline constexpr this_t operator + (this_t const& p_other) const
 	{
 		return this_t {*this} += p_other;
 	}
 
-	[[nodiscard]] inline constexpr this_t operator - (const this_t& p_other) const
+	[[nodiscard]] inline constexpr this_t operator - (this_t const& p_other) const
 	{
 		return this_t{*this} -= p_other;
 	}
@@ -117,28 +117,28 @@ public:
 	}
 
 	template <_p::is_arithmetic O_T>
-	[[nodiscard]] inline constexpr this_t operator * (const O_T p_scalar) const
+	[[nodiscard]] inline constexpr this_t operator * (O_T const p_scalar) const
 	{
 		return this_t{*this} *= p_scalar;
 	}
 
 	template <_p::is_arithmetic O_T>
-	[[nodiscard]] inline constexpr this_t operator / (const O_T p_scalar) const
+	[[nodiscard]] inline constexpr this_t operator / (O_T const p_scalar) const
 	{
 		return this_t{*this} /= p_scalar;
 	}
 
-	[[nodiscard]] inline constexpr T internalProduct (const this_t& p_other) const
+	[[nodiscard]] inline constexpr T internalProduct (this_t const& p_other) const
 	{
 		return (*this)[0] * p_other[0] + (*this)[1] * p_other[1] + (*this)[2] * p_other[2];
 	}
 
-	[[nodiscard]] inline constexpr T operator * (const this_t& p_other) const
+	[[nodiscard]] inline constexpr T operator * (this_t const& p_other) const
 	{
 		return internalProduct(p_other);
 	}
 
-	inline this_t& operator = (const container_t& p_other)
+	inline this_t& operator = (container_t const& p_other)
 	{
 		container_t::operator = (p_other);
 		return *this;
@@ -152,7 +152,7 @@ public:
 };
 
 template <_p::is_arithmetic T1, _p::is_non_const_arithmetic T2>
-[[nodiscard]] Vector3<T2> operator * (const T1 p_1, const Vector3<T2>& p_2)
+[[nodiscard]] Vector3<T2> operator * (T1 const p_1, Vector3<T2> const& p_2)
 {
 	return p_2 * p_1;
 }
@@ -174,37 +174,37 @@ private:
 
 public:
 	constexpr Matrix3()				= default;
-	constexpr Matrix3(const this_t&)	= default;
+	constexpr Matrix3(this_t const&)	= default;
 
-	constexpr Matrix3(const init_t& p_data)
+	constexpr Matrix3(init_t const& p_data)
 	{
 		set(p_data);
 	}
 
-	this_t& operator = (const this_t&)	= default;
+	this_t& operator = (this_t const&)	= default;
 
-	inline this_t& operator = (const init_t& p_data)
+	inline this_t& operator = (init_t const& p_data)
 	{
 		set(p_data);
 		return *this;
 	}
 
-	[[nodiscard]] bool operator == (const this_t& p_other) const
+	[[nodiscard]] bool operator == (this_t const& p_other) const
 	{
 		return memcmp(this, &p_other, sizeof(this_t)) == 0;
 	}
 
-	[[nodiscard]] bool operator != (const this_t& p_other) const
+	[[nodiscard]] bool operator != (this_t const& p_other) const
 	{
 		return memcmp(this, &p_other, sizeof(this_t)) != 0;
 	}
 
-	void set(const uintptr_t p_pos1, const uintptr_t p_pos2, const T p_newvalue)
+	void set(uintptr_t const p_pos1, uintptr_t const p_pos2, T const p_newvalue)
 	{
 		_M[p_pos1][p_pos2] = p_newvalue;
 	}
 
-	void set(const init_t& p_data)
+	void set(init_t const& p_data)
 	{
 		_M[0][0] = p_data[0][0];
 		_M[0][1] = p_data[0][1];
@@ -219,22 +219,22 @@ public:
 		_M[2][2] = p_data[2][2];
 	}
 
-	inline T* operator [] (const uintptr_t p_pos)
+	inline T* operator [] (uintptr_t const p_pos)
 	{
 		return _M[p_pos];
 	}
 
-	inline const T* operator [] (const uintptr_t p_pos) const
+	inline const T* operator [] (uintptr_t const p_pos) const
 	{
 		return _M[p_pos];
 	}
 
-	[[nodiscard]] inline T& get(const uintptr_t p_pos1, const uintptr_t p_pos2)
+	[[nodiscard]] inline T& get(uintptr_t const p_pos1, uintptr_t const p_pos2)
 	{
 		return _M[p_pos1][p_pos2];
 	}
 
-	[[nodiscard]] inline constexpr T get(const uintptr_t p_pos1, const uintptr_t p_pos2) const
+	[[nodiscard]] inline constexpr T get(uintptr_t const p_pos1, uintptr_t const p_pos2) const
 	{
 		return _M[p_pos1][p_pos2];
 	}
@@ -243,7 +243,7 @@ public:
 	static constexpr uintptr_t size1() { return 3; }
 	static constexpr uintptr_t size2() { return 3; }
 
-	this_t& operator += (const this_t& p_other)
+	this_t& operator += (this_t const& p_other)
 	{
 		_M[0][0] += p_other._M[0][0];
 		_M[0][1] += p_other._M[0][1];
@@ -257,7 +257,7 @@ public:
 		return *this;
 	}
 
-	this_t& operator -= (const this_t& p_other)
+	this_t& operator -= (this_t const& p_other)
 	{
 		_M[0][0] -= p_other._M[0][0];
 		_M[0][1] -= p_other._M[0][1];
@@ -272,7 +272,7 @@ public:
 	}
 
 	template <_p::is_arithmetic O_T>
-	constexpr this_t& operator *= (const O_T p_scalar)
+	constexpr this_t& operator *= (O_T const p_scalar)
 	{
 		_M[0][0] *= p_scalar;
 		_M[0][1] *= p_scalar;
@@ -288,7 +288,7 @@ public:
 	}
 
 	template <_p::is_arithmetic O_T>
-	constexpr this_t& operator /= (const O_T p_scalar)
+	constexpr this_t& operator /= (O_T const p_scalar)
 	{
 		_M[0][0] /= p_scalar;
 		_M[0][1] /= p_scalar;
@@ -302,29 +302,29 @@ public:
 		return *this;
 	}
 
-	[[nodiscard]] inline constexpr this_t operator + (const this_t& p_other) const
+	[[nodiscard]] inline constexpr this_t operator + (this_t const& p_other) const
 	{
 		return this_t {*this} += p_other;
 	}
 
-	[[nodiscard]] inline constexpr this_t operator - (const this_t& p_other) const
+	[[nodiscard]] inline constexpr this_t operator - (this_t const& p_other) const
 	{
 		return this_t{*this} -= p_other;
 	}
 
 	template <_p::is_arithmetic O_T>
-	[[nodiscard]] inline constexpr this_t operator * (const O_T p_scalar) const
+	[[nodiscard]] inline constexpr this_t operator * (O_T const p_scalar) const
 	{
 		return this_t{*this} *= p_scalar;
 	}
 
 	template <_p::is_arithmetic O_T>
-	[[nodiscard]] inline constexpr this_t operator / (const O_T p_scalar) const
+	[[nodiscard]] inline constexpr this_t operator / (O_T const p_scalar) const
 	{
 		return this_t{*this} /= p_scalar;
 	}
 
-	[[nodiscard]] constexpr Vector3<T> operator * (const Vector3<T>& p_vect) const
+	[[nodiscard]] constexpr Vector3<T> operator * (Vector3<T> const& p_vect) const
 	{
 		Vector3<T> p_res;
 
@@ -334,7 +334,7 @@ public:
 		return p_res;
 	}
 
-	[[nodiscard]] constexpr Matrix3<T> operator * (const Matrix3<T>& p_mat) const
+	[[nodiscard]] constexpr Matrix3<T> operator * (Matrix3<T> const& p_mat) const
 	{
 		Matrix3<T> p_res;
 		p_res.set(0, 0,  _M[0][0] * p_mat[0][0] +  _M[0][1] * p_mat[1][0] +  _M[0][2] * p_mat[2][0]);
@@ -384,7 +384,7 @@ public:
 };
 
 template <_p::is_arithmetic T1, _p::is_non_const_arithmetic T2>
-[[nodiscard]] Matrix3<T2> operator * (const T1 p_1, const Matrix3<T2>& p_2)
+[[nodiscard]] Matrix3<T2> operator * (T1 const p_1, Matrix3<T2> const& p_2)
 {
 	return p_2 * p_1;
 }

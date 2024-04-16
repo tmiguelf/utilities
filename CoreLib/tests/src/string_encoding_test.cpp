@@ -45,7 +45,7 @@ TEST(string_encoding, UTF8_to_ANSI)
 	};
 
 	uintptr_t num_case = 0;
-	for(const std::pair<std::vector<char8_t>, std::vector<char8_t>>& tcase : goodCases)
+	for(std::pair<std::vector<char8_t>, std::vector<char8_t>> const& tcase : goodCases)
 	{
 		std::optional<std::u8string> result = core::UTF8_to_ANSI({tcase.first.data(), tcase.first.size()});
 		ASSERT_TRUE(result.has_value()) << "Case " << num_case;
@@ -62,7 +62,7 @@ TEST(string_encoding, UTF8_to_ANSI)
 
 	num_case = 0;
 
-	for(const std::vector<char8_t>& tcase : badCases)
+	for(std::vector<char8_t> const& tcase : badCases)
 	{
 		std::optional<std::u8string> result = core::UTF8_to_ANSI({tcase.data(), tcase.size()});
 		ASSERT_FALSE(result.has_value()) << "Case " << num_case;
@@ -79,7 +79,7 @@ TEST(string_encoding, UTF16_to_ANSI)
 	};
 
 	uintptr_t num_case = 0;
-	for(const std::pair<std::vector<char16_t>, std::vector<char8_t>>& tcase : goodCases)
+	for(std::pair<std::vector<char16_t>, std::vector<char8_t>> const& tcase : goodCases)
 	{
 		std::optional<std::u8string> result = core::UTF16_to_ANSI({tcase.first.data(), tcase.first.size()});
 		ASSERT_TRUE(result.has_value()) << "Case " << num_case;
@@ -96,7 +96,7 @@ TEST(string_encoding, UTF16_to_ANSI)
 
 	num_case = 0;
 
-	for(const std::vector<char16_t>& tcase : badCases)
+	for(std::vector<char16_t> const& tcase : badCases)
 	{
 		std::optional<std::u8string> result = core::UTF16_to_ANSI({tcase.data(), tcase.size()});
 		ASSERT_FALSE(result.has_value()) << "Case " << num_case;
@@ -113,7 +113,7 @@ TEST(string_encoding, UCS2_to_ANSI)
 	};
 
 	uintptr_t num_case = 0;
-	for(const std::pair<std::vector<char16_t>, std::vector<char8_t>>& tcase : goodCases)
+	for(std::pair<std::vector<char16_t>, std::vector<char8_t>> const& tcase : goodCases)
 	{
 		std::optional<std::u8string> result = core::UCS2_to_ANSI({tcase.first.data(), tcase.first.size()});
 		ASSERT_TRUE(result.has_value()) << "Case " << num_case;
@@ -128,7 +128,7 @@ TEST(string_encoding, UCS2_to_ANSI)
 
 	num_case = 0;
 
-	for(const std::vector<char16_t>& tcase : badCases)
+	for(std::vector<char16_t> const& tcase : badCases)
 	{
 		std::optional<std::u8string> result = core::UCS2_to_ANSI({tcase.data(), tcase.size()});
 		ASSERT_FALSE(result.has_value()) << "Case " << num_case;
@@ -145,7 +145,7 @@ TEST(string_encoding, UCS4_to_ANSI)
 	};
 
 	uintptr_t num_case = 0;
-	for(const std::pair<std::vector<char32_t>, std::vector<char8_t>>& tcase : goodCases)
+	for(std::pair<std::vector<char32_t>, std::vector<char8_t>> const& tcase : goodCases)
 	{
 		std::optional<std::u8string> result = core::UCS4_to_ANSI({tcase.first.data(), tcase.first.size()});
 		ASSERT_TRUE(result.has_value()) << "Case " << num_case;
@@ -160,7 +160,7 @@ TEST(string_encoding, UCS4_to_ANSI)
 
 	num_case = 0;
 
-	for(const std::vector<char32_t>& tcase : badCases)
+	for(std::vector<char32_t> const& tcase : badCases)
 	{
 		std::optional<std::u8string> result = core::UCS4_to_ANSI({tcase.data(), tcase.size()});
 		ASSERT_FALSE(result.has_value()) << "Case " << num_case;
@@ -177,7 +177,7 @@ TEST(string_encoding, ANSI_to_UTF8)
 	};
 
 	uintptr_t num_case = 0;
-	for(const std::pair<std::vector<char8_t>, std::vector<char8_t>>& tcase : goodCases)
+	for(std::pair<std::vector<char8_t>, std::vector<char8_t>> const& tcase : goodCases)
 	{
 		std::u8string result = core::ANSI_to_UTF8({tcase.first.data(), tcase.first.size()});
 		ASSERT_EQ((std::u8string_view{result}), (std::u8string_view{tcase.second.data(), tcase.second.size()})) << "Case " << num_case;
@@ -194,7 +194,7 @@ TEST(string_encoding, UTF16_to_UTF8)
 	};
 
 	uintptr_t num_case = 0;
-	for(const std::pair<std::vector<char16_t>, std::vector<char8_t>>& tcase : goodCases)
+	for(std::pair<std::vector<char16_t>, std::vector<char8_t>> const& tcase : goodCases)
 	{
 		std::optional<std::u8string> result = core::UTF16_to_UTF8({tcase.first.data(), tcase.first.size()});
 		ASSERT_TRUE(result.has_value()) << "Case " << num_case;
@@ -210,7 +210,7 @@ TEST(string_encoding, UTF16_to_UTF8)
 
 	num_case = 0;
 
-	for(const std::vector<char16_t>& tcase : badCases)
+	for(std::vector<char16_t> const& tcase : badCases)
 	{
 		std::optional<std::u8string> result = core::UTF16_to_UTF8({tcase.data(), tcase.size()});
 		ASSERT_FALSE(result.has_value()) << "Case " << num_case;
@@ -234,7 +234,7 @@ TEST(string_encoding, UCS2_to_UTF8)
 	};
 
 	uintptr_t num_case = 0;
-	for(const std::pair<std::vector<char16_t>, std::vector<char8_t>>& tcase : goodCases)
+	for(std::pair<std::vector<char16_t>, std::vector<char8_t>> const& tcase : goodCases)
 	{
 		std::u8string result = core::UCS2_to_UTF8({tcase.first.data(), tcase.first.size()});
 		ASSERT_EQ((std::u8string_view{result}), (std::u8string_view{tcase.second.data(), tcase.second.size()})) << "Case " << num_case;
@@ -251,7 +251,7 @@ TEST(string_encoding, UCS4_to_UTF8)
 	};
 
 	uintptr_t num_case = 0;
-	for(const std::pair<std::vector<char32_t>, std::vector<char8_t>>& tcase : goodCases)
+	for(std::pair<std::vector<char32_t>, std::vector<char8_t>> const& tcase : goodCases)
 	{
 		std::optional<std::u8string> result = core::UCS4_to_UTF8({tcase.first.data(), tcase.first.size()});
 		ASSERT_TRUE(result.has_value()) << "Case " << num_case;
@@ -266,7 +266,7 @@ TEST(string_encoding, UCS4_to_UTF8)
 
 	num_case = 0;
 
-	for(const std::vector<char32_t>& tcase : badCases)
+	for(std::vector<char32_t> const& tcase : badCases)
 	{
 		std::optional<std::u8string> result = core::UCS4_to_UTF8({tcase.data(), tcase.size()});
 		ASSERT_FALSE(result.has_value()) << "Case " << num_case;
@@ -283,7 +283,7 @@ TEST(string_encoding, ANSI_to_UTF16)
 	};
 
 	uintptr_t num_case = 0;
-	for(const std::pair<std::vector<char8_t>, std::vector<char16_t>>& tcase : goodCases)
+	for(std::pair<std::vector<char8_t>, std::vector<char16_t>> const& tcase : goodCases)
 	{
 		std::u16string result = core::ANSI_to_UTF16({tcase.first.data(), tcase.first.size()});
 		ASSERT_EQ((std::u16string_view{result}), (std::u16string_view{tcase.second.data(), tcase.second.size()})) << "Case " << num_case;
@@ -301,7 +301,7 @@ TEST(string_encoding, UTF8_to_UTF16)
 	};
 
 	uintptr_t num_case = 0;
-	for(const std::pair<std::vector<char8_t>, std::vector<char16_t>>& tcase : goodCases)
+	for(std::pair<std::vector<char8_t>, std::vector<char16_t>> const& tcase : goodCases)
 	{
 		std::optional<std::u16string> result = core::UTF8_to_UTF16({tcase.first.data(), tcase.first.size()});
 		ASSERT_TRUE(result.has_value()) << "Case " << num_case;
@@ -319,7 +319,7 @@ TEST(string_encoding, UTF8_to_UTF16)
 
 	num_case = 0;
 
-	for(const std::vector<char8_t>& tcase : badCases)
+	for(std::vector<char8_t> const& tcase : badCases)
 	{
 		std::optional<std::u16string> result = core::UTF8_to_UTF16({tcase.data(), tcase.size()});
 		ASSERT_FALSE(result.has_value()) << "Case " << num_case;
@@ -336,7 +336,7 @@ TEST(string_encoding, UCS2_to_UTF16)
 	};
 
 	uintptr_t num_case = 0;
-	for(const std::pair<std::vector<char16_t>, std::vector<char16_t>>& tcase : goodCases)
+	for(std::pair<std::vector<char16_t>, std::vector<char16_t>> const& tcase : goodCases)
 	{
 		std::optional<std::u16string> result = core::UCS2_to_UTF16({tcase.first.data(), tcase.first.size()});
 		ASSERT_TRUE(result.has_value()) << "Case " << num_case;
@@ -351,7 +351,7 @@ TEST(string_encoding, UCS2_to_UTF16)
 
 	num_case = 0;
 
-	for(const std::vector<char16_t>& tcase : badCases)
+	for(std::vector<char16_t> const& tcase : badCases)
 	{
 		std::optional<std::u16string> result = core::UCS2_to_UTF16({tcase.data(), tcase.size()});
 		ASSERT_FALSE(result.has_value()) << "Case " << num_case;
@@ -368,7 +368,7 @@ TEST(string_encoding, UCS4_to_UTF16)
 	};
 
 	uintptr_t num_case = 0;
-	for(const std::pair<std::vector<char32_t>, std::vector<char16_t>>& tcase : goodCases)
+	for(std::pair<std::vector<char32_t>, std::vector<char16_t>> const& tcase : goodCases)
 	{
 		std::optional<std::u16string> result = core::UCS4_to_UTF16({tcase.first.data(), tcase.first.size()});
 		ASSERT_TRUE(result.has_value()) << "Case " << num_case;
@@ -384,7 +384,7 @@ TEST(string_encoding, UCS4_to_UTF16)
 
 	num_case = 0;
 
-	for(const std::vector<char32_t>& tcase : badCases)
+	for(std::vector<char32_t> const& tcase : badCases)
 	{
 		std::optional<std::u16string> result = core::UCS4_to_UTF16({tcase.data(), tcase.size()});
 		ASSERT_FALSE(result.has_value()) << "Case " << num_case;
@@ -401,7 +401,7 @@ TEST(string_encoding, ANSI_to_UCS2)
 	};
 
 	uintptr_t num_case = 0;
-	for(const std::pair<std::vector<char8_t>, std::vector<char16_t>>& tcase : goodCases)
+	for(std::pair<std::vector<char8_t>, std::vector<char16_t>> const& tcase : goodCases)
 	{
 		std::optional<std::u16string> result = core::ANSI_to_UCS2({tcase.first.data(), tcase.first.size()});
 		ASSERT_TRUE(result.has_value()) << "Case " << num_case;
@@ -419,7 +419,7 @@ TEST(string_encoding, UTF8_to_UCS2)
 	};
 
 	uintptr_t num_case = 0;
-	for(const std::pair<std::vector<char8_t>, std::vector<char16_t>>& tcase : goodCases)
+	for(std::pair<std::vector<char8_t>, std::vector<char16_t>> const& tcase : goodCases)
 	{
 		std::optional<std::u16string> result = core::UTF8_to_UCS2({tcase.first.data(), tcase.first.size()});
 		ASSERT_TRUE(result.has_value()) << "Case " << num_case;
@@ -436,7 +436,7 @@ TEST(string_encoding, UTF8_to_UCS2)
 
 	num_case = 0;
 
-	for(const std::vector<char8_t>& tcase : badCases)
+	for(std::vector<char8_t> const& tcase : badCases)
 	{
 		std::optional<std::u16string> result = core::UTF8_to_UCS2({tcase.data(), tcase.size()});
 		ASSERT_FALSE(result.has_value()) << "Case " << num_case;
@@ -453,7 +453,7 @@ TEST(string_encoding, UTF16_to_UCS2)
 	};
 
 	uintptr_t num_case = 0;
-	for(const std::pair<std::vector<char16_t>, std::vector<char16_t>>& tcase : goodCases)
+	for(std::pair<std::vector<char16_t>, std::vector<char16_t>> const& tcase : goodCases)
 	{
 		std::optional<std::u16string> result = core::UTF16_to_UCS2({tcase.first.data(), tcase.first.size()});
 		ASSERT_TRUE(result.has_value()) << "Case " << num_case;
@@ -470,7 +470,7 @@ TEST(string_encoding, UTF16_to_UCS2)
 
 	num_case = 0;
 
-	for(const std::vector<char16_t>& tcase : badCases)
+	for(std::vector<char16_t> const& tcase : badCases)
 	{
 		std::optional<std::u16string> result = core::UTF16_to_UCS2({tcase.data(), tcase.size()});
 		ASSERT_FALSE(result.has_value()) << "Case " << num_case;
@@ -487,7 +487,7 @@ TEST(string_encoding, UCS4_to_UCS2)
 	};
 
 	uintptr_t num_case = 0;
-	for(const std::pair<std::vector<char32_t>, std::vector<char16_t>>& tcase : goodCases)
+	for(std::pair<std::vector<char32_t>, std::vector<char16_t>> const& tcase : goodCases)
 	{
 		std::optional<std::u16string> result = core::UCS4_to_UCS2({tcase.first.data(), tcase.first.size()});
 		ASSERT_TRUE(result.has_value()) << "Case " << num_case;
@@ -502,7 +502,7 @@ TEST(string_encoding, UCS4_to_UCS2)
 
 	num_case = 0;
 
-	for(const std::vector<char32_t>& tcase : badCases)
+	for(std::vector<char32_t> const& tcase : badCases)
 	{
 		std::optional<std::u16string> result = core::UCS4_to_UCS2({tcase.data(), tcase.size()});
 		ASSERT_FALSE(result.has_value()) << "Case " << num_case;
@@ -519,7 +519,7 @@ TEST(string_encoding, ANSI_to_UCS4)
 	};
 
 	uintptr_t num_case = 0;
-	for(const std::pair<std::vector<char8_t>, std::vector<char32_t>>& tcase : goodCases)
+	for(std::pair<std::vector<char8_t>, std::vector<char32_t>> const& tcase : goodCases)
 	{
 		std::u32string result = core::ANSI_to_UCS4({tcase.first.data(), tcase.first.size()});
 		ASSERT_EQ((std::u32string_view{result}), (std::u32string_view{tcase.second.data(), tcase.second.size()})) << "Case " << num_case;
@@ -538,7 +538,7 @@ TEST(string_encoding, UTF8_to_UCS4)
 	};
 
 	uintptr_t num_case = 0;
-	for(const std::pair<std::vector<char8_t>, std::vector<char32_t>>& tcase : goodCases)
+	for(std::pair<std::vector<char8_t>, std::vector<char32_t>> const& tcase : goodCases)
 	{
 		std::optional<std::u32string> result = core::UTF8_to_UCS4({tcase.first.data(), tcase.first.size()});
 		ASSERT_TRUE(result.has_value()) << "Case " << num_case;
@@ -557,7 +557,7 @@ TEST(string_encoding, UTF8_to_UCS4)
 
 	num_case = 0;
 
-	for(const std::vector<char8_t>& tcase : badCases)
+	for(std::vector<char8_t> const& tcase : badCases)
 	{
 		std::optional<std::u16string> result = core::UTF8_to_UCS2({tcase.data(), tcase.size()});
 		ASSERT_FALSE(result.has_value()) << "Case " << num_case;
@@ -574,7 +574,7 @@ TEST(string_encoding, UTF16_to_UCS4)
 	};
 
 	uintptr_t num_case = 0;
-	for(const std::pair<std::vector<char16_t>, std::vector<char32_t>>& tcase : goodCases)
+	for(std::pair<std::vector<char16_t>, std::vector<char32_t>> const& tcase : goodCases)
 	{
 		std::optional<std::u32string> result = core::UTF16_to_UCS4({tcase.first.data(), tcase.first.size()});
 		ASSERT_TRUE(result.has_value()) << "Case " << num_case;
@@ -590,7 +590,7 @@ TEST(string_encoding, UTF16_to_UCS4)
 
 	num_case = 0;
 
-	for(const std::vector<char16_t>& tcase : badCases)
+	for(std::vector<char16_t> const& tcase : badCases)
 	{
 		std::optional<std::u32string> result = core::UTF16_to_UCS4({tcase.data(), tcase.size()});
 		ASSERT_FALSE(result.has_value()) << "Case " << num_case;
@@ -607,7 +607,7 @@ TEST(string_encoding, UCS2_to_UCS4)
 	};
 
 	uintptr_t num_case = 0;
-	for(const std::pair<std::vector<char16_t>, std::vector<char32_t>>& tcase : goodCases)
+	for(std::pair<std::vector<char16_t>, std::vector<char32_t>> const& tcase : goodCases)
 	{
 		std::optional<std::u32string> result = core::UCS2_to_UCS4({tcase.first.data(), tcase.first.size()});
 		ASSERT_TRUE(result.has_value()) << "Case " << num_case;
@@ -628,7 +628,7 @@ TEST(string_encoding, UTF8_to_ANSI_faulty)
 	};
 
 	uintptr_t num_case = 0;
-	for(const std::pair<std::vector<char8_t>, std::vector<char8_t>>& tcase : goodCases)
+	for(std::pair<std::vector<char8_t>, std::vector<char8_t>> const& tcase : goodCases)
 	{
 		std::u8string result = core::UTF8_to_ANSI_faulty({tcase.first.data(), tcase.first.size()}, '?');
 		ASSERT_EQ((std::u8string_view{result}), (std::u8string_view{tcase.second.data(), tcase.second.size()})) << "Case " << num_case;
@@ -647,7 +647,7 @@ TEST(string_encoding, UTF16_to_ANSI_faulty)
 	};
 
 	uintptr_t num_case = 0;
-	for(const std::pair<std::vector<char16_t>, std::vector<char8_t>>& tcase : goodCases)
+	for(std::pair<std::vector<char16_t>, std::vector<char8_t>> const& tcase : goodCases)
 	{
 		std::u8string result = core::UTF16_to_ANSI_faulty({tcase.first.data(), tcase.first.size()}, '?');
 		ASSERT_EQ((std::u8string_view{result}), (std::u8string_view{tcase.second.data(), tcase.second.size()})) << "Case " << num_case;
@@ -664,7 +664,7 @@ TEST(string_encoding, UCS2_to_ANSI_faulty)
 	};
 
 	uintptr_t num_case = 0;
-	for(const std::pair<std::vector<char16_t>, std::vector<char8_t>>& tcase : goodCases)
+	for(std::pair<std::vector<char16_t>, std::vector<char8_t>> const& tcase : goodCases)
 	{
 		std::u8string result = core::UCS2_to_ANSI_faulty({tcase.first.data(), tcase.first.size()}, '?');
 		ASSERT_EQ((std::u8string_view{result}), (std::u8string_view{tcase.second.data(), tcase.second.size()})) << "Case " << num_case;
@@ -681,7 +681,7 @@ TEST(string_encoding, UCS4_to_ANSI_faulty)
 	};
 
 	uintptr_t num_case = 0;
-	for(const std::pair<std::vector<char32_t>, std::vector<char8_t>>& tcase : goodCases)
+	for(std::pair<std::vector<char32_t>, std::vector<char8_t>> const& tcase : goodCases)
 	{
 		std::u8string result = core::UCS4_to_ANSI_faulty({tcase.first.data(), tcase.first.size()}, '?');
 		ASSERT_EQ((std::u8string_view{result}), (std::u8string_view{tcase.second.data(), tcase.second.size()})) << "Case " << num_case;
@@ -699,7 +699,7 @@ TEST(string_encoding, UTF16_to_UTF8_faulty)
 	};
 
 	uintptr_t num_case = 0;
-	for(const std::pair<std::vector<char16_t>, std::vector<char8_t>>& tcase : goodCases)
+	for(std::pair<std::vector<char16_t>, std::vector<char8_t>> const& tcase : goodCases)
 	{
 		std::u8string result = core::UTF16_to_UTF8_faulty({tcase.first.data(), tcase.first.size()}, 0x0100);
 		ASSERT_EQ((std::u8string_view{result}), (std::u8string_view{tcase.second.data(), tcase.second.size()})) << "Case " << num_case;
@@ -716,7 +716,7 @@ TEST(string_encoding, UCS4_to_UTF8_faulty)
 	};
 
 	uintptr_t num_case = 0;
-	for(const std::pair<std::vector<char32_t>, std::vector<char8_t>>& tcase : goodCases)
+	for(std::pair<std::vector<char32_t>, std::vector<char8_t>> const& tcase : goodCases)
 	{
 		std::u8string result = core::UCS4_to_UTF8_faulty({tcase.first.data(), tcase.first.size()}, 0x0100);
 		ASSERT_EQ((std::u8string_view{result}), (std::u8string_view{tcase.second.data(), tcase.second.size()})) << "Case " << num_case;
@@ -736,7 +736,7 @@ TEST(string_encoding, UTF8_to_UTF16_faulty)
 	};
 
 	uintptr_t num_case = 0;
-	for(const std::pair<std::vector<char8_t>, std::vector<char16_t>>& tcase : goodCases)
+	for(std::pair<std::vector<char8_t>, std::vector<char16_t>> const& tcase : goodCases)
 	{
 		std::u16string result = core::UTF8_to_UTF16_faulty({tcase.first.data(), tcase.first.size()}, 0x010000);
 		ASSERT_EQ((std::u16string_view{result}), (std::u16string_view{tcase.second.data(), tcase.second.size()})) << "Case " << num_case;
@@ -753,7 +753,7 @@ TEST(string_encoding, UCS2_to_UTF16_faulty)
 	};
 
 	uintptr_t num_case = 0;
-	for(const std::pair<std::vector<char16_t>, std::vector<char16_t>>& tcase : goodCases)
+	for(std::pair<std::vector<char16_t>, std::vector<char16_t>> const& tcase : goodCases)
 	{
 		std::u16string result = core::UCS2_to_UTF16_faulty({tcase.first.data(), tcase.first.size()}, 0x010000);
 		ASSERT_EQ((std::u16string_view{result}), (std::u16string_view{tcase.second.data(), tcase.second.size()})) << "Case " << num_case;
@@ -771,7 +771,7 @@ TEST(string_encoding, UCS4_to_UTF16_faulty)
 	};
 
 	uintptr_t num_case = 0;
-	for(const std::pair<std::vector<char32_t>, std::vector<char16_t>>& tcase : goodCases)
+	for(std::pair<std::vector<char32_t>, std::vector<char16_t>> const& tcase : goodCases)
 	{
 		std::u16string result = core::UCS4_to_UTF16_faulty({tcase.first.data(), tcase.first.size()}, 0x010000);
 		ASSERT_EQ((std::u16string_view{result}), (std::u16string_view{tcase.second.data(), tcase.second.size()})) << "Case " << num_case;
@@ -790,7 +790,7 @@ TEST(string_encoding, UTF8_to_UCS2_faulty)
 	};
 
 	uintptr_t num_case = 0;
-	for(const std::pair<std::vector<char8_t>, std::vector<char16_t>>& tcase : goodCases)
+	for(std::pair<std::vector<char8_t>, std::vector<char16_t>> const& tcase : goodCases)
 	{
 		std::u16string result = core::UTF8_to_UCS2_faulty({tcase.first.data(), tcase.first.size()}, '?');
 		ASSERT_EQ((std::u16string_view{result}), (std::u16string_view{tcase.second.data(), tcase.second.size()})) << "Case " << num_case;
@@ -809,7 +809,7 @@ TEST(string_encoding, UTF16_to_UCS2_faulty)
 	};
 
 	uintptr_t num_case = 0;
-	for(const std::pair<std::vector<char16_t>, std::vector<char16_t>>& tcase : goodCases)
+	for(std::pair<std::vector<char16_t>, std::vector<char16_t>> const& tcase : goodCases)
 	{
 		std::u16string result = core::UTF16_to_UCS2_faulty({tcase.first.data(), tcase.first.size()}, '?');
 		ASSERT_EQ((std::u16string_view{result}), (std::u16string_view{tcase.second.data(), tcase.second.size()})) << "Case " << num_case;
@@ -827,7 +827,7 @@ TEST(string_encoding, UCS4_to_UCS2_faulty)
 	};
 
 	uintptr_t num_case = 0;
-	for(const std::pair<std::vector<char32_t>, std::vector<char16_t>>& tcase : goodCases)
+	for(std::pair<std::vector<char32_t>, std::vector<char16_t>> const& tcase : goodCases)
 	{
 		std::u16string result = core::UCS4_to_UCS2_faulty({tcase.first.data(), tcase.first.size()}, '?');
 		ASSERT_EQ((std::u16string_view{result}), (std::u16string_view{tcase.second.data(), tcase.second.size()})) << "Case " << num_case;
@@ -848,7 +848,7 @@ TEST(string_encoding, UTF8_to_UCS4_faulty)
 	};
 
 	uintptr_t num_case = 0;
-	for(const std::pair<std::vector<char8_t>, std::vector<char32_t>>& tcase : goodCases)
+	for(std::pair<std::vector<char8_t>, std::vector<char32_t>> const& tcase : goodCases)
 	{
 		std::u32string result = core::UTF8_to_UCS4_faulty({tcase.first.data(), tcase.first.size()}, '?');
 		ASSERT_EQ((std::u32string_view{result}), (std::u32string_view{tcase.second.data(), tcase.second.size()})) << "Case " << num_case;
@@ -866,7 +866,7 @@ TEST(string_encoding, UTF16_to_UCS4_faulty)
 	};
 
 	uintptr_t num_case = 0;
-	for(const std::pair<std::vector<char16_t>, std::vector<char32_t>>& tcase : goodCases)
+	for(std::pair<std::vector<char16_t>, std::vector<char32_t>> const& tcase : goodCases)
 	{
 		std::u32string result = core::UTF16_to_UCS4_faulty({tcase.first.data(), tcase.first.size()}, '?');
 		ASSERT_EQ((std::u32string_view{result}), (std::u32string_view{tcase.second.data(), tcase.second.size()})) << "Case " << num_case;
@@ -950,7 +950,7 @@ TEST(string_encoding, UTF8_UNICODE_Compliant)
 		{'T', 'e', 'x', 't', ' ', 0x7F, 0xC2, 0x80, 0x00, 0xC2, 0xA7, 0xC3, 0xBF, 0xF4, 0x8F, 0xBF, 0xBF},
 	};
 
-	for(const std::vector<char8_t>& tcase : goodCases)
+	for(std::vector<char8_t> const& tcase : goodCases)
 	{
 		ASSERT_TRUE(core::UTF8_UNICODE_Compliant({tcase.data(), tcase.size()}));
 	}
@@ -964,7 +964,7 @@ TEST(string_encoding, UTF8_UNICODE_Compliant)
 	};
 
 	uintptr_t num_case = 0;
-	for(const std::vector<char8_t>& tcase : badCases)
+	for(std::vector<char8_t> const& tcase : badCases)
 	{
 		ASSERT_FALSE(core::UTF8_UNICODE_Compliant({tcase.data(), tcase.size()})) << "Case: " << num_case;
 		++num_case;
@@ -978,7 +978,7 @@ TEST(string_encoding, UTF16_UNICODE_Compliant)
 		{'T', 'e', 'x', 't', ' ', 0xFF, 0xD7FF, 0xE000, 0xD800, 0xDC00, 0xDBFF, 0xDFFF, 0xFFFF},
 	};
 
-	for(const std::vector<char16_t>& tcase : goodCases)
+	for(std::vector<char16_t> const& tcase : goodCases)
 	{
 		ASSERT_TRUE(core::UTF16_UNICODE_Compliant({tcase.data(), tcase.size()}));
 	}
@@ -990,7 +990,7 @@ TEST(string_encoding, UTF16_UNICODE_Compliant)
 	};
 
 	uintptr_t num_case = 0;
-	for(const std::vector<char16_t>& tcase : badCases)
+	for(std::vector<char16_t> const& tcase : badCases)
 	{
 		ASSERT_FALSE(core::UTF16_UNICODE_Compliant({tcase.data(), tcase.size()})) << "Case: " << num_case;
 		++num_case;
@@ -1004,7 +1004,7 @@ TEST(string_encoding, UCS2_UNICODE_Compliant)
 		{'T', 'e', 'x', 't', ' ', 0xFF, 0xD7FF, 0xE000,  0xFFFF},
 	};
 
-	for(const std::vector<char16_t>& tcase : goodCases)
+	for(std::vector<char16_t> const& tcase : goodCases)
 	{
 		ASSERT_TRUE(core::UCS2_UNICODE_Compliant({tcase.data(), tcase.size()}));
 	}
@@ -1014,7 +1014,7 @@ TEST(string_encoding, UCS2_UNICODE_Compliant)
 		{'B', 'a', 'd', ' ', 0xD801 },	//bad code point
 	};
 
-	for(const std::vector<char16_t>& tcase : badCases)
+	for(std::vector<char16_t> const& tcase : badCases)
 	{
 		ASSERT_FALSE(core::UCS2_UNICODE_Compliant({tcase.data(), tcase.size()}));
 	}
@@ -1027,7 +1027,7 @@ TEST(string_encoding, UCS4_UNICODE_Compliant)
 		{'T', 'e', 'x', 't', ' ', 0xFF, 0xD7FF, 0xE000,  0xFFFF, 0x100000, 0x10FFFF},
 	};
 
-	for(const std::vector<char32_t>& tcase : goodCases)
+	for(std::vector<char32_t> const& tcase : goodCases)
 	{
 		ASSERT_TRUE(core::UCS4_UNICODE_Compliant({tcase.data(), tcase.size()}));
 	}
@@ -1037,7 +1037,7 @@ TEST(string_encoding, UCS4_UNICODE_Compliant)
 		{'B', 'a', 'd', ' ', 0xD801, 0x110000 },
 	};
 
-	for(const std::vector<char32_t>& tcase : badCases)
+	for(std::vector<char32_t> const& tcase : badCases)
 	{
 		ASSERT_FALSE(core::UCS4_UNICODE_Compliant({tcase.data(), tcase.size()}));
 	}
@@ -1050,7 +1050,7 @@ TEST(string_encoding, ASCII_Compliant_uint8_t)
 		{'T', 'e', 'x', 't', ' ', 0x7F},
 	};
 
-	for(const std::vector<char8_t>& tcase : goodCases)
+	for(std::vector<char8_t> const& tcase : goodCases)
 	{
 		ASSERT_TRUE(core::ASCII_Compliant({tcase.data(), tcase.size()}));
 	}
@@ -1060,7 +1060,7 @@ TEST(string_encoding, ASCII_Compliant_uint8_t)
 		{'B', 'a', 'd', ' ', 0x80},
 	};
 
-	for(const std::vector<char8_t>& tcase : badCases)
+	for(std::vector<char8_t> const& tcase : badCases)
 	{
 		ASSERT_FALSE(core::ASCII_Compliant({tcase.data(), tcase.size()}));
 	}
@@ -1073,7 +1073,7 @@ TEST(string_encoding, ASCII_Compliant_uint32_t)
 		{'T', 'e', 'x', 't', ' ', 0x7F},
 	};
 
-	for(const std::vector<char32_t>& tcase : goodCases)
+	for(std::vector<char32_t> const& tcase : goodCases)
 	{
 		ASSERT_TRUE(core::ASCII_Compliant({tcase.data(), tcase.size()}));
 	}
@@ -1083,7 +1083,7 @@ TEST(string_encoding, ASCII_Compliant_uint32_t)
 		{'B', 'a', 'd', ' ', 0x80},
 	};
 
-	for(const std::vector<char32_t>& tcase : badCases)
+	for(std::vector<char32_t> const& tcase : badCases)
 	{
 		ASSERT_FALSE(core::ASCII_Compliant({tcase.data(), tcase.size()}));
 	}

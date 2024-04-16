@@ -90,9 +90,9 @@ namespace core
 			}
 
 			uint_T r_val = 0;
-			for(const char_T tchar: p_str)
+			for(char_T const tchar: p_str)
 			{
-				const uint8_t t_val = static_cast<uint8_t>(tchar - '0');
+				uint8_t const t_val = static_cast<uint8_t>(tchar - '0');
 				if(t_val > 9)
 				{
 					return std::errc::invalid_argument;
@@ -116,14 +116,14 @@ namespace core
 		template <charconv_sint_c int_T, charconv_char_c char_T>
 		[[nodiscard]] static inline from_chars_result<int_T> dec2int(std::basic_string_view<char_T> const p_str)
 		{
-			const uintptr_t size = p_str.size();
+			uintptr_t const size = p_str.size();
 			if(size == 0)
 			{
 				return std::errc::invalid_argument;
 			}
 
-			const char_T* pivot	= p_str.data();
-			const char_T* end = pivot + size;
+			char_T const* pivot = p_str.data();
+			char_T const* end   = pivot + size;
 
 			int_T r_val = 0;
 
@@ -191,7 +191,7 @@ namespace core
 		[[nodiscard]] static inline from_chars_result<uint_T> hex2uint(std::basic_string_view<char_T> const p_str)
 		{
 			constexpr char_T num_A_offset = static_cast<char_T>('A' - '9' - 1);
-			constexpr char_T A_a_offset = static_cast<char_T>('a' - 'A');
+			constexpr char_T A_a_offset   = static_cast<char_T>('a' - 'A');
 
 			if(p_str.empty())
 			{
@@ -263,7 +263,7 @@ namespace core
 
 
 		template<charconv_char_c char_T>
-		static bool is_inf(std::basic_string_view<char_T> p_str)
+		static bool is_inf(std::basic_string_view<char_T> const p_str)
 		{
 			if(p_str.size() == 3)
 			{
@@ -338,7 +338,7 @@ namespace core
 		}
 
 		template<_p::charconv_char_c char_T>
-		static bool is_nan(std::basic_string_view<char_T> p_str)
+		static bool is_nan(std::basic_string_view<char_T> const p_str)
 		{
 			if(p_str.size() == 3)
 			{
@@ -379,7 +379,7 @@ namespace core
 				return std::errc::invalid_argument;
 			}
 
-			const bool sig_bit = (p_str[0] == '-');
+			bool const sig_bit = (p_str[0] == '-');
 			if(sig_bit || p_str[0] == '+')
 			{
 				p_str = p_str.substr(1);
@@ -390,7 +390,7 @@ namespace core
 			}
 
 			{
-				const char_T first_char = p_str[0];
+				char_T const first_char = p_str[0];
 				if(is_digit(first_char) || first_char == '.')
 				{
 					std::basic_string_view<char_T> exp_str;
@@ -426,7 +426,7 @@ namespace core
 					}
 					else
 					{
-						const uintptr_t pos = p_str.find(char_T{'.'});
+						uintptr_t const pos = p_str.find(char_T{'.'});
 						if(pos == std::basic_string_view<char_T>::npos)
 						{
 							unit_str = p_str;
@@ -451,7 +451,7 @@ namespace core
 				{
 					bits |= core::fp_traits<fp_T>::sign_mask;
 				}
-				return std::bit_cast<const fp_T>(bits);
+				return std::bit_cast<fp_T const>(bits);
 			}
 			if(is_nan(p_str))
 			{
@@ -463,14 +463,14 @@ namespace core
 				{
 					bits |= core::fp_traits<fp_T>::sign_mask;
 				}
-				return std::bit_cast<const fp_T>(bits);
+				return std::bit_cast<fp_T const>(bits);
 			}
 
 			return std::errc::invalid_argument;
 
 			//const uintptr_t tsize = p_str.size();
 			//if(tsize > 126) return std::errc::no_buffer_space; //large enough to not make any sense
-			//for(const char_T t_char: p_str)
+			//for(char_T const t_char: p_str)
 			//{
 			//	//last allowable character also checks that conversion to to char8_t will not alias
 			//	if(t_char > 'e') return std::errc::invalid_argument;
@@ -479,7 +479,7 @@ namespace core
 			//std::array<char8_t, 126> buff;
 			//{
 			//	char8_t* pos = buff.data();
-			//	for(const char_T t_char : p_str)
+			//	for(char_T const t_char : p_str)
 			//	{
 			//		*(pos++) = static_cast<char8_t>(t_char);
 			//	}
@@ -806,7 +806,7 @@ namespace core
 		{
 
 			fp_to_chars_shortest_context<Fp_t> context;
-			const fp_base_classify classification = to_chars_shortest_classify(p_val, context);
+			fp_base_classify const classification = to_chars_shortest_classify(p_val, context);
 
 			switch(classification.classification)
 			{
@@ -821,8 +821,8 @@ namespace core
 				return 3;
 			}
 
-			const fp_to_chars_sci_size sci_size_data = to_chars_shortest_sci_size(context);
-			const fp_to_chars_fix_size fix_size_data = to_chars_shortest_fix_size(context);
+			fp_to_chars_sci_size const sci_size_data = to_chars_shortest_sci_size(context);
+			fp_to_chars_fix_size const fix_size_data = to_chars_shortest_fix_size(context);
 
 			uint8_t sci_size = 1;
 			if(sci_size_data.mantissa_decimal_size)
@@ -903,7 +903,7 @@ namespace core
 		}
 
 		template <charconv_char_c char_T, charconv_sint_c num_T>
-		static inline char_T* int2dec(const num_T p_val, char_T* const p_str)
+		static inline char_T* int2dec(num_T const p_val, char_T* const p_str)
 		{
 			using unsigned_t = std::make_unsigned_t<num_T>;
 
@@ -927,7 +927,7 @@ namespace core
 
 			//skip ahead algorithm
 			constexpr uintptr_t lastBit = sizeof(num_T) * 8 - 1;
-			const uint8_t index = static_cast<uint8_t>((lastBit - std::countl_zero<num_T>(p_val)) / 4);
+			uint8_t const index = static_cast<uint8_t>((lastBit - std::countl_zero<num_T>(p_val)) / 4);
 
 			for(uint8_t t_bias = static_cast<uint8_t>(index * 4); t_bias; t_bias -= 4)
 			{
@@ -948,7 +948,7 @@ namespace core
 
 			//skip ahead algorithm
 			constexpr uintptr_t bit_count = sizeof(num_T) * 8;
-			const uint8_t index = static_cast<uint8_t>(bit_count - std::countl_zero<num_T>(p_val) - 1);
+			uint8_t const index = static_cast<uint8_t>(bit_count - std::countl_zero<num_T>(p_val) - 1);
 
 			for (uint8_t t_bias = index; t_bias; --t_bias)
 			{
@@ -959,14 +959,14 @@ namespace core
 		}
 
 		template <charconv_char_c T>
-		static inline void uint2hex_fix(const uint8_t p_val, T* p_str)
+		static inline void uint2hex_fix(uint8_t const p_val, T* p_str)
 		{
 			*p_str   = _p::Hex2Nible(p_val >> 4);
 			*++p_str = _p::Hex2Nible(p_val);
 		}
 
 		template <charconv_char_c T>
-		static inline void uint2hex_fix(const uint16_t p_val, T* p_str)
+		static inline void uint2hex_fix(uint16_t const p_val, T* p_str)
 		{
 			*p_str   = _p::Hex2Nible(p_val >> 12);
 			*++p_str = _p::Hex2Nible(p_val >> 8);
@@ -975,7 +975,7 @@ namespace core
 		}
 
 		template <charconv_char_c T>
-		static inline void uint2hex_fix(const uint32_t p_val, T* p_str)
+		static inline void uint2hex_fix(uint32_t const p_val, T* p_str)
 		{
 			*p_str   = _p::Hex2Nible(p_val >> 28);
 			*++p_str = _p::Hex2Nible(p_val >> 24);
@@ -988,7 +988,7 @@ namespace core
 		}
 
 		template <charconv_char_c T>
-		static inline void uint2hex_fix(const uint64_t p_val, T* p_str)
+		static inline void uint2hex_fix(uint64_t const p_val, T* p_str)
 		{
 			*p_str   = _p::Hex2Nible(p_val >> 60);
 			*++p_str = _p::Hex2Nible(p_val >> 56);
@@ -1019,7 +1019,7 @@ namespace core
 		//}
 
 		template <charconv_char_c T>
-		static inline void uint2bin_fix(const uint8_t p_val, T* p_str)
+		static inline void uint2bin_fix(uint8_t const p_val, T* p_str)
 		{
 			*p_str   = ((p_val >> 7) & 1) ? '1' : '0';
 			*++p_str = ((p_val >> 6) & 1) ? '1' : '0';
@@ -1032,7 +1032,7 @@ namespace core
 		}
 
 		template <charconv_char_c T>
-		static inline void uint2bin_fix(const uint16_t p_val, T* p_str)
+		static inline void uint2bin_fix(uint16_t const p_val, T* p_str)
 		{
 			*p_str   = ((p_val >> 15) & 1) ? '1' : '0';
 			*++p_str = ((p_val >> 14) & 1) ? '1' : '0';
@@ -1053,7 +1053,7 @@ namespace core
 		}
 
 		template <charconv_char_c T>
-		static inline void uint2bin_fix(const uint32_t p_val, T* p_str)
+		static inline void uint2bin_fix(uint32_t const p_val, T* p_str)
 		{
 			*p_str   = ((p_val >> 31) & 1) ? '1' : '0';
 			*++p_str = ((p_val >> 30) & 1) ? '1' : '0';
@@ -1090,7 +1090,7 @@ namespace core
 		}
 
 		template <charconv_char_c T>
-		static inline void uint2bin_fix(const uint64_t p_val, T* p_str)
+		static inline void uint2bin_fix(uint64_t const p_val, T* p_str)
 		{
 			*p_str   = ((p_val >> 63) & 1) ? '1' : '0';
 			*++p_str = ((p_val >> 62) & 1) ? '1' : '0';
@@ -1170,10 +1170,10 @@ namespace core
 
 
 		template<charconv_char_c char_T, charconv_fp_c Fp_t>
-		static inline char_T* fp2dec(const Fp_t p_val, char_T* pivot)
+		static inline char_T* fp2dec(Fp_t const p_val, char_T* pivot)
 		{
 			fp_to_chars_shortest_context<Fp_t> context;
-			const fp_base_classify classification = to_chars_shortest_classify(p_val, context);
+			fp_base_classify const classification = to_chars_shortest_classify(p_val, context);
 
 			if(classification.classification == fp_classify::nan)
 			{
@@ -1196,8 +1196,8 @@ namespace core
 				break;
 			case fp_classify::finite:
 				{
-					const fp_to_chars_sci_size sci_size_data = to_chars_shortest_sci_size(context);
-					const fp_to_chars_fix_size fix_size_data = to_chars_shortest_fix_size(context);
+					fp_to_chars_sci_size const sci_size_data = to_chars_shortest_sci_size(context);
+					fp_to_chars_fix_size const fix_size_data = to_chars_shortest_fix_size(context);
 
 					uint8_t sci_size = 1;
 					if(sci_size_data.mantissa_decimal_size)
@@ -1297,12 +1297,12 @@ namespace core
 				}
 
 				template<typename char_T>
-				static inline char_T* to_chars(const num_T p_val, char_T* const p_str)
+				static inline char_T* to_chars(num_T const p_val, char_T* const p_str)
 				{
 					return fp2dec(p_val, p_str);
 				}
 
-				static inline uintptr_t estimate(const num_T p_val)
+				static inline uintptr_t estimate(num_T const p_val)
 				{
 					return fp2dec_estimate(p_val);
 				}
@@ -1318,12 +1318,12 @@ namespace core
 				}
 
 				template<typename char_T>
-				static inline char_T* to_chars(const num_T p_val, char_T* const p_str)
+				static inline char_T* to_chars(num_T const p_val, char_T* const p_str)
 				{
 					return int2dec(p_val, p_str);
 				}
 
-				static inline uintptr_t estimate(const num_T p_val)
+				static inline uintptr_t estimate(num_T const p_val)
 				{
 					return int2dec_estimate(p_val);
 				}
@@ -1339,12 +1339,12 @@ namespace core
 				}
 
 				template<typename char_T>
-				static inline char_T* to_chars(const num_T p_val, char_T* const p_str)
+				static inline char_T* to_chars(num_T const p_val, char_T* const p_str)
 				{
 					return uint2dec(p_val, p_str);
 				}
 
-				static inline uintptr_t estimate(const num_T p_val)
+				static inline uintptr_t estimate(num_T const p_val)
 				{
 					return uint2dec_estimate(p_val);
 				}
@@ -1357,50 +1357,50 @@ namespace core
 	//======== Public implementation ========
 
 	template <char_conv_dec_supported_c num_T>
-	[[nodiscard]] uintptr_t to_chars_size(const num_T p_val)
+	[[nodiscard]] uintptr_t to_chars_size(num_T const p_val)
 	{
 		return _p::help_char_conv<num_T>::estimate(p_val);
 	}
 
 	template <_p::charconv_char_c char_T, char_conv_dec_supported_c num_T>
-	char_T* to_chars_unsafe(const num_T p_val, char_T* const p_str)
+	char_T* to_chars_unsafe(num_T const p_val, char_T* const p_str)
 	{
 		return _p::help_char_conv<num_T>::to_chars(p_val, p_str);
 	}
 
 	template <char_conv_hex_supported_c num_T>
-	[[nodiscard]] uintptr_t to_chars_hex_size(const num_T p_val)
+	[[nodiscard]] uintptr_t to_chars_hex_size(num_T const p_val)
 	{
 		return _p::uint2hex_estimate(p_val);
 	}
 
 	template <_p::charconv_char_c char_T, char_conv_hex_supported_c num_T>
-	char_T* to_chars_hex_unsafe(const num_T p_val, char_T* const p_str)
+	char_T* to_chars_hex_unsafe(num_T const p_val, char_T* const p_str)
 	{
 		return _p::uint2hex(p_val, p_str);
 	}
 
 
 	template <_p::charconv_char_c char_T, char_conv_hex_supported_c num_T>
-	void to_chars_hex_fix_unsafe(const num_T p_val, char_T* const p_str)
+	void to_chars_hex_fix_unsafe(num_T const p_val, char_T* const p_str)
 	{
 		_p::uint2hex_fix(p_val, p_str);
 	}
 
 	template <char_conv_bin_supported_c num_T>
-	[[nodiscard]] uintptr_t to_chars_bin_size(const num_T p_val)
+	[[nodiscard]] uintptr_t to_chars_bin_size(num_T const p_val)
 	{
 		return _p::uint2bin_estimate(p_val);
 	}
 
 	template <_p::charconv_char_c char_T, char_conv_bin_supported_c num_T>
-	char_T* to_chars_bin_unsafe(const num_T p_val, char_T* const p_str)
+	char_T* to_chars_bin_unsafe(num_T const p_val, char_T* const p_str)
 	{
 		return _p::uint2bin(p_val, p_str);
 	}
 
 	template <_p::charconv_char_c char_T, char_conv_bin_supported_c num_T>
-	void to_chars_bin_fix_unsafe(const num_T p_val, char_T* const p_str)
+	void to_chars_bin_fix_unsafe(num_T const p_val, char_T* const p_str)
 	{
 		_p::uint2bin_fix(p_val, p_str);
 	}
@@ -1433,7 +1433,7 @@ namespace core
 		[[nodiscard]] bool is_hex(std::basic_string_view<T> const p_str)
 		{
 			if(p_str.size() == 0) return false;
-			for(T tchar : p_str)
+			for(T const tchar : p_str)
 			{
 				if(!is_xdigit(tchar)) return false;
 			}
@@ -1444,7 +1444,7 @@ namespace core
 		[[nodiscard]] bool is_bin(std::basic_string_view<T> const p_str)
 		{
 			if(p_str.size() == 0) return false;
-			for(T tchar : p_str)
+			for(T const tchar : p_str)
 			{
 				if(!is_bdigit(tchar)) return false;
 			}
@@ -1470,31 +1470,31 @@ namespace core
 		}
 
 		template <_p::charconv_char_c char_T, char_conv_dec_supported_c num_T>
-		[[nodiscard]] uintptr_t to_chars(const num_T p_val, std::span<char_T, to_chars_dec_max_size_v<num_T>> const p_str)
+		[[nodiscard]] uintptr_t to_chars(num_T const p_val, std::span<char_T, to_chars_dec_max_size_v<num_T>> const p_str)
 		{
 			return static_cast<uintptr_t>(_p::help_char_conv<num_T>::to_chars(p_val, p_str.data()) - p_str.data());
 		}
 
 		template <_p::charconv_char_c char_T, char_conv_hex_supported_c num_T>
-		[[nodiscard]] uintptr_t to_chars_hex(const num_T p_val, std::span<char_T, to_chars_hex_max_size_v<num_T>> const p_str)
+		[[nodiscard]] uintptr_t to_chars_hex(num_T const p_val, std::span<char_T, to_chars_hex_max_size_v<num_T>> const p_str)
 		{
 			return static_cast<uintptr_t>(_p::uint2hex(p_val, p_str.data()) - p_str.data());
 		}
 
 		template <_p::charconv_char_c char_T, char_conv_hex_supported_c num_T>
-		void to_chars_hex_fix(const num_T p_val, std::span<char_T, to_chars_hex_max_size_v<num_T>> const p_str)
+		void to_chars_hex_fix(num_T const p_val, std::span<char_T, to_chars_hex_max_size_v<num_T>> const p_str)
 		{
 			_p::uint2hex_fix(p_val, p_str.data());
 		}
 
 		template <_p::charconv_char_c char_T, char_conv_bin_supported_c num_T>
-		[[nodiscard]] uintptr_t to_chars_bin(const num_T p_val, std::span<char_T, to_chars_bin_max_size_v<num_T>> const p_str)
+		[[nodiscard]] uintptr_t to_chars_bin(num_T const p_val, std::span<char_T, to_chars_bin_max_size_v<num_T>> const p_str)
 		{
 			return static_cast<uintptr_t>(_p::uint2bin(p_val, p_str.data()) - p_str.data());
 		}
 
 		template <_p::charconv_char_c char_T, char_conv_bin_supported_c num_T>
-		void to_chars_bin_fix(const num_T p_val, std::span<char_T, to_chars_bin_max_size_v<num_T>> const p_str)
+		void to_chars_bin_fix(num_T const p_val, std::span<char_T, to_chars_bin_max_size_v<num_T>> const p_str)
 		{
 			_p::uint2bin_fix(p_val, p_str.data());
 		}

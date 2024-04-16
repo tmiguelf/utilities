@@ -37,7 +37,7 @@ namespace core
 		template<>
 		struct fp_utils<float32_t>: public fp_utils_pre<float32_t>
 		{
-			[[nodiscard]] static inline constexpr uint8_t sig_digits(const uint32_t mantissa)
+			[[nodiscard]] static inline constexpr uint8_t sig_digits(uint32_t const mantissa)
 			{
 				if(mantissa <        10_ui32) return 1;
 				if(mantissa <       100_ui32) return 2;
@@ -54,7 +54,7 @@ namespace core
 		template<>
 		struct fp_utils<float64_t>: public fp_utils_pre<float64_t>
 		{
-			[[nodiscard]] static inline constexpr uint8_t sig_digits(const uint64_t mantissa)
+			[[nodiscard]] static inline constexpr uint8_t sig_digits(uint64_t const mantissa)
 			{
 				if(mantissa <                10_ui64) return 1;
 				if(mantissa <               100_ui64) return 2;
@@ -79,7 +79,7 @@ namespace core
 
 
 	template<>
-	fp_base_classify to_chars_shortest_classify<float32_t>(float32_t value, fp_to_chars_shortest_context<float32_t>& context)
+	fp_base_classify to_chars_shortest_classify<float32_t>(float32_t const value, fp_to_chars_shortest_context<float32_t>& context)
 	{
 		using fp_type = float32_t;
 		using fp_utils_t = fp_utils<fp_type>;
@@ -87,9 +87,9 @@ namespace core
 		using exp_st = fp_utils_t::exp_st;
 		//using exp_ut = fp_utils_t::exp_ut;
 
-		const uint_t exponent_bits = fp_utils_t::get_exponent_bits(value);
-		const uint_t mantissa_bits = fp_utils_t::get_mantissa(value);
-		const bool sign_bit        = fp_utils_t::get_sign(value);
+		uint_t const exponent_bits = fp_utils_t::get_exponent_bits(value);
+		uint_t const mantissa_bits = fp_utils_t::get_mantissa(value);
+		bool   const sign_bit      = fp_utils_t::get_sign(value);
 
 		if(exponent_bits == fp_utils_t::exponent_mask)
 		{ //nan or inf
@@ -118,18 +118,18 @@ namespace core
 		}
 
 		// We subtract 2 so that the bounds computation has 2 additional bits.
-		const exp_st   e2 = exponent - 2;
-		const uint32_t m2 = mantissa;
+		exp_st const   e2 = exponent - 2;
+		uint32_t const m2 = mantissa;
 
-		const bool acceptBounds = (m2 & 1) == 0; //even
+		bool const acceptBounds = (m2 & 1) == 0; //even
 
 		// Step 2: Determine the interval of valid decimal representations.
-		const uint32_t m_md = 4 * m2;
-		const uint32_t m_hi = m_md + 2;
+		uint32_t const m_md = 4 * m2;
+		uint32_t const m_hi = m_md + 2;
 
 		// Implicit bool -> int conversion. True is 1, false is 0.
-		const uint32_t mmShift = mantissa_bits != 0 || exponent_bits <= 1;
-		const uint32_t m_lo = m_md - 1 - mmShift;
+		uint32_t const mmShift = mantissa_bits != 0 || exponent_bits <= 1;
+		uint32_t const m_lo = m_md - 1 - mmShift;
 
 
 		// Step 3: Convert to a decimal power base using 64-bit arithmetic.
@@ -138,13 +138,13 @@ namespace core
 		bool     vloIsTrailingZeros = false;
 		bool     vmdIsTrailingZeros = false;
 		uint8_t  lastRemovedDigit  = 0;
-		const int16_t ne2 = -e2;
+		int16_t const ne2 = -e2;
 
 		if(e2 >= 0)
 		{
-			const uint16_t q = log10Pow2(e2);
-			const uint16_t k = FLOAT_POW5_INV_BITCOUNT + pow5bits(q) - 1;
-			const uint8_t  i = static_cast<uint8_t>(ne2 + static_cast<int16_t>(q + k));
+			uint16_t const q = log10Pow2(e2);
+			uint16_t const k = FLOAT_POW5_INV_BITCOUNT + pow5bits(q) - 1;
+			uint8_t  const i = static_cast<uint8_t>(ne2 + static_cast<int16_t>(q + k));
 
 			e10 = static_cast<int16_t>(q);
 
@@ -157,7 +157,7 @@ namespace core
 				// We need to know one removed digit even if we are not going to loop below. We could use
 				// q = X - 1 above, except that would require 33 bits for the result, and we've found that
 				// 32-bit arithmetic is faster even on 64-bit machines.
-				const uint16_t l = static_cast<uint16_t>(FLOAT_POW5_INV_BITCOUNT + pow5bits(q - 1) - 1);
+				uint16_t const l = static_cast<uint16_t>(FLOAT_POW5_INV_BITCOUNT + pow5bits(q - 1) - 1);
 				lastRemovedDigit = static_cast<uint8_t>(mulPow5InvDivPow2(m_md, q - 1, static_cast<uint8_t>(ne2 + q - 1 + l)) % 10);
 			}
 			if(q <= 9)
@@ -180,9 +180,9 @@ namespace core
 		}
 		else
 		{
-			const uint16_t q = log10Pow5(ne2);
-			const uint16_t i = static_cast<uint16_t>(ne2 - q);
-			const int16_t  k = static_cast<int16_t>(pow5bits(i) - FLOAT_POW5_BITCOUNT);
+			uint16_t const q = log10Pow5(ne2);
+			uint16_t const i = static_cast<uint16_t>(ne2 - q);
+			int16_t  const k = static_cast<int16_t>(pow5bits(i) - FLOAT_POW5_BITCOUNT);
 			uint8_t        j = static_cast<uint8_t>(static_cast<int16_t>(q) - k);
 
 			e10 = static_cast<int16_t>(q) + e2;
@@ -311,7 +311,7 @@ namespace core
 
 
 	template<>
-	fp_base_classify to_chars_shortest_classify<float64_t>(float64_t value, fp_to_chars_shortest_context<float64_t>& context)
+	fp_base_classify to_chars_shortest_classify<float64_t>(float64_t const value, fp_to_chars_shortest_context<float64_t>& context)
 	{
 		using fp_type = float64_t;
 		using fp_utils_t = fp_utils<fp_type>;
@@ -319,9 +319,9 @@ namespace core
 		using exp_st = fp_utils_t::exp_st;
 		//using exp_ut = fp_utils_t::exp_ut;
 
-		const uint_t exponent_bits = fp_utils_t::get_exponent_bits(value);
-		const uint_t mantissa_bits = fp_utils_t::get_mantissa(value);
-		const bool sign_bit        = fp_utils_t::get_sign(value);
+		uint_t const exponent_bits = fp_utils_t::get_exponent_bits(value);
+		uint_t const mantissa_bits = fp_utils_t::get_mantissa(value);
+		bool const   sign_bit      = fp_utils_t::get_sign(value);
 
 		if(exponent_bits == fp_utils_t::exponent_mask)
 		{ //nan or inf
@@ -350,15 +350,15 @@ namespace core
 		}
 
 		// We subtract 2 so that the bounds computation has 2 additional bits.
-		const exp_st  e2 = exponent - 2;
-		const uint64_t m2 = mantissa;
+		exp_st   const e2 = exponent - 2;
+		uint64_t const m2 = mantissa;
 
-		const bool acceptBounds = (m2 & 1) == 0; //even
+		bool const acceptBounds = (m2 & 1) == 0; //even
 
 		// Step 2: Determine the interval of valid decimal representations.
-		const uint64_t m_md = 4 * m2;
+		uint64_t const m_md = 4 * m2;
 		// Implicit bool -> int conversion. True is 1, false is 0.
-		const uint8_t mmShift = mantissa_bits != 0 || exponent_bits <= 1;
+		uint8_t const mmShift = mantissa_bits != 0 || exponent_bits <= 1;
 		// We would compute m_hi and m_lo like this:
 		// uint64_t m_hi = 4 * m2 + 2;
 		// uint64_t m_lo = m_md - 1 - mmShift;
@@ -368,15 +368,15 @@ namespace core
 		exp_st e10;
 		bool vloIsTrailingZeros = false;
 		bool vmdIsTrailingZeros = false;
-		const int16_t ne2 = -e2;
+		int16_t const ne2 = -e2;
 
 		if(e2 >= 0)
 		{
 			// I tried special-casing q == 0, but there was no effect on performance.
 			// This expression is slightly faster than max(0, log10Pow2(e2) - 1).
-			const uint16_t q = static_cast<uint16_t>(log10Pow2(static_cast<uint16_t>(e2)) - (e2 > 3));
-			const uint16_t k = DOUBLE_POW5_INV_BITCOUNT + pow5bits(q) - 1;
-			const uint8_t  i = static_cast<uint8_t>(ne2 + static_cast<int16_t>(q + k));
+			uint16_t const q = static_cast<uint16_t>(log10Pow2(static_cast<uint16_t>(e2)) - (e2 > 3));
+			uint16_t const k = DOUBLE_POW5_INV_BITCOUNT + pow5bits(q) - 1;
+			uint8_t  const i = static_cast<uint8_t>(ne2 + static_cast<int16_t>(q + k));
 
 			e10 = static_cast<int16_t>(q);
 			v_md = mulShiftAll64(m2, DOUBLE_POW5_INV_SPLIT[q], i, v_hi, v_lo, mmShift);
@@ -386,7 +386,7 @@ namespace core
 				// This should use q <= 22, but I think 21 is also safe. Smaller values
 				// may still be safe, but it's more difficult to reason about them.
 				// Only one of m_hi, m_md, and m_lo can be a multiple of 5, if any.
-				const uint32_t mvMod5 = static_cast<uint32_t>(m_md % 5);
+				uint32_t const mvMod5 = static_cast<uint32_t>(m_md % 5);
 				if(mvMod5 == 0)
 				{
 					vmdIsTrailingZeros = multipleOfPowerOf5(m_md, q);
@@ -408,10 +408,10 @@ namespace core
 		else
 		{
 			// This expression is slightly faster than max(0, log10Pow5(-e2) - 1).
-			const uint16_t q = static_cast<uint16_t>(log10Pow5(static_cast<uint16_t>(ne2)) - (ne2 > 1));
-			const uint16_t i = static_cast<uint16_t>(ne2 - q);
-			const int16_t  k = static_cast<int16_t>(pow5bits(i) - DOUBLE_POW5_BITCOUNT);
-			const uint8_t  j = static_cast<uint8_t>(static_cast<int16_t>(q) - k);
+			uint16_t const q = static_cast<uint16_t>(log10Pow5(static_cast<uint16_t>(ne2)) - (ne2 > 1));
+			uint16_t const i = static_cast<uint16_t>(ne2 - q);
+			int16_t  const k = static_cast<int16_t>(pow5bits(i) - DOUBLE_POW5_BITCOUNT);
+			uint8_t  const j = static_cast<uint8_t>(static_cast<int16_t>(q) - k);
 
 			e10 = static_cast<int16_t>(q) + e2;
 			v_md = mulShiftAll64(m2, DOUBLE_POW5_SPLIT[i], j, v_hi, v_lo, mmShift);
@@ -451,15 +451,15 @@ namespace core
 			// General case, which happens rarely (~0.7%).
 			for(;;)
 			{
-				const uint64_t vpDiv10 = v_hi / 10;
-				const uint64_t vmDiv10 = v_lo / 10;
+				uint64_t const vpDiv10 = v_hi / 10;
+				uint64_t const vmDiv10 = v_lo / 10;
 				if(vpDiv10 <= vmDiv10)
 				{
 					break;
 				}
-				const uint32_t vmMod10 = static_cast<uint32_t>(v_lo % 10);
-				const uint64_t vrDiv10 = v_md / 10;
-				const uint32_t vrMod10 = static_cast<uint32_t>(v_md % 10);
+				uint32_t const vmMod10 = static_cast<uint32_t>(v_lo % 10);
+				uint64_t const vrDiv10 = v_md / 10;
+				uint32_t const vrMod10 = static_cast<uint32_t>(v_md % 10);
 				vloIsTrailingZeros &= vmMod10 == 0;
 				vmdIsTrailingZeros &= lastRemovedDigit == 0;
 				lastRemovedDigit = static_cast<uint8_t>(vrMod10);
@@ -473,20 +473,20 @@ namespace core
 			{
 				for(;;)
 				{
-					const uint64_t vmDiv10 = v_lo / 10;
-					const uint32_t vmMod10 = static_cast<uint32_t>(v_lo % 10);
+					uint64_t const vmDiv10 = v_lo / 10;
+					uint32_t const vmMod10 = static_cast<uint32_t>(v_lo % 10);
 					if(vmMod10 != 0)
 					{
 						break;
 					}
-					const uint64_t vpDiv10 = v_hi / 10;
-					const uint64_t vrDiv10 = v_md / 10;
-					const uint32_t vrMod10 = static_cast<uint32_t>(v_md % 10);
+					uint64_t const vpDiv10 = v_hi / 10;
+					uint64_t const vrDiv10 = v_md / 10;
+					uint32_t const vrMod10 = static_cast<uint32_t>(v_md % 10);
 					vmdIsTrailingZeros &= lastRemovedDigit == 0;
 					lastRemovedDigit = static_cast<uint8_t>(vrMod10);
-					v_md				 = vrDiv10;
-					v_hi				 = vpDiv10;
-					v_lo				 = vmDiv10;
+					v_md			 = vrDiv10;
+					v_hi			 = vpDiv10;
+					v_lo			 = vmDiv10;
 					++e10;
 				}
 			}
@@ -503,15 +503,15 @@ namespace core
 		{
 			// Specialized for the common case (~99.3%). Percentages below are relative to this.
 			bool		   roundUp	= false;
-			const uint64_t vpDiv100 = v_hi / 100;
-			const uint64_t vmDiv100 = v_lo / 100;
+			uint64_t const vpDiv100 = v_hi / 100;
+			uint64_t const vmDiv100 = v_lo / 100;
 			if(vpDiv100 > vmDiv100)
 			{ // Optimization: remove two digits at a time (~86.2%).
-				const uint64_t vrDiv100 = v_md / 100;
+				uint64_t const vrDiv100 = v_md / 100;
 				roundUp					= v_md % 100 >= 50;
-				v_md						= vrDiv100;
-				v_hi						= vpDiv100;
-				v_lo						= vmDiv100;
+				v_md					= vrDiv100;
+				v_hi					= vpDiv100;
+				v_lo					= vmDiv100;
 				e10 += 2;
 			}
 			// Loop iterations below (approximately), without optimization above:
@@ -520,17 +520,17 @@ namespace core
 			// 0: 70.6%, 1: 27.8%, 2: 1.40%, 3: 0.14%, 4+: 0.02%
 			for(;;)
 			{
-				const uint64_t vpDiv10 = v_hi / 10;
-				const uint64_t vmDiv10 = v_lo / 10;
+				uint64_t const vpDiv10 = v_hi / 10;
+				uint64_t const vmDiv10 = v_lo / 10;
 				if(vpDiv10 <= vmDiv10)
 				{
 					break;
 				}
-				const uint64_t vrDiv10 = v_md / 10;
+				uint64_t const vrDiv10 = v_md / 10;
 				roundUp				   = v_md % 10 >= 5;
-				v_md					   = vrDiv10;
-				v_hi					   = vpDiv10;
-				v_lo					   = vmDiv10;
+				v_md				   = vrDiv10;
+				v_hi				   = vpDiv10;
+				v_lo				   = vmDiv10;
 				++e10;
 			}
 

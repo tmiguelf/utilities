@@ -111,9 +111,9 @@ public:
 
 	static constexpr uint32_t Infinite = 0xFFFFFFFF;
 private:
-	thread& operator = (const thread&)	= delete;
+	thread& operator = (thread const&)	= delete;
 	thread& operator = (thread&&)		= delete;
-	thread(const thread&)				= delete;
+	thread(thread const&)				= delete;
 
 #ifdef _WIN32
 	void*		m_handle = nullptr;

@@ -43,20 +43,20 @@ using ::core::literals::operator "" _ui64;
 
 using stream_t = std::basic_ostream<char>;
 
-static stream_t& operator << (stream_t& p_stream, const std::u8string& p_str)
+static stream_t& operator << (stream_t& p_stream, std::u8string const& p_str)
 {
-	p_stream.write(reinterpret_cast<const char*>(p_str.data()), p_str.size());
+	p_stream.write(reinterpret_cast<char const*>(p_str.data()), p_str.size());
 	return p_stream;
 }
 
 /*
 static stream_t& operator << (stream_t& p_stream, std::u8string_view p_str)
 {
-	p_stream.write(reinterpret_cast<const char*>(p_str.data()), p_str.size());
+	p_stream.write(reinterpret_cast<char const*>(p_str.data()), p_str.size());
 	return p_stream;
 }*/
 
-static stream_t& operator << (stream_t& p_stream, const std::u16string& p_str)
+static stream_t& operator << (stream_t& p_stream, std::u16string const& p_str)
 {
 	std::u8string temp;
 	temp.resize(p_str.size());
@@ -72,7 +72,7 @@ static stream_t& operator << (stream_t& p_stream, const std::u16string& p_str)
 	return p_stream << temp;
 }
 
-static stream_t& operator << (stream_t& p_stream, const std::u32string& p_str)
+static stream_t& operator << (stream_t& p_stream, std::u32string const& p_str)
 {
 	std::u8string temp;
 	temp.resize(p_str.size());
@@ -103,8 +103,8 @@ template <typename char_T>
 std::basic_string<char_T> str2_Tstring(std::string_view p_str)
 {
 	std::basic_string<char_T> out;
-	const char* first = p_str.data();
-	const char* last = first + p_str.size();
+	char const* first = p_str.data();
+	char const* last = first + p_str.size();
 
 	out.resize(p_str.size());
 
@@ -120,7 +120,7 @@ std::basic_string<char_T> str2_Tstring(std::string_view p_str)
 
 //======== ======== ======== Decimal test Cases ======== ======== ========
 
-static const std::vector<int64_t> s_numbers =
+static std::vector<int64_t> const s_numbers =
 {
 	-0,
 	-1,
@@ -196,7 +196,7 @@ static const std::vector<int64_t> s_numbers =
 	-9223372036854775807,
 };
 
-static const std::vector<uint64_t> u_numbers =
+static std::vector<uint64_t> const u_numbers =
 {
 	0,
 	1,
@@ -272,7 +272,7 @@ static const std::vector<uint64_t> u_numbers =
 	18446744073709551615_ui64
 };
 
-const std::vector<std::string> badCases_s =
+std::vector<std::string> const badCases_s =
 {
 	"",
 	"/",
@@ -434,7 +434,7 @@ std::vector<std::basic_string<char_T>> get_badCases()
 {
 	std::vector<std::basic_string<char_T>> out;
 
-	for(const std::string& t_str : badCases_s)
+	for(std::string const& t_str : badCases_s)
 	{
 		out.emplace_back(str2_Tstring<char_T>(t_str));
 	}
@@ -506,8 +506,8 @@ TYPED_TEST(charconv_Decimal_T, from_chars_good)
 	using char_T = typename TypeParam::second_type;
 
 	{
-		const std::vector<std::pair<num_T, std::basic_string<char_T>>>& goodCases = get_goodCases<num_T, char_T>();
-		for(const std::pair<num_T, std::basic_string<char_T>>& testCase: goodCases)
+		std::vector<std::pair<num_T, std::basic_string<char_T>>> const& goodCases = get_goodCases<num_T, char_T>();
+		for(std::pair<num_T, std::basic_string<char_T>> const& testCase: goodCases)
 		{
 			core::from_chars_result<num_T> result = core::from_chars<num_T>(testCase.second);
 
@@ -518,8 +518,8 @@ TYPED_TEST(charconv_Decimal_T, from_chars_good)
 
 	if constexpr (std::is_floating_point_v<num_T>)
 	{
-		const std::vector<std::pair<num_T, std::basic_string<char_T>>>& cases = getFpCases_extra<num_T, char_T>();
-		for(const std::pair<num_T, std::basic_string<char_T>>& testCase: cases)
+		std::vector<std::pair<num_T, std::basic_string<char_T>>> const& cases = getFpCases_extra<num_T, char_T>();
+		for(std::pair<num_T, std::basic_string<char_T>> const& testCase: cases)
 		{
 			core::from_chars_result<num_T> result = core::from_chars<num_T>(testCase.second);
 
@@ -535,8 +535,8 @@ TYPED_TEST(charconv_Decimal_T, from_chars_bad)
 	using num_T = typename TypeParam::first_type;
 	using char_T = typename TypeParam::second_type;
 
-	const std::vector<std::basic_string<char_T>>& badCases = get_badCases<num_T, char_T>();
-	for(const std::basic_string<char_T>& testCase: badCases)
+	std::vector<std::basic_string<char_T>> const& badCases = get_badCases<num_T, char_T>();
+	for(std::basic_string<char_T> const& testCase: badCases)
 	{
 		core::from_chars_result<num_T> result = core::from_chars<num_T>(testCase);
 
@@ -547,7 +547,7 @@ TYPED_TEST(charconv_Decimal_T, from_chars_bad)
 
 //======== ======== ======== Hex test Cases ======== ======== ========
 
-static const std::vector<uint64_t> hex_numbers =
+static std::vector<uint64_t> const hex_numbers =
 {
 	0x0,
 	0x1,
@@ -593,7 +593,7 @@ static const std::vector<uint64_t> hex_numbers =
 	0xFFFFFFFFFFFFFFFF,
 };
 
-const std::vector<std::string> hexBadCases_s =
+std::vector<std::string> const hexBadCases_s =
 {
 	"",
 	"/",
@@ -657,7 +657,7 @@ std::vector<std::basic_string<char_T>> get_badCases_hex()
 {
 	std::vector<std::basic_string<char_T>> out;
 
-	for(const std::string& t_str : hexBadCases_s)
+	for(std::string const& t_str : hexBadCases_s)
 	{
 		out.emplace_back(str2_Tstring<char_T>(t_str));
 	}
@@ -698,8 +698,8 @@ TYPED_TEST(charconv_Hex_T, from_string_good)
 	using num_T = typename TypeParam::first_type;
 	using char_T = typename TypeParam::second_type;
 
-	const std::vector<std::pair<num_T, std::basic_string<char_T>>>& goodCases = get_goodCases_hex<num_T, char_T>();
-	for(const std::pair<num_T, std::basic_string<char_T>>& testCase: goodCases)
+	std::vector<std::pair<num_T, std::basic_string<char_T>>> const& goodCases = get_goodCases_hex<num_T, char_T>();
+	for(std::pair<num_T, std::basic_string<char_T>> const& testCase: goodCases)
 	{
 		core::from_chars_result<num_T> result = core::from_chars_hex<num_T>(testCase.second);
 
@@ -713,8 +713,8 @@ TYPED_TEST(charconv_Hex_T, from_string_bad)
 	using num_T = typename TypeParam::first_type;
 	using char_T = typename TypeParam::second_type;
 
-	const std::vector<std::basic_string<char_T>>& badCases = get_badCases_hex<num_T, char_T>();
-	for(const std::basic_string<char_T>& testCase: badCases)
+	std::vector<std::basic_string<char_T>> const& badCases = get_badCases_hex<num_T, char_T>();
+	for(std::basic_string<char_T> const& testCase: badCases)
 	{
 		core::from_chars_result<num_T> result = core::from_chars_hex<num_T>(testCase);
 
@@ -725,7 +725,7 @@ TYPED_TEST(charconv_Hex_T, from_string_bad)
 
 //======== ======== ======== Bin test Cases ======== ======== ========
 
-const std::vector<std::string> binBadCases_s =
+std::vector<std::string> const binBadCases_s =
 {
 	"",
 	"false",
@@ -792,7 +792,7 @@ std::vector<std::basic_string<char_T>> get_badCases_bin()
 {
 	std::vector<std::basic_string<char_T>> out;
 
-	for(const std::string& t_str : binBadCases_s)
+	for(std::string const& t_str : binBadCases_s)
 	{
 		out.emplace_back(str2_Tstring<char_T>(t_str));
 	}
@@ -833,8 +833,8 @@ TYPED_TEST(charconv_Bin_T, from_string_good)
 	using num_T = typename TypeParam::first_type;
 	using char_T = typename TypeParam::second_type;
 
-	const std::vector<std::pair<num_T, std::basic_string<char_T>>>& goodCases = get_goodCases_bin<num_T, char_T>();
-	for(const std::pair<num_T, std::basic_string<char_T>>& testCase: goodCases)
+	std::vector<std::pair<num_T, std::basic_string<char_T>>> const& goodCases = get_goodCases_bin<num_T, char_T>();
+	for(std::pair<num_T, std::basic_string<char_T>> const& testCase: goodCases)
 	{
 		core::from_chars_result<num_T> result = core::from_chars_bin<num_T>(testCase.second);
 
@@ -848,8 +848,8 @@ TYPED_TEST(charconv_Bin_T, from_string_bad)
 	using num_T = typename TypeParam::first_type;
 	using char_T = typename TypeParam::second_type;
 
-	const std::vector<std::basic_string<char_T>>& badCases = get_badCases_bin<num_T, char_T>();
-	for(const std::basic_string<char_T>& testCase: badCases)
+	std::vector<std::basic_string<char_T>> const& badCases = get_badCases_bin<num_T, char_T>();
+	for(std::basic_string<char_T> const& testCase: badCases)
 	{
 		core::from_chars_result<num_T> result = core::from_chars_bin<num_T>(testCase);
 
@@ -879,8 +879,8 @@ TYPED_TEST(charconv_char_T, is_uint)
 
 	//good
 	{
-		const std::vector<std::pair<uint64_t, std::basic_string<char_T>>>& goodCases = get_goodCases<uint64_t, char_T>();
-		for(const std::pair<uint64_t, std::basic_string<char_T>>& testCase: goodCases)
+		std::vector<std::pair<uint64_t, std::basic_string<char_T>>> const& goodCases = get_goodCases<uint64_t, char_T>();
+		for(std::pair<uint64_t, std::basic_string<char_T>> const& testCase: goodCases)
 		{
 			ASSERT_TRUE(core::is_uint(testCase.second)) << "Case" << testCase.second;
 		}
@@ -903,8 +903,8 @@ TYPED_TEST(charconv_char_T, is_int)
 
 	//good
 	{
-		const std::vector<std::pair<int64_t, std::basic_string<char_T>>>& goodCases = get_goodCases<int64_t, char_T>();
-		for(const std::pair<int64_t, std::basic_string<char_T>>& testCase: goodCases)
+		std::vector<std::pair<int64_t, std::basic_string<char_T>>> const& goodCases = get_goodCases<int64_t, char_T>();
+		for(std::pair<int64_t, std::basic_string<char_T>> const& testCase: goodCases)
 		{
 			ASSERT_TRUE(core::is_int(testCase.second)) << "Case " << testCase.second;
 		}
@@ -926,8 +926,8 @@ TYPED_TEST(charconv_char_T, is_hex)
 
 	//good
 	{
-		const std::vector<std::pair<uint64_t, std::basic_string<char_T>>>& goodCases = get_goodCases_hex<uint64_t, char_T>();
-		for(const std::pair<uint64_t, std::basic_string<char_T>>& testCase: goodCases)
+		std::vector<std::pair<uint64_t, std::basic_string<char_T>>> const& goodCases = get_goodCases_hex<uint64_t, char_T>();
+		for(std::pair<uint64_t, std::basic_string<char_T>> const& testCase: goodCases)
 		{
 			ASSERT_TRUE(core::is_hex(testCase.second)) << "Case " << testCase.second;
 		}
@@ -950,8 +950,8 @@ TYPED_TEST(charconv_char_T, is_bin)
 
 	//good
 	{
-		const std::vector<std::pair<uint64_t, std::basic_string<char_T>>>& goodCases = get_goodCases_bin<uint64_t, char_T>();
-		for(const std::pair<uint64_t, std::basic_string<char_T>>& testCase: goodCases)
+		std::vector<std::pair<uint64_t, std::basic_string<char_T>>> const& goodCases = get_goodCases_bin<uint64_t, char_T>();
+		for(std::pair<uint64_t, std::basic_string<char_T>> const& testCase: goodCases)
 		{
 			ASSERT_TRUE(core::is_bin(testCase.second)) << "Case " << testCase.second;
 		}
@@ -965,35 +965,6 @@ TYPED_TEST(charconv_char_T, is_bin)
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 } //namespace numeric

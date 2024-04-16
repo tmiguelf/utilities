@@ -108,7 +108,7 @@ namespace core
 		static constexpr uint16_t pow_2_low_mask = 0x1F_ui16;
 		static constexpr uint8_t pow_2_hi_offset = 5_ui8;
 
-		[[nodiscard]] inline static constexpr uint16_t num_digits(const uint64_t p_val)
+		[[nodiscard]] inline static constexpr uint16_t num_digits(uint64_t const p_val)
 		{
 			if(p_val <                  10_ui64) return  1;
 			if(p_val <                 100_ui64) return  2;
@@ -206,7 +206,7 @@ namespace core
 		}
 
 
-		inline static void fix_rounding_mode(fp_round& rounding_mode, const bool sign_bit)
+		inline static void fix_rounding_mode(fp_round& rounding_mode, bool const sign_bit)
 		{
 			if(rounding_mode >= fp_round::to_inf)
 			{
@@ -260,7 +260,7 @@ namespace core
 			bignum_t{7572422027587890625_ui64, 8447331464594753924_ui64, 1400485046962261850_ui64, 6665277316200968382_ui64, 5085839414626955934_ui64, 448415_ui64},
 		};
 
-		[[nodiscard]] static inline exp_ut last_block(const bignum_t& p_val)
+		[[nodiscard]] static inline exp_ut last_block(bignum_t const& p_val)
 		{
 			if(p_val[5]) return 5;
 			if(p_val[4]) return 4;
@@ -270,7 +270,7 @@ namespace core
 			return 0;
 		}
 
-		[[nodiscard]] static inline exp_ut leading_zeros(const bignum_t& p_val)
+		[[nodiscard]] static inline exp_ut leading_zeros(bignum_t const& p_val)
 		{
 			if(p_val[0]) return                         leading_0(p_val[0]);
 			if(p_val[1]) return     max_pow_10_digits + leading_0(p_val[1]);
@@ -282,7 +282,7 @@ namespace core
 		}
 
 
-		static inline void exp_load(const exp_st exponent, fp_to_chars_sci_size& p_out)
+		static inline void exp_load(exp_st const exponent, fp_to_chars_sci_size& p_out)
 		{
 			if(exponent < 0)
 			{
@@ -433,7 +433,7 @@ namespace core
 			bignum_t{6788730621337890625_ui64, 8260916350154730025_ui64, 1054836111697107017_ui64, 9746592397646568228_ui64, 9003823349558934395_ui64, 6440580415145095266_ui64, 5026422047965260195_ui64, 4588071890710870340_ui64, 3911281493787879813_ui64, 1055037089914986243_ui64, 3316991619930098923_ui64, 7923901231336910927_ui64, 8334722404240460246_ui64, 3329727744369531573_ui64, 1332890737901334288_ui64, 7751610724284299668_ui64, 2005392141059738880_ui64, 8907120637420954446_ui64, 5329809902859147605_ui64, 1677279576363216662_ui64, 7604509920518839998_ui64, 6596982131722182617_ui64, 2412424997277810863_ui64, 6634226747072748158_ui64, 9650495426236468410_ui64, 4605601268615415922_ui64, 7549249893589092678_ui64, 2554963661425993_ui64, 8745442279949228922_ui64, 3268671395928414754_ui64, 285276124561811138_ui64, 991840431275125052_ui64, 6626841423759185595_ui64, 8625878178287092370_ui64, 1993454465439695191_ui64, 2702029080835007461_ui64, 5729905770234273000_ui64, 4728854894602392104_ui64, 3364986176706275171_ui64, 197626258_ui64, 0_ui64},
 		};
 
-		[[nodiscard]] static inline exp_ut last_block(const bignum_t& p_val)
+		[[nodiscard]] static inline exp_ut last_block(bignum_t const& p_val)
 		{
 			for(uint16_t i = static_cast<uint16_t>(p_val.size()); --i;)
 			{
@@ -442,12 +442,12 @@ namespace core
 			return 0;
 		}
 
-		[[nodiscard]] static inline exp_ut leading_zeros(const bignum_t& p_val)
+		[[nodiscard]] static inline exp_ut leading_zeros(bignum_t const& p_val)
 		{
 			if(p_val[0]) return                     leading_0(p_val[0]);
 			if(p_val[1]) return max_pow_10_digits + leading_0(p_val[1]);
 
-			const uint16_t t_size = static_cast<uint16_t>(p_val.size());
+			uint16_t const t_size = static_cast<uint16_t>(p_val.size());
 			for(uint16_t i = 2; i < t_size; ++i)
 			{
 				if(p_val[i]) return static_cast<exp_ut>(i * max_pow_10_digits + leading_0(p_val[0]));
@@ -519,7 +519,7 @@ namespace core
 		using exp_st = typename fp_utils_p::exp_st;
 		using exp_ut = typename fp_utils_p::exp_ut;
 
-		static void mul_hack(bignum_t& p_1, const uint64_t p_2)
+		static void mul_hack(bignum_t& p_1, uint64_t const p_2)
 		{
 			uint64_t mul_carry = 0;
 			uint64_t carry = 0;
@@ -569,20 +569,20 @@ namespace core
 			core::addcarry(0, carry, core::umul(p_1[last_index], p_2, mul_carry), p_1[last_index]);
 		}
 
-		static inline void pow2_load(bignum_t& p_out, const exp_ut p_pow)
+		static inline void pow2_load(bignum_t& p_out, exp_ut const p_pow)
 		{
 			p_out = fp_utils_p::pow_2_hack_table[p_pow >> fp_utils_p::pow_2_hi_offset];
-			const exp_ut low = p_pow & fp_utils_p::pow_2_low_mask;
+			exp_ut const low = p_pow & fp_utils_p::pow_2_low_mask;
 			if(low)
 			{
 				mul_hack(p_out, fp_utils_p::pow_2_low_table(low));
 			}
 		}
 
-		static inline void pow5_load(bignum_t& p_out, const exp_ut p_pow)
+		static inline void pow5_load(bignum_t& p_out, exp_ut const p_pow)
 		{
 			p_out = fp_utils_p::pow_5_hack_table[p_pow >> fp_utils_p::pow_5_hi_offset];
-			const exp_ut low = p_pow & fp_utils_p::pow_5_low_mask;
+			exp_ut const low = p_pow & fp_utils_p::pow_5_low_mask;
 			if(low)
 			{
 				mul_hack(p_out, fp_utils_p::pow_5_low_table[low]);
@@ -601,7 +601,7 @@ namespace core
 
 			if(exponent < 0)
 			{
-				const exp_ut decimal_seperator_offset = static_cast<exp_ut>(-exponent);
+				exp_ut const decimal_seperator_offset = static_cast<exp_ut>(-exponent);
 				pow5_load(digits, decimal_seperator_offset);
 				mul_hack(digits, mantissa);
 				return decimal_seperator_offset;
@@ -611,17 +611,17 @@ namespace core
 			return 0;
 		}
 
-		static inline void round_nearest_at(bignum_t& p_out, const exp_ut pos)
+		static inline void round_nearest_at(bignum_t& p_out, exp_ut const pos)
 		{
-			const exp_ut block = pos / fp_utils_p::max_pow_10_digits;
-			const exp_ut block_offset = pos % fp_utils_p::max_pow_10_digits;
+			exp_ut const block = pos / fp_utils_p::max_pow_10_digits;
+			exp_ut const block_offset = pos % fp_utils_p::max_pow_10_digits;
 
 			if(block_offset)
 			{
-				const uint64_t val = p_out[block];
+				uint64_t const val = p_out[block];
 
-				const uint64_t over_val = fp_utils_p::pow_10_table[block_offset];
-				const uint64_t remain = val % over_val;
+				uint64_t const over_val = fp_utils_p::pow_10_table[block_offset];
+				uint64_t const remain = val % over_val;
 				p_out[block] -= remain;
 
 				if(((block_offset == 1) ? remain : remain / fp_utils_p::pow_10_table[block_offset - 1]) < 5)
@@ -660,11 +660,11 @@ namespace core
 			}
 		}
 
-		static inline void round_down_at(bignum_t& p_out, const exp_ut pos)
+		static inline void round_down_at(bignum_t& p_out, exp_ut const pos)
 		{
-			const exp_ut block = pos / fp_utils_p::max_pow_10_digits;
-			const exp_ut block_offset = pos % fp_utils_p::max_pow_10_digits;
-			const uint64_t val = p_out[block];
+			exp_ut const block = pos / fp_utils_p::max_pow_10_digits;
+			exp_ut const block_offset = pos % fp_utils_p::max_pow_10_digits;
+			uint64_t const val = p_out[block];
 
 			for(exp_ut i = 0; i < block; ++i)
 			{
@@ -673,17 +673,17 @@ namespace core
 
 			if(block_offset)
 			{
-				const uint64_t over_val = fp_utils_p::pow_10_table[block_offset];
-				const uint64_t remain = val % over_val;
+				uint64_t const over_val = fp_utils_p::pow_10_table[block_offset];
+				uint64_t const remain = val % over_val;
 				p_out[block] -= remain;
 			}
 		}
 
-		static inline void round_up_at(bignum_t& p_out, const exp_ut pos)
+		static inline void round_up_at(bignum_t& p_out, exp_ut const pos)
 		{
 			exp_ut block = pos / fp_utils_p::max_pow_10_digits;
-			const exp_ut block_offset = pos % fp_utils_p::max_pow_10_digits;
-			const uint64_t val = p_out[block];
+			exp_ut const block_offset = pos % fp_utils_p::max_pow_10_digits;
+			uint64_t const val = p_out[block];
 
 			for(exp_ut i = 0; i < block; ++i)
 			{
@@ -692,8 +692,8 @@ namespace core
 
 			if(block_offset)
 			{
-				const uint64_t over_val = fp_utils_p::pow_10_table[block_offset];
-				const uint64_t remain = val % over_val;
+				uint64_t const over_val = fp_utils_p::pow_10_table[block_offset];
+				uint64_t const remain = val % over_val;
 				p_out[block] -= remain;
 				p_out[block] += over_val;
 			}
@@ -716,7 +716,7 @@ namespace core
 		}
 
 		template<typename char_t>
-		static inline void to_chars_sci_mantissa(const bignum_t& digits, char_t* const unit_char, char_t* decimal_chars,
+		static inline void to_chars_sci_mantissa(bignum_t const& digits, char_t* const unit_char, char_t* decimal_chars,
 			exp_ut last_block,
 			exp_ut last_num_digits,
 			exp_ut sig_digits)
@@ -728,7 +728,7 @@ namespace core
 			else
 			{
 				uint64_t this_block = digits[last_block--];
-				const uint64_t this_div = fp_utils_p::pow_10_table[--last_num_digits];
+				uint64_t const this_div = fp_utils_p::pow_10_table[--last_num_digits];
 				*unit_char = static_cast<char_t>('0' + this_block / this_div);
 
 				this_block %= this_div;
@@ -762,7 +762,7 @@ namespace core
 		}
 
 		template<_p::charconv_char_c char_t>
-		static inline void fill_digits(const bignum_t& digits,
+		static inline void fill_digits(bignum_t const& digits,
 			exp_ut last_block,
 			exp_ut last_num_digits,
 			exp_ut sig_digits,
@@ -802,7 +802,7 @@ namespace core
 
 
 		template<_p::charconv_char_c char_t>
-		static inline void to_chars_fix(const bignum_t& digits,
+		static inline void to_chars_fix(bignum_t const& digits,
 			exp_st decimal_offset,
 			char_t* unit_chars, char_t* decimal_chars,
 			exp_ut last_block,
@@ -810,7 +810,7 @@ namespace core
 			exp_ut leading_zeros
 		)
 		{
-			const exp_ut num_digits = static_cast<exp_ut>(last_block * fp_utils_p::max_pow_10_digits + last_num_digits);
+			exp_ut const num_digits = static_cast<exp_ut>(last_block * fp_utils_p::max_pow_10_digits + last_num_digits);
 			exp_ut sig_digits = num_digits - leading_zeros;
 			if(decimal_offset < num_digits)
 			{
@@ -861,10 +861,10 @@ namespace core
 
 					if(unit_digits < last_num_digits)
 					{
-						const uint64_t this_div = fp_utils_p::pow_10_table[last_num_digits - unit_digits];
-						const uint64_t this_val = digits[last_block--];
-						const uint64_t div = this_val / this_div;
-						const uint64_t rem = this_val % this_div;
+						uint64_t const this_div = fp_utils_p::pow_10_table[last_num_digits - unit_digits];
+						uint64_t const this_val = digits[last_block--];
+						uint64_t const div = this_val / this_div;
+						uint64_t const rem = this_val % this_div;
 						fp_utils_p::output_sig_digits(div, unit_chars, unit_digits);
 
 						last_num_digits -= unit_digits;
@@ -888,11 +888,11 @@ namespace core
 						{
 							if(unit_digits < 19)
 							{
-								const exp_ut rem_digits = 19 - sig_digits;
-								const uint64_t this_div = fp_utils_p::pow_10_table[rem_digits];
-								const uint64_t this_val = digits[last_block--];
-								const uint64_t div = this_val / this_div;
-								const uint64_t rem = this_val % this_div;
+								exp_ut   const rem_digits = 19 - sig_digits;
+								uint64_t const this_div = fp_utils_p::pow_10_table[rem_digits];
+								uint64_t const this_val = digits[last_block--];
+								uint64_t const div = this_val / this_div;
+								uint64_t const rem = this_val % this_div;
 								fp_utils_p::output_sig_digits(div, unit_chars, unit_digits);
 
 
@@ -984,9 +984,9 @@ namespace core
 		using exp_ut = fp_utils_t::exp_ut;
 		using bignum_t = fp_utils_t::bignum_t;
 
-		const uint_t exponent_bits = fp_utils_t::get_exponent_bits(value);
-		const uint_t mantissa_bits = fp_utils_t::get_mantissa(value);
-		const bool sign_bit        = fp_utils_t::get_sign(value);
+		uint_t const exponent_bits = fp_utils_t::get_exponent_bits(value);
+		uint_t const mantissa_bits = fp_utils_t::get_mantissa(value);
+		bool   const sign_bit      = fp_utils_t::get_sign(value);
 
 		if(exponent_bits == fp_utils_t::exponent_mask)
 		{ //nan or inf
@@ -1022,7 +1022,7 @@ namespace core
 		res.classification = fp_classify::finite;
 
 		bignum_t& digits = context.digits;
-		const exp_ut decimal_seperator_offset = fp_utils_t::load_digits(digits, mantissa, exponent);
+		exp_ut const decimal_seperator_offset = fp_utils_t::load_digits(digits, mantissa, exponent);
 
 		exp_ut last_block      = fp_utils_t::last_block(digits);
 		exp_ut last_num_digits = fp_utils_t::num_digits(digits[last_block]);
@@ -1033,7 +1033,7 @@ namespace core
 		significant_digits = std::min(significant_digits, fp_utils_t::max_scientific_decimal_digits_10);
 		if(significant_digits < sig_digits)
 		{
-			const exp_ut round_pos = static_cast<exp_ut>((num_digits - 1) - significant_digits);
+			exp_ut const round_pos = static_cast<exp_ut>((num_digits - 1) - significant_digits);
 
 			fp_utils_t::fix_rounding_mode(rounding_mode, sign_bit);
 
@@ -1071,7 +1071,7 @@ namespace core
 		return res;
 	}
 
-	fp_to_chars_fix_result to_chars_fix_size(const float32_t value, fp_to_chars_fix_context<float32_t>& context, int16_t precision, fp_round rounding_mode)
+	fp_to_chars_fix_result to_chars_fix_size(float32_t const value, fp_to_chars_fix_context<float32_t>& context, int16_t precision, fp_round rounding_mode)
 	{
 		using fp_type = float32_t;
 		using fp_utils_t = fp_utils<fp_type>;
@@ -1080,9 +1080,9 @@ namespace core
 		using exp_ut = fp_utils_t::exp_ut;
 		using bignum_t = fp_utils_t::bignum_t;
 
-		const uint_t exponent_bits = fp_utils_t::get_exponent_bits(value);
-		const uint_t mantissa_bits = fp_utils_t::get_mantissa(value);
-		const bool sign_bit        = fp_utils_t::get_sign(value);
+		uint_t const exponent_bits = fp_utils_t::get_exponent_bits(value);
+		uint_t const mantissa_bits = fp_utils_t::get_mantissa(value);
+		bool   const sign_bit      = fp_utils_t::get_sign(value);
 
 		if(exponent_bits == fp_utils_t::exponent_mask)
 		{ //nan or inf
@@ -1118,7 +1118,7 @@ namespace core
 		res.classification = fp_classify::finite;
 
 		bignum_t& digits = context.digits;
-		const exp_ut decimal_seperator_offset = fp_utils_t::load_digits(digits, mantissa, exponent);
+		exp_ut const decimal_seperator_offset = fp_utils_t::load_digits(digits, mantissa, exponent);
 
 		exp_ut last_block      = fp_utils_t::last_block(digits);
 		exp_ut last_num_digits = fp_utils_t::num_digits(digits[last_block]);
@@ -1127,7 +1127,7 @@ namespace core
 
 		precision = std::clamp(precision, fp_utils_t::min_fixed_precision_10, fp_utils_t::max_fixed_precision_10);
 
-		const int16_t digits_to_precision = static_cast<int16_t>(decimal_seperator_offset) - precision;
+		int16_t const digits_to_precision = static_cast<int16_t>(decimal_seperator_offset) - precision;
 
 		if(digits_to_precision <= leading_zeros)
 		{ //all digits make it exactly
@@ -1243,7 +1243,7 @@ namespace core
 	}
 
 
-	void to_chars_sci_mantissa_unsafe(const fp_to_chars_sci_context<float32_t>& context, char8_t* const unit_char, char8_t* const decimal_chars)
+	void to_chars_sci_mantissa_unsafe(fp_to_chars_sci_context<float32_t> const& context, char8_t* const unit_char, char8_t* const decimal_chars)
 	{
 		using fp_type = float32_t;
 		using fp_utils_t = fp_utils<fp_type>;
@@ -1258,7 +1258,7 @@ namespace core
 		fp_utils_t::to_chars_sci_mantissa(context.digits, unit_char, decimal_chars, last_block, last_num_digits, sig_digits);
 	}
 
-	void to_chars_sci_exp_unsafe(const fp_to_chars_sci_context<float32_t>& context, char8_t* exp_chars)
+	void to_chars_sci_exp_unsafe(fp_to_chars_sci_context<float32_t> const& context, char8_t* exp_chars)
 	{
 		using fp_type = float32_t;
 		using fp_utils_t = fp_utils<fp_type>;
@@ -1266,7 +1266,7 @@ namespace core
 		fp_utils_t::to_chars_exp(context.exponent, exp_chars);
 	}
 
-	void to_chars_fix_unsafe(const fp_to_chars_fix_context<float32_t>& context, char8_t* unit_chars, char8_t* decimal_chars)
+	void to_chars_fix_unsafe(fp_to_chars_fix_context<float32_t> const& context, char8_t* unit_chars, char8_t* decimal_chars)
 	{
 		using fp_type = float32_t;
 		using fp_utils_t = fp_utils<fp_type>;
@@ -1290,9 +1290,9 @@ namespace core
 		using exp_ut = fp_utils_t::exp_ut;
 		using bignum_t = fp_utils_t::bignum_t;
 
-		const uint_t exponent_bits = fp_utils_t::get_exponent_bits(value);
-		const uint_t mantissa_bits = fp_utils_t::get_mantissa(value);
-		const bool sign_bit        = fp_utils_t::get_sign(value);
+		uint_t const exponent_bits = fp_utils_t::get_exponent_bits(value);
+		uint_t const mantissa_bits = fp_utils_t::get_mantissa(value);
+		bool const sign_bit        = fp_utils_t::get_sign(value);
 
 		if(exponent_bits == fp_utils_t::exponent_mask)
 		{ //nan or inf
@@ -1328,7 +1328,7 @@ namespace core
 		res.classification = fp_classify::finite;
 
 		bignum_t& digits = context.digits;
-		const exp_ut decimal_seperator_offset = fp_utils_t::load_digits(digits, mantissa, exponent);
+		exp_ut const decimal_seperator_offset = fp_utils_t::load_digits(digits, mantissa, exponent);
 
 		exp_ut last_block      = fp_utils_t::last_block(digits);
 		exp_ut last_num_digits = fp_utils_t::num_digits(digits[last_block]);
@@ -1339,7 +1339,7 @@ namespace core
 		significant_digits = std::min(significant_digits, fp_utils_t::max_scientific_decimal_digits_10);
 		if(significant_digits < sig_digits)
 		{
-			const exp_ut round_pos = static_cast<exp_ut>((num_digits - 1) - significant_digits);
+			exp_ut const round_pos = static_cast<exp_ut>((num_digits - 1) - significant_digits);
 
 			fp_utils_t::fix_rounding_mode(rounding_mode, sign_bit);
 
@@ -1377,7 +1377,7 @@ namespace core
 		return res;
 	}
 
-	void to_chars_sci_mantissa_unsafe(const fp_to_chars_sci_context<float64_t>& context, char8_t* unit_char, char8_t* decimal_chars)
+	void to_chars_sci_mantissa_unsafe(fp_to_chars_sci_context<float64_t> const& context, char8_t* unit_char, char8_t* decimal_chars)
 	{
 		using fp_type = float64_t;
 		using fp_utils_t = fp_utils<fp_type>;
@@ -1392,14 +1392,14 @@ namespace core
 		fp_utils_t::to_chars_sci_mantissa(context.digits, unit_char, decimal_chars, last_block, last_num_digits, sig_digits);
 	}
 
-	void to_chars_sci_exp_unsafe(const fp_to_chars_sci_context<float64_t>& context, char8_t* exp_chars)
+	void to_chars_sci_exp_unsafe(fp_to_chars_sci_context<float64_t> const& context, char8_t* exp_chars)
 	{
 		using fp_type = float64_t;
 		using fp_utils_t = fp_utils<fp_type>;
 		fp_utils_t::to_chars_exp(context.exponent, exp_chars);
 	}
 
-	void to_chars_fix_unsafe(const fp_to_chars_fix_context<float64_t>& context, char8_t* unit_chars, char8_t* decimal_chars)
+	void to_chars_fix_unsafe(fp_to_chars_fix_context<float64_t> const& context, char8_t* unit_chars, char8_t* decimal_chars)
 	{
 		using fp_type = float64_t;
 		using fp_utils_t = fp_utils<fp_type>;

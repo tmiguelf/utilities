@@ -72,9 +72,9 @@ namespace core
 		constexpr int fixed_flags = _O_BINARY | _O_NOINHERIT;
 		constexpr int fixed_permissions = _S_IREAD | _S_IWRITE;
 
-		static inline void* os_open_read(const std::filesystem::path& p_path)
+		static inline void* os_open_read(std::filesystem::path const& p_path)
 		{
-			const int fd0 = _wopen(p_path.native().c_str(), _O_RDONLY | fixed_flags);
+			int const fd0 = _wopen(p_path.native().c_str(), _O_RDONLY | fixed_flags);
 			if(fd0 >= 0)
 			{
 				FILE* const fd = _wfdopen(fd0, L"rb");
@@ -88,7 +88,7 @@ namespace core
 			return nullptr;
 		}
 
-		static inline void* os_open_write(const std::filesystem::path& p_path, const _p::file_base::open_mode p_mode)
+		static inline void* os_open_write(std::filesystem::path const& p_path, _p::file_base::open_mode const p_mode)
 		{
 			int fd0;
 			switch(p_mode)
@@ -121,7 +121,7 @@ namespace core
 			return nullptr;
 		}
 
-		static inline void* os_open_duplex(const std::filesystem::path& p_path, const _p::file_base::open_mode p_mode)
+		static inline void* os_open_duplex(std::filesystem::path const& p_path, _p::file_base::open_mode const p_mode)
 		{
 			int fd0;
 			switch(p_mode)
@@ -174,12 +174,12 @@ namespace core
 			return p_handle ? _ftelli64_nolock(reinterpret_cast<FILE*>(p_handle)) : -1;
 		}
 
-		static inline std::errc os_seek(void* const p_handle, const int64_t p_pos, const int p_mode)
+		static inline std::errc os_seek(void* const p_handle, int64_t const p_pos, int const p_mode)
 		{
 			return p_handle ? std::errc{_fseeki64(reinterpret_cast<FILE*>(p_handle), p_pos, p_mode) ? errno : 0} : std::errc::bad_file_descriptor;
 		}
 
-		static inline std::errc os_seek_unlocked(void* const p_handle, const int64_t p_pos, const int p_mode)
+		static inline std::errc os_seek_unlocked(void* const p_handle, int64_t const p_pos, int const p_mode)
 		{
 			return p_handle ? std::errc{_fseeki64_nolock(reinterpret_cast<FILE*>(p_handle), p_pos, p_mode) ? errno : 0} : std::errc::bad_file_descriptor;
 		}
@@ -209,22 +209,22 @@ namespace core
 			return p_handle ? std::errc{_chsize_s(_fileno(reinterpret_cast<FILE*>(p_handle)), p_size)} : std::errc::bad_file_descriptor;
 		}
 
-		static inline uintptr_t os_read(void* const p_handle, void* const p_buff, const uintptr_t p_size)
+		static inline uintptr_t os_read(void* const p_handle, void* const p_buff, uintptr_t const p_size)
 		{
 			return p_handle ? fread(p_buff, 1, p_size, reinterpret_cast<FILE*>(p_handle)) : 0;
 		}
 
-		static inline uintptr_t os_read_unlocked(void* const p_handle, void* const p_buff, const uintptr_t p_size)
+		static inline uintptr_t os_read_unlocked(void* const p_handle, void* const p_buff, uintptr_t const p_size)
 		{
 			return p_handle ? _fread_nolock(p_buff, 1, p_size, reinterpret_cast<FILE*>(p_handle)) : 0;
 		}
 
-		static inline uintptr_t os_write(void* const p_handle, const void* const p_buff, const uintptr_t p_size)
+		static inline uintptr_t os_write(void* const p_handle, void const* const p_buff, uintptr_t const p_size)
 		{
 			return p_handle ? fwrite(p_buff, 1, p_size, reinterpret_cast<FILE*>(p_handle)) : 0;
 		}
 
-		static inline uintptr_t os_write_unlocked(void* const p_handle, const void* const p_buff, const uintptr_t p_size)
+		static inline uintptr_t os_write_unlocked(void* const p_handle, void const* const p_buff, uintptr_t const p_size)
 		{
 			return p_handle ? _fwrite_nolock(p_buff, 1, p_size, reinterpret_cast<FILE*>(p_handle)) : 0;
 		}
@@ -241,9 +241,9 @@ namespace core
 #else
 		constexpr int fixed_flags = O_CLOEXEC;
 		constexpr mode_t fixed_permissions = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
-		static inline void* os_open_read(const std::filesystem::path& p_path)
+		static inline void* os_open_read(std::filesystem::path const& p_path)
 		{
-			const int fd0 = open64(p_path.native().c_str(), O_RDONLY | fixed_flags);
+			int const fd0 = open64(p_path.native().c_str(), O_RDONLY | fixed_flags);
 			if(fd0 >= 0)
 			{
 				FILE* const fd = fdopen(fd0, "rb");
@@ -257,7 +257,7 @@ namespace core
 			return nullptr;
 		}
 
-		static inline void* os_open_write(const std::filesystem::path& p_path, const _p::file_base::open_mode p_mode)
+		static inline void* os_open_write(std::filesystem::path const& p_path, _p::file_base::open_mode const p_mode)
 		{
 			int fd0;
 			switch(p_mode)
@@ -290,7 +290,7 @@ namespace core
 			return nullptr;
 		}
 
-		static inline void* os_open_duplex(const std::filesystem::path& p_path, const _p::file_base::open_mode p_mode)
+		static inline void* os_open_duplex(std::filesystem::path const& p_path, _p::file_base::open_mode const p_mode)
 		{
 			int fd0;
 			switch(p_mode)
@@ -333,7 +333,7 @@ namespace core
 			return p_handle ? ftello64(reinterpret_cast<FILE*>(p_handle)) : -1;
 		}
 
-		static inline std::errc os_seek(void* const p_handle, const int64_t p_pos, const int p_mode)
+		static inline std::errc os_seek(void* const p_handle, int64_t const p_pos, int const p_mode)
 		{
 			return p_handle ? std::errc{fseeko64(reinterpret_cast<FILE*>(p_handle), p_pos, p_mode) ? errno : 0}  : std::errc::bad_file_descriptor;;
 		}
@@ -379,39 +379,39 @@ namespace core
 			return stat_value.st_size;
 		}
 
-		static inline std::errc os_file_resize(void* const p_handle, const int64_t p_size)
+		static inline std::errc os_file_resize(void* const p_handle, int64_t const p_size)
 		{
 			return p_handle ? std::errc{ftruncate64(fileno(reinterpret_cast<FILE*>(p_handle)), p_size) ? errno : 0} : std::errc::bad_file_descriptor;
 		}
 
-		static inline uintptr_t os_read(void* const p_handle, void* const p_buff, const uintptr_t p_size)
+		static inline uintptr_t os_read(void* const p_handle, void* const p_buff, uintptr_t const p_size)
 		{
 			return p_handle ? fread(p_buff, 1, p_size, reinterpret_cast<FILE*>(p_handle)) : 0;
 		}
 
-		static inline uintptr_t os_read_unlocked(void* const p_handle, void* const p_buff, const uintptr_t p_size)
+		static inline uintptr_t os_read_unlocked(void* const p_handle, void* const p_buff, uintptr_t const p_size)
 		{
 			return p_handle ? fread_unlocked(p_buff, 1, p_size, reinterpret_cast<FILE*>(p_handle)) : 0;
 		}
 
-		static inline uintptr_t os_read_offset(void* const p_handle, void* const p_buff, const uintptr_t p_size, const int64_t p_offset)
+		static inline uintptr_t os_read_offset(void* const p_handle, void* const p_buff, uintptr_t const p_size, int64_t const p_offset)
 		{
 			if(!p_handle) return 0;
 			ssize_t res = pread64(fileno(reinterpret_cast<FILE*>(p_handle)), p_buff, p_size, p_offset);
 			return (res == -1) ? 0 : static_cast<uintptr_t>(res);
 		}
 
-		static inline uintptr_t os_write(void* const p_handle, const void* const p_buff, const uintptr_t p_size)
+		static inline uintptr_t os_write(void* const p_handle, void const* const p_buff, uintptr_t const p_size)
 		{
 			return p_handle ? fwrite(p_buff, 1, p_size, reinterpret_cast<FILE*>(p_handle)) : 0;
 		}
 
-		static inline uintptr_t os_write_unlocked(void* const p_handle, const void* const p_buff, const uintptr_t p_size)
+		static inline uintptr_t os_write_unlocked(void* const p_handle, void const* const p_buff, uintptr_t const p_size)
 		{
 			return p_handle ? fwrite_unlocked(p_buff, 1, p_size, reinterpret_cast<FILE*>(p_handle)) : 0;
 		}
 
-		static inline uintptr_t os_write_offset(void* const p_handle, const void* const p_buff, const uintptr_t p_size, const int64_t p_offset)
+		static inline uintptr_t os_write_offset(void* const p_handle, void const* const p_buff, uintptr_t const p_size, int64_t const p_offset)
 		{
 			if(!p_handle) return 0;
 			ssize_t res = pwrite64(fileno(reinterpret_cast<FILE*>(p_handle)), p_buff, p_size, p_offset);
@@ -456,17 +456,17 @@ namespace core
 			return os_tell(m_handle);
 		}
 
-		std::errc file_base::seek(const int64_t p_pos)
+		std::errc file_base::seek(int64_t const p_pos)
 		{
 			return os_seek(m_handle, p_pos, SEEK_SET);
 		}
 
-		std::errc file_base::seek_current(const int64_t p_pos)
+		std::errc file_base::seek_current(int64_t const p_pos)
 		{
 			return os_seek(m_handle, p_pos, SEEK_CUR);
 		}
 
-		std::errc file_base::seek_end(const int64_t p_pos)
+		std::errc file_base::seek_end(int64_t const p_pos)
 		{
 			return os_seek(m_handle, p_pos, SEEK_END);
 		}
@@ -521,17 +521,17 @@ namespace core
 			return os_tell_unlocked(m_handle);
 		}
 
-		std::errc file_base::seek_unlocked(const int64_t p_pos)
+		std::errc file_base::seek_unlocked(int64_t const p_pos)
 		{
 			return os_seek_unlocked(m_handle, p_pos, SEEK_SET);
 		}
 
-		std::errc file_base::seek_current_unlocked(const int64_t p_pos)
+		std::errc file_base::seek_current_unlocked(int64_t const p_pos)
 		{
 			return os_seek_unlocked(m_handle, p_pos, SEEK_CUR);
 		}
 
-		std::errc file_base::seek_end_unlocked(const int64_t p_pos)
+		std::errc file_base::seek_end_unlocked(int64_t const p_pos)
 		{
 			return os_seek_unlocked(m_handle, p_pos, SEEK_END);
 		}
@@ -566,7 +566,7 @@ namespace core
 
 
 	//
-	std::errc file_read::open(const std::filesystem::path& p_path)
+	std::errc file_read::open(std::filesystem::path const& p_path)
 	{
 		close();
 		void* const handle = os_open_read(p_path);
@@ -574,25 +574,25 @@ namespace core
 		return std::errc{handle ? 0 : errno};
 	}
 
-	uintptr_t file_read::read(void* const p_buff, const uintptr_t p_size)
+	uintptr_t file_read::read(void* const p_buff, uintptr_t const p_size)
 	{
 		return os_read(m_handle, p_buff, p_size);
 	}
 
-	uintptr_t file_read::read_unlocked(void* const p_buff, const uintptr_t p_size)
+	uintptr_t file_read::read_unlocked(void* const p_buff, uintptr_t const p_size)
 	{
 		return os_read_unlocked(m_handle, p_buff, p_size);
 	}
 
 #ifndef _WIN32
-	uintptr_t file_read::read_offset(void* const p_buff, const uintptr_t p_size, const int64_t p_offset)
+	uintptr_t file_read::read_offset(void* const p_buff, uintptr_t const p_size, int64_t const p_offset)
 	{
 		return os_read_offset(m_handle, p_buff, p_size, p_offset);
 	}
 #endif
 
 
-	std::errc file_write::open(const std::filesystem::path& p_path, const open_mode p_mode, const bool p_create_directories)
+	std::errc file_write::open(std::filesystem::path const& p_path, open_mode const p_mode, bool const p_create_directories)
 	{
 		close();
 		if(p_create_directories && p_mode != open_mode::open_existing)
@@ -606,7 +606,7 @@ namespace core
 		return std::errc{handle ? 0 : errno};
 	}
 
-	uintptr_t file_write::write(const void* const p_buff, const uintptr_t p_size)
+	uintptr_t file_write::write(void const* const p_buff, uintptr_t const p_size)
 	{
 		return os_write(m_handle, p_buff, p_size);
 	}
@@ -616,12 +616,12 @@ namespace core
 		os_flush(m_handle);
 	}
 
-	std::errc file_write::resize(const int64_t p_size)
+	std::errc file_write::resize(int64_t const p_size)
 	{
 		return os_file_resize(m_handle, p_size);
 	}
 
-	uintptr_t file_write::write_unlocked(const void* const p_buff, const uintptr_t p_size)
+	uintptr_t file_write::write_unlocked(void const* const p_buff, uintptr_t const p_size)
 	{
 		return os_write_unlocked(m_handle, p_buff, p_size);
 	}
@@ -632,13 +632,13 @@ namespace core
 	}
 
 #ifndef _WIN32
-	uintptr_t file_write::write_offset(const void* const p_buff, const uintptr_t p_size, const int64_t p_offset)
+	uintptr_t file_write::write_offset(void const* const p_buff, uintptr_t const p_size, int64_t const p_offset)
 	{
 		return os_write_offset(m_handle, p_buff, p_size, p_offset);
 	}
 #endif
 
-	std::errc file_duplex::open(const std::filesystem::path& p_path, const open_mode p_mode, const bool p_create_directories)
+	std::errc file_duplex::open(std::filesystem::path const& p_path, open_mode const p_mode, bool const p_create_directories)
 	{
 		close();
 		if(p_create_directories && p_mode != open_mode::open_existing)
@@ -652,12 +652,12 @@ namespace core
 		return std::errc{handle ? 0 : errno};
 	}
 
-	uintptr_t file_duplex::read(void* const p_buff, const uintptr_t p_size)
+	uintptr_t file_duplex::read(void* const p_buff, uintptr_t const p_size)
 	{
 		return os_read(m_handle, p_buff, p_size);
 	}
 
-	uintptr_t file_duplex::write(const void* const p_buff, const uintptr_t p_size)
+	uintptr_t file_duplex::write(void const* const p_buff, uintptr_t const p_size)
 	{
 		return os_write(m_handle, p_buff, p_size);
 	}
@@ -667,17 +667,17 @@ namespace core
 		os_flush(m_handle);
 	}
 
-	std::errc file_duplex::resize(const int64_t p_size)
+	std::errc file_duplex::resize(int64_t const p_size)
 	{
 		return os_file_resize(m_handle, p_size);
 	}
 
-	uintptr_t file_duplex::read_unlocked(void* const p_buff, const uintptr_t p_size)
+	uintptr_t file_duplex::read_unlocked(void* const p_buff, uintptr_t const p_size)
 	{
 		return os_read_unlocked(m_handle, p_buff, p_size);
 	}
 
-	uintptr_t file_duplex::write_unlocked(const void* const p_buff, const uintptr_t p_size)
+	uintptr_t file_duplex::write_unlocked(void const* const p_buff, uintptr_t const p_size)
 	{
 		return os_write_unlocked(m_handle, p_buff, p_size);
 	}
@@ -689,12 +689,12 @@ namespace core
 
 
 #ifndef _WIN32
-	uintptr_t file_duplex::read_offset(void* const p_buff, const uintptr_t p_size, const int64_t p_offset)
+	uintptr_t file_duplex::read_offset(void* const p_buff, uintptr_t const p_size, int64_t const p_offset)
 	{
 		return os_read_offset(m_handle, p_buff, p_size, p_offset);
 	}
 
-	uintptr_t file_duplex::write_offset(const void* const p_buff, const uintptr_t p_size, const int64_t p_offset)
+	uintptr_t file_duplex::write_offset(void const* const p_buff, uintptr_t const p_size, int64_t const p_offset)
 	{
 		return os_write_offset(m_handle, p_buff, p_size, p_offset);
 	}

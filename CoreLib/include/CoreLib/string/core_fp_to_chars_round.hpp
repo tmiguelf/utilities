@@ -98,12 +98,12 @@ namespace core
 	fp_to_chars_fix_result to_chars_fix_size(fp_t value, fp_to_chars_fix_context<fp_t>& context, int16_t precision, fp_round rounding_mode);
 
 	template<_p::charconv_fp_c fp_t, _p::charconv_char_c char_t>
-	void to_chars_sci_mantissa_unsafe(const fp_to_chars_sci_context<fp_t>& context, char_t* unit_char, char_t* decimal_chars);
+	void to_chars_sci_mantissa_unsafe(fp_to_chars_sci_context<fp_t> const& context, char_t* unit_char, char_t* decimal_chars);
 	
 	template<_p::charconv_fp_c fp_t, _p::charconv_char_c char_t>
-	void to_chars_sci_exp_unsafe(const fp_to_chars_sci_context<fp_t>& context, char_t* exp_chars);
+	void to_chars_sci_exp_unsafe(fp_to_chars_sci_context<fp_t> const& context, char_t* exp_chars);
 
 	template<_p::charconv_fp_c fp_t, _p::charconv_char_c char_t>
-	void to_chars_fix_unsafe(const fp_to_chars_fix_context<fp_t>& context, char_t* unit_chars, char_t* decimal_chars);
+	void to_chars_fix_unsafe(fp_to_chars_fix_context<fp_t> const& context, char_t* unit_chars, char_t* decimal_chars);
 
 } //namespace core

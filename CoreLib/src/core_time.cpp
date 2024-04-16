@@ -62,7 +62,7 @@ public:
 	inline uint64_t frequency() const { return m_frequency; }
 };
 
-static const os_clock_frequency g_WinFreq;
+static os_clock_frequency const g_WinFreq;
 #endif
 
 static constexpr uint64_t g_sec2nsec = uint64_t{1000000000};
@@ -86,7 +86,7 @@ void chrono::set()
 uint64_t chrono::elapsed() const //nanosecond resolution
 {
 #ifdef _WIN32
-	const uint64_t freq = core_p::g_WinFreq.frequency();
+	uint64_t const freq = core_p::g_WinFreq.frequency();
 
 	LARGE_INTEGER Time;
 	QueryPerformanceCounter(&Time);
@@ -154,7 +154,7 @@ uint64_t track_chrono::read() const
 {
 
 #ifdef _WIN32
-	const uint64_t freq = core_p::g_WinFreq.frequency();
+	uint64_t const freq = core_p::g_WinFreq.frequency();
 	if(m_isPaused)
 	{
 		return (m_acumulated / freq) * core_p::g_sec2nsec + ((m_acumulated % freq) * core_p::g_sec2nsec) / freq;
@@ -162,7 +162,7 @@ uint64_t track_chrono::read() const
 
 	LARGE_INTEGER Time;
 	QueryPerformanceCounter(&Time);
-	const uint64_t val = m_acumulated + Time.QuadPart - m_ref;
+	uint64_t const val = m_acumulated + Time.QuadPart - m_ref;
 	return (val / freq) * core_p::g_sec2nsec + ((val % freq) * core_p::g_sec2nsec) / freq;
 #else
 	if(m_isPaused)
@@ -180,7 +180,7 @@ uint64_t track_chrono::read() const
 void track_chrono::set(uint64_t p_value)
 {
 #ifdef _WIN32
-	const uint64_t freq = core_p::g_WinFreq.frequency();
+	uint64_t const freq = core_p::g_WinFreq.frequency();
 	m_acumulated = (p_value / core_p::g_sec2nsec) * freq + ((p_value % core_p::g_sec2nsec) * freq) / core_p::g_sec2nsec;
 	if(!m_isPaused)
 	{
@@ -205,8 +205,8 @@ uint64_t clock_stamp() //1 nanosecond resolution
 #ifdef _WIN32
 	LARGE_INTEGER Time;
 	QueryPerformanceCounter(&Time);
-	const uint64_t t_val = Time.QuadPart;
-	const uint64_t freq = core_p::g_WinFreq.frequency();
+	uint64_t const t_val = Time.QuadPart;
+	uint64_t const freq = core_p::g_WinFreq.frequency();
 	return (t_val / freq) * core_p::g_sec2nsec + ((t_val % freq) * core_p::g_sec2nsec) / freq;
 #else
 	struct timespec time;

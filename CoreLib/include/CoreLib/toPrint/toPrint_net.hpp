@@ -46,12 +46,12 @@ private:
 	static constexpr uintptr_t max_ip_size = 15;
 	using array_t = std::array<char8_t, max_ip_size>;
 public:
-	toPrint(const core::IPv4_address& p_data): m_data(p_data) {}
+	toPrint(core::IPv4_address const& p_data): m_data(p_data) {}
 
 	inline uintptr_t size() const { return to_chars_IPv4_size(m_data.byteField); }
 
 	template<_p::c_toPrint_char CharT>
-	inline uintptr_t size(const CharT&) const { return size(); }
+	inline uintptr_t size(CharT const&) const { return size(); }
 
 	template<_p::c_toPrint_char CharT>
 	inline CharT* get_print(CharT* const p_out) const
@@ -60,7 +60,7 @@ public:
 	}
 
 private:
-	const core::IPv4_address m_data;
+	core::IPv4_address const m_data;
 };
 
 template<>
@@ -70,12 +70,12 @@ private:
 	static constexpr uintptr_t max_ip_size = 39;
 	using array_t = std::array<char8_t, max_ip_size>;
 public:
-	toPrint(const core::IPv6_address& p_data): m_data(p_data) {}
+	toPrint(core::IPv6_address const& p_data): m_data(p_data) {}
 
 	inline uintptr_t size() const { return to_chars_IPv6_size(m_data.doubletField); }
 
 	template<_p::c_toPrint_char CharT>
-	inline uintptr_t size(const CharT&) const { return size(); }
+	inline uintptr_t size(CharT const&) const { return size(); }
 
 	template<_p::c_toPrint_char CharT>
 	inline CharT* get_print(CharT* const p_out) const
@@ -84,7 +84,7 @@ public:
 	}
 
 private:
-	const core::IPv6_address m_data;
+	core::IPv6_address const m_data;
 };
 
 template<>
@@ -94,7 +94,7 @@ private:
 	static constexpr uintptr_t max_ip_size = 39;
 	using array_t = std::array<char8_t, max_ip_size>;
 public:
-	toPrint(const core::IP_address& p_data): m_data(p_data) {}
+	toPrint(core::IP_address const& p_data): m_data(p_data) {}
 
 	uintptr_t size() const
 	{
@@ -110,7 +110,7 @@ public:
 	}
 
 	template<_p::c_toPrint_char CharT>
-	inline uintptr_t size(const CharT&) const { return size(); }
+	inline uintptr_t size(CharT const&) const { return size(); }
 
 	template<_p::c_toPrint_char CharT>
 	inline CharT* get_print(CharT* const p_out) const
@@ -127,7 +127,7 @@ public:
 	}
 
 private:
-	const core::IP_address& m_data;
+	core::IP_address const& m_data;
 };
 
 
@@ -139,7 +139,7 @@ template<>
 class toPrint_net<core::IPv4_address>: public toPrint_base
 {
 public:
-	toPrint_net(const core::IPv4_address& p_ip, uint16_t const p_port)
+	toPrint_net(core::IPv4_address const& p_ip, uint16_t const p_port)
 		: m_ip  (p_ip)
 		, m_port(p_port)
 	{}
@@ -152,7 +152,7 @@ public:
 	}
 
 	template<_p::c_toPrint_char CharT>
-	inline uintptr_t size(const CharT&) const { return size(); }
+	inline uintptr_t size(CharT const&) const { return size(); }
 
 	template<_p::c_toPrint_char CharT>
 	inline CharT* get_print(CharT* p_out) const
@@ -163,15 +163,15 @@ public:
 	}
 
 private:
-	const core::IPv4_address m_ip;
-	const uint16_t m_port;
+	core::IPv4_address const m_ip;
+	uint16_t const m_port;
 };
 
 template<>
 class toPrint_net<core::IPv6_address>: public toPrint_base
 {
 public:
-	toPrint_net(const core::IPv6_address& p_ip, uint16_t const p_port)
+	toPrint_net(core::IPv6_address const& p_ip, uint16_t const p_port)
 		: m_ip  (p_ip)
 		, m_port(p_port)
 	{}
@@ -184,7 +184,7 @@ public:
 	}
 
 	template<_p::c_toPrint_char CharT>
-	inline uintptr_t size(const CharT&) const  { return size(); }
+	inline uintptr_t size(CharT const&) const { return size(); }
 
 	template<_p::c_toPrint_char CharT>
 	inline CharT* get_print(CharT* p_out) const
@@ -195,8 +195,8 @@ public:
 	}
 
 private:
-	const core::IPv6_address m_ip;
-	const uint16_t m_port;
+	core::IPv6_address const m_ip;
+	uint16_t const m_port;
 };
 
 template<>
@@ -217,7 +217,7 @@ private:
 	}
 
 public:
-	toPrint_net(const core::IP_address& p_ip, uint16_t const p_port)
+	toPrint_net(core::IP_address const& p_ip, uint16_t const p_port)
 		: m_ip  (p_ip)
 		, m_port(p_port)
 	{}
@@ -228,7 +228,7 @@ public:
 	}
 
 	template<_p::c_toPrint_char CharT>
-	inline uintptr_t size(const CharT&) const { return size(); }
+	inline uintptr_t size(CharT const&) const { return size(); }
 
 	template<_p::c_toPrint_char CharT>
 	inline CharT* get_print(CharT* p_out) const
@@ -246,8 +246,8 @@ public:
 	}
 
 private:
-	const core::IP_address& m_ip;
-	const uint16_t m_port;
+	core::IP_address const& m_ip;
+	uint16_t const m_port;
 };
 
 } //namespace core

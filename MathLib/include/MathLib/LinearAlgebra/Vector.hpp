@@ -52,20 +52,20 @@ namespace mathlib
 
 		using container_t::operator [];
 
-		inline this_t& operator = (const this_t& p_other) = default;
+		inline this_t& operator = (this_t const& p_other) = default;
 
 
-		[[nodiscard]] inline bool operator == (const this_t& p_other) const
+		[[nodiscard]] inline bool operator == (this_t const& p_other) const
 		{
-			return static_cast<const container_t&>(*this) == static_cast<const container_t&>(p_other);
+			return static_cast<container_t const&>(*this) == static_cast<container_t const&>(p_other);
 		}
 
-		[[nodiscard]] inline bool operator != (const this_t& p_other) const
+		[[nodiscard]] inline bool operator != (this_t const& p_other) const
 		{
 			return !operator == (p_other);
 		}
 
-		inline this_t& operator += (const this_t& p_other)
+		inline this_t& operator += (this_t const& p_other)
 		{
 			for(uintptr_t i = 0; i < T_size; ++i)
 			{
@@ -74,7 +74,7 @@ namespace mathlib
 			return *this;
 		}
 
-		inline this_t& operator -= (const this_t& p_other)
+		inline this_t& operator -= (this_t const& p_other)
 		{
 			for(uintptr_t i = 0; i < T_size; ++i)
 			{
@@ -84,7 +84,7 @@ namespace mathlib
 		}
 
 		template <_p::is_arithmetic O_T>
-		inline this_t& operator *= (const O_T p_scalar)
+		inline this_t& operator *= (O_T const p_scalar)
 		{
 			for(T& obj: *this)
 			{
@@ -94,7 +94,7 @@ namespace mathlib
 		}
 
 		template <_p::is_arithmetic O_T>
-		inline this_t& operator /= (const O_T p_scalar)
+		inline this_t& operator /= (O_T const p_scalar)
 		{
 			for(T& obj: *this)
 			{
@@ -103,12 +103,12 @@ namespace mathlib
 			return *this;
 		}
 
-		[[nodiscard]] inline constexpr this_t operator + (const this_t& p_other) const
+		[[nodiscard]] inline constexpr this_t operator + (this_t const& p_other) const
 		{
 			return this_t {*this} += p_other;
 		}
 
-		[[nodiscard]] inline constexpr this_t operator - (const this_t& p_other) const
+		[[nodiscard]] inline constexpr this_t operator - (this_t const& p_other) const
 		{
 			return this_t{*this} -= p_other;
 		}
@@ -124,18 +124,18 @@ namespace mathlib
 		}
 
 		template <_p::is_arithmetic O_T>
-		[[nodiscard]] inline constexpr this_t operator * (const O_T p_scalar) const
+		[[nodiscard]] inline constexpr this_t operator * (O_T const p_scalar) const
 		{
 			return this_t{*this} *= p_scalar;
 		}
 
 		template <_p::is_arithmetic O_T>
-		[[nodiscard]] inline constexpr this_t operator / (const O_T p_scalar) const
+		[[nodiscard]] inline constexpr this_t operator / (O_T const p_scalar) const
 		{
 			return this_t{*this} /= p_scalar;
 		}
 
-		[[nodiscard]] inline constexpr T internalProduct (const this_t& p_other) const
+		[[nodiscard]] inline constexpr T internalProduct (this_t const& p_other) const
 		{
 			T res = 0;
 			for(uintptr_t i = 0; i < T_size; ++i)
@@ -145,12 +145,12 @@ namespace mathlib
 			return res;
 		}
 
-		[[nodiscard]] inline constexpr T operator * (const this_t& p_other) const
+		[[nodiscard]] inline constexpr T operator * (this_t const& p_other) const
 		{
 			return internalProduct(p_other);
 		}
 
-		inline this_t& operator = (const container_t& p_other)
+		inline this_t& operator = (container_t const& p_other)
 		{
 			container_t::operator = (p_other);
 			return *this;
@@ -229,14 +229,14 @@ namespace mathlib
 
 
 	template <_p::is_arithmetic T1, _p::is_non_const_arithmetic T2, uintptr_t T_size>
-	[[nodiscard]] Vector<T2, T_size> operator * (const T1 p_1, const Vector<T2, T_size>& p_2)
+	[[nodiscard]] Vector<T2, T_size> operator * (T1 const p_1, Vector<T2, T_size> const& p_2)
 	{
 		return p_2 * p_1;
 	}
 
 
 	template<typename T, uintptr_t T_size> requires (T_size > 1 && T_size < 4)
-	[[nodiscard]] inline auto hypot(const Vector<T, T_size>& p_vect)
+	[[nodiscard]] inline auto hypot(Vector<T, T_size> const& p_vect)
 	{
 		if constexpr(T_size == 2)
 		{
@@ -252,7 +252,7 @@ namespace mathlib
 	///	\note
 	///		Cross product is Only defined for R3
 	template <_p::is_non_const_arithmetic T>
-	[[nodiscard]] constexpr Vector<T, 3> crossProduct(const Vector<T, 3>& p_1, const Vector<T, 3>& p_2)
+	[[nodiscard]] constexpr Vector<T, 3> crossProduct(Vector<T, 3> const& p_1, Vector<T, 3> const& p_2)
 	{
 		//Sarrus's rule
 		return Vector<T, 3>

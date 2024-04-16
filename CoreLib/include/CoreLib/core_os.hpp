@@ -36,15 +36,15 @@
 namespace core
 {
 
-bool env_exists	(const core::os_string& p_key);
-bool set_env	(const core::os_string& p_key, const core::os_string& p_value);
-bool delete_env	(const core::os_string& p_key);
-std::optional<core::os_string>	get_env		(const core::os_string& p_key);
+bool env_exists	(core::os_string const& p_key);
+bool set_env	(core::os_string const& p_key, core::os_string const& p_value);
+bool delete_env	(core::os_string const& p_key);
+std::optional<core::os_string>	get_env		(core::os_string const& p_key);
 std::optional<core::os_string>	machine_name();
 
 std::filesystem::path application_path();
 
-inline std::filesystem::path to_absolute_lexical(const std::filesystem::path& p_path, const std::filesystem::path& p_base)
+inline std::filesystem::path to_absolute_lexical(std::filesystem::path const& p_path, std::filesystem::path const& p_base)
 {
 	if(p_path.is_absolute())
 	{

@@ -177,7 +177,7 @@ void thread::detach()
 	}
 }
 
-thread::Error thread::set_affinity_mask(const uint64_t p_affinity)
+thread::Error thread::set_affinity_mask(uint64_t const p_affinity)
 {
 	DWORD_PTR t_affinity;
 #ifndef _WIN64
@@ -193,7 +193,7 @@ thread::Error thread::set_affinity_mask(const uint64_t p_affinity)
 	return Error::Unavailable;
 }
 
-thread::Error thread::_setPreferedProcessor(const uint8_t p_num)
+thread::Error thread::_setPreferedProcessor(uint8_t const p_num)
 {
 	if(p_num > MAXIMUM_PROCESSORS) return Error::Fail;
 	if(m_handle)
@@ -268,7 +268,7 @@ thread::Error thread::create(void (*const p_function)(void *), void* const p_par
 	}
 }
 
-thread::Error thread::join(const uint32_t p_time)
+thread::Error thread::join(uint32_t const p_time)
 {
 	if(!m_hasThread) return Error::None;
 	
@@ -319,7 +319,7 @@ void thread::detach()
 	}
 }
 
-thread::Error thread::set_affinity_mask(const uint64_t p_affinity)
+thread::Error thread::set_affinity_mask(uint64_t const p_affinity)
 {
 	if(m_hasThread)
 	{

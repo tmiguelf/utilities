@@ -39,7 +39,7 @@ namespace
 	class AssistFileCleanup
 	{
 	public:
-		AssistFileCleanup(const std::filesystem::path& p_path): m_path(p_path) {}
+		AssistFileCleanup(std::filesystem::path const& p_path): m_path(p_path) {}
 		~AssistFileCleanup()
 		{
 			std::error_code ec;
@@ -49,7 +49,7 @@ namespace
 	};
 
 
-	void assist_delete_file(const std::filesystem::path& p_path)
+	void assist_delete_file(std::filesystem::path const& p_path)
 	{
 		std::error_code ec;
 		if(std::filesystem::exists(p_path, ec))
@@ -61,7 +61,7 @@ namespace
 		}
 	}
 
-	void assist_make_file(const std::filesystem::path& p_path, std::string_view p_content)
+	void assist_make_file(std::filesystem::path const& p_path, std::string_view p_content)
 	{
 		assist_delete_file(p_path);
 		std::ofstream aux_file;
@@ -96,7 +96,7 @@ namespace text_formating
 	void assist_read_test(core::file_read& file, uintptr_t (core::file_read::* read_method)(void*, uintptr_t),
 		std::string_view test_content, std::string_view p_method_name)
 	{
-		const uintptr_t expected_read_count = test_content.size();
+		uintptr_t const expected_read_count = test_content.size();
 		std::string aux;
 		aux.resize(expected_read_count);
 		memset(aux.data(), 0, expected_read_count);
@@ -120,7 +120,7 @@ namespace text_formating
 		ASSERT_FALSE(file.good()) << p_method_name;
 
 		//---- reposition ----
-		const int64_t read_offset = 2;
+		int64_t const read_offset = 2;
 		ASSERT_EQ(file.seek(read_offset), std::errc{}) << p_method_name;
 		ASSERT_EQ(file.size(), static_cast<int64_t>(expected_read_count)) << p_method_name;
 		ASSERT_EQ(file.pos(), read_offset) << p_method_name;
@@ -129,7 +129,7 @@ namespace text_formating
 		ASSERT_TRUE(file.good()) << p_method_name;
 
 		//---- re-read ----
-		const uintptr_t new_read_count = expected_read_count - read_offset;
+		uintptr_t const new_read_count = expected_read_count - read_offset;
 		aux.resize(new_read_count);
 		ASSERT_EQ((file.*read_method)(aux.data(), new_read_count), static_cast<uintptr_t>(new_read_count)) << p_method_name;
 		ASSERT_EQ(std::string_view{aux}, test_content.substr(read_offset)) << p_method_name;
@@ -141,8 +141,8 @@ namespace text_formating
 
 	TEST(core_file, open_read)
 	{
-		const std::filesystem::path fileName   = "open_R_e_test.txt";
-		const std::filesystem::path fileName_n = "open_R_n_test.txt";
+		std::filesystem::path const fileName   = "open_R_e_test.txt";
+		std::filesystem::path const fileName_n = "open_R_n_test.txt";
 
 		constexpr std::string_view test_content = "The quick brown fox jumps over the lazy dog";
 		constexpr uintptr_t expected_read_count = test_content.size();
@@ -184,14 +184,14 @@ namespace text_formating
 
 	TEST(core_file, open_modes_write)
 	{
-		const std::filesystem::path fileName_create_e			= "open_W_create_e_test.txt";
-		const std::filesystem::path fileName_create_n			= "open_W_create_n_test.txt";
-		const std::filesystem::path fileName_create_if_new_e	= "open_W_create_if_new_e_test.txt";
-		const std::filesystem::path fileName_create_if_new_n	= "open_W_create_if_new_n_test.txt";
-		const std::filesystem::path fileName_open_or_create_e	= "open_W_open_or_create_e_test.txt";
-		const std::filesystem::path fileName_open_or_create_n	= "open_W_open_or_create_n_test.txt";
-		const std::filesystem::path fileName_open_existing_e	= "open_W_open_existing_e_test.txt";
-		const std::filesystem::path fileName_open_existing_n	= "open_W_open_existing_n_test.txt";
+		std::filesystem::path const fileName_create_e			= "open_W_create_e_test.txt";
+		std::filesystem::path const fileName_create_n			= "open_W_create_n_test.txt";
+		std::filesystem::path const fileName_create_if_new_e	= "open_W_create_if_new_e_test.txt";
+		std::filesystem::path const fileName_create_if_new_n	= "open_W_create_if_new_n_test.txt";
+		std::filesystem::path const fileName_open_or_create_e	= "open_W_open_or_create_e_test.txt";
+		std::filesystem::path const fileName_open_or_create_n	= "open_W_open_or_create_n_test.txt";
+		std::filesystem::path const fileName_open_existing_e	= "open_W_open_existing_e_test.txt";
+		std::filesystem::path const fileName_open_existing_n	= "open_W_open_existing_n_test.txt";
 		
 		constexpr std::string_view test_content = "The quick brown fox jumps over the lazy dog";
 		constexpr uintptr_t expected_read_count = test_content.size();
@@ -261,14 +261,14 @@ namespace text_formating
 
 	TEST(core_file, open_modes_read_write)
 	{
-		const std::filesystem::path fileName_create_e			= "open_RW_create_e_test.txt";
-		const std::filesystem::path fileName_create_n			= "open_RW_create_n_test.txt";
-		const std::filesystem::path fileName_create_if_new_e	= "open_RW_create_if_new_e_test.txt";
-		const std::filesystem::path fileName_create_if_new_n	= "open_RW_create_if_new_n_test.txt";
-		const std::filesystem::path fileName_open_or_create_e	= "open_RW_open_or_create_e_test.txt";
-		const std::filesystem::path fileName_open_or_create_n	= "open_RW_open_or_create_n_test.txt";
-		const std::filesystem::path fileName_open_existing_e	= "open_RW_open_existing_e_test.txt";
-		const std::filesystem::path fileName_open_existing_n	= "open_RW_open_existing_n_test.txt";
+		std::filesystem::path const fileName_create_e			= "open_RW_create_e_test.txt";
+		std::filesystem::path const fileName_create_n			= "open_RW_create_n_test.txt";
+		std::filesystem::path const fileName_create_if_new_e	= "open_RW_create_if_new_e_test.txt";
+		std::filesystem::path const fileName_create_if_new_n	= "open_RW_create_if_new_n_test.txt";
+		std::filesystem::path const fileName_open_or_create_e	= "open_RW_open_or_create_e_test.txt";
+		std::filesystem::path const fileName_open_or_create_n	= "open_RW_open_or_create_n_test.txt";
+		std::filesystem::path const fileName_open_existing_e	= "open_RW_open_existing_e_test.txt";
+		std::filesystem::path const fileName_open_existing_n	= "open_RW_open_existing_n_test.txt";
 
 		constexpr std::string_view test_content = "The quick brown fox jumps over the lazy dog";
 		constexpr uintptr_t expected_read_count = test_content.size();
@@ -333,10 +333,6 @@ namespace text_formating
 		ASSERT_EQ(file_open_or_create_e	.pos(), int64_t{0});
 		ASSERT_EQ(file_open_or_create_n	.pos(), int64_t{0});
 		ASSERT_EQ(file_open_existing_e	.pos(), int64_t{0});
-
-
 	}
-
-
 }
 

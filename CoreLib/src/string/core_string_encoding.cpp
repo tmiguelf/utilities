@@ -34,18 +34,20 @@
 namespace core
 {
 
-static inline bool __fmove_UTF8_ANSI(const char8_t*& p_input, const char8_t*& p_end)
+namespace
 {
-	const char8_t testp = *p_input;
+static inline bool __fmove_UTF8_ANSI(char8_t const*& p_input, char8_t const*& p_end)
+{
+	char8_t const testp = *p_input;
 	return !(testp & 0x80) ||
 		((testp == 0xC2 || testp == 0xC3) &&	//validate encoding 1, check range and unique representation simultaneously
 		(p_end - p_input) > 1	&&				//validate size
 		(*(++p_input) & 0xC0) == 0x80);			//validate encoding 2;
 }
 
-static inline char8_t __convert_UTF8_ANSI_unsafe(const char8_t*& p_input)
+static inline char8_t __convert_UTF8_ANSI_unsafe(char8_t const*& p_input)
 {
-	const char8_t testp = *p_input;
+	char8_t const testp = *p_input;
 	if(testp & 0x80)
 	{
 		return static_cast<char8_t>((testp << 6) | (*++p_input & 0x3F));
@@ -53,9 +55,9 @@ static inline char8_t __convert_UTF8_ANSI_unsafe(const char8_t*& p_input)
 	return testp;
 }
 
-static uintptr_t __estimate_UTF8_UTF16(const char8_t*& p_input, const char8_t* const p_end)
+static uintptr_t __estimate_UTF8_UTF16(char8_t const*& p_input, char8_t const* const p_end)
 {
-	const char8_t testp = *p_input;
+	char8_t const testp = *p_input;
 
 	if((testp & 0x80) == 0) //level 0
 	{
@@ -73,7 +75,7 @@ static uintptr_t __estimate_UTF8_UTF16(const char8_t*& p_input, const char8_t* c
 		return 1;
 	}
 
-	const char8_t* tlocal = p_input;
+	char8_t const* tlocal = p_input;
 
 	if((testp & 0xF0) == 0xE0) //level 2
 	{
@@ -81,9 +83,9 @@ static uintptr_t __estimate_UTF8_UTF16(const char8_t*& p_input, const char8_t* c
 		{
 			return 0;
 		}
-		const char8_t t1 = testp & 0x0F;
-		const char8_t t2 = *++tlocal;
-		const char8_t t2m = t2 & 0x20;
+		char8_t const t1 = testp & 0x0F;
+		char8_t const t2 = *++tlocal;
+		char8_t const t2m = t2 & 0x20;
 		if(
 			(!t1 && !t2m)		|| //validate range
 			(t1 == 0x0D && t2m)	|| //surrogates
@@ -100,13 +102,13 @@ static uintptr_t __estimate_UTF8_UTF16(const char8_t*& p_input, const char8_t* c
 
 	if((testp & 0xF8) == 0xF0) //level 3
 	{
-		const char8_t t1 = testp & 0x07;
+		char8_t const t1 = testp & 0x07;
 		if((p_end - tlocal < 4) || t1 > 4) //validate size, and partial upper_range
 		{
 			return 0;
 		}
 
-		const char8_t t2 = *++tlocal;
+		char8_t const t2 = *++tlocal;
 		if(
 			(t1 == 4 && (t2 & 0x30))	|| //validate upper_range
 			(!t1 && (t2 < 0x90))		|| //validate sub-range
@@ -123,9 +125,9 @@ static uintptr_t __estimate_UTF8_UTF16(const char8_t*& p_input, const char8_t* c
 	return 0;
 }
 
-static void __convert_UTF8_UTF16_unsafe(const char8_t*& p_input, char16_t*& p_out)
+static void __convert_UTF8_UTF16_unsafe(char8_t const*& p_input, char16_t*& p_out)
 {
-	const char8_t testp = *p_input;
+	char8_t const testp = *p_input;
 
 	if((testp & 0x80) == 0) //level 0
 	{
@@ -139,11 +141,11 @@ static void __convert_UTF8_UTF16_unsafe(const char8_t*& p_input, char16_t*& p_ou
 	}
 	else
 	{
-		const char8_t* codeStart = p_input;
+		char8_t const* codeStart = p_input;
 		if((testp & 0xF0) == 0xE0) //level 2
 		{
 			p_input += 2;
-			const char16_t tcode =
+			char16_t const tcode =
 				static_cast<char16_t>(testp << 12) |
 				static_cast<char16_t>(static_cast<char16_t>(*++codeStart & 0x3F) << 6);
 			*p_out = tcode | static_cast<char16_t>(*++codeStart & 0x3F);
@@ -163,9 +165,9 @@ static void __convert_UTF8_UTF16_unsafe(const char8_t*& p_input, char16_t*& p_ou
 	}
 }
 
-static bool __fmove_UTF8_UCS2(const char8_t*& p_input, const char8_t* const p_end)
+static bool __fmove_UTF8_UCS2(char8_t const*& p_input, char8_t const* const p_end)
 {
-	const char8_t testp = *p_input;
+	char8_t const testp = *p_input;
 	if((testp & 0x80) == 0) //level 0
 	{
 		return true;
@@ -184,7 +186,7 @@ static bool __fmove_UTF8_UCS2(const char8_t*& p_input, const char8_t* const p_en
 
 	if((testp & 0xF0) == 0xE0) //level 2
 	{
-		const char8_t* tlocal = p_input;
+		char8_t const* tlocal = p_input;
 		if(p_end - tlocal < 3			||	//validate size
 			(!(*(tlocal++) & 0x0F) && !(*tlocal & 0x20)) || //validate range
 			(*tlocal & 0xC0) != 0x80	||	//validate encoding
@@ -198,9 +200,9 @@ static bool __fmove_UTF8_UCS2(const char8_t*& p_input, const char8_t* const p_en
 	return false;
 }
 
-static char16_t __convert_UTF8_UCS2_unsafe(const char8_t*& p_input)
+static char16_t __convert_UTF8_UCS2_unsafe(char8_t const*& p_input)
 {
-	const char8_t testp = *p_input;
+	char8_t const testp = *p_input;
 
 	if((testp & 0x80) == 0) //level 0
 	{
@@ -215,18 +217,18 @@ static char16_t __convert_UTF8_UCS2_unsafe(const char8_t*& p_input)
 	}
 
 	//level 2
-	const char8_t* codeStart = p_input;
+	char8_t const* codeStart = p_input;
 	p_input += 2;
 
-	const char16_t tcode =
+	char16_t const tcode =
 		static_cast<char16_t>((testp & 0x0F) << 12) |
 		static_cast<char16_t>(static_cast<char16_t>(*++codeStart & 0x3F) << 6);
 	return tcode | static_cast<char16_t>(*++codeStart & 0x3F);
 }
 
-static bool __fmove_UTF8_UCS4(const char8_t*& p_input, const char8_t* const p_end)
+static bool __fmove_UTF8_UCS4(char8_t const*& p_input, char8_t const* const p_end)
 {
-	const char8_t testp = *p_input;
+	char8_t const testp = *p_input;
 	if(testp & 0x80) //level 0
 	{
 		if((testp & 0xE0) == 0xC0) //level 1
@@ -240,7 +242,7 @@ static bool __fmove_UTF8_UCS4(const char8_t*& p_input, const char8_t* const p_en
 		}
 		else
 		{
-			const char8_t* tlocal = p_input;
+			char8_t const* tlocal = p_input;
 			if((testp & 0xF0) == 0xE0) //level 2
 			{
 				if(p_end - tlocal < 3			||	//validate size
@@ -254,13 +256,13 @@ static bool __fmove_UTF8_UCS4(const char8_t*& p_input, const char8_t* const p_en
 			}
 			else if((testp & 0xF8) == 0xF0) //level 3
 			{
-				const char8_t t1 = testp & 0x07;
+				char8_t const t1 = testp & 0x07;
 				if((p_end - tlocal < 4) || t1 > 4) //validate size, and partial upper_range
 				{
 					return false;
 				}
 
-				const char8_t t2 = *++tlocal;
+				char8_t const t2 = *++tlocal;
 				if(
 					(t1 == 4 && (t2 & 0x30))	|| //validate upper_range
 					(!t1 && (t2 < 0x90))		|| //validate sub-range
@@ -281,9 +283,9 @@ static bool __fmove_UTF8_UCS4(const char8_t*& p_input, const char8_t* const p_en
 	return true;
 }
 
-static char32_t __convert_UTF8_UCS4(const char8_t*& p_input)
+static char32_t __convert_UTF8_UCS4(char8_t const*& p_input)
 {
-	const char8_t testp = *p_input;
+	char8_t const testp = *p_input;
 
 	if((testp & 0x80) == 0) //level 0
 	{
@@ -297,12 +299,12 @@ static char32_t __convert_UTF8_UCS4(const char8_t*& p_input)
 			static_cast<char32_t>(*(++p_input) & 0x3F);
 	}
 
-	const char8_t* codeStart = p_input;
+	char8_t const* codeStart = p_input;
 
 	if((testp & 0xF0) == 0xE0) //level 2
 	{
 		p_input += 2;
-		const char32_t tcode =
+		char32_t const tcode =
 			static_cast<char32_t>(testp & 0x0F) << 12 |
 			static_cast<char32_t>(*++codeStart & 0x3F) << 6;
 		return tcode | static_cast<char32_t>(*++codeStart & 0x3F);
@@ -316,9 +318,9 @@ static char32_t __convert_UTF8_UCS4(const char8_t*& p_input)
 	return tcode | static_cast<char32_t>(*++codeStart & 0x3F);
 }
 
-static void __fmove_UTF8_failForward(const char8_t*& p_input, const char8_t* const p_end)
+static void __fmove_UTF8_failForward(char8_t const*& p_input, char8_t const* const p_end)
 {
-	const char8_t* testp = p_input;
+	char8_t const* testp = p_input;
 	if((*testp & 0x80) == 0) //level 0
 	{
 		return;
@@ -404,15 +406,15 @@ unwind_as_much_as_possible:
 	p_input = testp -1;
 }
 
-static char8_t __convert_UTF8_ANSI_failforward(const char8_t*& p_input, const char8_t* const p_end, const char8_t p_placeholder)
+static char8_t __convert_UTF8_ANSI_failforward(char8_t const*& p_input, char8_t const* const p_end, char8_t const p_placeholder)
 {
-	const char8_t* testp = p_input;
+	char8_t const* testp = p_input;
 	if(!(*testp & 0x80)) //level 0
 	{
 		return *testp;
 	}
 
-	const char8_t* codeStart = testp;
+	char8_t const* codeStart = testp;
 
 	if((*testp & 0xE0) == 0xC0) //level 1
 	{
@@ -426,7 +428,7 @@ static char8_t __convert_UTF8_ANSI_failforward(const char8_t*& p_input, const ch
 
 		if((*codeStart & 0x1E) != 0x02) return p_placeholder;
 
-		const char8_t rcode = *codeStart << 6;
+		char8_t const rcode = *codeStart << 6;
 		return rcode | static_cast<char8_t>(*++codeStart & 0x3F);
 	}
 
@@ -502,15 +504,15 @@ unwind_as_much_as_possible:
 	return p_placeholder;
 }
 
-static char16_t __convert_UTF8_UCS2_failforward(const char8_t*& p_input, const char8_t* const p_end, const char16_t p_placeholder)
+static char16_t __convert_UTF8_UCS2_failforward(char8_t const*& p_input, char8_t const* const p_end, char16_t const p_placeholder)
 {
-	const char8_t* testp = p_input;
+	char8_t const* testp = p_input;
 	if(!(*testp & 0x80)) //level 0
 	{
 		return static_cast<char16_t>(*testp);
 	}
 
-	const char8_t* codeStart = testp;
+	char8_t const* codeStart = testp;
 
 	if((*testp & 0xE0) == 0xC0) //level 1
 	{
@@ -524,7 +526,7 @@ static char16_t __convert_UTF8_UCS2_failforward(const char8_t*& p_input, const c
 
 		if(*codeStart < 0xC2) return p_placeholder;
 
-		const char16_t rcode = (*codeStart & 0x3F) << 6;
+		char16_t const rcode = (*codeStart & 0x3F) << 6;
 		return rcode | static_cast<char16_t>(*++codeStart & 0x3F);
 	}
 
@@ -610,15 +612,15 @@ unwind_as_much_as_possible:
 	return p_placeholder;
 }
 
-static char32_t __convert_UTF8_UCS4_failforward(const char8_t*& p_input, const char8_t* const p_end, const char32_t p_placeholder)
+static char32_t __convert_UTF8_UCS4_failforward(char8_t const*& p_input, char8_t const* const p_end, char32_t const p_placeholder)
 {
-	const char8_t* testp = p_input;
+	char8_t const* testp = p_input;
 	if(!(*testp & 0x80)) //level 0
 	{
 		return static_cast<char16_t>(*testp);
 	}
 
-	const char8_t* codeStart = testp;
+	char8_t const* codeStart = testp;
 
 	if((*testp & 0xE0) == 0xC0) //level 1
 	{
@@ -631,7 +633,7 @@ static char32_t __convert_UTF8_UCS4_failforward(const char8_t*& p_input, const c
 
 		if(*codeStart < 0xC2) return p_placeholder;
 
-		const char16_t rcode = static_cast<char16_t>(static_cast<char16_t>(*codeStart & 0x3F) << 6);
+		char16_t const rcode = static_cast<char16_t>(static_cast<char16_t>(*codeStart & 0x3F) << 6);
 		return rcode | static_cast<char16_t>(*++codeStart & 0x3F);
 	}
 
@@ -668,12 +670,12 @@ static char32_t __convert_UTF8_UCS4_failforward(const char8_t*& p_input, const c
 		}
 		p_input += 3;
 
-		const char8_t t1 = *codeStart & 0x07;
+		char8_t const t1 = *codeStart & 0x07;
 		if(t1 > 4) //validate size, and partial upper_range
 		{
 			return p_placeholder;
 		}
-		const char8_t t2 = *++codeStart;
+		char8_t const t2 = *++codeStart;
 		if(	(t1 == 4 && (t2 & 0x30))	|| //validate upper_range
 			(!t1 && (t2 < 0x90))) //validate sub-range
 		{
@@ -736,14 +738,14 @@ unwind_as_much_as_possible:
 	return p_placeholder;
 }
 
-static uintptr_t __estimate_UTF8_UTF16_failforward(const char8_t*& p_input, const char8_t* const p_end)
+static uintptr_t __estimate_UTF8_UTF16_failforward(char8_t const*& p_input, char8_t const* const p_end)
 {
-	const char8_t* testp = p_input;
+	char8_t const* testp = p_input;
 	if(!(*testp & 0x80)) //level 0
 	{
 		return 1;
 	}
-	const char8_t* codeStart = testp;
+	char8_t const* codeStart = testp;
 	if((*testp & 0xE0) == 0xC0) //level 1
 	{
 		if(p_end - testp < 2) return 0;
@@ -767,8 +769,8 @@ static uintptr_t __estimate_UTF8_UTF16_failforward(const char8_t*& p_input, cons
 		}
 		p_input += 2;
 
-		const char8_t tsub1 = *codeStart & 0x0F;
-		const char8_t tsub2 = *++codeStart & 0x20;
+		char8_t const tsub1 = *codeStart & 0x0F;
+		char8_t const tsub2 = *++codeStart & 0x20;
 
 		if(	(!tsub1 && !tsub2) || //validate range
 			((tsub1 == 0x0D) && tsub2)) //surrogates
@@ -790,8 +792,8 @@ static uintptr_t __estimate_UTF8_UTF16_failforward(const char8_t*& p_input, cons
 		}
 		p_input += 3;
 
-		const char8_t tsub1 = *codeStart & 0x07;
-		const char8_t tsub2 = *++codeStart;
+		char8_t const tsub1 = *codeStart & 0x07;
+		char8_t const tsub2 = *++codeStart;
 
 		if(	(!tsub1 && (tsub2 < 0x90)) ||
 			(tsub1 > 4) ||
@@ -854,15 +856,15 @@ unwind_as_much_as_possible:
 	return 0;
 }
 
-static uintptr_t __convert_UTF8_UTF16_failforward(const char8_t*& p_input, const char8_t* const p_end, char16_t* p_output)
+static uintptr_t __convert_UTF8_UTF16_failforward(char8_t const*& p_input, char8_t const* const p_end, char16_t* p_output)
 {
-	const char8_t* testp = p_input;
+	char8_t const* testp = p_input;
 	if(!(*testp & 0x80)) //level 0
 	{
 		*p_output = static_cast<char16_t>(*testp);
 		return 1;
 	}
-	const char8_t* codeStart = testp;
+	char8_t const* codeStart = testp;
 	if((*testp & 0xE0) == 0xC0) //level 1
 	{
 		if(p_end - testp < 2) return 0;
@@ -871,7 +873,7 @@ static uintptr_t __convert_UTF8_UTF16_failforward(const char8_t*& p_input, const
 			return 0;
 		}
 		++p_input;
-		const char8_t tsub1 = *codeStart;
+		char8_t const tsub1 = *codeStart;
 		if(tsub1 < 0xC2) return 0;
 
 		*p_output =
@@ -892,8 +894,8 @@ static uintptr_t __convert_UTF8_UTF16_failforward(const char8_t*& p_input, const
 		}
 		p_input += 2;
 
-		const char8_t tsub1 = *codeStart & 0x0F;
-		const char8_t tsub2 = *++codeStart & 0x20;
+		char8_t const tsub1 = *codeStart & 0x0F;
+		char8_t const tsub2 = *++codeStart & 0x20;
 
 		if(	((tsub1 == 0) && !(tsub2)) || //validate range
 			((tsub1 == 0x0D) && tsub2)) //surrogates
@@ -901,7 +903,7 @@ static uintptr_t __convert_UTF8_UTF16_failforward(const char8_t*& p_input, const
 			return 0;
 		}
 
-		const char16_t tcode =
+		char16_t const tcode =
 			static_cast<char16_t>(tsub1 << 12) |
 			static_cast<char16_t>(static_cast<char16_t>(*codeStart & 0x3F) << 6);
 		*p_output = tcode | static_cast<char16_t>(*++codeStart & 0x3F);
@@ -919,8 +921,8 @@ static uintptr_t __convert_UTF8_UTF16_failforward(const char8_t*& p_input, const
 		}
 		p_input += 3;
 
-		const char8_t tsub1 = *codeStart & 0x07;
-		const char8_t tsub2 = *++codeStart;
+		char8_t const tsub1 = *codeStart & 0x07;
+		char8_t const tsub2 = *++codeStart;
 
 		if(	((!tsub1) && (tsub2 < 0x90)) ||
 			(tsub1 > 4) ||
@@ -991,7 +993,7 @@ unwind_as_much_as_possible:
 	return 0;
 }
 
-uintptr_t __inline_encode_UTF8(const char32_t p_char, char8_t* p_output)
+uintptr_t __inline_encode_UTF8(char32_t const p_char, char8_t* p_output)
 {
 	if(p_char < 0x00000080) //Level 0
 	{
@@ -1026,9 +1028,9 @@ uintptr_t __inline_encode_UTF8(const char32_t p_char, char8_t* p_output)
 	return 0;
 }
 
-static uintptr_t __estimate_UTF16_UTF8(const char16_t*& p_input, const char16_t* const p_end)
+static uintptr_t __estimate_UTF16_UTF8(char16_t const*& p_input, char16_t const* const p_end)
 {
-	const char16_t testp = *p_input;
+	char16_t const testp = *p_input;
 
 	if(testp < 0x0080) //Level 0
 	{
@@ -1048,9 +1050,9 @@ static uintptr_t __estimate_UTF16_UTF8(const char16_t*& p_input, const char16_t*
 	return 3;
 }
 
-static void __convert_UTF16_UTF8(const char16_t*& p_input, char8_t*& p_out)
+static void __convert_UTF16_UTF8(char16_t const*& p_input, char8_t*& p_out)
 {
-	const char16_t testp = *p_input;
+	char16_t const testp = *p_input;
 	if(testp < 0x0080) //Level 0
 	{
 		*p_out = static_cast<char8_t>(testp);
@@ -1062,7 +1064,7 @@ static void __convert_UTF16_UTF8(const char16_t*& p_input, char8_t*& p_out)
 	}
 	else if(testp > 0xD7FF && testp < 0xE000)
 	{
-		const char32_t refrag = (((testp & 0x03FF) << 10) | (*(++p_input) & 0x03FF)) + 0x10000;
+		char32_t const refrag = (((testp & 0x03FF) << 10) | (*(++p_input) & 0x03FF)) + 0x10000;
 		*p_out   =  static_cast<char8_t>(refrag >> 18)                  | char8_t{0xF0};
 		*++p_out = (static_cast<char8_t>(refrag >> 12) & char8_t{0x3F}) | char8_t{0x80};
 		*++p_out = (static_cast<char8_t>(refrag >>  6) & char8_t{0x3F}) | char8_t{0x80};
@@ -1076,9 +1078,9 @@ static void __convert_UTF16_UTF8(const char16_t*& p_input, char8_t*& p_out)
 	}
 }
 
-inline static char32_t __convert_UTF16_UCS4(const char16_t*& p_input)
+inline static char32_t __convert_UTF16_UCS4(char16_t const*& p_input)
 {
-	const char16_t testp = *p_input;
+	char16_t const testp = *p_input;
 	if(testp > 0xD7FF && testp < 0xE000)
 	{
 		return (((testp & 0x03FF) << 10) | (*++p_input & 0x03FF)) + 0x10000;
@@ -1087,12 +1089,12 @@ inline static char32_t __convert_UTF16_UCS4(const char16_t*& p_input)
 }
 
 
-static void __fmove_UTF16_failForward(const char16_t*& p_input, const char16_t* const p_end)
+static void __fmove_UTF16_failForward(char16_t const*& p_input, char16_t const* const p_end)
 {
-	const char16_t tchar = *p_input;
+	char16_t const tchar = *p_input;
 	if(tchar > 0xD7FF && tchar < 0xE000)
 	{
-		const char16_t* pivot = p_input;
+		char16_t const* pivot = p_input;
 		if(	(p_end - pivot < 2 )			||
 			(tchar & 0xFC00)	!= 0xD800	||
 			(*++pivot & 0xFC00)	!= 0xDC00)	return;
@@ -1100,9 +1102,9 @@ static void __fmove_UTF16_failForward(const char16_t*& p_input, const char16_t* 
 	}
 }
 
-static char8_t __convert_UTF16_ANSI_failforward(const char16_t*& p_input, const char16_t* const p_end, const char8_t p_placeholder)
+static char8_t __convert_UTF16_ANSI_failforward(char16_t const*& p_input, char16_t const* const p_end, char8_t const p_placeholder)
 {
-	const char16_t testp = *p_input;
+	char16_t const testp = *p_input;
 	if(testp < 0x0100)
 	{
 		return static_cast<char8_t>(testp);
@@ -1110,7 +1112,7 @@ static char8_t __convert_UTF16_ANSI_failforward(const char16_t*& p_input, const 
 
 	if(testp > 0xD7FF && testp < 0xE000)
 	{
-		const char16_t* pivot = p_input;
+		char16_t const* pivot = p_input;
 		if(	(p_end - pivot < 2)				||
 			(testp & 0xFC00)	!= 0xD800	||
 			(*++pivot & 0xFC00)	!= 0xDC00)	return p_placeholder;
@@ -1120,13 +1122,13 @@ static char8_t __convert_UTF16_ANSI_failforward(const char16_t*& p_input, const 
 	return p_placeholder;
 }
 
-static char16_t __convert_UTF16_UCS2_failforward(const char16_t*& p_input, const char16_t* const p_end, const char16_t p_placeholder)
+static char16_t __convert_UTF16_UCS2_failforward(char16_t const*& p_input, char16_t const* const p_end, char16_t const p_placeholder)
 {
-	const char16_t testp = *p_input;
+	char16_t const testp = *p_input;
 
 	if(testp > 0xD7FF && testp < 0xE000)
 	{
-		const char16_t* pivot = p_input;
+		char16_t const* pivot = p_input;
 		if(	(p_end - pivot < 2)				||
 			(testp & 0xFC00)	!= 0xD800	||
 			(*++pivot & 0xFC00)	!= 0xDC00)	return p_placeholder;
@@ -1137,13 +1139,13 @@ static char16_t __convert_UTF16_UCS2_failforward(const char16_t*& p_input, const
 	return testp;
 }
 
-static char32_t __convert_UTF16_UCS4_failforward(const char16_t*& p_input, const char16_t* const p_end, const char32_t p_placeholder)
+static char32_t __convert_UTF16_UCS4_failforward(char16_t const*& p_input, char16_t const* const p_end, char32_t const p_placeholder)
 {
-	const char16_t testp = *p_input;
+	char16_t const testp = *p_input;
 
 	if(testp > 0xD7FF && testp < 0xE000)
 	{
-		const char16_t* pivot = p_input;
+		char16_t const* pivot = p_input;
 		if(	(p_end - pivot < 2)				||
 			(testp & 0xFC00)	!= 0xD800	||
 			(*++pivot & 0xFC00)	!= 0xDC00)	return p_placeholder;
@@ -1156,9 +1158,9 @@ static char32_t __convert_UTF16_UCS4_failforward(const char16_t*& p_input, const
 }
 
 
-static uintptr_t __estimate_UTF16_UTF8_failforward(const char16_t*& p_input, const char16_t* const p_end)
+static uintptr_t __estimate_UTF16_UTF8_failforward(char16_t const*& p_input, char16_t const* const p_end)
 {
-	const char16_t testp = *p_input;
+	char16_t const testp = *p_input;
 
 	if(testp < 0x0080) //Level 0
 	{
@@ -1179,9 +1181,9 @@ static uintptr_t __estimate_UTF16_UTF8_failforward(const char16_t*& p_input, con
 	return 3;
 }
 
-static uintptr_t __convert_UTF16_UTF8_failforward(const char16_t*& p_input, const char16_t* const p_end, char8_t* p_out)
+static uintptr_t __convert_UTF16_UTF8_failforward(char16_t const*& p_input, char16_t const* const p_end, char8_t* p_out)
 {
-	const char16_t testp = *p_input;
+	char16_t const testp = *p_input;
 	if(testp < 0x0080) //Level 0
 	{
 		*p_out = static_cast<char8_t>(testp);
@@ -1197,7 +1199,7 @@ static uintptr_t __convert_UTF16_UTF8_failforward(const char16_t*& p_input, cons
 
 	if(testp > 0xD7FF && testp < 0xE000)
 	{
-		const char16_t* pivot = p_input;
+		char16_t const* pivot = p_input;
 		if((p_end - pivot < 2) ||
 			(testp & 0xFC00) != 0xD800 ||
 			(*++pivot & 0xFC00) != 0xDC00)
@@ -1205,7 +1207,7 @@ static uintptr_t __convert_UTF16_UTF8_failforward(const char16_t*& p_input, cons
 			return 0;
 		}
 
-		char32_t refrag = (((testp & 0x03FF) << 10) | (*(++p_input) & 0x03FF)) + 0x10000;
+		char32_t const refrag = (((testp & 0x03FF) << 10) | (*(++p_input) & 0x03FF)) + 0x10000;
 
 		*p_out   =  static_cast<char8_t>(refrag >> 18)                  | char8_t{0xF0};
 		*++p_out = (static_cast<char8_t>(refrag >> 12) & char8_t{0x3F}) | char8_t{0x80};
@@ -1221,7 +1223,7 @@ static uintptr_t __convert_UTF16_UTF8_failforward(const char16_t*& p_input, cons
 	return 3;
 }
 
-uintptr_t __inline_encode_UTF16(const char32_t p_char, char16_t* p_output)
+uintptr_t __inline_encode_UTF16(char32_t const p_char, char16_t* p_output)
 {
 	if(p_char < 0xD800)
 	{
@@ -1246,7 +1248,7 @@ uintptr_t __inline_encode_UTF16(const char32_t p_char, char16_t* p_output)
 	return 0;
 }
 
-static uintptr_t __estimate_UCS4_UTF8(const char32_t p_input)
+static uintptr_t __estimate_UCS4_UTF8(char32_t const p_input)
 {
 	if(p_input < 0x00000080) //Level 0
 	{
@@ -1268,7 +1270,7 @@ static uintptr_t __estimate_UCS4_UTF8(const char32_t p_input)
 	return 0;
 }
 
-static uintptr_t __convert_UCS4_UTF8(const char32_t p_input, char8_t* p_out)
+static uintptr_t __convert_UCS4_UTF8(char32_t const p_input, char8_t* p_out)
 {
 	if(p_input < 0x00000080) //Level 0
 	{
@@ -1296,7 +1298,7 @@ static uintptr_t __convert_UCS4_UTF8(const char32_t p_input, char8_t* p_out)
 	return 4;
 } 
 
-static uintptr_t __convert_UCS4_UTF8_checked(const char32_t p_input, char8_t* p_out)
+static uintptr_t __convert_UCS4_UTF8_checked(char32_t const p_input, char8_t* p_out)
 {
 	if(p_input < 0x00000080) //Level 0
 	{
@@ -1327,7 +1329,7 @@ static uintptr_t __convert_UCS4_UTF8_checked(const char32_t p_input, char8_t* p_
 	return 0;
 } 
 
-uintptr_t __estimate_UCS4_UTF16(const char32_t p_char)
+uintptr_t __estimate_UCS4_UTF16(char32_t const p_char)
 {
 	if(p_char < 0xD800)
 	{
@@ -1348,19 +1350,18 @@ uintptr_t __estimate_UCS4_UTF16(const char32_t p_char)
 	return 0;
 }
 
-namespace _p
-{
+} //namespace
 
-[[nodiscard]] std::optional<uintptr_t> UTF8_to_ANSI_estimate(std::u8string_view const p_input)
+[[nodiscard]] std::optional<uintptr_t> UTF8_to_ANSI_size(std::u8string_view const p_input)
 {
 	uintptr_t count = 0;
 
-	const char8_t* pos = p_input.data();
-	const char8_t* const end = pos + p_input.size();
+	char8_t const* pos = p_input.data();
+	char8_t const* const end = pos + p_input.size();
 
 	for(; pos < end; ++pos, ++count)
 	{
-		const char8_t testp = *pos;
+		char8_t const testp = *pos;
 		if(testp & 0x80)
 		{
 			if	(
@@ -1379,8 +1380,8 @@ namespace _p
 
 char8_t* UTF8_to_ANSI_unsafe(std::u8string_view const p_input, char8_t* p_output)
 {
-	const char8_t* pos = p_input.data();
-	const char8_t* const end = pos + p_input.size();
+	char8_t const* pos = p_input.data();
+	char8_t const* const end = pos + p_input.size();
 
 	for(; pos < end; ++pos, ++p_output)
 	{
@@ -1390,9 +1391,9 @@ char8_t* UTF8_to_ANSI_unsafe(std::u8string_view const p_input, char8_t* p_output
 }
 
 
-[[nodiscard]] std::optional<uintptr_t> UTF16_to_ANSI_estimate(std::u16string_view const p_input)
+[[nodiscard]] std::optional<uintptr_t> UTF16_to_ANSI_size(std::u16string_view const p_input)
 {
-	return UCS2_to_ANSI_estimate(p_input);
+	return UCS2_to_ANSI_size(p_input);
 }
 
 char8_t* UTF16_to_ANSI_unsafe(std::u16string_view const p_input, char8_t* const p_output)
@@ -1401,9 +1402,9 @@ char8_t* UTF16_to_ANSI_unsafe(std::u16string_view const p_input, char8_t* const 
 }
 
 
-[[nodiscard]] std::optional<uintptr_t> UCS2_to_ANSI_estimate(std::u16string_view const p_input)
+[[nodiscard]] std::optional<uintptr_t> UCS2_to_ANSI_size(std::u16string_view const p_input)
 {
-	for(const char16_t tchar : p_input)
+	for(char16_t const tchar : p_input)
 	{
 		if(tchar > 0xFF) return {};
 	}
@@ -1412,7 +1413,7 @@ char8_t* UTF16_to_ANSI_unsafe(std::u16string_view const p_input, char8_t* const 
 
 char8_t* UCS2_to_ANSI_unsafe(std::u16string_view const p_input, char8_t* p_output)
 {
-	for(const char16_t tchar : p_input)
+	for(char16_t const tchar : p_input)
 	{
 		*(p_output++) = static_cast<char8_t>(tchar);
 	}
@@ -1420,9 +1421,9 @@ char8_t* UCS2_to_ANSI_unsafe(std::u16string_view const p_input, char8_t* p_outpu
 }
 
 
-[[nodiscard]] std::optional<uintptr_t> UCS4_to_ANSI_estimate(std::u32string_view const p_input)
+[[nodiscard]] std::optional<uintptr_t> UCS4_to_ANSI_size(std::u32string_view const p_input)
 {
-	for(const char32_t tchar : p_input)
+	for(char32_t const tchar : p_input)
 	{
 		if(tchar > 0xFF) return {};
 	}
@@ -1431,17 +1432,17 @@ char8_t* UCS2_to_ANSI_unsafe(std::u16string_view const p_input, char8_t* p_outpu
 
 char8_t* UCS4_to_ANSI_unsafe(std::u32string_view const p_input, char8_t* p_output)
 {
-	for(const char32_t tchar : p_input)
+	for(char32_t const tchar : p_input)
 	{
 		*(p_output++) = static_cast<char8_t>(tchar);
 	}
 	return p_output;
 }
 
-[[nodiscard]] uintptr_t ANSI_to_UTF8_estimate(std::u8string_view const p_input)
+[[nodiscard]] uintptr_t ANSI_to_UTF8_size(std::u8string_view const p_input)
 {
 	uintptr_t res = 0;
-	for(const char8_t tchar : p_input)
+	for(char8_t const tchar : p_input)
 	{
 		if(tchar > 0x7F)
 		{
@@ -1457,7 +1458,7 @@ char8_t* UCS4_to_ANSI_unsafe(std::u32string_view const p_input, char8_t* p_outpu
 
 char8_t* ANSI_to_UTF8_unsafe(std::u8string_view const p_input, char8_t* p_output)
 {
-	for(const char8_t tchar : p_input)
+	for(char8_t const tchar : p_input)
 	{
 		if(tchar > 0x7F)
 		{
@@ -1474,15 +1475,15 @@ char8_t* ANSI_to_UTF8_unsafe(std::u8string_view const p_input, char8_t* p_output
 }
 
 
-[[nodiscard]] std::optional<uintptr_t> UTF16_to_UTF8_estimate(std::u16string_view const p_input)
+[[nodiscard]] std::optional<uintptr_t> UTF16_to_UTF8_size(std::u16string_view const p_input)
 {
 	uintptr_t count = 0;
-	const char16_t* pos = p_input.data();
-	const char16_t* const end = pos + p_input.size();
+	char16_t const* pos = p_input.data();
+	char16_t const* const end = pos + p_input.size();
 
 	for(; pos < end; ++pos)
 	{
-		const uintptr_t res = __estimate_UTF16_UTF8(pos, end);
+		uintptr_t const res = __estimate_UTF16_UTF8(pos, end);
 		if(res == 0)
 		{
 			return {};
@@ -1495,8 +1496,8 @@ char8_t* ANSI_to_UTF8_unsafe(std::u8string_view const p_input, char8_t* p_output
 
 char8_t* UTF16_to_UTF8_unsafe(std::u16string_view const p_input, char8_t* p_output)
 {
-	const char16_t* pos = p_input.data();
-	const char16_t* const end = pos + p_input.size();
+	char16_t const* pos = p_input.data();
+	char16_t const* const end = pos + p_input.size();
 	for(; pos < end; ++pos, ++p_output)
 	{
 		__convert_UTF16_UTF8(pos, p_output);
@@ -1505,10 +1506,10 @@ char8_t* UTF16_to_UTF8_unsafe(std::u16string_view const p_input, char8_t* p_outp
 }
 
 
-[[nodiscard]] uintptr_t UCS2_to_UTF8_estimate(std::u16string_view const p_input)
+[[nodiscard]] uintptr_t UCS2_to_UTF8_size(std::u16string_view const p_input)
 {
 	uintptr_t count = 0;
-	for(const char16_t tchar : p_input)
+	for(char16_t const tchar : p_input)
 	{
 		if(tchar < 0x0080)
 		{
@@ -1528,7 +1529,7 @@ char8_t* UTF16_to_UTF8_unsafe(std::u16string_view const p_input, char8_t* p_outp
 
 char8_t* UCS2_to_UTF8_unsafe(std::u16string_view const p_input, char8_t* p_output)
 {
-	for(const char16_t tchar : p_input)
+	for(char16_t const tchar : p_input)
 	{
 		if(tchar < 0x0080)
 		{
@@ -1549,12 +1550,12 @@ char8_t* UCS2_to_UTF8_unsafe(std::u16string_view const p_input, char8_t* p_outpu
 	return p_output;
 }
 
-[[nodiscard]] std::optional<uintptr_t> UCS4_to_UTF8_estimate(std::u32string_view const p_input)
+[[nodiscard]] std::optional<uintptr_t> UCS4_to_UTF8_size(std::u32string_view const p_input)
 {
 	uintptr_t count = 0;
-	for(const char32_t tchar : p_input)
+	for(char32_t const tchar : p_input)
 	{
-		const uintptr_t res = __estimate_UCS4_UTF8(tchar);
+		uintptr_t const res = __estimate_UCS4_UTF8(tchar);
 		if(!res)
 		{
 			return {};
@@ -1569,7 +1570,7 @@ char8_t* UCS2_to_UTF8_unsafe(std::u16string_view const p_input, char8_t* p_outpu
 
 char8_t* UCS4_to_UTF8_unsafe(std::u32string_view const p_input, char8_t* p_output)
 {
-	for(const char32_t tchar : p_input)
+	for(char32_t const tchar : p_input)
 	{
 		p_output += __convert_UCS4_UTF8(tchar, p_output);
 	}
@@ -1578,7 +1579,7 @@ char8_t* UCS4_to_UTF8_unsafe(std::u32string_view const p_input, char8_t* p_outpu
 
 char16_t* ANSI_to_UTF16_unsafe(std::u8string_view const p_input, char16_t* p_output)
 {
-	for(const char8_t tchar : p_input)
+	for(char8_t const tchar : p_input)
 	{
 		*(p_output++) = static_cast<char16_t>(tchar);
 	}
@@ -1586,15 +1587,15 @@ char16_t* ANSI_to_UTF16_unsafe(std::u8string_view const p_input, char16_t* p_out
 }
 
 
-[[nodiscard]] std::optional<uintptr_t> UTF8_to_UTF16_estimate(std::u8string_view const p_input)
+[[nodiscard]] std::optional<uintptr_t> UTF8_to_UTF16_size(std::u8string_view const p_input)
 {
 	uintptr_t count = 0;
-	const char8_t* pos = p_input.data();
-	const char8_t* const end = pos + p_input.size();
+	char8_t const* pos = p_input.data();
+	char8_t const* const end = pos + p_input.size();
 
 	for(; pos < end; ++pos)
 	{
-		const uintptr_t res = __estimate_UTF8_UTF16(pos, end);
+		uintptr_t const res = __estimate_UTF8_UTF16(pos, end);
 		if(res == 0)
 		{
 			return {};
@@ -1607,8 +1608,8 @@ char16_t* ANSI_to_UTF16_unsafe(std::u8string_view const p_input, char16_t* p_out
 
 char16_t* UTF8_to_UTF16_unsafe(std::u8string_view const p_input, char16_t* p_output)
 {
-	const char8_t* pos = p_input.data();
-	const char8_t* const end = pos + p_input.size();
+	char8_t const* pos = p_input.data();
+	char8_t const* const end = pos + p_input.size();
 
 	for(; pos < end; ++pos, ++p_output)
 	{
@@ -1618,9 +1619,9 @@ char16_t* UTF8_to_UTF16_unsafe(std::u8string_view const p_input, char16_t* p_out
 }
 
 
-[[nodiscard]] std::optional<uintptr_t> UCS2_to_UTF16_estimate(std::u16string_view const p_input)
+[[nodiscard]] std::optional<uintptr_t> UCS2_to_UTF16_size(std::u16string_view const p_input)
 {
-	for(const char16_t tchar : p_input)
+	for(char16_t const tchar : p_input)
 	{
 		if(tchar > 0xD7FF && tchar < 0xDE00) return {};
 	}
@@ -1634,10 +1635,10 @@ char16_t* UCS2_to_UTF16_unsafe(std::u16string_view const p_input, char16_t* cons
 }
 
 
-[[nodiscard]] std::optional<uintptr_t> UCS4_to_UTF16_estimate(std::u32string_view const p_input)
+[[nodiscard]] std::optional<uintptr_t> UCS4_to_UTF16_size(std::u32string_view const p_input)
 {
 	uintptr_t count = 0;
-	for(const char32_t tchar : p_input)
+	for(char32_t const tchar : p_input)
 	{
 		if(tchar > 0xFFFF)
 		{
@@ -1655,7 +1656,7 @@ char16_t* UCS2_to_UTF16_unsafe(std::u16string_view const p_input, char16_t* cons
 
 char16_t* UCS4_to_UTF16_unsafe(std::u32string_view const p_input, char16_t* p_output)
 {
-	for(const char32_t tchar : p_input)
+	for(char32_t const tchar : p_input)
 	{
 		if(tchar > 0xFFFF)
 		{
@@ -1673,7 +1674,7 @@ char16_t* UCS4_to_UTF16_unsafe(std::u32string_view const p_input, char16_t* p_ou
 
 char16_t* ANSI_to_UCS2_unsafe(std::u8string_view const p_input, char16_t* p_output)
 {
-	for(const char8_t tchar : p_input)
+	for(char8_t const tchar : p_input)
 	{
 		*(p_output++) = static_cast<char16_t>(tchar);
 	}
@@ -1681,11 +1682,11 @@ char16_t* ANSI_to_UCS2_unsafe(std::u8string_view const p_input, char16_t* p_outp
 }
 
 
-[[nodiscard]] std::optional<uintptr_t> UTF8_to_UCS2_estimate(std::u8string_view const p_input)
+[[nodiscard]] std::optional<uintptr_t> UTF8_to_UCS2_size(std::u8string_view const p_input)
 {
 	uintptr_t count = 0;
-	const char8_t* pos = p_input.data();
-	const char8_t* const end = pos + p_input.size();
+	char8_t const* pos = p_input.data();
+	char8_t const* const end = pos + p_input.size();
 	for(; pos < end; ++pos, ++count)
 	{
 		if(!__fmove_UTF8_UCS2(pos, end))
@@ -1698,8 +1699,8 @@ char16_t* ANSI_to_UCS2_unsafe(std::u8string_view const p_input, char16_t* p_outp
 
 char16_t* UTF8_to_UCS2_unsafe(std::u8string_view const p_input, char16_t* p_output)
 {
-	const char8_t* pos = p_input.data();
-	const char8_t* const end = pos + p_input.size();
+	char8_t const* pos = p_input.data();
+	char8_t const* const end = pos + p_input.size();
 	for(; pos < end; ++pos, ++p_output)
 	{
 		(*p_output) = __convert_UTF8_UCS2_unsafe(pos);
@@ -1708,9 +1709,9 @@ char16_t* UTF8_to_UCS2_unsafe(std::u8string_view const p_input, char16_t* p_outp
 }
 
 
-[[nodiscard]] std::optional<uintptr_t> UTF16_to_UCS2_estimate(std::u16string_view const p_input)
+[[nodiscard]] std::optional<uintptr_t> UTF16_to_UCS2_size(std::u16string_view const p_input)
 {
-	for(const char16_t tchar : p_input)
+	for(char16_t const tchar : p_input)
 	{
 		if(tchar > 0xD7FF && tchar < 0xDE00)
 		{
@@ -1727,9 +1728,9 @@ char16_t* UTF16_to_UCS2_unsafe(std::u16string_view const p_input, char16_t* cons
 }
 
 
-[[nodiscard]] std::optional<uintptr_t> UCS4_to_UCS2_estimate(std::u32string_view const p_input)
+[[nodiscard]] std::optional<uintptr_t> UCS4_to_UCS2_size(std::u32string_view const p_input)
 {
-	for(const char32_t tchar : p_input)
+	for(char32_t const tchar : p_input)
 	{
 		if(tchar > 0xFFFF)
 		{
@@ -1741,7 +1742,7 @@ char16_t* UTF16_to_UCS2_unsafe(std::u16string_view const p_input, char16_t* cons
 
 char16_t* UCS4_to_UCS2_unsafe(std::u32string_view const p_input, char16_t* p_output)
 {
-	for(const char32_t tchar : p_input)
+	for(char32_t const tchar : p_input)
 	{
 		*(p_output++) = static_cast<char16_t>(tchar);
 	}
@@ -1749,14 +1750,14 @@ char16_t* UCS4_to_UCS2_unsafe(std::u32string_view const p_input, char16_t* p_out
 }
 
 
-[[nodiscard]] uintptr_t ANSI_to_UCS4_estimate(std::u8string_view const p_input)
+[[nodiscard]] uintptr_t ANSI_to_UCS4_size(std::u8string_view const p_input)
 {
 	return p_input.size();
 }
 
 char32_t* ANSI_to_UCS4_unsafe(std::u8string_view const p_input, char32_t* p_output)
 {
-	for(const char8_t tchar : p_input)
+	for(char8_t const tchar : p_input)
 	{
 		*(p_output++) = static_cast<char32_t>(tchar);
 	}
@@ -1764,11 +1765,11 @@ char32_t* ANSI_to_UCS4_unsafe(std::u8string_view const p_input, char32_t* p_outp
 }
 
 
-[[nodiscard]] std::optional<uintptr_t> UTF8_to_UCS4_estimate(std::u8string_view const p_input)
+[[nodiscard]] std::optional<uintptr_t> UTF8_to_UCS4_size(std::u8string_view const p_input)
 {
 	uintptr_t count = 0;
-	const char8_t* pos = p_input.data();
-	const char8_t* const end = pos + p_input.size();
+	char8_t const* pos = p_input.data();
+	char8_t const* const end = pos + p_input.size();
 	for(; pos < end; ++pos, ++count)
 	{
 		if(!__fmove_UTF8_UCS4(pos, end))
@@ -1781,8 +1782,8 @@ char32_t* ANSI_to_UCS4_unsafe(std::u8string_view const p_input, char32_t* p_outp
 
 char32_t* UTF8_to_UCS4_unsafe(std::u8string_view const p_input, char32_t* p_output)
 {
-	const char8_t* pos = p_input.data();
-	const char8_t* const end = pos + p_input.size();
+	char8_t const* pos = p_input.data();
+	char8_t const* const end = pos + p_input.size();
 	for(; pos < end; ++pos, ++p_output)
 	{
 		*p_output = __convert_UTF8_UCS4(pos);
@@ -1791,15 +1792,15 @@ char32_t* UTF8_to_UCS4_unsafe(std::u8string_view const p_input, char32_t* p_outp
 }
 
 
-[[nodiscard]] std::optional<uintptr_t> UTF16_to_UCS4_estimate(std::u16string_view const p_input)
+[[nodiscard]] std::optional<uintptr_t> UTF16_to_UCS4_size(std::u16string_view const p_input)
 {
 	uintptr_t count = 0;
 
-	const char16_t* pos = p_input.data();
-	const char16_t* const end = pos + p_input.size();
+	char16_t const* pos = p_input.data();
+	char16_t const* const end = pos + p_input.size();
 	for(; pos < end; ++pos, ++count)
 	{
-		const char16_t testp = *pos;
+		char16_t const testp = *pos;
 		if(testp > 0xD7FF && testp < 0xE000)
 		{
 			if(	(end - pos < 2 )              ||
@@ -1812,8 +1813,8 @@ char32_t* UTF8_to_UCS4_unsafe(std::u8string_view const p_input, char32_t* p_outp
 
 char32_t* UTF16_to_UCS4_unsafe(std::u16string_view const p_input, char32_t* p_output)
 {
-	const char16_t* pos = p_input.data();
-	const char16_t* const end = pos + p_input.size();
+	char16_t const* pos = p_input.data();
+	char16_t const* const end = pos + p_input.size();
 	for(; pos < end; ++pos, ++p_output)
 	{
 		*p_output = __convert_UTF16_UCS4(pos);
@@ -1823,7 +1824,7 @@ char32_t* UTF16_to_UCS4_unsafe(std::u16string_view const p_input, char32_t* p_ou
 
 char32_t* UCS2_to_UCS4_unsafe(std::u16string_view const p_input, char32_t* p_output)
 {
-	for(const char16_t tchar : p_input)
+	for(char16_t const tchar : p_input)
 	{
 		*(p_output++) = static_cast<char32_t>(tchar);
 	}
@@ -1831,11 +1832,11 @@ char32_t* UCS2_to_UCS4_unsafe(std::u16string_view const p_input, char32_t* p_out
 }
 
 
-[[nodiscard]] static uintptr_t UTF8_to_fix_faulty_estimate(std::u8string_view const p_input)
+[[nodiscard]] static uintptr_t UTF8_to_fix_faulty_size(std::u8string_view const p_input)
 {
 	uintptr_t count = 0;
-	const char8_t* pos = p_input.data();
-	const char8_t* const end = pos + p_input.size();
+	char8_t const* pos = p_input.data();
+	char8_t const* const end = pos + p_input.size();
 	for(; pos < end; ++pos, ++count)
 	{
 		__fmove_UTF8_failForward(pos, end);
@@ -1844,11 +1845,11 @@ char32_t* UCS2_to_UCS4_unsafe(std::u16string_view const p_input, char32_t* p_out
 	return count;
 }
 
-[[nodiscard]] static uintptr_t UTF16_to_fix_faulty_estimate(std::u16string_view const p_input)
+[[nodiscard]] static uintptr_t UTF16_to_fix_faulty_size(std::u16string_view const p_input)
 {
 	uintptr_t count = 0;
-	const char16_t* pos = p_input.data();
-	const char16_t* const end = pos + p_input.size();
+	char16_t const* pos = p_input.data();
+	char16_t const* const end = pos + p_input.size();
 	for(; pos < end; ++pos, ++count)
 	{
 		__fmove_UTF16_failForward(pos, end);
@@ -1856,15 +1857,15 @@ char32_t* UCS2_to_UCS4_unsafe(std::u16string_view const p_input, char32_t* p_out
 	return count;
 }
 
-[[nodiscard]] uintptr_t UTF8_to_ANSI_faulty_estimate(std::u8string_view const p_input)
+[[nodiscard]] uintptr_t UTF8_to_ANSI_faulty_size(std::u8string_view const p_input)
 {
-	return UTF8_to_fix_faulty_estimate(p_input);
+	return UTF8_to_fix_faulty_size(p_input);
 }
 
-char8_t* UTF8_to_ANSI_faulty_unsafe(std::u8string_view const p_input, const  char8_t p_placeHolder, char8_t* p_output)
+char8_t* UTF8_to_ANSI_faulty_unsafe(std::u8string_view const p_input, char8_t const p_placeHolder, char8_t* p_output)
 {
-	const char8_t* pos = p_input.data();
-	const char8_t* const end = pos + p_input.size();
+	char8_t const* pos = p_input.data();
+	char8_t const* const end = pos + p_input.size();
 	for(; pos < end; ++pos, ++p_output)
 	{
 		*p_output = __convert_UTF8_ANSI_failforward(pos, end, p_placeHolder);
@@ -1873,15 +1874,15 @@ char8_t* UTF8_to_ANSI_faulty_unsafe(std::u8string_view const p_input, const  cha
 }
 
 
-[[nodiscard]] uintptr_t UTF16_to_ANSI_faulty_estimate(std::u16string_view const p_input)
+[[nodiscard]] uintptr_t UTF16_to_ANSI_faulty_size(std::u16string_view const p_input)
 {
-	return UTF16_to_fix_faulty_estimate(p_input);
+	return UTF16_to_fix_faulty_size(p_input);
 }
 
-char8_t* UTF16_to_ANSI_faulty_unsafe(std::u16string_view const p_input, const char8_t p_placeHolder, char8_t* p_output)
+char8_t* UTF16_to_ANSI_faulty_unsafe(std::u16string_view const p_input, char8_t const p_placeHolder, char8_t* p_output)
 {
-	const char16_t* pos = p_input.data();
-	const char16_t* const end = pos + p_input.size();
+	char16_t const* pos = p_input.data();
+	char16_t const* const end = pos + p_input.size();
 	for(; pos < end; ++pos, ++p_output)
 	{
 		*p_output = __convert_UTF16_ANSI_failforward(pos, end, p_placeHolder);
@@ -1890,9 +1891,9 @@ char8_t* UTF16_to_ANSI_faulty_unsafe(std::u16string_view const p_input, const ch
 }
 
 
-char8_t* UCS2_to_ANSI_faulty_unsafe(std::u16string_view const p_input, const char8_t p_placeHolder, char8_t* p_output)
+char8_t* UCS2_to_ANSI_faulty_unsafe(std::u16string_view const p_input, char8_t const p_placeHolder, char8_t* p_output)
 {
-	for(const char16_t tchar : p_input)
+	for(char16_t const tchar : p_input)
 	{
 		if(tchar < 0x0100)
 		{
@@ -1908,9 +1909,9 @@ char8_t* UCS2_to_ANSI_faulty_unsafe(std::u16string_view const p_input, const cha
 }
 
 
-char8_t* UCS4_to_ANSI_faulty_unsafe(std::u32string_view const p_input, const char8_t p_placeHolder, char8_t* p_output)
+char8_t* UCS4_to_ANSI_faulty_unsafe(std::u32string_view const p_input, char8_t const p_placeHolder, char8_t* p_output)
 {
-	for(const char32_t tchar : p_input)
+	for(char32_t const tchar : p_input)
 	{
 		if(tchar < 0x0100)
 		{
@@ -1926,30 +1927,30 @@ char8_t* UCS4_to_ANSI_faulty_unsafe(std::u32string_view const p_input, const cha
 }
 
 
-[[nodiscard]] uintptr_t UTF16_to_UTF8_faulty_estimate(std::u16string_view const p_input, const char32_t p_placeHolder)
+[[nodiscard]] uintptr_t UTF16_to_UTF8_faulty_size(std::u16string_view const p_input, char32_t const p_placeHolder)
 {
 	uintptr_t count = 0;
-	const char16_t* pos = p_input.data();
-	const char16_t* const end = pos + p_input.size();
+	char16_t const* pos = p_input.data();
+	char16_t const* const end = pos + p_input.size();
 
-	const uintptr_t ph_count = __estimate_UCS4_UTF8(p_placeHolder);
+	uintptr_t const ph_count = __estimate_UCS4_UTF8(p_placeHolder);
 
 	for(; pos < end; ++pos)
 	{
-		const uintptr_t tcount = __estimate_UTF16_UTF8_failforward(pos, end);
+		uintptr_t const tcount = __estimate_UTF16_UTF8_failforward(pos, end);
 		count += tcount ? tcount: ph_count;
 	}
 
 	return count;
 }
 
-char8_t* UTF16_to_UTF8_faulty_unsafe(std::u16string_view const p_input, const char32_t p_placeHolder, char8_t* p_output)
+char8_t* UTF16_to_UTF8_faulty_unsafe(std::u16string_view const p_input, char32_t const p_placeHolder, char8_t* p_output)
 {
 	std::array<char8_t, 4> placeHolder;
-	const uintptr_t placeHolderSize = __inline_encode_UTF8(p_placeHolder, placeHolder.data());
+	uintptr_t const placeHolderSize = __inline_encode_UTF8(p_placeHolder, placeHolder.data());
 
-	const char16_t* pos = p_input.data();
-	const char16_t* const end = pos + p_input.size();
+	char16_t const* pos = p_input.data();
+	char16_t const* const end = pos + p_input.size();
 
 	for(; pos < end; ++pos)
 	{
@@ -1967,27 +1968,27 @@ char8_t* UTF16_to_UTF8_faulty_unsafe(std::u16string_view const p_input, const ch
 	return p_output;
 }
 
-[[nodiscard]] uintptr_t UCS4_to_UTF8_faulty_estimate(std::u32string_view const p_input, const char32_t p_placeHolder)
+[[nodiscard]] uintptr_t UCS4_to_UTF8_faulty_size(std::u32string_view const p_input, char32_t const p_placeHolder)
 {
 	uintptr_t count = 0;
-	const uintptr_t ph_count = __estimate_UCS4_UTF8(p_placeHolder);
-	for(const char32_t tchar : p_input)
+	uintptr_t const ph_count = __estimate_UCS4_UTF8(p_placeHolder);
+	for(char32_t const tchar : p_input)
 	{
-		const uintptr_t tcount = __estimate_UCS4_UTF8(tchar);
+		uintptr_t const tcount = __estimate_UCS4_UTF8(tchar);
 		count += tcount ? tcount: ph_count;
 	}
 
 	return count;
 }
 
-char8_t* UCS4_to_UTF8_faulty_unsafe(std::u32string_view const p_input, const char32_t p_placeHolder, char8_t* p_output)
+char8_t* UCS4_to_UTF8_faulty_unsafe(std::u32string_view const p_input, char32_t const p_placeHolder, char8_t* p_output)
 {
 	std::array<char8_t, 4> placeHolder;
-	const uintptr_t placeHolderSize = __inline_encode_UTF8(p_placeHolder, placeHolder.data());
+	uintptr_t const placeHolderSize = __inline_encode_UTF8(p_placeHolder, placeHolder.data());
 
-	for(const char32_t tchar : p_input)
+	for(char32_t const tchar : p_input)
 	{
-		const uintptr_t tcount = __convert_UCS4_UTF8_checked(tchar, p_output);
+		uintptr_t const tcount = __convert_UCS4_UTF8_checked(tchar, p_output);
 		if(tcount)
 		{
 			p_output += tcount;
@@ -2001,16 +2002,16 @@ char8_t* UCS4_to_UTF8_faulty_unsafe(std::u32string_view const p_input, const cha
 	return p_output;
 }
 
-[[nodiscard]] uintptr_t UTF8_to_UTF16_faulty_estimate(std::u8string_view const p_input, const char32_t p_placeHolder)
+[[nodiscard]] uintptr_t UTF8_to_UTF16_faulty_size(std::u8string_view const p_input, char32_t const p_placeHolder)
 {
 	uintptr_t count = 0;
-	const char8_t* pos = p_input.data();
-	const char8_t* const end = pos + p_input.size();
-	const uintptr_t ph_count = __estimate_UCS4_UTF16(p_placeHolder);
+	char8_t const* pos = p_input.data();
+	char8_t const* const end = pos + p_input.size();
+	uintptr_t const ph_count = __estimate_UCS4_UTF16(p_placeHolder);
 
 	for(; pos < end; ++pos)
 	{
-		const uintptr_t tcount = __estimate_UTF8_UTF16_failforward(pos, end);
+		uintptr_t const tcount = __estimate_UTF8_UTF16_failforward(pos, end);
 		if(tcount)
 		{
 			count += tcount;
@@ -2024,14 +2025,14 @@ char8_t* UCS4_to_UTF8_faulty_unsafe(std::u32string_view const p_input, const cha
 	return count;
 }
 
-char16_t* UTF8_to_UTF16_faulty_unsafe(std::u8string_view const p_input, const char32_t p_placeHolder, char16_t* p_output)
+char16_t* UTF8_to_UTF16_faulty_unsafe(std::u8string_view const p_input, char32_t const p_placeHolder, char16_t* p_output)
 {
 	std::array<char16_t, 2> placeHolder;
-	const uintptr_t placeHolderCount = __inline_encode_UTF16(p_placeHolder, placeHolder.data());
-	const uintptr_t placeHolderSize = placeHolderCount * sizeof(char16_t);
+	uintptr_t const placeHolderCount = __inline_encode_UTF16(p_placeHolder, placeHolder.data());
+	uintptr_t const placeHolderSize = placeHolderCount * sizeof(char16_t);
 
-	const char8_t* pos = p_input.data();
-	const char8_t* const end = pos + p_input.size();
+	char8_t const* pos = p_input.data();
+	char8_t const* const end = pos + p_input.size();
 
 	for(; pos < end; ++pos)
 	{
@@ -2050,11 +2051,11 @@ char16_t* UTF8_to_UTF16_faulty_unsafe(std::u8string_view const p_input, const ch
 }
 
 
-[[nodiscard]] uintptr_t UCS2_to_UTF16_faulty_estimate(std::u16string_view const p_input, const char32_t p_placeHolder)
+[[nodiscard]] uintptr_t UCS2_to_UTF16_faulty_size(std::u16string_view const p_input, char32_t const p_placeHolder)
 {
-	const uintptr_t ph_count = __estimate_UCS4_UTF16(p_placeHolder);
+	uintptr_t const ph_count = __estimate_UCS4_UTF16(p_placeHolder);
 	uintptr_t count = 0;
-	for(const char16_t tchar : p_input)
+	for(char16_t const tchar : p_input)
 	{
 		if((tchar & 0xF800) == 0xD800)
 		{
@@ -2068,13 +2069,13 @@ char16_t* UTF8_to_UTF16_faulty_unsafe(std::u8string_view const p_input, const ch
 	return count;
 }
 
-char16_t* UCS2_to_UTF16_faulty_unsafe(std::u16string_view const p_input, const char32_t p_placeHolder, char16_t* p_output)
+char16_t* UCS2_to_UTF16_faulty_unsafe(std::u16string_view const p_input, char32_t const p_placeHolder, char16_t* p_output)
 {
 	std::array<char16_t, 2> placeHolder;
-	const uintptr_t placeHolderCount =  __inline_encode_UTF16(p_placeHolder, placeHolder.data());
-	const uintptr_t placeHolderSize  = placeHolderCount * sizeof(char16_t);
+	uintptr_t const placeHolderCount =  __inline_encode_UTF16(p_placeHolder, placeHolder.data());
+	uintptr_t const placeHolderSize  = placeHolderCount * sizeof(char16_t);
 
-	for(const char16_t tchar : p_input)
+	for(char16_t const tchar : p_input)
 	{
 		if(tchar > 0xD7FF && tchar < 0xDE00)
 		{
@@ -2089,11 +2090,11 @@ char16_t* UCS2_to_UTF16_faulty_unsafe(std::u16string_view const p_input, const c
 	return p_output;
 }
 
-[[nodiscard]] uintptr_t UCS4_to_UTF16_faulty_estimate(std::u32string_view const p_input, const char32_t p_placeHolder)
+[[nodiscard]] uintptr_t UCS4_to_UTF16_faulty_size(std::u32string_view const p_input, char32_t const p_placeHolder)
 {
-	const uintptr_t ph_count = __estimate_UCS4_UTF16(p_placeHolder);
+	uintptr_t const ph_count = __estimate_UCS4_UTF16(p_placeHolder);
 	uintptr_t count = 0;
-	for(const char32_t tchar : p_input)
+	for(char32_t const tchar : p_input)
 	{
 		uintptr_t res = __estimate_UCS4_UTF16(tchar);
 		if(res)
@@ -2109,13 +2110,13 @@ char16_t* UCS2_to_UTF16_faulty_unsafe(std::u16string_view const p_input, const c
 	
 }
 
-char16_t* UCS4_to_UTF16_faulty_unsafe(std::u32string_view const p_input, const char32_t p_placeHolder, char16_t* p_output)
+char16_t* UCS4_to_UTF16_faulty_unsafe(std::u32string_view const p_input, char32_t const p_placeHolder, char16_t* p_output)
 {
 	std::array<char16_t, 2> placeHolder;
-	const uintptr_t placeHolderCount =  __inline_encode_UTF16(p_placeHolder, placeHolder.data());
-	const uintptr_t placeHolderSize = placeHolderCount * sizeof(char16_t);
+	uintptr_t const placeHolderCount =  __inline_encode_UTF16(p_placeHolder, placeHolder.data());
+	uintptr_t const placeHolderSize = placeHolderCount * sizeof(char16_t);
 
-	for(const char32_t tchar : p_input)
+	for(char32_t const tchar : p_input)
 	{
 		uintptr_t res = __inline_encode_UTF16(tchar, p_output);
 		if(res)
@@ -2131,15 +2132,15 @@ char16_t* UCS4_to_UTF16_faulty_unsafe(std::u32string_view const p_input, const c
 	return p_output;
 }
 
-[[nodiscard]] uintptr_t UTF8_to_UCS2_faulty_estimate(std::u8string_view const p_input)
+[[nodiscard]] uintptr_t UTF8_to_UCS2_faulty_size(std::u8string_view const p_input)
 {
-	return UTF8_to_fix_faulty_estimate(p_input);
+	return UTF8_to_fix_faulty_size(p_input);
 }
 
-char16_t* UTF8_to_UCS2_faulty_unsafe(std::u8string_view const p_input, const char16_t p_placeHolder, char16_t* p_output)
+char16_t* UTF8_to_UCS2_faulty_unsafe(std::u8string_view const p_input, char16_t const p_placeHolder, char16_t* p_output)
 {
-	const char8_t* pos = p_input.data();
-	const char8_t* const end = pos + p_input.size();
+	char8_t const* pos = p_input.data();
+	char8_t const* const end = pos + p_input.size();
 	for(; pos < end; ++pos, ++p_output)
 	{
 		*p_output = __convert_UTF8_UCS2_failforward(pos, end, p_placeHolder);
@@ -2148,15 +2149,15 @@ char16_t* UTF8_to_UCS2_faulty_unsafe(std::u8string_view const p_input, const cha
 }
 
 
-[[nodiscard]] uintptr_t UTF16_to_UCS2_faulty_estimate(std::u16string_view const p_input)
+[[nodiscard]] uintptr_t UTF16_to_UCS2_faulty_size(std::u16string_view const p_input)
 {
-	return UTF16_to_fix_faulty_estimate(p_input);
+	return UTF16_to_fix_faulty_size(p_input);
 }
 
-char16_t* UTF16_to_UCS2_faulty_unsafe(std::u16string_view const p_input, const char16_t p_placeHolder, char16_t* p_output)
+char16_t* UTF16_to_UCS2_faulty_unsafe(std::u16string_view const p_input, char16_t const p_placeHolder, char16_t* p_output)
 {
-	const char16_t* pos = p_input.data();
-	const char16_t* const end = pos + p_input.size();
+	char16_t const* pos = p_input.data();
+	char16_t const* const end = pos + p_input.size();
 	for(; pos < end; ++pos, ++p_output)
 	{
 		*p_output = __convert_UTF16_UCS2_failforward(pos, end, p_placeHolder);
@@ -2164,9 +2165,9 @@ char16_t* UTF16_to_UCS2_faulty_unsafe(std::u16string_view const p_input, const c
 	return p_output;
 }
 
-char16_t* UCS4_to_UCS2_faulty_unsafe(std::u32string_view const p_input, const char16_t p_placeHolder, char16_t* p_output)
+char16_t* UCS4_to_UCS2_faulty_unsafe(std::u32string_view const p_input, char16_t const p_placeHolder, char16_t* p_output)
 {
-	for(char32_t tchar : p_input)
+	for(char32_t const tchar : p_input)
 	{
 		if(tchar < 0x010000)
 		{
@@ -2181,15 +2182,15 @@ char16_t* UCS4_to_UCS2_faulty_unsafe(std::u32string_view const p_input, const ch
 }
 
 
-[[nodiscard]] uintptr_t UTF8_to_UCS4_faulty_estimate(std::u8string_view const p_input)
+[[nodiscard]] uintptr_t UTF8_to_UCS4_faulty_size(std::u8string_view const p_input)
 {
-	return UTF8_to_fix_faulty_estimate(p_input);
+	return UTF8_to_fix_faulty_size(p_input);
 }
 
-char32_t* UTF8_to_UCS4_faulty_unsafe(std::u8string_view const p_input, const char32_t p_placeHolder, char32_t* p_output)
+char32_t* UTF8_to_UCS4_faulty_unsafe(std::u8string_view const p_input, char32_t const p_placeHolder, char32_t* p_output)
 {
-	const char8_t* pos = p_input.data();
-	const char8_t* const end = pos + p_input.size();
+	char8_t const* pos = p_input.data();
+	char8_t const* const end = pos + p_input.size();
 	for(; pos < end; ++pos, ++p_output)
 	{
 		*p_output = __convert_UTF8_UCS4_failforward(pos, end, p_placeHolder);
@@ -2198,23 +2199,21 @@ char32_t* UTF8_to_UCS4_faulty_unsafe(std::u8string_view const p_input, const cha
 }
 
 
-[[nodiscard]] uintptr_t UTF16_to_UCS4_faulty_estimate(std::u16string_view const p_input)
+[[nodiscard]] uintptr_t UTF16_to_UCS4_faulty_size(std::u16string_view const p_input)
 {
-	return UTF16_to_fix_faulty_estimate(p_input);
+	return UTF16_to_fix_faulty_size(p_input);
 }
 
-char32_t* UTF16_to_UCS4_faulty_unsafe(std::u16string_view const p_input, const char32_t p_placeHolder, char32_t* p_output)
+char32_t* UTF16_to_UCS4_faulty_unsafe(std::u16string_view const p_input, char32_t const p_placeHolder, char32_t* p_output)
 {
-	const char16_t* pos = p_input.data();
-	const char16_t* const end = pos + p_input.size();
+	char16_t const* pos = p_input.data();
+	char16_t const* const end = pos + p_input.size();
 	for(; pos < end; ++pos, ++p_output)
 	{
 		*p_output = __convert_UTF16_UCS4_failforward(pos, end, p_placeHolder);
 	}
 	return p_output;
 }
-
-} //namespace _p
 
 
 uint8_t encode_UTF8(char32_t const p_char, std::span<char8_t, 4> const p_output)
@@ -2274,8 +2273,8 @@ uint8_t encode_UTF16(char32_t p_char, std::span<char16_t, 2> const p_output)
 
 bool UTF8_UNICODE_Compliant(std::u8string_view const p_input)
 {
-	const char8_t* pos = p_input.data();
-	const char8_t* const end = pos + p_input.size();
+	char8_t const* pos = p_input.data();
+	char8_t const* const end = pos + p_input.size();
 	for(; pos < end; ++pos)
 	{
 		if(*pos & 0x80)
@@ -2288,7 +2287,7 @@ bool UTF8_UNICODE_Compliant(std::u8string_view const p_input)
 			}
 			else if((*pos & 0xF0) == 0xE0) //level 2
 			{
-				const char8_t* decode = pos;
+				char8_t const* decode = pos;
 
 				if(end - pos < 3			||	//validate size
 					(!(*(pos++) & 0x0F) && !(*pos & 0x20)) || //validate range
@@ -2303,14 +2302,14 @@ bool UTF8_UNICODE_Compliant(std::u8string_view const p_input)
 			}
 			else if((*pos & 0xF8) == 0xF0) //level 3
 			{
-				const char8_t* decode = pos;
+				char8_t const* decode = pos;
 				if(end - pos < 4			||	//validate size
 					(((*pos++ & 0x07) == 0) && (*pos < 0x90)) ||	//validate sub-range
 					(*pos & 0xC0) != 0x80 ||	//validate encoding
 					(*++pos & 0xC0) != 0x80 ||
 					(*++pos & 0xC0) != 0x80) return false;
 
-				char32_t temp = (*decode & 0x07);
+				char32_t const temp = (*decode & 0x07);
 
 				if(temp > 4 ||
 					(temp == 4 && (*++decode & 0x30))) return false; //validate upper-range
@@ -2324,8 +2323,8 @@ bool UTF8_UNICODE_Compliant(std::u8string_view const p_input)
 
 bool UTF16_UNICODE_Compliant(std::u16string_view const p_input)
 {
-	const char16_t* pos = p_input.data();
-	const char16_t* const end = pos + p_input.size();
+	char16_t const* pos = p_input.data();
+	char16_t const* const end = pos + p_input.size();
 	for(; pos < end; ++pos)
 	{
 		if(*pos > 0xD7FF && *pos < 0xE000)
@@ -2340,7 +2339,7 @@ bool UTF16_UNICODE_Compliant(std::u16string_view const p_input)
 
 bool UCS2_UNICODE_Compliant(std::u16string_view const p_input)
 {
-	for(const char16_t tchar: p_input)
+	for(char16_t const tchar: p_input)
 	{
 		if(tchar > 0xD7FF && tchar < 0xE000) return false;
 	}
@@ -2349,7 +2348,7 @@ bool UCS2_UNICODE_Compliant(std::u16string_view const p_input)
 
 bool UCS4_UNICODE_Compliant(std::u32string_view const p_input)
 {
-	for(const char32_t tchar: p_input)
+	for(char32_t const tchar: p_input)
 	{
 		if(!UNICODE_Compliant(tchar)) return false;
 	}
@@ -2359,7 +2358,7 @@ bool UCS4_UNICODE_Compliant(std::u32string_view const p_input)
 
 bool ASCII_Compliant(std::u8string_view const p_input)
 {
-	for(const char8_t tchar: p_input)
+	for(char8_t const tchar: p_input)
 	{
 		if(tchar > 0x7F) return false;
 	}
@@ -2368,7 +2367,7 @@ bool ASCII_Compliant(std::u8string_view const p_input)
 
 bool ASCII_Compliant(std::u32string_view const p_input)
 {
-	for(const char32_t tchar: p_input)
+	for(char32_t const tchar: p_input)
 	{
 		if(tchar > 0x7F) return false;
 	}
@@ -2377,11 +2376,11 @@ bool ASCII_Compliant(std::u32string_view const p_input)
 
 std::optional<std::u8string> UTF8_to_ANSI(std::u8string_view const p_input)
 {
-	const std::optional<uintptr_t> res = _p::UTF8_to_ANSI_estimate(p_input);
+	std::optional<uintptr_t> const res = UTF8_to_ANSI_size(p_input);
 	if(!res.has_value()) return {};
 	std::u8string output;
 	output.resize(res.value());
-	_p::UTF8_to_ANSI_unsafe(p_input, output.data());
+	UTF8_to_ANSI_unsafe(p_input, output.data());
 	return output;
 }
 
@@ -2395,82 +2394,82 @@ std::optional<std::u8string> UTF16_to_ANSI(std::u16string_view const p_input)
 
 std::optional<std::u8string> UCS2_to_ANSI(std::u16string_view const p_input)
 {
-	const std::optional<uintptr_t> res = _p::UCS2_to_ANSI_estimate(p_input);
+	std::optional<uintptr_t> const res = UCS2_to_ANSI_size(p_input);
 	if(!res.has_value()) return {};
 	std::u8string output;
 	output.resize(res.value());
-	_p::UCS2_to_ANSI_unsafe(p_input, output.data());
+	UCS2_to_ANSI_unsafe(p_input, output.data());
 	return output;
 }
 
 std::optional<std::u8string> UCS4_to_ANSI(std::u32string_view const p_input)
 {
-	const std::optional<uintptr_t> res = _p::UCS4_to_ANSI_estimate(p_input);
+	std::optional<uintptr_t> const res = UCS4_to_ANSI_size(p_input);
 	if(!res.has_value()) return {};
 	std::u8string output;
 	output.resize(res.value());
-	_p::UCS4_to_ANSI_unsafe(p_input, output.data());
+	UCS4_to_ANSI_unsafe(p_input, output.data());
 	return output;
 }
 
 std::u8string ANSI_to_UTF8(std::u8string_view const p_input)
 {
 	std::u8string output;
-	output.resize(_p::ANSI_to_UTF8_estimate(p_input));
-	_p::ANSI_to_UTF8_unsafe(p_input, output.data());
+	output.resize(ANSI_to_UTF8_size(p_input));
+	ANSI_to_UTF8_unsafe(p_input, output.data());
 	return output;
 }
 
 std::optional<std::u8string> UTF16_to_UTF8(std::u16string_view const p_input)
 {
-	const std::optional<uintptr_t> res = _p::UTF16_to_UTF8_estimate(p_input);
+	std::optional<uintptr_t> const res = UTF16_to_UTF8_size(p_input);
 	if(!res.has_value()) return {};
 	std::u8string output;
 	output.resize(res.value());
-	_p::UTF16_to_UTF8_unsafe(p_input, output.data());
+	UTF16_to_UTF8_unsafe(p_input, output.data());
 	return output;
 }
 
 std::u8string UCS2_to_UTF8(std::u16string_view const p_input)
 {
 	std::u8string output;
-	output.resize(_p::UCS2_to_UTF8_estimate(p_input));
-	_p::UCS2_to_UTF8_unsafe(p_input, output.data());
+	output.resize(UCS2_to_UTF8_size(p_input));
+	UCS2_to_UTF8_unsafe(p_input, output.data());
 	return output;
 }
 
 std::optional<std::u8string> UCS4_to_UTF8(std::u32string_view const p_input)
 {
-	const std::optional<uintptr_t> res = _p::UCS4_to_UTF8_estimate(p_input);
+	std::optional<uintptr_t> const res = UCS4_to_UTF8_size(p_input);
 	if(!res.has_value()) return {};
 
 	std::u8string output;
 	output.resize(res.value());
-	_p::UCS4_to_UTF8_unsafe(p_input, output.data());
+	UCS4_to_UTF8_unsafe(p_input, output.data());
 	return output;
 }
 
 std::u16string ANSI_to_UTF16(std::u8string_view const p_input)
 {
 	std::u16string output;
-	output.resize(_p::ANSI_to_UTF16_estimate(p_input));
-	_p::ANSI_to_UTF16_unsafe(p_input, output.data());
+	output.resize(ANSI_to_UTF16_size(p_input));
+	ANSI_to_UTF16_unsafe(p_input, output.data());
 	return output;
 }
 
 std::optional<std::u16string> UTF8_to_UTF16(std::u8string_view const p_input)
 {
-	const std::optional<uintptr_t> res = _p::UTF8_to_UTF16_estimate(p_input);
+	std::optional<uintptr_t> const res = UTF8_to_UTF16_size(p_input);
 	if(!res.has_value()) return {};
 	std::u16string output;
 	output.resize(res.value());
-	_p::UTF8_to_UTF16_unsafe(p_input, output.data());
+	UTF8_to_UTF16_unsafe(p_input, output.data());
 	return output;
 }
 
 std::optional<std::u16string> UCS2_to_UTF16(std::u16string_view const p_input)
 {
-	for(const char16_t tchar: p_input)
+	for(char16_t const tchar: p_input)
 	{
 		if(tchar > 0xD7FF && tchar < 0xE000) return {};
 	}
@@ -2479,35 +2478,35 @@ std::optional<std::u16string> UCS2_to_UTF16(std::u16string_view const p_input)
 
 std::optional<std::u16string> UCS4_to_UTF16(std::u32string_view const p_input)
 {
-	const std::optional<uintptr_t> res = _p::UCS4_to_UTF16_estimate(p_input);
+	std::optional<uintptr_t> const res = UCS4_to_UTF16_size(p_input);
 	if(!res.has_value()) return {};
 	std::u16string output;
 	output.resize(res.value());
-	_p::UCS4_to_UTF16_unsafe(p_input, output.data());
+	UCS4_to_UTF16_unsafe(p_input, output.data());
 	return output;
 }
 
 std::u16string ANSI_to_UCS2(std::u8string_view const p_input)
 {
 	std::u16string output;
-	output.resize(_p::ANSI_to_UCS2_estimate(p_input));
-	_p::ANSI_to_UCS2_unsafe(p_input, output.data());
+	output.resize(ANSI_to_UCS2_size(p_input));
+	ANSI_to_UCS2_unsafe(p_input, output.data());
 	return output;
 }
 
 std::optional<std::u16string> UTF8_to_UCS2(std::u8string_view const p_input)
 {
-	const std::optional<uintptr_t> res = _p::UTF8_to_UCS2_estimate(p_input);
+	std::optional<uintptr_t> const res = UTF8_to_UCS2_size(p_input);
 	if(!res.has_value()) return {};
 	std::u16string output;
 	output.resize(res.value());
-	_p::UTF8_to_UCS2_unsafe(p_input, output.data());
+	UTF8_to_UCS2_unsafe(p_input, output.data());
 	return output;
 }
 
 std::optional<std::u16string> UTF16_to_UCS2(std::u16string_view const p_input)
 {
-	for(const char16_t tchar: p_input)
+	for(char16_t const tchar: p_input)
 	{
 		if(tchar > 0xD7FF && tchar < 0xE000) return {};
 	}
@@ -2516,161 +2515,161 @@ std::optional<std::u16string> UTF16_to_UCS2(std::u16string_view const p_input)
 
 std::optional<std::u16string> UCS4_to_UCS2(std::u32string_view const p_input)
 {
-	const std::optional<uintptr_t> res = _p::UCS4_to_UCS2_estimate(p_input);
+	std::optional<uintptr_t> const res = UCS4_to_UCS2_size(p_input);
 	if(!res.has_value()) return {};
 	std::u16string output;
 	output.resize(res.value());
-	_p::UCS4_to_UCS2_unsafe(p_input, output.data());
+	UCS4_to_UCS2_unsafe(p_input, output.data());
 	return output;
 }
 
 std::u32string ANSI_to_UCS4(std::u8string_view const p_input)
 {
 	std::u32string output;
-	output.resize(_p::ANSI_to_UCS4_estimate(p_input));
-	_p::ANSI_to_UCS4_unsafe(p_input, output.data());
+	output.resize(ANSI_to_UCS4_size(p_input));
+	ANSI_to_UCS4_unsafe(p_input, output.data());
 	return output;
 }
 
 std::optional<std::u32string> UTF8_to_UCS4(std::u8string_view const p_input)
 {
-	const std::optional<uintptr_t> res = _p::UTF8_to_UCS4_estimate(p_input);
+	std::optional<uintptr_t> const res = UTF8_to_UCS4_size(p_input);
 	if(!res.has_value()) return {};
 	std::u32string output;
 	output.resize(res.value());
-	_p::UTF8_to_UCS4_unsafe(p_input, output.data());
+	UTF8_to_UCS4_unsafe(p_input, output.data());
 	return output;
 }
 
 std::optional<std::u32string> UTF16_to_UCS4(std::u16string_view const p_input)
 {
-	const std::optional<uintptr_t> res = _p::UTF16_to_UCS4_estimate(p_input);
+	std::optional<uintptr_t> const res = UTF16_to_UCS4_size(p_input);
 	if(!res.has_value()) return {};
 	std::u32string output;
 	output.resize(res.value());
-	_p::UTF16_to_UCS4_unsafe(p_input, output.data());
+	UTF16_to_UCS4_unsafe(p_input, output.data());
 	return output;
 }
 
 std::u32string UCS2_to_UCS4(std::u16string_view const p_input)
 {
 	std::u32string output;
-	output.resize(_p::UCS2_to_UCS4_estimate(p_input));
-	_p::UCS2_to_UCS4_unsafe(p_input, output.data());
+	output.resize(UCS2_to_UCS4_size(p_input));
+	UCS2_to_UCS4_unsafe(p_input, output.data());
 	return output;
 }
 
-std::u8string UTF8_to_ANSI_faulty(std::u8string_view const p_input, const char8_t p_placeHolder)
+std::u8string UTF8_to_ANSI_faulty(std::u8string_view const p_input, char8_t const p_placeHolder)
 {
 	std::u8string output;
-	output.resize(_p::UTF8_to_ANSI_faulty_estimate(p_input));
-	_p::UTF8_to_ANSI_faulty_unsafe(p_input, p_placeHolder, output.data());
+	output.resize(UTF8_to_ANSI_faulty_size(p_input));
+	UTF8_to_ANSI_faulty_unsafe(p_input, p_placeHolder, output.data());
 	return output;
 }
 
-std::u8string UTF16_to_ANSI_faulty(std::u16string_view const p_input, const char8_t p_placeHolder)
+std::u8string UTF16_to_ANSI_faulty(std::u16string_view const p_input, char8_t const p_placeHolder)
 {
 	std::u8string output;
-	output.resize(_p::UTF16_to_ANSI_faulty_estimate(p_input));
-	_p::UTF16_to_ANSI_faulty_unsafe(p_input, p_placeHolder, output.data());
+	output.resize(UTF16_to_ANSI_faulty_size(p_input));
+	UTF16_to_ANSI_faulty_unsafe(p_input, p_placeHolder, output.data());
 	return output;
 }
 
-std::u8string UCS2_to_ANSI_faulty(std::u16string_view const p_input, const char8_t p_placeHolder)
+std::u8string UCS2_to_ANSI_faulty(std::u16string_view const p_input, char8_t const p_placeHolder)
 {
 	std::u8string output;
-	output.resize(_p::UCS2_to_ANSI_faulty_estimate(p_input));
-	_p::UCS2_to_ANSI_faulty_unsafe(p_input, p_placeHolder, output.data());
+	output.resize(UCS2_to_ANSI_faulty_size(p_input));
+	UCS2_to_ANSI_faulty_unsafe(p_input, p_placeHolder, output.data());
 	return output;
 }
 
-std::u8string UCS4_to_ANSI_faulty(std::u32string_view const p_input, const char8_t p_placeHolder)
+std::u8string UCS4_to_ANSI_faulty(std::u32string_view const p_input, char8_t const p_placeHolder)
 {
 	std::u8string output;
-	output.resize(_p::UCS4_to_ANSI_faulty_estimate(p_input));
-	_p::UCS4_to_ANSI_faulty_unsafe(p_input, p_placeHolder, output.data());
+	output.resize(UCS4_to_ANSI_faulty_size(p_input));
+	UCS4_to_ANSI_faulty_unsafe(p_input, p_placeHolder, output.data());
 	return output;
 }
 
-std::u8string UTF16_to_UTF8_faulty(std::u16string_view const p_input, const char32_t p_placeHolder)
+std::u8string UTF16_to_UTF8_faulty(std::u16string_view const p_input, char32_t const p_placeHolder)
 {
 	std::u8string output;
-	output.resize(_p::UTF16_to_UTF8_faulty_estimate(p_input, p_placeHolder));
-	_p::UTF16_to_UTF8_faulty_unsafe(p_input, p_placeHolder, output.data());
+	output.resize(UTF16_to_UTF8_faulty_size(p_input, p_placeHolder));
+	UTF16_to_UTF8_faulty_unsafe(p_input, p_placeHolder, output.data());
 	return output;
 }
 
 
-[[nodiscard]] std::u8string UCS4_to_UTF8_faulty(std::u32string_view const p_input, const char32_t p_placeHolder)
+[[nodiscard]] std::u8string UCS4_to_UTF8_faulty(std::u32string_view const p_input, char32_t const p_placeHolder)
 {
 	std::u8string output;
-	output.resize(_p::UCS4_to_UTF8_faulty_estimate(p_input, p_placeHolder));
-	_p::UCS4_to_UTF8_faulty_unsafe(p_input, p_placeHolder, output.data());
+	output.resize(UCS4_to_UTF8_faulty_size(p_input, p_placeHolder));
+	UCS4_to_UTF8_faulty_unsafe(p_input, p_placeHolder, output.data());
 	return output;
 }
 
 
-std::u16string UTF8_to_UTF16_faulty(std::u8string_view const p_input, const char32_t p_placeHolder)
+std::u16string UTF8_to_UTF16_faulty(std::u8string_view const p_input, char32_t const p_placeHolder)
 {
 	std::u16string output;
-	output.resize(_p::UTF8_to_UTF16_faulty_estimate(p_input, p_placeHolder));
-	_p::UTF8_to_UTF16_faulty_unsafe(p_input, p_placeHolder, output.data());
+	output.resize(UTF8_to_UTF16_faulty_size(p_input, p_placeHolder));
+	UTF8_to_UTF16_faulty_unsafe(p_input, p_placeHolder, output.data());
 	return output;
 }
 
-std::u16string UCS2_to_UTF16_faulty(std::u16string_view const p_input, const char32_t p_placeHolder)
+std::u16string UCS2_to_UTF16_faulty(std::u16string_view const p_input, char32_t const p_placeHolder)
 {
 	std::u16string output;
-	output.resize(_p::UCS2_to_UTF16_faulty_estimate(p_input, p_placeHolder));
-	_p::UCS2_to_UTF16_faulty_unsafe(p_input, p_placeHolder, output.data());
+	output.resize(UCS2_to_UTF16_faulty_size(p_input, p_placeHolder));
+	UCS2_to_UTF16_faulty_unsafe(p_input, p_placeHolder, output.data());
 	return output;
 }
 
-std::u16string UCS4_to_UTF16_faulty(std::u32string_view const p_input, const char32_t p_placeHolder)
+std::u16string UCS4_to_UTF16_faulty(std::u32string_view const p_input, char32_t const p_placeHolder)
 {
 	std::u16string output;
-	output.resize(_p::UCS4_to_UTF16_faulty_estimate(p_input, p_placeHolder));
-	_p::UCS4_to_UTF16_faulty_unsafe(p_input, p_placeHolder, output.data());
+	output.resize(UCS4_to_UTF16_faulty_size(p_input, p_placeHolder));
+	UCS4_to_UTF16_faulty_unsafe(p_input, p_placeHolder, output.data());
 	return output;
 }
 
-std::u16string UTF8_to_UCS2_faulty(std::u8string_view const p_input, const char16_t p_placeHolder)
+std::u16string UTF8_to_UCS2_faulty(std::u8string_view const p_input, char16_t const p_placeHolder)
 {
 	std::u16string output;
-	output.resize(_p::UTF8_to_UCS2_faulty_estimate(p_input));
-	_p::UTF8_to_UCS2_faulty_unsafe(p_input, p_placeHolder, output.data());
+	output.resize(UTF8_to_UCS2_faulty_size(p_input));
+	UTF8_to_UCS2_faulty_unsafe(p_input, p_placeHolder, output.data());
 	return output;
 }
 
-std::u16string UTF16_to_UCS2_faulty(std::u16string_view const p_input, const char16_t p_placeHolder)
+std::u16string UTF16_to_UCS2_faulty(std::u16string_view const p_input, char16_t const p_placeHolder)
 {
 	std::u16string output;
-	output.resize(_p::UTF16_to_UCS2_faulty_estimate(p_input));
-	_p::UTF16_to_UCS2_faulty_unsafe(p_input, p_placeHolder, output.data());
+	output.resize(UTF16_to_UCS2_faulty_size(p_input));
+	UTF16_to_UCS2_faulty_unsafe(p_input, p_placeHolder, output.data());
 	return output;
 }
 
-std::u16string UCS4_to_UCS2_faulty(std::u32string_view const p_input, const char16_t p_placeHolder)
+std::u16string UCS4_to_UCS2_faulty(std::u32string_view const p_input, char16_t const p_placeHolder)
 {
 	std::u16string output;
-	output.resize(_p::UCS4_to_UCS2_faulty_estimate(p_input));
-	_p::UCS4_to_UCS2_faulty_unsafe(p_input, p_placeHolder, output.data());
+	output.resize(UCS4_to_UCS2_faulty_size(p_input));
+	UCS4_to_UCS2_faulty_unsafe(p_input, p_placeHolder, output.data());
 	return output;
 }
 
-std::u32string UTF8_to_UCS4_faulty(std::u8string_view const p_input, const char32_t p_placeHolder)
+std::u32string UTF8_to_UCS4_faulty(std::u8string_view const p_input, char32_t const p_placeHolder)
 {
 	std::u32string output;
-	output.resize(_p::UTF8_to_UCS4_faulty_estimate(p_input));
-	_p::UTF8_to_UCS4_faulty_unsafe(p_input, p_placeHolder, output.data());
+	output.resize(UTF8_to_UCS4_faulty_size(p_input));
+	UTF8_to_UCS4_faulty_unsafe(p_input, p_placeHolder, output.data());
 	return output;
 }
 
-std::u32string UTF16_to_UCS4_faulty(std::u16string_view const p_input, const char32_t p_placeHolder)
+std::u32string UTF16_to_UCS4_faulty(std::u16string_view const p_input, char32_t const p_placeHolder)
 {
 	std::u32string output;
-	output.resize(_p::UTF16_to_UCS4_faulty_estimate(p_input));
-	_p::UTF16_to_UCS4_faulty_unsafe(p_input, p_placeHolder, output.data());
+	output.resize(UTF16_to_UCS4_faulty_size(p_input));
+	UTF16_to_UCS4_faulty_unsafe(p_input, p_placeHolder, output.data());
 	return output;
 }
 

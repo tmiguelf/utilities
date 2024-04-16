@@ -28,7 +28,7 @@
 using core::literals::operator"" _ui32;
 
 // Returns the number of decimal digits in v, which must not contain more than 9 digits.
-[[nodiscard]] static inline constexpr uint32_t decimalLength9(const uint32_t v)
+[[nodiscard]] static inline constexpr uint32_t decimalLength9(uint32_t const v)
 {
 	// Function precondition: v is not a 10-digit number.
 	// (f2s: 9 digits are sufficient for round-tripping.)
@@ -46,7 +46,7 @@ using core::literals::operator"" _ui32;
 }
 
 // Returns e == 0 ? 1 : [log_2(5^e)]; requires 0 <= e <= 3528.
-[[nodiscard]] static inline constexpr uint16_t log2pow5(const uint16_t e)
+[[nodiscard]] static inline constexpr uint16_t log2pow5(uint16_t const e)
 {
 	// This approximation works up to the point that the multiplication overflows at e = 3529.
 	// If the multiplication were done in 64 bits, it would fail at 5^4004 which is just greater
@@ -56,7 +56,7 @@ using core::literals::operator"" _ui32;
 }
 
 // Returns e == 0 ? 1 : ceil(log_2(5^e)); requires 0 <= e <= 3528.
-[[nodiscard]] static inline constexpr uint16_t ceil_log2pow5(const uint16_t e)
+[[nodiscard]] static inline constexpr uint16_t ceil_log2pow5(uint16_t const e)
 {
 	return log2pow5(e) + 1;
 }
@@ -64,7 +64,7 @@ using core::literals::operator"" _ui32;
 
 
 // Returns e == 0 ? 1 : ceil(log_2(5^e)); requires 0 <= e <= 3528.
-[[nodiscard]] static inline constexpr uint16_t pow5bits(const uint16_t e)
+[[nodiscard]] static inline constexpr uint16_t pow5bits(uint16_t const e)
 {
 	// This approximation works up to the point that the multiplication overflows at e = 3529.
 	// If the multiplication were done in 64 bits, it would fail at 5^4004 which is just greater
@@ -76,7 +76,7 @@ using core::literals::operator"" _ui32;
 
 
 // Returns floor(log_10(2^e)); requires 0 <= e <= 1650.
-[[nodiscard]] static inline constexpr uint16_t log10Pow2(const uint16_t e)
+[[nodiscard]] static inline constexpr uint16_t log10Pow2(uint16_t const e)
 {
 	// The first value this approximation fails for is 2^1651 which is just greater than 10^297.
 	assert(e <= 1650);
@@ -84,7 +84,7 @@ using core::literals::operator"" _ui32;
 }
 
 // Returns floor(log_10(5^e)); requires 0 <= e <= 2620.
-[[nodiscard]] static inline constexpr uint16_t log10Pow5(const uint16_t e)
+[[nodiscard]] static inline constexpr uint16_t log10Pow5(uint16_t const e)
 {
 	// The first value this approximation fails for is 5^2621 which is just greater than 10^1832.
 	assert(e <= 2620);

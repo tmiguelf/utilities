@@ -68,7 +68,7 @@ namespace core
 //========			Bind and Join				========
 //========	========	========	========	========
 
-static inline NET_Error Core_BindIPv4(const _p::SocketHandle_t p_sock, const uint32_t p_rawAddr, const uint16_t p_port)
+static inline NET_Error Core_BindIPv4(_p::SocketHandle_t const p_sock, uint32_t const p_rawAddr, uint16_t const p_port)
 {
 	sockaddr_in addr_info4;
 
@@ -76,7 +76,7 @@ static inline NET_Error Core_BindIPv4(const _p::SocketHandle_t p_sock, const uin
 	addr_info4.sin_addr.s_addr	= p_rawAddr;
 	addr_info4.sin_port			= core::endian_host2big(p_port);
 
-	if(bind(p_sock, reinterpret_cast<const sockaddr*>(&addr_info4), sizeof(sockaddr_in)) != 0)
+	if(bind(p_sock, reinterpret_cast<sockaddr const*>(&addr_info4), sizeof(sockaddr_in)) != 0)
 	{
 		return NET_Error::Sock_Bind;
 	}
@@ -84,14 +84,14 @@ static inline NET_Error Core_BindIPv4(const _p::SocketHandle_t p_sock, const uin
 	return NET_Error::NoErr;
 }
 
-static inline NET_Error Core_BindIPv6(const _p::SocketHandle_t p_sock, std::span<const uint8_t, 16> const p_rawAddr, const uint16_t p_port)
+static inline NET_Error Core_BindIPv6(_p::SocketHandle_t const p_sock, std::span<uint8_t const, 16> const p_rawAddr, uint16_t const p_port)
 {
 	sockaddr_in6 addr_info6{};
 	memcpy(&addr_info6.sin6_addr, p_rawAddr.data(), 16);
 	addr_info6.sin6_family	= AF_INET6;
 	addr_info6.sin6_port	= core::endian_host2big(p_port);
 
-	if(bind(p_sock, reinterpret_cast<const sockaddr*>(&addr_info6), sizeof(sockaddr_in6)) != 0)
+	if(bind(p_sock, reinterpret_cast<sockaddr const*>(&addr_info6), sizeof(sockaddr_in6)) != 0)
 	{
 		return NET_Error::Sock_Bind;
 	}
@@ -99,52 +99,52 @@ static inline NET_Error Core_BindIPv6(const _p::SocketHandle_t p_sock, std::span
 	return NET_Error::NoErr;
 }
 
-static inline NET_Error Core_JoinMulticastGroupIPv4(const _p::SocketHandle_t p_sock, const uint32_t p_rawGroup, const uint32_t p_InterfaceAddr)
+static inline NET_Error Core_JoinMulticastGroupIPv4(_p::SocketHandle_t const p_sock, uint32_t const p_rawGroup, uint32_t const p_InterfaceAddr)
 {
 	ip_mreq mreq;
 	mreq.imr_multiaddr.s_addr = p_rawGroup;
 	mreq.imr_interface.s_addr = p_InterfaceAddr;
 
-	if(setsockopt(p_sock, IPPROTO_IP, IP_ADD_MEMBERSHIP, reinterpret_cast<const char*>(&mreq), sizeof(ip_mreq)))
+	if(setsockopt(p_sock, IPPROTO_IP, IP_ADD_MEMBERSHIP, reinterpret_cast<char const*>(&mreq), sizeof(ip_mreq)))
 	{
 		return NET_Error::Sock_Option;
 	}
 	return NET_Error::NoErr;
 }
 
-static inline NET_Error Core_JoinMulticastGroupIPv6(const _p::SocketHandle_t p_sock, std::span<const uint8_t, 16> const p_rawGroup, const uint32_t p_InterfaceNum)
+static inline NET_Error Core_JoinMulticastGroupIPv6(_p::SocketHandle_t const p_sock, std::span<uint8_t const, 16> const p_rawGroup, uint32_t const p_InterfaceNum)
 {
 	ipv6_mreq mreq;
 	memcpy(&mreq.ipv6mr_multiaddr, p_rawGroup.data(), 16);
 	mreq.ipv6mr_interface = p_InterfaceNum;
 
-	if(setsockopt(p_sock, IPPROTO_IPV6, IPV6_ADD_MEMBERSHIP, reinterpret_cast<const char*>(&mreq), sizeof(ipv6_mreq)))
+	if(setsockopt(p_sock, IPPROTO_IPV6, IPV6_ADD_MEMBERSHIP, reinterpret_cast<char const*>(&mreq), sizeof(ipv6_mreq)))
 	{
 		return NET_Error::Sock_Option;
 	}
 	return NET_Error::NoErr;
 }
 
-static inline NET_Error Core_LeaveMulticastGroupIPv4(const _p::SocketHandle_t p_sock, const uint32_t p_rawGroup, const uint32_t p_InterfaceAddr)
+static inline NET_Error Core_LeaveMulticastGroupIPv4(_p::SocketHandle_t const p_sock, uint32_t const p_rawGroup, uint32_t const p_InterfaceAddr)
 {
 	ip_mreq mreq;
 	mreq.imr_multiaddr.s_addr = p_rawGroup;
 	mreq.imr_interface.s_addr = p_InterfaceAddr;
 
-	if(setsockopt(p_sock, IPPROTO_IP, IP_DROP_MEMBERSHIP, reinterpret_cast<const char*>(&mreq), sizeof(ip_mreq)))
+	if(setsockopt(p_sock, IPPROTO_IP, IP_DROP_MEMBERSHIP, reinterpret_cast<char const*>(&mreq), sizeof(ip_mreq)))
 	{
 		return NET_Error::Sock_Option;
 	}
 	return NET_Error::NoErr;
 }
 
-static inline NET_Error Core_LeaveMulticastGroupIPv6(const _p::SocketHandle_t p_sock, std::span<const uint8_t, 16> const p_rawGroup, const uint32_t p_InterfaceNum)
+static inline NET_Error Core_LeaveMulticastGroupIPv6(_p::SocketHandle_t const p_sock, std::span<uint8_t const, 16> const p_rawGroup, uint32_t const p_InterfaceNum)
 {
 	ipv6_mreq mreq;
 	memcpy(&mreq.ipv6mr_multiaddr, p_rawGroup.data(), 16);
 	mreq.ipv6mr_interface = p_InterfaceNum;
 
-	if(setsockopt(p_sock, IPPROTO_IPV6, IPV6_DROP_MEMBERSHIP, reinterpret_cast<const char*>(&mreq), sizeof(ipv6_mreq)))
+	if(setsockopt(p_sock, IPPROTO_IPV6, IPV6_DROP_MEMBERSHIP, reinterpret_cast<char const*>(&mreq), sizeof(ipv6_mreq)))
 	{
 		return NET_Error::Sock_Option;
 	}
@@ -155,10 +155,10 @@ static inline NET_Error Core_LeaveMulticastGroupIPv6(const _p::SocketHandle_t p_
 //========			Common Check				========
 //========	========	========	========	========
 
-static inline NET_Error Core_Poll(const _p::SocketHandle_t p_sock, const uint64_t p_microseconds)
+static inline NET_Error Core_Poll(_p::SocketHandle_t const p_sock, uint64_t const p_microseconds)
 {
 	fd_set fds;
-	const uint64_t sec = p_microseconds / 1000000;
+	uint64_t const sec = p_microseconds / 1000000;
 	if(sec > std::numeric_limits<decltype(timeval::tv_sec)>::max())
 	{
 		switch (select(static_cast<int>(p_sock + 1), &fds, nullptr, nullptr, nullptr))
@@ -191,7 +191,7 @@ static inline NET_Error Core_Poll(const _p::SocketHandle_t p_sock, const uint64_
 	return NET_Error::Unknown;
 }
 
-static inline NET_Error Core_TCP_NonBlock_Connect_state(const _p::SocketHandle_t p_sock)
+static inline NET_Error Core_TCP_NonBlock_Connect_state(_p::SocketHandle_t const p_sock)
 {
 	fd_set fds;
 	struct timeval tv;
@@ -235,26 +235,26 @@ typedef int CoreSockLen_t;
 
 /// \brief Gets socket last error
 //
-static inline int SockLastError(const _p::SocketHandle_t)
+static inline int SockLastError(_p::SocketHandle_t const)
 {
 	return WSAGetLastError();
 }
 
 /// \brief Used to check if last error on the socket was to a timeout on a non-blocking socket
 //
-static inline bool SockWouldBlock(const _p::SocketHandle_t p_socket)
+static inline bool SockWouldBlock(_p::SocketHandle_t const p_socket)
 {
 	return (SockLastError(p_socket) == WSAEWOULDBLOCK);
 }
 
 /// \brief Used to check if last error on the socket was a buffer overflow
 //
-static inline bool SockBuffOverflow(const _p::SocketHandle_t p_socket)
+static inline bool SockBuffOverflow(_p::SocketHandle_t const p_socket)
 {
 	return (SockLastError(p_socket) == WSAEMSGSIZE);
 }
 
-static inline bool SockNonBlockingConnectCheck(const _p::SocketHandle_t p_socket)
+static inline bool SockNonBlockingConnectCheck(_p::SocketHandle_t const p_socket)
 {
 	return SockLastError(p_socket) == WSAEWOULDBLOCK;
 }
@@ -264,41 +264,41 @@ static inline bool SockNonBlockingConnectCheck(const _p::SocketHandle_t p_socket
 //========	========	Set options	========	========
 //========	========	========	========	========
 
-static inline NET_Error Core_setSockBlocking(const _p::SocketHandle_t p_sock, const bool p_blocking)
+static inline NET_Error Core_setSockBlocking(_p::SocketHandle_t const p_sock, bool const p_blocking)
 {
 	u_long opt = p_blocking ? 0 : 1;
 	return ioctlsocket(p_sock, FIONBIO, &opt) ? NET_Error::Sock_Option : NET_Error::NoErr;
 }
 
-static inline NET_Error Core_setSockLinger(const _p::SocketHandle_t p_sock, const bool p_linger, const uint16_t p_timeOut)
+static inline NET_Error Core_setSockLinger(_p::SocketHandle_t const p_sock, bool const p_linger, uint16_t const p_timeOut)
 {
 	linger opt;
 
 	opt.l_onoff		= p_linger ? 1: 0;
 	opt.l_linger	= p_timeOut;
 
-	return setsockopt(p_sock, SOL_SOCKET, SO_LINGER, reinterpret_cast<const char*>(&opt), sizeof(opt)) ? NET_Error::Sock_Option : NET_Error::NoErr;
+	return setsockopt(p_sock, SOL_SOCKET, SO_LINGER, reinterpret_cast<char const*>(&opt), sizeof(opt)) ? NET_Error::Sock_Option : NET_Error::NoErr;
 }
 
-static inline NET_Error Core_setBrodCasting(const _p::SocketHandle_t p_sock, const bool p_broadcast)
+static inline NET_Error Core_setBrodCasting(_p::SocketHandle_t const p_sock, bool const p_broadcast)
 {
-	BOOL opt = p_broadcast ? TRUE : FALSE;
-	return setsockopt(p_sock, SOL_SOCKET, SO_BROADCAST, reinterpret_cast<const char*>(&opt), sizeof(opt)) ? NET_Error::Sock_Option : NET_Error::NoErr;
+	BOOL const opt = p_broadcast ? TRUE : FALSE;
+	return setsockopt(p_sock, SOL_SOCKET, SO_BROADCAST, reinterpret_cast<char const*>(&opt), sizeof(opt)) ? NET_Error::Sock_Option : NET_Error::NoErr;
 }
 
-static inline NET_Error Core_setReuseAddress(const _p::SocketHandle_t p_sock, const bool p_reuse)
+static inline NET_Error Core_setReuseAddress(_p::SocketHandle_t const p_sock, bool const p_reuse)
 {
-	BOOL opt = p_reuse ? TRUE : FALSE;
-	return setsockopt(p_sock, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&opt), sizeof(opt)) ? NET_Error::Sock_Option : NET_Error::NoErr;
+	BOOL const opt = p_reuse ? TRUE : FALSE;
+	return setsockopt(p_sock, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<char const*>(&opt), sizeof(opt)) ? NET_Error::Sock_Option : NET_Error::NoErr;
 }
 
-static inline NET_Error Core_setNagle(const _p::SocketHandle_t p_sock, const bool p_nagle)
+static inline NET_Error Core_setNagle(_p::SocketHandle_t const p_sock, bool const p_nagle)
 {
-	BOOL opt = p_nagle ? FALSE : TRUE;
-	return setsockopt(p_sock, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<const char*>(&opt), sizeof(opt)) ? NET_Error::Sock_Option : NET_Error::NoErr;
+	BOOL const opt = p_nagle ? FALSE : TRUE;
+	return setsockopt(p_sock, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<char const*>(&opt), sizeof(opt)) ? NET_Error::Sock_Option : NET_Error::NoErr;
 }
 
-static inline NET_Error Core_SetKeepAlive(const _p::SocketHandle_t p_sock, const bool p_keepAlive, const uint32_t p_probePeriod, const uint32_t p_maxProbes)
+static inline NET_Error Core_SetKeepAlive(_p::SocketHandle_t const p_sock, bool const p_keepAlive, uint32_t const p_probePeriod, uint32_t const p_maxProbes)
 {
 	if(p_keepAlive)
 	{
@@ -314,7 +314,7 @@ static inline NET_Error Core_SetKeepAlive(const _p::SocketHandle_t p_sock, const
 		opt.keepaliveinterval	= p_probePeriod * 1000;
 		opt.keepalivetime		= p_maxProbes * p_probePeriod * 1000;
 
-		int res = WSAIoctl(p_sock, SIO_KEEPALIVE_VALS, &opt, sizeof(opt), nullptr, 0, nullptr, nullptr, nullptr);
+		int const res = WSAIoctl(p_sock, SIO_KEEPALIVE_VALS, &opt, sizeof(opt), nullptr, 0, nullptr, nullptr, nullptr);
 
 		switch(res)
 		{
@@ -327,20 +327,20 @@ static inline NET_Error Core_SetKeepAlive(const _p::SocketHandle_t p_sock, const
 		return NET_Error::Sock_Option;
 	}
 
-	DWORD opt = 0;
-	return setsockopt(p_sock, SOL_SOCKET, SO_KEEPALIVE, reinterpret_cast<const char*>(&opt), sizeof(opt)) ? NET_Error::Sock_Option : NET_Error::NoErr;
+	DWORD const opt = 0;
+	return setsockopt(p_sock, SOL_SOCKET, SO_KEEPALIVE, reinterpret_cast<char const*>(&opt), sizeof(opt)) ? NET_Error::Sock_Option : NET_Error::NoErr;
 }
 
 //========	========	========	========	========
 //========			Open and Close				========
 //========	========	========	========	========
 
-static inline int Core_CloseSock(const _p::SocketHandle_t p_sock)
+static inline int Core_CloseSock(_p::SocketHandle_t const p_sock)
 {
 	return closesocket(p_sock);
 }
 
-static inline NET_Error Core_createSocket(_p::SocketHandle_t& p_sock, const int p_af, const int p_domain, const int p_protocol, const bool p_blocking)
+static inline NET_Error Core_createSocket(_p::SocketHandle_t& p_sock, int const p_af, int const p_domain, int const p_protocol, bool const p_blocking)
 {
 	//not sure why WSA_FLAG_OVERLAPPED was added originally but I don't think it is needed
 	//I will leave it just in case
@@ -359,9 +359,9 @@ static inline NET_Error Core_createSocket(_p::SocketHandle_t& p_sock, const int 
 	return NET_Error::NoErr;
 }
 
-static inline NET_Error Core_CreateUDPSocketIPv4(_p::SocketHandle_t& p_sock, const bool p_blocking)
+static inline NET_Error Core_CreateUDPSocketIPv4(_p::SocketHandle_t& p_sock, bool const p_blocking)
 {
-	NET_Error err = Core_createSocket(p_sock, AF_INET, SOCK_DGRAM, IPPROTO_UDP, p_blocking);
+	NET_Error const err = Core_createSocket(p_sock, AF_INET, SOCK_DGRAM, IPPROTO_UDP, p_blocking);
 	if(err != NET_Error::NoErr) return err;
 
 	//disables recieving UDP connection reset messages as regular messages
@@ -376,9 +376,9 @@ static inline NET_Error Core_CreateUDPSocketIPv4(_p::SocketHandle_t& p_sock, con
 	return NET_Error::NoErr;
 }
 
-static inline NET_Error Core_CreateUDPSocketIPv6(_p::SocketHandle_t& p_sock, const bool p_blocking)
+static inline NET_Error Core_CreateUDPSocketIPv6(_p::SocketHandle_t& p_sock, bool const p_blocking)
 {
-	NET_Error err = Core_createSocket(p_sock, AF_INET6, SOCK_DGRAM, IPPROTO_UDP, p_blocking);
+	NET_Error const err = Core_createSocket(p_sock, AF_INET6, SOCK_DGRAM, IPPROTO_UDP, p_blocking);
 	if(err != NET_Error::NoErr) return err;
 
 	//disables recieving UDP connection reset messages as regular messages
@@ -393,7 +393,7 @@ static inline NET_Error Core_CreateUDPSocketIPv6(_p::SocketHandle_t& p_sock, con
 	return NET_Error::NoErr;
 }
 
-static inline NET_Error Core_Shutdown(const _p::SocketHandle_t p_sock, const _p::Net_Socket::Endpoint p_direction)
+static inline NET_Error Core_Shutdown(_p::SocketHandle_t const p_sock, _p::Net_Socket::Endpoint const p_direction)
 {
 	//this optimization is only aforder because documentation states that Read=0, Write=1 amd ReadWrite=2
 	static_assert(_p::Net_Socket::Endpoint::Receive	== _p::Net_Socket::Endpoint{1});
@@ -403,7 +403,7 @@ static inline NET_Error Core_Shutdown(const _p::SocketHandle_t p_sock, const _p:
 }
 
 #if 0
-static inline NET_Error Core_Shutdown(const _p::SocketHandle_t p_sock, const _p::Net_Socket::Endpoint p_direction)
+static inline NET_Error Core_Shutdown(_p::SocketHandle_t const p_sock, _p::Net_Socket::Endpoint const p_direction)
 {
 	switch(p_direction)
 	{
@@ -425,7 +425,7 @@ static inline NET_Error Core_Shutdown(const _p::SocketHandle_t p_sock, const _p:
 //========	========	========	========	========
 
 
-static inline NET_Error Core_PeekSize(const _p::SocketHandle_t p_sock, uintptr_t& p_size)
+static inline NET_Error Core_PeekSize(_p::SocketHandle_t const p_sock, uintptr_t& p_size)
 {
 	u_long	size = 0;
 	char	c[1];
@@ -447,7 +447,7 @@ static inline NET_Error Core_PeekSize(const _p::SocketHandle_t p_sock, uintptr_t
 	return NET_Error::NoErr;
 }
 
-static inline NET_Error Core_PeekSizeIPv4(const _p::SocketHandle_t p_sock, uintptr_t& p_size, uint32_t& p_rawAddr, uint16_t& p_port)
+static inline NET_Error Core_PeekSizeIPv4(_p::SocketHandle_t const p_sock, uintptr_t& p_size, uint32_t& p_rawAddr, uint16_t& p_port)
 {
 	int			addr_size;
 	u_long		size = 0;
@@ -474,7 +474,7 @@ static inline NET_Error Core_PeekSizeIPv4(const _p::SocketHandle_t p_sock, uintp
 	return NET_Error::NoErr;
 }
 
-static inline NET_Error Core_PeekSizeIPv6(const _p::SocketHandle_t p_sock, uintptr_t& p_size, void* const p_rawAddr, uint16_t& p_port)
+static inline NET_Error Core_PeekSizeIPv6(_p::SocketHandle_t const p_sock, uintptr_t& p_size, void* const p_rawAddr, uint16_t& p_port)
 {
 	int		addr_size;
 	u_long	size = 0;
@@ -512,7 +512,7 @@ typedef socklen_t CoreSockLen_t;
 
 /// \brief Gets socket last error
 //
-static inline int SockLastError(const _p::SocketHandle_t p_socket)
+static inline int SockLastError(_p::SocketHandle_t const p_socket)
 {
 	int error;
 	socklen_t len;
@@ -523,7 +523,7 @@ static inline int SockLastError(const _p::SocketHandle_t p_socket)
 
 /// \brief Used to check if last error on the socket was to a timeout on a non-blocking socket
 //
-static bool SockWouldBlock(const _p::SocketHandle_t p_socket)
+static bool SockWouldBlock(_p::SocketHandle_t const p_socket)
 {
 	int error;
 	socklen_t len;
@@ -532,7 +532,7 @@ static bool SockWouldBlock(const _p::SocketHandle_t p_socket)
 	return (error == EAGAIN || error == EWOULDBLOCK);
 }
 
-static inline bool SockNonBlockingConnectCheck(const _p::SocketHandle_t p_socket)
+static inline bool SockNonBlockingConnectCheck(_p::SocketHandle_t const p_socket)
 {
 	int error;
 	socklen_t len;
@@ -546,41 +546,42 @@ static inline bool SockNonBlockingConnectCheck(const _p::SocketHandle_t p_socket
 //========	========	Set options	========	========
 //========	========	========	========	========
 
-static inline NET_Error Core_setSockBlocking(const _p::SocketHandle_t p_sock, const bool blocking)
+static inline NET_Error Core_setSockBlocking(_p::SocketHandle_t const p_sock, bool const blocking)
 {
-	int b = blocking ? 0 : 1;
+	int const b = blocking ? 0 : 1;
 	return ioctl(p_sock, FIONBIO, &b) ? NET_Error::Sock_Option : NET_Error::NoErr;
 }
 
-static inline NET_Error Core_setSockLinger(const _p::SocketHandle_t p_sock, const bool p_linger, const uint16_t p_timeOut)
+static inline NET_Error Core_setSockLinger(_p::SocketHandle_t const p_sock, bool const p_linger, uint16_t const p_timeOut)
 {
-	linger opt;
+	linger const opt
+	{
+		.l_onoff  = p_linger ? 1 : 0,
+		.l_linger = p_timeOut,
+	};
 
-	opt.l_onoff		= p_linger ? 1: 0;
-	opt.l_linger	= p_timeOut;
-
-	return setsockopt(p_sock, SOL_SOCKET, SO_LINGER, reinterpret_cast<const void*>(&opt), sizeof(opt)) ? NET_Error::Sock_Option : NET_Error::NoErr;
+	return setsockopt(p_sock, SOL_SOCKET, SO_LINGER, reinterpret_cast<void const*>(&opt), sizeof(opt)) ? NET_Error::Sock_Option : NET_Error::NoErr;
 }
 
-static inline NET_Error Core_setBrodCasting(const _p::SocketHandle_t p_sock, const bool broadcast)
+static inline NET_Error Core_setBrodCasting(_p::SocketHandle_t const p_sock, bool const broadcast)
 {
-	int h = broadcast ? 1 : 0;
-	return setsockopt(p_sock, SOL_SOCKET, SO_BROADCAST, reinterpret_cast<const void*>(&h), sizeof(h)) ? NET_Error::Sock_Option : NET_Error::NoErr;
+	int const h = broadcast ? 1 : 0;
+	return setsockopt(p_sock, SOL_SOCKET, SO_BROADCAST, reinterpret_cast<void const*>(&h), sizeof(h)) ? NET_Error::Sock_Option : NET_Error::NoErr;
 }
 
-static inline NET_Error Core_setReuseAddress(const _p::SocketHandle_t p_sock, const bool p_reuse)
+static inline NET_Error Core_setReuseAddress(_p::SocketHandle_t const p_sock, bool const p_reuse)
 {
-	int opt = p_reuse ? 1 : 0;
-	return setsockopt(p_sock, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const void*>(&opt), sizeof(opt)) ? NET_Error::Sock_Option : NET_Error::NoErr;
+	int const opt = p_reuse ? 1 : 0;
+	return setsockopt(p_sock, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<void const*>(&opt), sizeof(opt)) ? NET_Error::Sock_Option : NET_Error::NoErr;
 }
 
-static inline NET_Error Core_setNagle(const _p::SocketHandle_t p_sock, const bool p_nagle)
+static inline NET_Error Core_setNagle(_p::SocketHandle_t const p_sock, bool const p_nagle)
 {
-	int opt = p_nagle ? 0 : 1;
-	return setsockopt(p_sock, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<const void*>(&opt), sizeof(opt)) ? NET_Error::Sock_Option : NET_Error::NoErr;
+	int const opt = p_nagle ? 0 : 1;
+	return setsockopt(p_sock, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<void const*>(&opt), sizeof(opt)) ? NET_Error::Sock_Option : NET_Error::NoErr;
 }
 
-static inline NET_Error Core_SetKeepAlive(const _p::SocketHandle_t p_sock, const bool p_keepAlive, const uint32_t p_probePeriod, const uint32_t p_maxProbes)
+static inline NET_Error Core_SetKeepAlive(_p::SocketHandle_t const p_sock, bool const p_keepAlive, uint32_t const p_probePeriod, uint32_t const p_maxProbes)
 {
 	if(p_keepAlive)
 	{
@@ -591,10 +592,10 @@ static inline NET_Error Core_SetKeepAlive(const _p::SocketHandle_t p_sock, const
 			return NET_Error::Invalid_Option;
 		}
 
-		int probes		= static_cast<int>(p_maxProbes);
-		int period		= static_cast<int>(p_probePeriod);
-		int firstDelay	= period;
-		int keepAlive	= 1;
+		int const probes		= static_cast<int>(p_maxProbes);
+		int const period		= static_cast<int>(p_probePeriod);
+		int const firstDelay	= period;
+		int const keepAlive		= 1;
 
 		if(	setsockopt(p_sock, IPPROTO_TCP, TCP_KEEPCNT,   &probes,     sizeof(probes)    ) ||
 			setsockopt(p_sock, IPPROTO_TCP, TCP_KEEPIDLE,  &firstDelay, sizeof(firstDelay)) ||
@@ -607,7 +608,7 @@ static inline NET_Error Core_SetKeepAlive(const _p::SocketHandle_t p_sock, const
 		return NET_Error::NoErr;
 	}
 
-	int opt = 0;
+	int const opt = 0;
 	return setsockopt(p_sock, SOL_SOCKET, SO_KEEPALIVE, &opt, sizeof(opt)) ? NET_Error::Sock_Option : NET_Error::NoErr;
 
 }
@@ -616,29 +617,29 @@ static inline NET_Error Core_SetKeepAlive(const _p::SocketHandle_t p_sock, const
 //========			Open and Close				========
 //========	========	========	========	========
 
-static inline int Core_CloseSock(const _p::SocketHandle_t p_sock)
+static inline int Core_CloseSock(_p::SocketHandle_t const p_sock)
 {
 	return close(p_sock);
 }
 
-static inline NET_Error Core_createSocket(_p::SocketHandle_t& p_sock, const int p_af, const int p_domain, const int p_protocol, const bool p_blocking)
+static inline NET_Error Core_createSocket(_p::SocketHandle_t& p_sock, int const p_af, int const p_domain, int const p_protocol, bool const p_blocking)
 {
 	p_sock = socket(p_af, p_domain | (p_blocking ? SOCK_CLOEXEC : SOCK_CLOEXEC | SOCK_NONBLOCK), p_protocol);
 	if(p_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 	return NET_Error::NoErr;
 }
 
-static inline NET_Error Core_CreateUDPSocketIPv4(_p::SocketHandle_t& p_sock, const bool p_blocking)
+static inline NET_Error Core_CreateUDPSocketIPv4(_p::SocketHandle_t& p_sock, bool const p_blocking)
 {
 	return Core_createSocket(p_sock, AF_INET, SOCK_DGRAM, IPPROTO_UDP, p_blocking);
 }
 
-static inline NET_Error Core_CreateUDPSocketIPv6(_p::SocketHandle_t& p_sock, const bool p_blocking)
+static inline NET_Error Core_CreateUDPSocketIPv6(_p::SocketHandle_t& p_sock, bool const p_blocking)
 {
 	return Core_createSocket(p_sock, AF_INET6, SOCK_DGRAM, IPPROTO_UDP, p_blocking);
 }
 
-static inline NET_Error Core_Shutdown(const _p::SocketHandle_t p_sock, const _p::Net_Socket::Endpoint p_direction)
+static inline NET_Error Core_Shutdown(_p::SocketHandle_t const p_sock, _p::Net_Socket::Endpoint const p_direction)
 {
 	//this optimization is only aforder because documentation states that Read=0, Write=1 amd ReadWrite=2
 	static_assert(_p::Net_Socket::Endpoint::Receive	== _p::Net_Socket::Endpoint{1});
@@ -648,7 +649,7 @@ static inline NET_Error Core_Shutdown(const _p::SocketHandle_t p_sock, const _p:
 }
 
 #if 0
-static inline NET_Error Core_Shutdown(const _p::SocketHandle_t p_sock, const _p::Net_Socket::Endpoint p_direction)
+static inline NET_Error Core_Shutdown(_p::SocketHandle_t const p_sock, _p::Net_Socket::Endpoint const p_direction)
 {
 	switch(p_direction)
 	{
@@ -670,14 +671,12 @@ static inline NET_Error Core_Shutdown(const _p::SocketHandle_t p_sock, const _p:
 //========	========	========	========	========
 
 
-static inline NET_Error Core_PeekSize(const _p::SocketHandle_t p_sock, uintptr_t& p_size)
+static inline NET_Error Core_PeekSize(_p::SocketHandle_t const p_sock, uintptr_t& p_size)
 {
 	int		size = 0;
 	char	c[1];
-	ssize_t	check;
 
-	check = recvfrom(p_sock, c, 0, MSG_PEEK, nullptr, nullptr);
-
+	ssize_t	const check = recvfrom(p_sock, c, 0, MSG_PEEK, nullptr, nullptr);
 	if(check == SOCKET_ERROR)
 	{
 		if(SockWouldBlock(p_sock))	return NET_Error::WouldBlock;
@@ -689,16 +688,15 @@ static inline NET_Error Core_PeekSize(const _p::SocketHandle_t p_sock, uintptr_t
 	return NET_Error::NoErr;
 }
 
-static inline NET_Error Core_PeekSizeIPv4(const _p::SocketHandle_t p_sock, uintptr_t& p_size, uint32_t& p_rawAddr, uint16_t& p_port)
+static inline NET_Error Core_PeekSizeIPv4(_p::SocketHandle_t const p_sock, uintptr_t& p_size, uint32_t& p_rawAddr, uint16_t& p_port)
 {
 	socklen_t	addr_size;
 	int			size = 0;
 	char		c[1];
-	ssize_t		check;
 	sockaddr_in	addr_info4;
 
-	addr_size	= sizeof(sockaddr_in);
-	check		= recvfrom(p_sock, c, 0, MSG_PEEK, reinterpret_cast<sockaddr*>(&addr_info4), &addr_size);
+	addr_size = sizeof(sockaddr_in);
+	ssize_t const check = recvfrom(p_sock, c, 0, MSG_PEEK, reinterpret_cast<sockaddr*>(&addr_info4), &addr_size);
 
 	if(check == SOCKET_ERROR)
 	{
@@ -715,16 +713,15 @@ static inline NET_Error Core_PeekSizeIPv4(const _p::SocketHandle_t p_sock, uintp
 	return NET_Error::NoErr;
 }
 
-static inline NET_Error Core_PeekSizeIPv6(const _p::SocketHandle_t p_sock, uintptr_t& p_size, void* const p_rawAddr, uint16_t& p_port)
+static inline NET_Error Core_PeekSizeIPv6(_p::SocketHandle_t const p_sock, uintptr_t& p_size, void* const p_rawAddr, uint16_t& p_port)
 {
 	socklen_t		addr_size;
 	int				size = 0;
 	char			c[1];
-	ssize_t			check;
 	sockaddr_in6	addr_info6;
 
-	addr_size	= sizeof(sockaddr_in6);
-	check		= recvfrom(p_sock, c, 0, MSG_PEEK, reinterpret_cast<sockaddr*>(&addr_info6), &addr_size);
+	addr_size = sizeof(sockaddr_in6);
+	ssize_t const check = recvfrom(p_sock, c, 0, MSG_PEEK, reinterpret_cast<sockaddr*>(&addr_info6), &addr_size);
 
 	if(check == SOCKET_ERROR)
 	{
@@ -743,12 +740,12 @@ static inline NET_Error Core_PeekSizeIPv6(const _p::SocketHandle_t p_sock, uintp
 
 #endif
 
-static inline NET_Error Core_CreateTCPSocketIPv4(_p::SocketHandle_t& p_sock, const bool p_blocking)
+static inline NET_Error Core_CreateTCPSocketIPv4(_p::SocketHandle_t& p_sock, bool const p_blocking)
 {
 	return Core_createSocket(p_sock, AF_INET, SOCK_STREAM, IPPROTO_TCP, p_blocking);
 }
 
-static inline NET_Error Core_CreateTCPSocketIPv6(_p::SocketHandle_t& p_sock, const bool p_blocking)
+static inline NET_Error Core_CreateTCPSocketIPv6(_p::SocketHandle_t& p_sock, bool const p_blocking)
 {
 	return Core_createSocket(p_sock, AF_INET6, SOCK_STREAM, IPPROTO_TCP, p_blocking);
 }
@@ -757,7 +754,7 @@ static inline NET_Error Core_CreateTCPSocketIPv6(_p::SocketHandle_t& p_sock, con
 //========	========	Get Address	========	========
 //========	========	========	========	========
 
-static inline NET_Error Core_GetAddressIPv4(const _p::SocketHandle_t p_sock, uint32_t& p_rawAddr, uint16_t& p_port)
+static inline NET_Error Core_GetAddressIPv4(_p::SocketHandle_t const p_sock, uint32_t& p_rawAddr, uint16_t& p_port)
 {
 	sockaddr_in		addr_info4;
 	CoreSockLen_t	len;
@@ -774,7 +771,7 @@ static inline NET_Error Core_GetAddressIPv4(const _p::SocketHandle_t p_sock, uin
 	return NET_Error::NoErr;
 }
 
-static inline NET_Error Core_GetAddressIPv6(const _p::SocketHandle_t p_sock, void* const p_rawGroup, uint16_t& p_port)
+static inline NET_Error Core_GetAddressIPv6(_p::SocketHandle_t const p_sock, void* const p_rawGroup, uint16_t& p_port)
 {
 	sockaddr_in6	addr_info6;
 	CoreSockLen_t	len;
@@ -791,7 +788,7 @@ static inline NET_Error Core_GetAddressIPv6(const _p::SocketHandle_t p_sock, voi
 	return NET_Error::NoErr;
 }
 
-static inline NET_Error Core_GetPeerAddressIPv4(const _p::SocketHandle_t p_sock, uint32_t& p_rawAddr, uint16_t& p_port)
+static inline NET_Error Core_GetPeerAddressIPv4(_p::SocketHandle_t const p_sock, uint32_t& p_rawAddr, uint16_t& p_port)
 {
 	sockaddr_in addr_info4;
 	CoreSockLen_t len;
@@ -808,7 +805,7 @@ static inline NET_Error Core_GetPeerAddressIPv4(const _p::SocketHandle_t p_sock,
 	return NET_Error::NoErr;
 }
 
-static inline NET_Error Core_GetPeerAddressIPv6(const _p::SocketHandle_t p_sock, void* const p_rawGroup, uint16_t& p_port)
+static inline NET_Error Core_GetPeerAddressIPv6(_p::SocketHandle_t const p_sock, void* const p_rawGroup, uint16_t& p_port)
 {
 	sockaddr_in6 addr_info6;
 	CoreSockLen_t len;
@@ -829,13 +826,13 @@ static inline NET_Error Core_GetPeerAddressIPv6(const _p::SocketHandle_t p_sock,
 //========			Connect and Accept			========
 //========	========	========	========	========
 
-static inline NET_Error Core_ConnectIPv4(const _p::SocketHandle_t p_sock, const uint32_t p_rawAddr, const uint16_t p_port)
+static inline NET_Error Core_ConnectIPv4(_p::SocketHandle_t const p_sock, uint32_t const p_rawAddr, uint16_t const p_port)
 {
 	sockaddr_in o_addr_info4;
 	o_addr_info4.sin_family			= AF_INET;
 	o_addr_info4.sin_addr.s_addr	= p_rawAddr;
 	o_addr_info4.sin_port			= core::endian_host2big(p_port);
-	if(connect(p_sock, reinterpret_cast<const sockaddr*>(&o_addr_info4), sizeof(sockaddr_in)) != 0)
+	if(connect(p_sock, reinterpret_cast<sockaddr const*>(&o_addr_info4), sizeof(sockaddr_in)) != 0)
 	{
 		if(SockNonBlockingConnectCheck(p_sock)) return NET_Error::WouldBlock;
 		return NET_Error::Connection;
@@ -843,14 +840,14 @@ static inline NET_Error Core_ConnectIPv4(const _p::SocketHandle_t p_sock, const 
 	return NET_Error::NoErr;
 }
 
-static inline NET_Error Core_ConnectIPv6(const _p::SocketHandle_t p_sock, std::span<const uint8_t, 16> const p_rawAddr, const uint16_t p_port)
+static inline NET_Error Core_ConnectIPv6(_p::SocketHandle_t const p_sock, std::span<uint8_t const, 16> const p_rawAddr, uint16_t const p_port)
 {
 	sockaddr_in6 o_addr_info6{};
 	memcpy(&o_addr_info6.sin6_addr, p_rawAddr.data(), 16);
 	o_addr_info6.sin6_family	= AF_INET6;
 	o_addr_info6.sin6_port		= core::endian_host2big(p_port);
 
-	if(connect(p_sock, reinterpret_cast<const sockaddr*>(&o_addr_info6), sizeof(sockaddr_in6)) != 0)
+	if(connect(p_sock, reinterpret_cast<sockaddr const*>(&o_addr_info6), sizeof(sockaddr_in6)) != 0)
 	{
 		if(SockNonBlockingConnectCheck(p_sock)) return NET_Error::WouldBlock;
 		return NET_Error::Connection;
@@ -858,7 +855,7 @@ static inline NET_Error Core_ConnectIPv6(const _p::SocketHandle_t p_sock, std::s
 	return NET_Error::NoErr;
 }
 
-static inline NET_Error Core_AcceptIPv4(const _p::SocketHandle_t p_sock, _p::SocketHandle_t& p_connection, const bool p_blocking, sockaddr_in& p_info)
+static inline NET_Error Core_AcceptIPv4(_p::SocketHandle_t const p_sock, _p::SocketHandle_t& p_connection, bool const p_blocking, sockaddr_in& p_info)
 {
 	_p::SocketHandle_t sock;
 	CoreSockLen_t addr_size = sizeof(sockaddr_in);
@@ -888,7 +885,7 @@ static inline NET_Error Core_AcceptIPv4(const _p::SocketHandle_t p_sock, _p::Soc
 	return NET_Error::NoErr;
 }
 
-static inline NET_Error Core_AcceptIPv6(const _p::SocketHandle_t p_sock, _p::SocketHandle_t& p_connection, const bool p_blocking, sockaddr_in6& p_info)
+static inline NET_Error Core_AcceptIPv6(_p::SocketHandle_t const p_sock, _p::SocketHandle_t& p_connection, bool const p_blocking, sockaddr_in6& p_info)
 {
 	_p::SocketHandle_t sock;
 	CoreSockLen_t addr_size = sizeof(sockaddr_in6);
@@ -923,13 +920,13 @@ static inline NET_Error Core_AcceptIPv6(const _p::SocketHandle_t p_sock, _p::Soc
 //========			Send and Receive			========
 //========	========	========	========	========
 
-static inline NET_Error Core_Send_size(const _p::SocketHandle_t p_sock, const void* const p_buffer, uintptr_t p_size, uintptr_t& p_sent)
+static inline NET_Error Core_Send_size(_p::SocketHandle_t const p_sock, void const* const p_buffer, uintptr_t p_size, uintptr_t& p_sent)
 {
 #ifdef _WIN32
 	if(p_size > static_cast<uintptr_t>(std::numeric_limits<int>::max())) p_size = static_cast<uintptr_t>(std::numeric_limits<int>::max());
-	int ret = send(p_sock, reinterpret_cast<const char*>(p_buffer), static_cast<int>(p_size), 0);
+	int const ret = send(p_sock, reinterpret_cast<char const*>(p_buffer), static_cast<int>(p_size), 0);
 #else
-	intptr_t ret = send(p_sock, reinterpret_cast<const char*>(p_buffer), p_size, 0);
+	intptr_t const ret = send(p_sock, reinterpret_cast<char const*>(p_buffer), p_size, 0);
 #endif
 	if(ret == SOCKET_ERROR)
 	{
@@ -943,7 +940,7 @@ static inline NET_Error Core_Send_size(const _p::SocketHandle_t p_sock, const vo
 	return NET_Error::NoErr;
 }
 
-static inline NET_Error Core_Send_context(const _p::SocketHandle_t p_sock, const void* p_buffer, const uintptr_t p_size, uintptr_t& p_context)
+static inline NET_Error Core_Send_context(_p::SocketHandle_t const p_sock, void const* p_buffer, uintptr_t const p_size, uintptr_t& p_context)
 {
 	if(p_context >= p_size) return NET_Error::Invalid_Option;
 
@@ -951,9 +948,9 @@ static inline NET_Error Core_Send_context(const _p::SocketHandle_t p_sock, const
 
 #ifdef _WIN32
 	if(currentSize > static_cast<uintptr_t>(std::numeric_limits<int>::max())) currentSize = static_cast<uintptr_t>(std::numeric_limits<int>::max());
-	int ret = send(p_sock, reinterpret_cast<const char*>(p_buffer) + p_context, static_cast<int>(currentSize), 0);
+	int const ret = send(p_sock, reinterpret_cast<char const*>(p_buffer) + p_context, static_cast<int>(currentSize), 0);
 #else
-	intptr_t ret = send(p_sock, reinterpret_cast<const char*>(p_buffer) + p_context, currentSize, 0);
+	intptr_t const ret = send(p_sock, reinterpret_cast<char const*>(p_buffer) + p_context, currentSize, 0);
 #endif
 	if(ret == SOCKET_ERROR)
 	{
@@ -974,13 +971,13 @@ static inline NET_Error Core_Send_context(const _p::SocketHandle_t p_sock, const
 	return NET_Error::NoErr;
 }
 
-static inline NET_Error Core_Receive_size(const _p::SocketHandle_t p_sock, void* const p_buffer, uintptr_t p_size, uintptr_t& p_received)
+static inline NET_Error Core_Receive_size(_p::SocketHandle_t const p_sock, void* const p_buffer, uintptr_t p_size, uintptr_t& p_received)
 {
 #ifdef _WIN32
 	if(p_size > static_cast<uintptr_t>(std::numeric_limits<int>::max())) p_size =static_cast<uintptr_t>( std::numeric_limits<int>::max());
-	int ret = recv(p_sock, reinterpret_cast<char* const>(p_buffer), static_cast<int>(p_size), 0);
+	int const ret = recv(p_sock, reinterpret_cast<char* const>(p_buffer), static_cast<int>(p_size), 0);
 #else
-	intptr_t ret = recv(p_sock, reinterpret_cast<char* const>(p_buffer), p_size, 0);
+	intptr_t const ret = recv(p_sock, reinterpret_cast<char* const>(p_buffer), p_size, 0);
 #endif
 	if(ret == SOCKET_ERROR)
 	{
@@ -1001,16 +998,16 @@ static inline NET_Error Core_Receive_size(const _p::SocketHandle_t p_sock, void*
 	return NET_Error::Connection;
 }
 
-static inline NET_Error Core_Receive_context(const _p::SocketHandle_t p_sock, void* const p_buffer, const uintptr_t p_size, uintptr_t& p_context)
+static inline NET_Error Core_Receive_context(_p::SocketHandle_t const p_sock, void* const p_buffer, uintptr_t const p_size, uintptr_t& p_context)
 {
 	if(p_context >= p_size) return NET_Error::Invalid_Option;
 
 	uintptr_t currentSize = p_size - p_context;
 #ifdef _WIN32
 	if(currentSize > static_cast<uintptr_t>(std::numeric_limits<int>::max())) currentSize = static_cast<uintptr_t>(std::numeric_limits<int>::max());
-	int ret = recv(p_sock, reinterpret_cast<char*>(p_buffer) + p_context, static_cast<int>(currentSize), 0);
+	int const ret = recv(p_sock, reinterpret_cast<char*>(p_buffer) + p_context, static_cast<int>(currentSize), 0);
 #else
-	intptr_t ret = recv(p_sock, reinterpret_cast<char*>(p_buffer) + p_context, currentSize, 0);
+	intptr_t const ret = recv(p_sock, reinterpret_cast<char*>(p_buffer) + p_context, currentSize, 0);
 #endif
 	if(ret == SOCKET_ERROR)
 	{
@@ -1039,7 +1036,7 @@ static inline NET_Error Core_Receive_context(const _p::SocketHandle_t p_sock, vo
 	return NET_Error::Connection;
 }
 
-static inline NET_Error Core_SendToIPv4(const _p::SocketHandle_t p_sock, const void* p_data, uintptr_t const p_size, const uint32_t p_rawAddr, const uint16_t p_port, const uint8_t p_repeat)
+static inline NET_Error Core_SendToIPv4(_p::SocketHandle_t const p_sock, void const* p_data, uintptr_t const p_size, uint32_t const p_rawAddr, uint16_t const p_port, uint8_t const p_repeat)
 {
 	uint8_t		count = 0;
 	sockaddr_in	addr_info4;
@@ -1056,9 +1053,9 @@ static inline NET_Error Core_SendToIPv4(const _p::SocketHandle_t p_sock, const v
 	do
 	{
 #ifdef _WIN32
-		if(sendto(p_sock, reinterpret_cast<const char*>(p_data), static_cast<int>(p_size), 0, reinterpret_cast<sockaddr*>(&addr_info4), sizeof(addr_info4)) == SOCKET_ERROR)
+		if(sendto(p_sock, reinterpret_cast<char const*>(p_data), static_cast<int>(p_size), 0, reinterpret_cast<sockaddr*>(&addr_info4), sizeof(addr_info4)) == SOCKET_ERROR)
 #else
-		if(sendto(p_sock, reinterpret_cast<const char*>(p_data), p_size, 0, reinterpret_cast<sockaddr*>(&addr_info4), sizeof(addr_info4)) == SOCKET_ERROR)
+		if(sendto(p_sock, reinterpret_cast<char const*>(p_data), p_size, 0, reinterpret_cast<sockaddr const*>(&addr_info4), sizeof(addr_info4)) == SOCKET_ERROR)
 #endif
 		{
 			if(SockWouldBlock(p_sock))
@@ -1074,7 +1071,7 @@ static inline NET_Error Core_SendToIPv4(const _p::SocketHandle_t p_sock, const v
 	return sentOnce ? NET_Error::NoErr : NET_Error::Unknown;
 }
 
-static inline NET_Error Core_SendToIPv6(const _p::SocketHandle_t p_sock, const void* const p_data, uintptr_t p_size, std::span<const uint8_t, 16> p_rawAddr, const uint16_t p_port, const uint8_t p_repeat)
+static inline NET_Error Core_SendToIPv6(_p::SocketHandle_t const p_sock, void const* const p_data, uintptr_t p_size, std::span<uint8_t const, 16> p_rawAddr, uint16_t const p_port, uint8_t const p_repeat)
 {
 	uint8_t			count = 0;
 	sockaddr_in6	addr_info6{};
@@ -1091,9 +1088,9 @@ static inline NET_Error Core_SendToIPv6(const _p::SocketHandle_t p_sock, const v
 	do
 	{
 #ifdef _WIN32
-		if(sendto(p_sock, reinterpret_cast<const char*>(p_data), static_cast<int>(p_size), 0, reinterpret_cast<const sockaddr*>(&addr_info6), sizeof(addr_info6)) == SOCKET_ERROR)
+		if(sendto(p_sock, reinterpret_cast<char const*>(p_data), static_cast<int>(p_size), 0, reinterpret_cast<sockaddr const*>(&addr_info6), sizeof(addr_info6)) == SOCKET_ERROR)
 #else
-		if(sendto(p_sock, reinterpret_cast<const char*>(p_data), p_size, 0, reinterpret_cast<const sockaddr*>(&addr_info6), sizeof(addr_info6)) == SOCKET_ERROR)
+		if(sendto(p_sock, reinterpret_cast<char const*>(p_data), p_size, 0, reinterpret_cast<sockaddr const*>(&addr_info6), sizeof(addr_info6)) == SOCKET_ERROR)
 #endif
 		{
 			if(SockWouldBlock(p_sock))
@@ -1110,14 +1107,14 @@ static inline NET_Error Core_SendToIPv6(const _p::SocketHandle_t p_sock, const v
 
 }
 
-static inline NET_Error Core_ReceiveFrom(const _p::SocketHandle_t p_sock, void* const p_data, uintptr_t& p_size)
+static inline NET_Error Core_ReceiveFrom(_p::SocketHandle_t const p_sock, void* const p_data, uintptr_t& p_size)
 {
 #ifdef _WIN32
 	uintptr_t size = p_size;
 	if(size > static_cast<uintptr_t>(std::numeric_limits<int>::max())) size = static_cast<uintptr_t>(std::numeric_limits<int>::max());
-	int check = recvfrom(p_sock, reinterpret_cast<char*>(p_data), static_cast<int>(size), 0, nullptr, nullptr);
+	int const check = recvfrom(p_sock, reinterpret_cast<char*>(p_data), static_cast<int>(size), 0, nullptr, nullptr);
 #else
-	intptr_t check = recvfrom(p_sock, reinterpret_cast<char*>(p_data), p_size, 0, nullptr, nullptr);
+	intptr_t const check = recvfrom(p_sock, reinterpret_cast<char*>(p_data), p_size, 0, nullptr, nullptr);
 #endif
 
 
@@ -1131,7 +1128,7 @@ static inline NET_Error Core_ReceiveFrom(const _p::SocketHandle_t p_sock, void* 
 	return NET_Error::NoErr;
 }
 
-static inline NET_Error Core_ReceiveFromIPv4(const _p::SocketHandle_t p_sock, void* const p_data, uintptr_t& p_size, uint32_t& p_rawAddr, uint16_t& p_port)
+static inline NET_Error Core_ReceiveFromIPv4(_p::SocketHandle_t const p_sock, void* const p_data, uintptr_t& p_size, uint32_t& p_rawAddr, uint16_t& p_port)
 {
 	sockaddr_in		addr_info4{};
 	CoreSockLen_t	addr_size = sizeof(sockaddr_in);
@@ -1139,9 +1136,9 @@ static inline NET_Error Core_ReceiveFromIPv4(const _p::SocketHandle_t p_sock, vo
 #ifdef _WIN32
 	uintptr_t size = p_size;
 	if(size > static_cast<uintptr_t>(std::numeric_limits<int32_t>::max())) size = static_cast<uintptr_t>(std::numeric_limits<int32_t>::max());
-	int check = recvfrom(p_sock, reinterpret_cast<char*>(p_data), static_cast<int>(size), 0, reinterpret_cast<sockaddr*>(&addr_info4), &addr_size);
+	int const check = recvfrom(p_sock, reinterpret_cast<char*>(p_data), static_cast<int>(size), 0, reinterpret_cast<sockaddr*>(&addr_info4), &addr_size);
 #else
-	intptr_t check = recvfrom(p_sock, reinterpret_cast<char*>(p_data), p_size, 0, reinterpret_cast<sockaddr*>(&addr_info4), &addr_size);
+	intptr_t const check = recvfrom(p_sock, reinterpret_cast<char*>(p_data), p_size, 0, reinterpret_cast<sockaddr*>(&addr_info4), &addr_size);
 #endif
 	if(SockWouldBlock(p_sock)) return NET_Error::WouldBlock;
 
@@ -1157,7 +1154,7 @@ static inline NET_Error Core_ReceiveFromIPv4(const _p::SocketHandle_t p_sock, vo
 	return NET_Error::NoErr;
 }
 
-static inline NET_Error Core_ReceiveFromIPv6(const _p::SocketHandle_t p_sock, void* const p_data, uintptr_t& p_size, void* const p_rawAddr, uint16_t& p_port)
+static inline NET_Error Core_ReceiveFromIPv6(_p::SocketHandle_t const p_sock, void* const p_data, uintptr_t& p_size, void* const p_rawAddr, uint16_t& p_port)
 {
 	sockaddr_in6	addr_info6{};
 	CoreSockLen_t	addr_size = sizeof(sockaddr_in6);
@@ -1165,9 +1162,9 @@ static inline NET_Error Core_ReceiveFromIPv6(const _p::SocketHandle_t p_sock, vo
 #ifdef _WIN32
 	uintptr_t size = p_size;
 	if(size > static_cast<uintptr_t>(std::numeric_limits<int>::max())) size = static_cast<uintptr_t>(std::numeric_limits<int>::max());
-	int check = recvfrom(p_sock, reinterpret_cast<char*>(p_data), static_cast<int>(size), 0, reinterpret_cast<sockaddr*>(&addr_info6), &addr_size);
+	int const check = recvfrom(p_sock, reinterpret_cast<char*>(p_data), static_cast<int>(size), 0, reinterpret_cast<sockaddr*>(&addr_info6), &addr_size);
 #else
-	intptr_t check = recvfrom(p_sock, reinterpret_cast<char*>(p_data), p_size, 0, reinterpret_cast<sockaddr*>(&addr_info6), &addr_size);
+	intptr_t const check = recvfrom(p_sock, reinterpret_cast<char*>(p_data), p_size, 0, reinterpret_cast<sockaddr*>(&addr_info6), &addr_size);
 #endif
 	if(SockWouldBlock(p_sock)) return NET_Error::WouldBlock;
 
@@ -1189,7 +1186,7 @@ static inline NET_Error Core_ReceiveFromIPv6(const _p::SocketHandle_t p_sock, vo
 //========	========	Wake on LAN	========	========
 //========	========	========	========	========
 
-static inline void Core_PrepareWOLPacket(std::span<uint8_t, 102> const p_payload, std::span<const uint8_t, 6> const p_MacAddress)
+static inline void Core_PrepareWOLPacket(std::span<uint8_t, 102> const p_payload, std::span<uint8_t const, 6> const p_MacAddress)
 {
 	uint8_t* payload = p_payload.data();
 	uint8_t* pivot = payload + 6;
@@ -1201,24 +1198,24 @@ static inline void Core_PrepareWOLPacket(std::span<uint8_t, 102> const p_payload
 	memcpy(payload + (6 * 9), pivot, 48);
 }
 
-static inline NET_Error Core_WakeOnLanIPv4(const _p::SocketHandle_t p_sock, std::span<const uint8_t, 6> const p_MacAddress, const uint32_t p_rawAddr, const uint16_t p_port)
+static inline NET_Error Core_WakeOnLanIPv4(_p::SocketHandle_t const p_sock, std::span<uint8_t const, 6> const p_MacAddress, uint32_t const p_rawAddr, uint16_t const p_port)
 {
-	uint8_t				payload[102];
+	uint8_t payload[102];
 	Core_PrepareWOLPacket(payload, p_MacAddress);
 
 	return Core_SendToIPv4(p_sock, payload, 102, p_rawAddr, p_port, 0);
 }
 
-static inline NET_Error Core_WakeOnLanIPv6(const _p::SocketHandle_t p_sock, std::span<const uint8_t, 6> const p_MacAddress, std::span<const uint8_t, 16> const p_rawAddr, const uint16_t p_port)
+static inline NET_Error Core_WakeOnLanIPv6(_p::SocketHandle_t const p_sock, std::span<uint8_t const, 6> const p_MacAddress, std::span<uint8_t const, 16> const p_rawAddr, uint16_t const p_port)
 {
-	uint8_t				payload[102];
+	uint8_t payload[102];
 	Core_PrepareWOLPacket(payload, p_MacAddress);
 	return Core_SendToIPv6(p_sock, payload, 102, p_rawAddr, p_port, 0);
 }
 
 
 //WOL typically port 7 or 9
-static inline NET_Error Core_WakeOnLanIPv4(const _p::SocketHandle_t p_sock, std::span<const uint8_t, 6> const p_MacAddress, const uint32_t p_rawAddr, const uint16_t p_port, const void* const p_password, const uint16_t p_password_size)
+static inline NET_Error Core_WakeOnLanIPv4(_p::SocketHandle_t const p_sock, std::span<uint8_t const, 6> const p_MacAddress, uint32_t const p_rawAddr, uint16_t const p_port, void const* const p_password, uint16_t const p_password_size)
 {
 	uint16_t	payload_size = 102;
 	uint8_t		payload[CORE_NET_MAX_DATA_LEN];
@@ -1242,10 +1239,10 @@ static inline NET_Error Core_WakeOnLanIPv4(const _p::SocketHandle_t p_sock, std:
 	return Core_SendToIPv4(p_sock, payload, payload_size, p_rawAddr, p_port, 0);
 }
 
-static inline NET_Error Core_WakeOnLanIPv6(const _p::SocketHandle_t p_sock, std::span<const uint8_t, 6> const p_MacAddress, std::span<const uint8_t, 16> const p_rawAddr, const uint16_t p_port, const void* const p_password, const uint16_t p_password_size)
+static inline NET_Error Core_WakeOnLanIPv6(_p::SocketHandle_t const p_sock, std::span<uint8_t const, 6> const p_MacAddress, std::span<uint8_t const, 16> const p_rawAddr, uint16_t const p_port, void const* const p_password, uint16_t const p_password_size)
 {
-	uint16_t	payload_size = 102;
-	uint8_t		payload[CORE_NET_MAX_DATA_LEN];
+	uint16_t payload_size = 102;
+	uint8_t payload[CORE_NET_MAX_DATA_LEN];
 
 	if(p_password_size)
 	{
@@ -1311,31 +1308,31 @@ NET_Error Net_Socket::close()
 	return NET_Error::NoErr;
 }
 
-NET_Error Net_Socket::poll(const uint64_t p_microseconds)
+NET_Error Net_Socket::poll(uint64_t const p_microseconds)
 {
 	if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 	return Core_Poll(m_sock, p_microseconds);
 }
 
-NET_Error Net_Socket::shutdown(const Endpoint p_direction)
+NET_Error Net_Socket::shutdown(Endpoint const p_direction)
 {
 	if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 	return Core_Shutdown(m_sock, p_direction);
 }
 
-NET_Error Net_Socket::set_blocking(const bool p_blocking)
+NET_Error Net_Socket::set_blocking(bool const p_blocking)
 {
 	if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 	return Core_setSockBlocking(m_sock, p_blocking);
 }
 
-NET_Error Net_Socket::set_reuse_address(const bool p_reuse)
+NET_Error Net_Socket::set_reuse_address(bool const p_reuse)
 {
 	if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 	return Core_setReuseAddress(m_sock, p_reuse);
 }
 
-NET_Error Net_Socket::set_linger(const bool p_linger, const uint16_t p_timeout)
+NET_Error Net_Socket::set_linger(bool const p_linger, uint16_t const p_timeout)
 {
 	if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 	return Core_setSockLinger(m_sock, p_linger, p_timeout);
@@ -1344,7 +1341,7 @@ NET_Error Net_Socket::set_linger(const bool p_linger, const uint16_t p_timeout)
 
 //========= ======== ======== NetUDP_p ========= ======== ========
 
-NET_Error NetUDP_p::set_broadcasting(const bool p_broadcast)
+NET_Error NetUDP_p::set_broadcasting(bool const p_broadcast)
 {
 	if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 	return Core_setBrodCasting(m_sock, p_broadcast);
@@ -1365,7 +1362,7 @@ NET_Error NetUDP_p::peek_size(uintptr_t& p_size)
 
 //========= ======== ======== NetTCP_S_p ========= ======== ========
 
-NET_Error NetTCP_S_p::listen(const int p_max_connections)
+NET_Error NetTCP_S_p::listen(int const p_max_connections)
 {
 	if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 
@@ -1385,33 +1382,33 @@ NET_Error NetTCP_C_p::nonblock_connect_state()
 	return Core_TCP_NonBlock_Connect_state(m_sock);
 }
 
-NET_Error NetTCP_C_p::send_context(const void* const p_buffer, const uintptr_t p_size, uintptr_t& p_context)
+NET_Error NetTCP_C_p::send_context(void const* const p_buffer, uintptr_t const p_size, uintptr_t& p_context)
 {
 	return Core_Send_context(m_sock, p_buffer, p_size, p_context);
 }
 
-NET_Error NetTCP_C_p::send_size(const void* const p_buffer, const uintptr_t p_size, uintptr_t& p_sent)
+NET_Error NetTCP_C_p::send_size(void const* const p_buffer, uintptr_t const p_size, uintptr_t& p_sent)
 {
 	return Core_Send_size(m_sock, p_buffer, p_size, p_sent);
 }
 
-NET_Error NetTCP_C_p::receive_context(void* const p_buffer, const uintptr_t p_size, uintptr_t& p_context)
+NET_Error NetTCP_C_p::receive_context(void* const p_buffer, uintptr_t const p_size, uintptr_t& p_context)
 {
 	return Core_Receive_context(m_sock, p_buffer, p_size, p_context);
 }
 
-NET_Error NetTCP_C_p::receive_size(void* const p_buffer, const uintptr_t p_size, uintptr_t& p_received)
+NET_Error NetTCP_C_p::receive_size(void* const p_buffer, uintptr_t const p_size, uintptr_t& p_received)
 {
 	return Core_Receive_size(m_sock, p_buffer, p_size, p_received);
 }
 
-NET_Error NetTCP_C_p::set_nagle(const bool p_useNagle)
+NET_Error NetTCP_C_p::set_nagle(bool const p_useNagle)
 {
 	if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 	return Core_setNagle(m_sock, p_useNagle);
 }
 
-NET_Error NetTCP_C_p::set_keep_alive(const bool p_keepAlive, const uint32_t p_probePeriod, const uint32_t p_maxProbes)
+NET_Error NetTCP_C_p::set_keep_alive(bool const p_keepAlive, uint32_t const p_probePeriod, uint32_t const p_maxProbes)
 {
 	if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 	return Core_SetKeepAlive(m_sock, p_keepAlive, p_probePeriod, p_maxProbes);
@@ -1431,19 +1428,19 @@ NetUDP_V4::NetUDP_V4(NetUDP_V4&& p_other): NetUDP_V4()
 	std::swap(m_sock, p_other.m_sock);
 }
 
-NET_Error NetUDP_V4::open(const bool p_blocking)
+NET_Error NetUDP_V4::open(bool const p_blocking)
 {
 	if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
 	return Core_CreateUDPSocketIPv4(m_sock, p_blocking);
 }
 
-NET_Error NetUDP_V4::bind(const IPv4_address& p_IP, const uint16_t p_Port)
+NET_Error NetUDP_V4::bind(IPv4_address const& p_IP, uint16_t const p_Port)
 {
 	if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 	return Core_BindIPv4(m_sock, p_IP.ui32Type, p_Port);
 }
 
-NET_Error NetUDP_V4::open_bind(const IPv4_address& p_IP, const uint16_t p_Port, const bool p_blocking)
+NET_Error NetUDP_V4::open_bind(IPv4_address const& p_IP, uint16_t const p_Port, bool const p_blocking)
 {
 	if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
 	NET_Error ret;
@@ -1463,13 +1460,13 @@ NET_Error NetUDP_V4::open_bind(const IPv4_address& p_IP, const uint16_t p_Port, 
 	return NET_Error::NoErr;
 }
 
-NET_Error NetUDP_V4::join_multicast_group(const IPv4_address& p_group, const uint32_t p_interface)
+NET_Error NetUDP_V4::join_multicast_group(IPv4_address const& p_group, uint32_t const p_interface)
 {
 	if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 	return Core_JoinMulticastGroupIPv4(m_sock, p_group.ui32Type, p_interface);
 }
 
-NET_Error NetUDP_V4::leave_multicast_group(const IPv4_address& p_group, const uint32_t p_interface)
+NET_Error NetUDP_V4::leave_multicast_group(IPv4_address const& p_group, uint32_t const p_interface)
 {
 	if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 	return Core_LeaveMulticastGroupIPv4(m_sock, p_group.ui32Type, p_interface);
@@ -1481,7 +1478,7 @@ NET_Error NetUDP_V4::get_address(IPv4_address& p_IP, uint16_t& p_Port)
 	return Core_GetAddressIPv4(m_sock, p_IP.ui32Type, p_Port);
 }
 
-NET_Error NetUDP_V4::send(const void* const p_data, const uintptr_t p_size, const IPv4_address& p_IP, const uint16_t p_Port, const uint8_t p_repeat)
+NET_Error NetUDP_V4::send(void const* const p_data, uintptr_t const p_size, IPv4_address const& p_IP, uint16_t const p_Port, uint8_t const p_repeat)
 {
 	if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 	return Core_SendToIPv4(m_sock, p_data, p_size, p_IP.ui32Type, p_Port, p_repeat);
@@ -1499,13 +1496,13 @@ NET_Error NetUDP_V4::peek_size(uintptr_t& p_size, IPv4_address& p_other_IP, uint
 	return Core_PeekSizeIPv4(m_sock, p_size, p_other_IP.ui32Type, p_other_port);
 }
 
-NET_Error NetUDP_V4::WakeOnLan(std::span<const uint8_t, 6> const p_MacAddress, const IPv4_address& p_subNet, const uint16_t p_port)
+NET_Error NetUDP_V4::WakeOnLan(std::span<uint8_t const, 6> const p_MacAddress, IPv4_address const& p_subNet, uint16_t const p_port)
 {
 	if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 	return Core_WakeOnLanIPv4(m_sock, p_MacAddress, p_subNet.ui32Type, p_port);
 }
 
-NET_Error NetUDP_V4::WakeOnLan_password(std::span<const uint8_t, 6> const p_MacAddress, const IPv4_address& p_subNet, const uint16_t p_port, const void* const p_password, const uint16_t p_password_size)
+NET_Error NetUDP_V4::WakeOnLan_password(std::span<uint8_t const, 6> const p_MacAddress, IPv4_address const& p_subNet, uint16_t const p_port, void const* const p_password, uint16_t const p_password_size)
 {
 	if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 	return Core_WakeOnLanIPv4(m_sock, p_MacAddress, p_subNet.ui32Type, p_port, p_password, p_password_size);
@@ -1519,18 +1516,18 @@ NetUDP_V6::NetUDP_V6(NetUDP_V6&& p_other): NetUDP_V6()
 	std::swap(m_sock, p_other.m_sock);
 }
 
-NET_Error NetUDP_V6::open(const bool p_blocking)
+NET_Error NetUDP_V6::open(bool const p_blocking)
 {
 	if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
 	return Core_CreateUDPSocketIPv6(m_sock, p_blocking);
 }
 
-NET_Error NetUDP_V6::bind(const IPv6_address& p_IP, const uint16_t p_Port)
+NET_Error NetUDP_V6::bind(IPv6_address const& p_IP, uint16_t const p_Port)
 {
 	return Core_BindIPv6(m_sock, p_IP.byteField, p_Port);
 }
 
-NET_Error NetUDP_V6::open_bind(const IPv6_address& p_IP, const uint16_t p_Port, bool p_blocking)
+NET_Error NetUDP_V6::open_bind(IPv6_address const& p_IP, uint16_t const p_Port, bool const p_blocking)
 {
 	if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
 
@@ -1551,13 +1548,13 @@ NET_Error NetUDP_V6::open_bind(const IPv6_address& p_IP, const uint16_t p_Port, 
 	return NET_Error::NoErr;
 }
 
-NET_Error NetUDP_V6::join_multicast_group(const IPv6_address& p_group, const uint32_t p_interface)
+NET_Error NetUDP_V6::join_multicast_group(IPv6_address const& p_group, uint32_t const p_interface)
 {
 	if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 	return Core_JoinMulticastGroupIPv6(m_sock, p_group.byteField, p_interface);
 }
 
-NET_Error NetUDP_V6::leave_multicast_group(const IPv6_address& p_group, const uint32_t p_interface)
+NET_Error NetUDP_V6::leave_multicast_group(IPv6_address const& p_group, uint32_t const p_interface)
 {
 	if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 	return Core_LeaveMulticastGroupIPv6(m_sock, p_group.byteField, p_interface);
@@ -1569,7 +1566,7 @@ NET_Error NetUDP_V6::get_address(IPv6_address& p_IP, uint16_t& p_Port)
 	return Core_GetAddressIPv6(m_sock, p_IP.byteField, p_Port);
 }
 
-NET_Error NetUDP_V6::send(const void* const p_data, const uintptr_t p_size, const IPv6_address& p_IP, const uint16_t p_Port, const uint8_t p_repeat)
+NET_Error NetUDP_V6::send(void const* const p_data, uintptr_t const p_size, IPv6_address const& p_IP, uint16_t const p_Port, uint8_t const p_repeat)
 {
 	if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 	return Core_SendToIPv6(m_sock, p_data, p_size, p_IP.byteField, p_Port, p_repeat);
@@ -1587,13 +1584,13 @@ NET_Error NetUDP_V6::peek_size(uintptr_t& p_size, IPv6_address& p_other_IP, uint
 	return Core_PeekSizeIPv6(m_sock, p_size, p_other_IP.byteField, p_other_port);
 }
 
-NET_Error NetUDP_V6::WakeOnLan(std::span<const uint8_t, 6> const p_MacAddress, const IPv6_address& p_subNet, const uint16_t p_port)
+NET_Error NetUDP_V6::WakeOnLan(std::span<uint8_t const, 6> const p_MacAddress, IPv6_address const& p_subNet, uint16_t const p_port)
 {
 	if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 	return Core_WakeOnLanIPv6(m_sock, p_MacAddress, p_subNet.byteField, p_port);
 }
 
-NET_Error NetUDP_V6::WakeOnLan_password(std::span<const uint8_t, 6> const p_MacAddress, const IPv6_address& p_subNet, const uint16_t p_port, const void* const p_password, const uint16_t p_password_size)
+NET_Error NetUDP_V6::WakeOnLan_password(std::span<uint8_t const, 6> const p_MacAddress, IPv6_address const& p_subNet, uint16_t const p_port, void const* const p_password, uint16_t const p_password_size)
 {
 	return Core_WakeOnLanIPv6(m_sock, p_MacAddress, p_subNet.byteField, p_port, p_password, p_password_size);
 }
@@ -1610,19 +1607,19 @@ NetTCP_S_V4::NetTCP_S_V4(NetTCP_S_V4&& p_other): NetTCP_S_V4()
 	std::swap(m_sock, p_other.m_sock);
 }
 
-NET_Error NetTCP_S_V4::open(const bool p_blocking)
+NET_Error NetTCP_S_V4::open(bool const p_blocking)
 {
 	if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
 	return Core_CreateTCPSocketIPv4(m_sock, p_blocking);
 }
 
-NET_Error NetTCP_S_V4::bind(const IPv4_address& p_IP, const uint16_t p_Port)
+NET_Error NetTCP_S_V4::bind(IPv4_address const& p_IP, uint16_t const p_Port)
 {
 	if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 	return Core_BindIPv4(m_sock, p_IP.ui32Type, p_Port);
 }
 
-NET_Error NetTCP_S_V4::open_bind(const IPv4_address& p_IP, const uint16_t p_Port, bool p_blocking)
+NET_Error NetTCP_S_V4::open_bind(IPv4_address const& p_IP, uint16_t const p_Port, bool const p_blocking)
 {
 	if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
 
@@ -1642,7 +1639,7 @@ NET_Error NetTCP_S_V4::open_bind(const IPv4_address& p_IP, const uint16_t p_Port
 	return NET_Error::NoErr;
 }
 
-NET_Error NetTCP_S_V4::open_bind_listen(const IPv4_address& p_IP, const uint16_t p_Port, const int p_max_connections, const bool p_blocking)
+NET_Error NetTCP_S_V4::open_bind_listen(IPv4_address const& p_IP, uint16_t const p_Port, int const p_max_connections, bool const p_blocking)
 {
 	if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
 
@@ -1669,7 +1666,7 @@ NET_Error NetTCP_S_V4::open_bind_listen(const IPv4_address& p_IP, const uint16_t
 	return NET_Error::NoErr;
 }
 
-NET_Error NetTCP_S_V4::accept(NetTCP_C_V4& p_Client, const bool p_blocking)
+NET_Error NetTCP_S_V4::accept(NetTCP_C_V4& p_Client, bool const p_blocking)
 {
 	if(m_sock == INVALID_SOCKET)	return NET_Error::Invalid_Socket;
 	if(p_Client.is_open())			return NET_Error::Already_Used;
@@ -1678,7 +1675,7 @@ NET_Error NetTCP_S_V4::accept(NetTCP_C_V4& p_Client, const bool p_blocking)
 	return Core_AcceptIPv4(m_sock, p_Client.m_sock, p_blocking, addr_info4);
 }
 
-NET_Error NetTCP_S_V4::accept(NetTCP_C_V4& p_Client, IPv4_address& p_other_IP, uint16_t& p_other_port, const bool p_blocking)
+NET_Error NetTCP_S_V4::accept(NetTCP_C_V4& p_Client, IPv4_address& p_other_IP, uint16_t& p_other_port, bool const p_blocking)
 {
 	if(m_sock == INVALID_SOCKET)	return NET_Error::Invalid_Socket;
 	if(p_Client.is_open())			return NET_Error::Already_Used;
@@ -1711,19 +1708,19 @@ NetTCP_S_V6::NetTCP_S_V6(NetTCP_S_V6&& p_other): NetTCP_S_V6()
 	std::swap(m_sock, p_other.m_sock);
 }
 
-NET_Error NetTCP_S_V6::open(const bool p_blocking)
+NET_Error NetTCP_S_V6::open(bool const p_blocking)
 {
 	if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
 	return Core_CreateTCPSocketIPv6(m_sock, p_blocking);
 }
 
-NET_Error NetTCP_S_V6::bind(const IPv6_address& p_IP, const uint16_t p_Port)
+NET_Error NetTCP_S_V6::bind(IPv6_address const& p_IP, uint16_t const p_Port)
 {
 	if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 	return Core_BindIPv6(m_sock, p_IP.byteField, p_Port);
 }
 
-NET_Error NetTCP_S_V6::open_bind(const IPv6_address& p_IP, const uint16_t p_Port, const bool p_blocking)
+NET_Error NetTCP_S_V6::open_bind(IPv6_address const& p_IP, uint16_t const p_Port, bool const p_blocking)
 {
 	if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
 
@@ -1743,7 +1740,7 @@ NET_Error NetTCP_S_V6::open_bind(const IPv6_address& p_IP, const uint16_t p_Port
 	return NET_Error::NoErr;
 }
 
-NET_Error NetTCP_S_V6::open_bind_listen(const IPv6_address& p_IP, const uint16_t p_Port, const int p_max_connections, const bool p_blocking)
+NET_Error NetTCP_S_V6::open_bind_listen(IPv6_address const& p_IP, uint16_t const p_Port, int const p_max_connections, bool const p_blocking)
 {
 	if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
 
@@ -1770,7 +1767,7 @@ NET_Error NetTCP_S_V6::open_bind_listen(const IPv6_address& p_IP, const uint16_t
 	return NET_Error::NoErr;
 }
 
-NET_Error NetTCP_S_V6::accept(NetTCP_C_V6& p_Client, const bool p_blocking)
+NET_Error NetTCP_S_V6::accept(NetTCP_C_V6& p_Client, bool const p_blocking)
 {
 	if(m_sock == INVALID_SOCKET)	return NET_Error::Invalid_Socket;
 	if(p_Client.is_open())			return NET_Error::Already_Used;
@@ -1779,7 +1776,7 @@ NET_Error NetTCP_S_V6::accept(NetTCP_C_V6& p_Client, const bool p_blocking)
 	return Core_AcceptIPv6(m_sock, p_Client.m_sock, p_blocking, addr_info6);
 }
 
-NET_Error NetTCP_S_V6::accept(NetTCP_C_V6& p_Client, IPv6_address& p_other_IP, uint16_t& p_other_port, const bool p_blocking)
+NET_Error NetTCP_S_V6::accept(NetTCP_C_V6& p_Client, IPv6_address& p_other_IP, uint16_t& p_other_port, bool const p_blocking)
 {
 	if(m_sock == INVALID_SOCKET)	return NET_Error::Invalid_Socket;
 	if(p_Client.is_open())			return NET_Error::Already_Used;
@@ -1817,26 +1814,26 @@ NetTCP_C_V4::NetTCP_C_V4(NetTCP_C_V4&& p_other): NetTCP_C_V4()
 	std::swap(m_sock, p_other.m_sock);
 }
 
-NET_Error NetTCP_C_V4::open(const bool p_blocking)
+NET_Error NetTCP_C_V4::open(bool const p_blocking)
 {
 	if(m_sock != INVALID_SOCKET)	return NET_Error::Invalid_Socket;
 	return Core_CreateTCPSocketIPv4(m_sock, p_blocking);
 }
 
-NET_Error NetTCP_C_V4::bind(const IPv4_address& my_IP, const uint16_t my_Port)
+NET_Error NetTCP_C_V4::bind(IPv4_address const& my_IP, uint16_t const my_Port)
 {
 	if(m_sock == INVALID_SOCKET)	return NET_Error::Invalid_Socket;
 	return Core_BindIPv4(m_sock, my_IP.ui32Type, my_Port);
 }
 
-NET_Error NetTCP_C_V4::connect(const IPv4_address& dest_IP, const uint16_t dest_Port)
+NET_Error NetTCP_C_V4::connect(IPv4_address const& dest_IP, uint16_t const dest_Port)
 {
 	if(m_sock == INVALID_SOCKET)	return NET_Error::Invalid_Socket;
 	if(dest_IP.ui32Type == 0)		return NET_Error::Invalid_IP;
 	return Core_ConnectIPv4(m_sock, dest_IP.ui32Type, dest_Port);
 }
 
-NET_Error NetTCP_C_V4::open_bind(const IPv4_address& my_IP, const uint16_t my_Port, const bool p_blocking)
+NET_Error NetTCP_C_V4::open_bind(IPv4_address const& my_IP, uint16_t const my_Port, bool const p_blocking)
 {
 	if(m_sock != INVALID_SOCKET)	return NET_Error::Already_Used;
 
@@ -1855,7 +1852,7 @@ NET_Error NetTCP_C_V4::open_bind(const IPv4_address& my_IP, const uint16_t my_Po
 	return NET_Error::NoErr;
 }
 
-NET_Error NetTCP_C_V4::open_bind_connect(const IPv4_address& my_IP, const uint16_t my_Port, const IPv4_address& dest_IP, const uint16_t dest_Port, const bool p_blocking)
+NET_Error NetTCP_C_V4::open_bind_connect(IPv4_address const& my_IP, uint16_t const my_Port, IPv4_address const& dest_IP, uint16_t const dest_Port, bool const p_blocking)
 {
 	if(m_sock != INVALID_SOCKET)	return NET_Error::Already_Used;
 	if(dest_IP.ui32Type == 0)		return NET_Error::Invalid_IP;
@@ -1904,29 +1901,29 @@ NetTCP_C_V6::NetTCP_C_V6(NetTCP_C_V6&& p_other): NetTCP_C_V6()
 	std::swap(m_sock, p_other.m_sock);
 }
 
-NET_Error NetTCP_C_V6::open(const bool p_blocking)
+NET_Error NetTCP_C_V6::open(bool const p_blocking)
 {
 	if(m_sock != INVALID_SOCKET)	return NET_Error::Invalid_Socket;
 	return Core_CreateTCPSocketIPv6(m_sock, p_blocking);
 }
 
-NET_Error NetTCP_C_V6::bind(const IPv6_address& my_IP, const uint16_t my_Port)
+NET_Error NetTCP_C_V6::bind(IPv6_address const& my_IP, uint16_t const my_Port)
 {
 	if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 	return Core_BindIPv6(m_sock, my_IP.byteField, my_Port);
 }
 
-NET_Error NetTCP_C_V6::connect(const IPv6_address& dest_IP, const uint16_t dest_Port)
+NET_Error NetTCP_C_V6::connect(IPv6_address const& dest_IP, uint16_t const dest_Port)
 {
 	if(m_sock == INVALID_SOCKET)	return NET_Error::Invalid_Socket;
 	if(dest_IP.ui64Type[0] == 0 && dest_IP.ui64Type[1] == 0) return NET_Error::Invalid_IP;
 
-	return Core_ConnectIPv6(m_sock, std::span<const uint8_t, 16>{dest_IP.byteField, 16}, dest_Port);
+	return Core_ConnectIPv6(m_sock, std::span<uint8_t const, 16>{dest_IP.byteField, 16}, dest_Port);
 }
 
-NET_Error NetTCP_C_V6::open_bind(const IPv6_address& my_IP, const uint16_t my_Port, const bool p_blocking)
+NET_Error NetTCP_C_V6::open_bind(IPv6_address const& my_IP, uint16_t const my_Port, bool const p_blocking)
 {
-	if(m_sock != INVALID_SOCKET)	return NET_Error::Already_Used;
+	if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
 
 	//open
 	NET_Error err = Core_CreateTCPSocketIPv6(m_sock, p_blocking);
@@ -1944,7 +1941,7 @@ NET_Error NetTCP_C_V6::open_bind(const IPv6_address& my_IP, const uint16_t my_Po
 	return NET_Error::NoErr;
 }
 
-NET_Error NetTCP_C_V6::open_bind_connect(const IPv6_address& my_IP, const uint16_t my_Port, const IPv6_address& dest_IP, const uint16_t dest_Port, const bool p_blocking)
+NET_Error NetTCP_C_V6::open_bind_connect(IPv6_address const& my_IP, uint16_t const my_Port, IPv6_address const& dest_IP, uint16_t const dest_Port, bool const p_blocking)
 {
 	if(m_sock != INVALID_SOCKET)	return NET_Error::Already_Used;
 	if(dest_IP.ui64Type[0] == 0 && dest_IP.ui64Type[1] == 0) return NET_Error::Invalid_IP;
@@ -2009,26 +2006,26 @@ NetUDP::NetUDP(NetUDP&& p_other): NetUDP()
 
 NET_Error NetUDP::close()
 {
-	NET_Error ret = NetUDP_p::close();
+	NET_Error const ret = NetUDP_p::close();
 	if(ret != NET_Error::NoErr) return ret;
 	m_IpV = IPv::None;
 	return NET_Error::NoErr;
 }
 
-NET_Error NetUDP::open(const IPv p_ipV, const bool p_blocking)
+NET_Error NetUDP::open(IPv const p_ipV, bool const p_blocking)
 {
 	if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
 
 	if(p_ipV == IPv::IPv_4)
 	{
-		NET_Error ret = Core_CreateUDPSocketIPv4(m_sock, p_blocking);
+		NET_Error const ret = Core_CreateUDPSocketIPv4(m_sock, p_blocking);
 		if(ret != NET_Error::NoErr) return ret;
 		m_IpV = IPv::IPv_4;
 		return NET_Error::NoErr;
 	}
 	else if(p_ipV == IPv::IPv_6)
 	{
-		NET_Error ret = Core_CreateUDPSocketIPv6(m_sock, p_blocking);
+		NET_Error const ret = Core_CreateUDPSocketIPv6(m_sock, p_blocking);
 		if(ret != NET_Error::NoErr) return ret;
 		m_IpV = IPv::IPv_6;
 		return NET_Error::NoErr;
@@ -2037,10 +2034,10 @@ NET_Error NetUDP::open(const IPv p_ipV, const bool p_blocking)
 	return NET_Error::Invalid_Option;
 }
 
-NET_Error NetUDP::bind(const IP_address& p_IP, const uint16_t p_Port)
+NET_Error NetUDP::bind(IP_address const& p_IP, uint16_t const p_Port)
 {
 	if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
-	const IPv ver = p_IP.version();
+	IPv const ver = p_IP.version();
 
 	if(ver != m_IpV) return NET_Error::Incompatible_Protocol;
 
@@ -2054,10 +2051,10 @@ NET_Error NetUDP::bind(const IP_address& p_IP, const uint16_t p_Port)
 
 }
 
-NET_Error NetUDP::open_bind(const IP_address& p_IP, const uint16_t p_Port, const bool p_blocking)
+NET_Error NetUDP::open_bind(IP_address const& p_IP, uint16_t const p_Port, bool const p_blocking)
 {
 	if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
-	const IPv ver = p_IP.version();
+	IPv const ver = p_IP.version();
 
 	if(ver == IPv::IPv_4)
 	{
@@ -2095,10 +2092,10 @@ NET_Error NetUDP::open_bind(const IP_address& p_IP, const uint16_t p_Port, const
 	return NET_Error::Invalid_IP;
 }
 
-NET_Error NetUDP::join_multicast_group(const IP_address& p_group, const uint32_t p_interface)
+NET_Error NetUDP::join_multicast_group(IP_address const& p_group, uint32_t const p_interface)
 {
 	if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
-	const IPv ver	= p_group		.version();
+	IPv const ver = p_group.version();
 
 	if(ver != m_IpV) return NET_Error::Incompatible_Protocol;
 
@@ -2111,10 +2108,10 @@ NET_Error NetUDP::join_multicast_group(const IP_address& p_group, const uint32_t
 	return Core_JoinMulticastGroupIPv6(m_sock, p_group.v6.byteField, p_interface);
 }
 
-NET_Error NetUDP::leave_multicast_group(const IP_address& p_group, const uint32_t p_interface)
+NET_Error NetUDP::leave_multicast_group(IP_address const& p_group, uint32_t const p_interface)
 {
 	if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
-	const IPv ver	= p_group		.version();
+	IPv const ver = p_group.version();
 
 	if(ver != m_IpV) return NET_Error::Incompatible_Protocol;
 
@@ -2145,10 +2142,10 @@ NET_Error NetUDP::get_address(IP_address& p_IP, uint16_t& p_Port)
 	return NET_Error::NoErr;
 }
 
-NET_Error NetUDP::send(const void* const p_data, const uintptr_t p_size, const IP_address& p_IP, const uint16_t p_Port, const uint8_t p_repeat)
+NET_Error NetUDP::send(void const* const p_data, uintptr_t const p_size, IP_address const& p_IP, uint16_t const p_Port, uint8_t const p_repeat)
 {
 	if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
-	const IPv ver = p_IP.version();
+	IPv const ver = p_IP.version();
 	if(ver != m_IpV) return NET_Error::Incompatible_Protocol;
 
 	if(ver == IPv::IPv_4)
@@ -2190,10 +2187,10 @@ NET_Error NetUDP::peek_size(uintptr_t& p_size, IP_address& p_other_IP, uint16_t&
 	return Core_PeekSizeIPv6(m_sock, p_size, p_other_IP.v6.byteField, p_other_port);
 }
 
-NET_Error NetUDP::WakeOnLan(std::span<const uint8_t, 6> const p_MacAddress, const IP_address& p_subNet, const uint16_t p_port)
+NET_Error NetUDP::WakeOnLan(std::span<uint8_t const, 6> const p_MacAddress, IP_address const& p_subNet, uint16_t const p_port)
 {
 	if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
-	const IPv ver = p_subNet.version();
+	IPv const ver = p_subNet.version();
 
 	if(ver != m_IpV) return NET_Error::Incompatible_Protocol;
 
@@ -2204,10 +2201,10 @@ NET_Error NetUDP::WakeOnLan(std::span<const uint8_t, 6> const p_MacAddress, cons
 	return Core_WakeOnLanIPv6(m_sock, p_MacAddress, p_subNet.v6.byteField, p_port);
 }
 
-NET_Error NetUDP::WakeOnLan_password(std::span<const uint8_t, 6> const p_MacAddress, const IP_address& p_subNet, const uint16_t p_port, const void* const p_password, const uint16_t p_password_size)
+NET_Error NetUDP::WakeOnLan_password(std::span<uint8_t const, 6> const p_MacAddress, IP_address const& p_subNet, uint16_t const p_port, void const* const p_password, uint16_t const p_password_size)
 {
 	if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
-	const IPv ver = p_subNet.version();
+	IPv const ver = p_subNet.version();
 
 	if(ver != m_IpV) return NET_Error::Incompatible_Protocol;
 
@@ -2241,7 +2238,7 @@ NET_Error NetTCP_S::close()
 	return NET_Error::NoErr;
 }
 
-NET_Error NetTCP_S::open(const IPv p_ipV, const bool p_blocking)
+NET_Error NetTCP_S::open(IPv const p_ipV, bool const p_blocking)
 {
 	if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
 
@@ -2263,10 +2260,10 @@ NET_Error NetTCP_S::open(const IPv p_ipV, const bool p_blocking)
 	return NET_Error::Invalid_Option;
 }
 
-NET_Error NetTCP_S::bind(const IP_address& p_IP, const uint16_t p_Port)
+NET_Error NetTCP_S::bind(IP_address const& p_IP, uint16_t const p_Port)
 {
 	if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
-	const IPv ver = p_IP.version();
+	IPv const ver = p_IP.version();
 
 	if(ver != m_IpV) return NET_Error::Incompatible_Protocol;
 
@@ -2279,10 +2276,10 @@ NET_Error NetTCP_S::bind(const IP_address& p_IP, const uint16_t p_Port)
 	return Core_BindIPv6(m_sock, p_IP.v6.byteField, p_Port);
 }
 
-NET_Error NetTCP_S::open_bind(const IP_address& p_IP, const uint16_t p_Port, const bool p_blocking)
+NET_Error NetTCP_S::open_bind(IP_address const& p_IP, uint16_t const p_Port, bool const p_blocking)
 {
 	if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
-	const IPv ver = p_IP.version();
+	IPv const ver = p_IP.version();
 
 	if(ver == IPv::IPv_4)
 	{
@@ -2324,10 +2321,10 @@ NET_Error NetTCP_S::open_bind(const IP_address& p_IP, const uint16_t p_Port, con
 	return NET_Error::Invalid_IP;
 }
 
-NET_Error NetTCP_S::open_bind_listen(const IP_address& p_IP, const uint16_t p_Port, const int p_max_connections, const bool p_blocking)
+NET_Error NetTCP_S::open_bind_listen(IP_address const& p_IP, uint16_t const p_Port, int const p_max_connections, bool const p_blocking)
 {
 	if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
-	const IPv ver = p_IP.version();
+	IPv const ver = p_IP.version();
 
 	if(ver == IPv::IPv_4)
 	{
@@ -2384,7 +2381,7 @@ NET_Error NetTCP_S::open_bind_listen(const IP_address& p_IP, const uint16_t p_Po
 	return NET_Error::Invalid_IP;
 }
 
-NET_Error NetTCP_S::accept(NetTCP_C& p_Client, const bool p_blocking)
+NET_Error NetTCP_S::accept(NetTCP_C& p_Client, bool const p_blocking)
 {
 	if(m_sock == INVALID_SOCKET)	return NET_Error::Invalid_Socket;
 	if(p_Client.is_open())			return NET_Error::Already_Used;
@@ -2414,7 +2411,7 @@ NET_Error NetTCP_S::accept(NetTCP_C& p_Client, const bool p_blocking)
 	return NET_Error::NoErr;
 }
 
-NET_Error NetTCP_S::accept(NetTCP_C& p_Client, IP_address& p_other_IP, uint16_t& p_other_port, const bool p_blocking)
+NET_Error NetTCP_S::accept(NetTCP_C& p_Client, IP_address& p_other_IP, uint16_t& p_other_port, bool const p_blocking)
 {
 	if(m_sock == INVALID_SOCKET)	return NET_Error::Invalid_Socket;
 	if(p_Client.is_open())			return NET_Error::Already_Used;
@@ -2495,7 +2492,7 @@ NET_Error NetTCP_C::close()
 }
 
 
-NET_Error NetTCP_C::open(const IPv p_ipV, const bool p_blocking)
+NET_Error NetTCP_C::open(IPv const p_ipV, bool const p_blocking)
 {
 	if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
 
@@ -2517,11 +2514,11 @@ NET_Error NetTCP_C::open(const IPv p_ipV, const bool p_blocking)
 	return NET_Error::Invalid_Option;
 }
 
-NET_Error NetTCP_C::bind(const IP_address& my_IP, const uint16_t my_Port)
+NET_Error NetTCP_C::bind(IP_address const& my_IP, uint16_t const my_Port)
 {
 	if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 
-	const IPv ver = my_IP.version();
+	IPv const ver = my_IP.version();
 	if(ver != m_IpV) return NET_Error::Incompatible_Protocol;
 
 	if(ver == IPv::IPv_4)
@@ -2533,11 +2530,11 @@ NET_Error NetTCP_C::bind(const IP_address& my_IP, const uint16_t my_Port)
 	return Core_BindIPv6(m_sock, my_IP.v6.byteField, my_Port);
 }
 
-NET_Error NetTCP_C::connect(const IP_address& dest_IP, const uint16_t dest_Port)
+NET_Error NetTCP_C::connect(IP_address const& dest_IP, uint16_t const dest_Port)
 {
 	if(m_sock == INVALID_SOCKET) return NET_Error::Invalid_Socket;
 
-	const IPv ver = dest_IP.version();
+	IPv const ver = dest_IP.version();
 	if(ver != m_IpV) return NET_Error::Incompatible_Protocol;
 
 	if(ver == IPv::IPv_4)
@@ -2551,10 +2548,10 @@ NET_Error NetTCP_C::connect(const IP_address& dest_IP, const uint16_t dest_Port)
 	return Core_ConnectIPv6(m_sock, dest_IP.v6.byteField, dest_Port);
 }
 
-NET_Error NetTCP_C::open_bind(const IP_address& my_IP, const uint16_t my_Port, const bool p_blocking)
+NET_Error NetTCP_C::open_bind(IP_address const& my_IP, uint16_t const my_Port, bool const p_blocking)
 {
 	if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
-	const IPv ver	= my_IP		.version();
+	IPv const ver = my_IP.version();
 
 	if(ver == IPv::IPv_4)
 	{
@@ -2596,11 +2593,11 @@ NET_Error NetTCP_C::open_bind(const IP_address& my_IP, const uint16_t my_Port, c
 	return NET_Error::Invalid_IP;
 }
 
-NET_Error NetTCP_C::open_bind_connect(const IP_address& my_IP, const uint16_t my_Port, const IP_address& dest_IP, const uint16_t dest_Port, const bool p_blocking)
+NET_Error NetTCP_C::open_bind_connect(IP_address const& my_IP, uint16_t const my_Port, IP_address const& dest_IP, uint16_t const dest_Port, bool const p_blocking)
 {
 	if(m_sock != INVALID_SOCKET) return NET_Error::Already_Used;
-	const IPv ver	= my_IP		.version();
-	const IPv ver2	= dest_IP	.version();
+	IPv const ver	= my_IP		.version();
+	IPv const ver2	= dest_IP	.version();
 
 	if(ver != ver2) return NET_Error::Invalid_IP;
 

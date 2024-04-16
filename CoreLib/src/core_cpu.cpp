@@ -201,7 +201,7 @@ namespace core
 			// ---- Basic data ----
 			{
 				cpu_id(outp.m_Fn0, 0);
-				const uint32_t maxId = outp.m_Fn0.eax;
+				uint32_t const maxId = outp.m_Fn0.eax;
 
 				*reinterpret_cast<uint32_t*>(outp.vendor.data()) = outp.m_Fn0.ebx;
 				*reinterpret_cast<uint32_t*>(outp.vendor.data() + sizeof(uint32_t)) = outp.m_Fn0.edx;
@@ -212,7 +212,7 @@ namespace core
 					cpu_id(outp.m_Fn1, 0x01);
 					outp.cpu_count = static_cast<uint8_t>(outp.m_Fn1.ebx >> 16);
 					{
-						const std::bitset<32> data = outp.m_Fn1.ecx;
+						std::bitset<32> const data = outp.m_Fn1.ecx;
 						outp.m_SSE3			= data[ 0];
 						outp.m_PCLMULQDQ	= data[ 1];
 						outp.m_MONITOR		= data[ 3];
@@ -235,7 +235,7 @@ namespace core
 						outp.m_RDRAND		= data[30];
 					}
 					{
-						const std::bitset<32> data = outp.m_Fn1.edx;
+						std::bitset<32> const data = outp.m_Fn1.edx;
 						outp.m_FPU			= data[ 0];
 						outp.m_VME			= data[ 1];
 						outp.m_DE			= data[ 2];
@@ -266,7 +266,7 @@ namespace core
 					{
 						cpu_id_ex(outp.m_Fn7, 0x07, 0x00);
 						{
-							const std::bitset<32> data = outp.m_Fn7.ebx;
+							std::bitset<32> const data = outp.m_Fn7.ebx;
 							outp.m_FSGSBASE		= data[ 0];
 							outp.m_SGX			= data[ 2];
 							outp.m_BMI1			= data[ 3];
@@ -291,7 +291,7 @@ namespace core
 							outp.m_AVX512VL		= data[31];
 						}
 						{
-							const std::bitset<32> data = outp.m_Fn7.ecx;
+							std::bitset<32> const data = outp.m_Fn7.ecx;
 							outp.m_PREFETCHWT1		= data[ 0];
 							outp.m_AVX512_VBMI		= data[ 1];
 							outp.m_UMIP				= data[ 2];
@@ -314,7 +314,7 @@ namespace core
 							outp.m_PKS				= data[31];
 						}
 						{
-							const std::bitset<32> data = outp.m_Fn7.edx;
+							std::bitset<32> const data = outp.m_Fn7.edx;
 							outp.m_FSRM					= data[ 4];
 							outp.m_UINTR				= data[ 5];
 							outp.m_AVX512_VP2INTERSECT	= data[ 8];
@@ -330,7 +330,7 @@ namespace core
 			// ---- Extra data ----
 			//{
 			//	get_cpu_id(reg, 0x80000000_ui32);
-			//	const uint32_t maxId = reg.eax;
+			//	uint32_t const maxId = reg.eax;
 			//
 			//	if(maxId > 0x80000000_ui32)
 			//	{

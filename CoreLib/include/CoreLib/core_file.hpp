@@ -91,9 +91,9 @@ namespace core
 			void* m_handle = nullptr;
 
 		private:
-			file_base(const file_base&) = delete;
+			file_base(file_base const&) = delete;
 			file_base(file_base&&) = delete;
-			file_base& operator = (const file_base&) = delete;
+			file_base& operator = (file_base const&) = delete;
 			file_base& operator = (file_base&&) = delete;
 		};
 
@@ -102,7 +102,7 @@ namespace core
 	class file_read: public _p::file_base
 	{
 	public:
-		std::errc open(const std::filesystem::path& p_path);
+		std::errc open(std::filesystem::path const& p_path);
 		uintptr_t read(void* p_buff, uintptr_t p_size);
 		uintptr_t read_unlocked(void* p_buff, uintptr_t p_size);
 
@@ -114,36 +114,36 @@ namespace core
 	class file_write: public _p::file_base
 	{
 	public:
-		std::errc open(const std::filesystem::path& p_path, open_mode p_mode, bool p_create_directories = true);
-		uintptr_t write(const void* p_buff, uintptr_t p_size);
+		std::errc open(std::filesystem::path const& p_path, open_mode p_mode, bool p_create_directories = true);
+		uintptr_t write(void const* p_buff, uintptr_t p_size);
 		void flush();
 		std::errc resize(int64_t p_size);
 
-		uintptr_t write_unlocked(const void* p_buff, uintptr_t p_size);
+		uintptr_t write_unlocked(void const* p_buff, uintptr_t p_size);
 		void flush_unlocked();
 
 #ifndef _WIN32
-		uintptr_t write_offset(const void* p_buff, uintptr_t p_size, int64_t p_offset);
+		uintptr_t write_offset(void const* p_buff, uintptr_t p_size, int64_t p_offset);
 #endif
 	};
 
 	class file_duplex: public _p::file_base
 	{
 	public:
-		std::errc open(const std::filesystem::path& p_path, open_mode p_mode, bool p_create_directories = true);
+		std::errc open(std::filesystem::path const& p_path, open_mode p_mode, bool p_create_directories = true);
 
 		uintptr_t read (void* p_buff, uintptr_t p_size);
-		uintptr_t write(const void* p_buff, uintptr_t p_size);
+		uintptr_t write(void const* p_buff, uintptr_t p_size);
 		void flush();
 		std::errc resize(int64_t p_size);
 
 		uintptr_t read_unlocked(void* p_buff, uintptr_t p_size);
-		uintptr_t write_unlocked(const void* p_buff, uintptr_t p_size);
+		uintptr_t write_unlocked(void const* p_buff, uintptr_t p_size);
 		void flush_unlocked();
 
 #ifndef _WIN32
 		uintptr_t read_offset(void* p_buff, uintptr_t p_size, int64_t p_offset);
-		uintptr_t write_offset(const void* p_buff, uintptr_t p_size, int64_t p_offset);
+		uintptr_t write_offset(void const* p_buff, uintptr_t p_size, int64_t p_offset);
 #endif
 	};
 

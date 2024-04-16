@@ -57,11 +57,11 @@ private:
 #if defined(_WIN32)
 	void* const m_handle;
 #elif defined(__unix__)
-	const int m_handle;
+	int const m_handle;
 #endif
 };
 
-extern const console_out cout;
-extern const console_out cerr;
+extern console_out const cout;
+extern console_out const cerr;
 
 } //namespace core

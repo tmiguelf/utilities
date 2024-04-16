@@ -36,21 +36,21 @@ namespace core
 	namespace
 	{
 		template<typename char_t>
-		[[nodiscard]] static inline constexpr bool is_all_num(const std::basic_string_view<char_t> p_string)
+		[[nodiscard]] static inline constexpr bool is_all_num(std::basic_string_view<char_t> const p_string)
 		{
-			for(char_t character : p_string)
+			for(char_t const character : p_string)
 			{
 				if(!is_digit(character)) return false;
 			}
 			return true;
 		}
 
-		[[nodiscard]] static inline uint8_t floor_log2(const uint32_t value)
+		[[nodiscard]] static inline uint8_t floor_log2(uint32_t const value)
 		{
 			return static_cast<uint8_t>(31 - std::countl_zero(value));
 		}
 
-		[[nodiscard]] static inline uint8_t floor_log2(const uint64_t value)
+		[[nodiscard]] static inline uint8_t floor_log2(uint64_t const value)
 		{
 			return static_cast<uint8_t>(63 - std::countl_zero(value));
 		}
@@ -59,7 +59,7 @@ namespace core
 		[[nodiscard]] static fp_t from_chars_b10_to_b2(bool sign_bit, typename fp_utils_pre<fp_t>::uint_t m10, typename fp_utils_pre<fp_t>::exp_st e10);
 
 		template<>
-		[[nodiscard]] float32_t from_chars_b10_to_b2<float32_t>(bool sign_bit, typename fp_utils_pre<float32_t>::uint_t m10, typename fp_utils_pre<float32_t>::exp_st e10)
+		[[nodiscard]] float32_t from_chars_b10_to_b2<float32_t>(bool const sign_bit, typename fp_utils_pre<float32_t>::uint_t const m10, typename fp_utils_pre<float32_t>::exp_st const e10)
 		{
 			using fp_t = float32_t;
 			using fp_utils_t = fp_utils_pre<fp_t>;
@@ -88,7 +88,7 @@ namespace core
 
 				// We now compute [m10 * 10^e10 / 2^e2] = [m10 * 5^e10 / 2^(e2-e10)].
 				// To that end, we use the FLOAT_POW5_SPLIT table.
-				const uint8_t j = static_cast<uint8_t>(e2 - e10 - ceil_log2pow5(e10) + FLOAT_POW5_BITCOUNT);
+				uint8_t const j = static_cast<uint8_t>(e2 - e10 - ceil_log2pow5(e10) + FLOAT_POW5_BITCOUNT);
 				m2 = mulPow5divPow2(m10, static_cast<uint16_t>(e10), j);
 
 				// We also compute if the result is exact, i.e.,
@@ -103,7 +103,7 @@ namespace core
 				e2 = static_cast<exp_st>(floor_log2(m10) + e10 - ceil_log2pow5(static_cast<uint16_t>(-e10)) - (mantisssa_bits + 1));
 
 				// We now compute [m10 * 10^e10 / 2^e2] = [m10 / (5^(-e10) 2^(e2-e10))].
-				const uint8_t j = static_cast<uint8_t>(e2 - e10 + ceil_log2pow5(static_cast<uint16_t>(-e10)) - 1 + FLOAT_POW5_INV_BITCOUNT);
+				uint8_t const j = static_cast<uint8_t>(e2 - e10 + ceil_log2pow5(static_cast<uint16_t>(-e10)) - 1 + FLOAT_POW5_INV_BITCOUNT);
 				m2	  = mulPow5InvDivPow2(m10, static_cast<uint16_t>(-e10), j);
 
 				// We also compute if the result is exact, i.e.,
@@ -124,8 +124,8 @@ namespace core
 			if(e2_base > 0xFE)
 			{
 				// Final IEEE exponent is larger than the maximum representable; return +/-Infinity.
-				const uint_t t_resut = sign_bit ? (fp_utils_t::sign_mask | fp_utils_t::exponent_mask) : fp_utils_t::exponent_mask;
-				return std::bit_cast<const fp_t>(t_resut);
+				uint_t const t_resut = sign_bit ? (fp_utils_t::sign_mask | fp_utils_t::exponent_mask) : fp_utils_t::exponent_mask;
+				return std::bit_cast<fp_t const>(t_resut);
 			}
 			if(e2_base < 0)
 			{
@@ -163,11 +163,11 @@ namespace core
 
 			uint_t t_resut = ieee_m2 | static_cast<uint_t>(ieee_e2) << fp_utils_t::exponent_offset;
 			if(sign_bit) t_resut |= fp_utils_t::sign_mask;
-			return std::bit_cast<const fp_t>(t_resut);
+			return std::bit_cast<fp_t const>(t_resut);
 		}
 
 		template<>
-		[[nodiscard]] float64_t from_chars_b10_to_b2<float64_t>(bool sign_bit, typename fp_utils_pre<float64_t>::uint_t m10, typename fp_utils_pre<float64_t>::exp_st e10)
+		[[nodiscard]] float64_t from_chars_b10_to_b2<float64_t>(bool const sign_bit, typename fp_utils_pre<float64_t>::uint_t const m10, typename fp_utils_pre<float64_t>::exp_st const e10)
 		{
 			using fp_t = float64_t;
 			using fp_utils_t = fp_utils_pre<fp_t>;
@@ -196,7 +196,7 @@ namespace core
 
 				// We now compute [m10 * 10^e10 / 2^e2] = [m10 * 5^e10 / 2^(e2-e10)].
 				// To that end, we use the DOUBLE_POW5_SPLIT table.
-				const uint8_t j = static_cast<uint8_t>(e2 - e10 - ceil_log2pow5(e10) + DOUBLE_POW5_BITCOUNT);
+				uint8_t const j = static_cast<uint8_t>(e2 - e10 - ceil_log2pow5(e10) + DOUBLE_POW5_BITCOUNT);
 
 				assert(e10 < DOUBLE_POW5_TABLE_SIZE);
 				m2 = mulShift64(m10, DOUBLE_POW5_SPLIT[e10], j);
@@ -211,7 +211,7 @@ namespace core
 			else
 			{
 				e2 = static_cast<exp_st>(floor_log2(m10) + e10 - ceil_log2pow5(static_cast<uint16_t>(-e10)) - (mantisssa_bits + 1));
-				const uint8_t j = static_cast<uint8_t>(e2 - e10 + ceil_log2pow5(static_cast<uint16_t>(-e10)) - 1 + DOUBLE_POW5_INV_BITCOUNT);
+				uint8_t const j = static_cast<uint8_t>(e2 - e10 + ceil_log2pow5(static_cast<uint16_t>(-e10)) - 1 + DOUBLE_POW5_INV_BITCOUNT);
 
 				assert(-e10 < DOUBLE_POW5_INV_TABLE_SIZE);
 				m2 = mulShift64(m10, DOUBLE_POW5_INV_SPLIT[-e10], j);
@@ -225,8 +225,8 @@ namespace core
 			if(e2_base > 0x7FE)
 			{
 				// Final IEEE exponent is larger than the maximum representable; return +/-Infinity.
-				const uint_t t_resut = sign_bit ? (fp_utils_t::sign_mask | fp_utils_t::exponent_mask) : fp_utils_t::exponent_mask;
-				return std::bit_cast<const fp_t>(t_resut);
+				uint_t const t_resut = sign_bit ? (fp_utils_t::sign_mask | fp_utils_t::exponent_mask) : fp_utils_t::exponent_mask;
+				return std::bit_cast<fp_t const>(t_resut);
 			}
 			if(e2_base < 0)
 			{
@@ -260,14 +260,14 @@ namespace core
 
 			uint_t t_resut = ieee_m2 | static_cast<uint_t>(ieee_e2) << fp_utils_t::exponent_offset;
 			if(sign_bit) t_resut |= fp_utils_t::sign_mask;
-			return std::bit_cast<const fp_t>(t_resut);
+			return std::bit_cast<fp_t const>(t_resut);
 		}
 	} //namespace
 
 	namespace _p
 	{
 		template<_p::charconv_fp_c fp_t, _p::charconv_char_c char_t>
-		[[nodiscard]] from_chars_result<fp_t> from_chars_fp(bool sign_bit, std::basic_string_view<char_t> units, std::basic_string_view<char_t> decimal, bool exp_negative, std::basic_string_view<char_t> exponent)
+		[[nodiscard]] from_chars_result<fp_t> from_chars_fp(bool const sign_bit, std::basic_string_view<char_t> const units, std::basic_string_view<char_t> const decimal, bool const exp_negative, std::basic_string_view<char_t> const exponent)
 		{
 			using fp_utils_t = fp_utils_pre<fp_t>;
 			using uint_t = fp_utils_t::uint_t;
@@ -286,8 +286,8 @@ namespace core
 			intptr_t decimal_offset = 0;
 
 			{
-				const char_t* pivot = units.data();
-				const char_t* const end = pivot + units.size();
+				char_t const* pivot = units.data();
+				char_t const* const end = pivot + units.size();
 
 				for(;pivot < end && *pivot == '0'; ++pivot);
 
@@ -304,8 +304,8 @@ namespace core
 			}
 
 			{
-				const char_t* pivot = decimal.data();
-				const char_t*const  end = pivot + decimal.size();
+				char_t const* pivot = decimal.data();
+				char_t const* const  end = pivot + decimal.size();
 
 				if(sig_digits == 0)
 				{
@@ -328,8 +328,8 @@ namespace core
 
 			if(sig_digits == 0)
 			{
-				const uint_t t_resut = sign_bit ? fp_utils_t::sign_mask : uint_t{0};
-				return std::bit_cast<const fp_t>(t_resut);
+				uint_t const t_resut = sign_bit ? fp_utils_t::sign_mask : uint_t{0};
+				return std::bit_cast<fp_t const>(t_resut);
 			}
 
 		$exp_parse:
@@ -337,8 +337,8 @@ namespace core
 			{
 				intptr_t e_temp = 0;
 
-				const char_t* pivot = exponent.data();
-				const char_t* const end = pivot + exponent.size();
+				char_t const* pivot = exponent.data();
+				char_t const* const end = pivot + exponent.size();
 
 				for(;pivot < end && *pivot == '0'; ++pivot);
 
@@ -354,16 +354,16 @@ namespace core
 
 				e_temp += decimal_offset;
 
-				const intptr_t adjusted_e10 = e_temp + sig_digits;
+				intptr_t const adjusted_e10 = e_temp + sig_digits;
 				if(adjusted_e10 > fp_utils_t::max_scientific_exponent_10 + 1)
 				{
-					const uint_t t_resut = sign_bit ? (fp_utils_t::sign_mask | fp_utils_t::exponent_mask) : fp_utils_t::exponent_mask;
-					return std::bit_cast<const fp_t>(t_resut);
+					uint_t const t_resut = sign_bit ? (fp_utils_t::sign_mask | fp_utils_t::exponent_mask) : fp_utils_t::exponent_mask;
+					return std::bit_cast<fp_t const>(t_resut);
 				}
 				if(adjusted_e10 < fp_utils_t::min_scientific_exponent_10)
 				{
-					const uint_t t_resut = sign_bit ? (fp_utils_t::sign_mask | fp_utils_t::exponent_mask) : fp_utils_t::exponent_mask;
-					return std::bit_cast<const fp_t>(t_resut);
+					uint_t const t_resut = sign_bit ? (fp_utils_t::sign_mask | fp_utils_t::exponent_mask) : fp_utils_t::exponent_mask;
+					return std::bit_cast<fp_t const>(t_resut);
 				}
 				e10 = static_cast<exp_st>(e_temp);
 			}

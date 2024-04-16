@@ -42,7 +42,7 @@
 #include <CoreLib/toPrint/toPrint_base.hpp>
 
 template<typename T>
-static uintptr_t to_chars_quat_estimate(const mathlib::Quaternion<T>& p_data)
+static uintptr_t to_chars_quat_estimate(mathlib::Quaternion<T> const& p_data)
 {
 	constexpr std::string_view filler = "[; i; j; k]";
 
@@ -55,7 +55,7 @@ static uintptr_t to_chars_quat_estimate(const mathlib::Quaternion<T>& p_data)
 }
 
 template<typename T>
-static uintptr_t to_chars_quat_unsafe(const mathlib::Quaternion<T>& p_data, char8_t* p_out)
+static uintptr_t to_chars_quat_unsafe(mathlib::Quaternion<T> const& p_data, char8_t* p_out)
 {
 	constexpr uintptr_t max_size = core::to_chars_dec_max_size_v<T>;
 	char8_t* const begin = p_out;
@@ -84,9 +84,9 @@ template<typename T>
 class core::toPrint<mathlib::Quaternion<T>>: public core::toPrint_base
 {
 public:
-	toPrint(const mathlib::Quaternion<T>& p_data): m_data(p_data) {}
+	toPrint(mathlib::Quaternion<T> const& p_data): m_data(p_data) {}
 
-	uintptr_t size(const char8_t&) const
+	uintptr_t size(char8_t const&) const
 	{
 		return to_chars_quat_estimate(m_data);
 	}
@@ -97,7 +97,7 @@ public:
 	}
 
 private:
-	const mathlib::Quaternion<T>& m_data;
+	mathlib::Quaternion<T> const& m_data;
 };
 
 
@@ -132,19 +132,19 @@ TYPED_TEST(Quaternion_T, Getters)
 
 	struct TestCase
 	{
-		const Quaternion<real_t> m_testObj;
-		const real_t m_r;
-		const real_t m_i;
-		const real_t m_j;
-		const real_t m_k;
+		Quaternion<real_t> const m_testObj;
+		real_t const m_r;
+		real_t const m_i;
+		real_t const m_j;
+		real_t const m_k;
 	};
 
 	struct CasePrint: public core::toPrint_base
 	{
 	public:
-		CasePrint(const TestCase& p_data): m_data{p_data}{}
+		CasePrint(TestCase const& p_data): m_data{p_data}{}
 
-		uintptr_t size(const char8_t&) const
+		uintptr_t size(char8_t const&) const
 		{
 			constexpr std::string_view filler = "[; i; j; k]";
 
@@ -176,13 +176,13 @@ TYPED_TEST(Quaternion_T, Getters)
 			*(p_out) = u8']';
 		}
 	private:
-		const TestCase& m_data;
+		TestCase const& m_data;
 	};
 
 //saves all that work of setting up and type casting
 #define TESTCASE_2(R, I, J, K) TestCase{{R, I, J, K}, R, I, J, K}
 #define TESTCASE(R, I, J, K) TESTCASE_2(static_cast<real_t>(R), static_cast<real_t>(I), static_cast<real_t>(J), static_cast<real_t>(K))
-	const std::vector<TestCase> testData =
+	std::vector<TestCase> const testData =
 		{
 			TESTCASE(0.0, 0.0, 0.0, 0.0),
 			TESTCASE(1.0, 0.0, 0.0, 0.0),
@@ -199,7 +199,7 @@ TYPED_TEST(Quaternion_T, Getters)
 #undef TESTCASE
 #undef TESTCASE_2
 
-	for(const TestCase& tcase: testData)
+	for(TestCase const& tcase: testData)
 	{
 		ASSERT_EQ(tcase.m_testObj.r(), tcase.m_r) << CasePrint{tcase};
 		ASSERT_EQ(tcase.m_testObj.i(), tcase.m_i) << CasePrint{tcase};
@@ -214,18 +214,18 @@ TYPED_TEST(Quaternion_T, Setters)
 
 	struct TestCase
 	{
-		const real_t m_r;
-		const real_t m_i;
-		const real_t m_j;
-		const real_t m_k;
+		real_t const m_r;
+		real_t const m_i;
+		real_t const m_j;
+		real_t const m_k;
 	};
 
 	struct CasePrint: public core::toPrint_base
 	{
 	public:
-		CasePrint(const TestCase& p_data): m_data{p_data}{}
+		CasePrint(TestCase const& p_data): m_data{p_data}{}
 
-		uintptr_t size(const char8_t&) const
+		uintptr_t size(char8_t const&) const
 		{
 			constexpr std::string_view filler = "[; i; j; k]";
 
@@ -257,12 +257,12 @@ TYPED_TEST(Quaternion_T, Setters)
 			*(p_out) = u8']';
 		}
 	private:
-		const TestCase& m_data;
+		TestCase const& m_data;
 	};
 
 	//saves all that work of setting up and type casting
 #define TESTCASE(R, I, J, K) {static_cast<real_t>(R), static_cast<real_t>(I), static_cast<real_t>(J), static_cast<real_t>(K)}
-	const std::vector<TestCase> testData =
+	std::vector<TestCase> const testData =
 	{
 		TESTCASE(0.0, 0.0, 0.0, 0.0),
 		TESTCASE(1.0, 0.0, 0.0, 0.0),
@@ -278,7 +278,7 @@ TYPED_TEST(Quaternion_T, Setters)
 	};
 #undef TESTCASE
 
-	const std::vector<real_t> testDataR =
+	std::vector<real_t> const testDataR =
 	{
 		static_cast<real_t>( 0.0 ),
 		static_cast<real_t>( 1.0 ),
@@ -304,7 +304,7 @@ TYPED_TEST(Quaternion_T, Setters)
 	};
 
 	//all test
-	for(const TestCase& tcase: testData)
+	for(TestCase const& tcase: testData)
 	{
 		Quaternion<real_t> testObj;
 		testObj.set(tcase.m_r, tcase.m_i, tcase.m_j, tcase.m_k);
@@ -315,7 +315,7 @@ TYPED_TEST(Quaternion_T, Setters)
 	}
 
 	//individual test
-	for(const real_t& tcase: testDataR)
+	for(real_t const& tcase: testDataR)
 	{
 		Quaternion<real_t> testR{-41.0, 42.0, -43.0, 44.0};
 		Quaternion<real_t> testI{-41.0, 42.0, -43.0, 44.0};
@@ -351,7 +351,7 @@ TYPED_TEST(Quaternion_T, Comparison)
 	using TestCase = Quaternion<real_t>;
 
 #define TESTCASE(R, I, J, K) {static_cast<real_t>(R), static_cast<real_t>(I), static_cast<real_t>(J), static_cast<real_t>(K)}
-	const std::vector<TestCase> testData =
+	std::vector<TestCase> const testData =
 		{
 			TESTCASE(0.0, 0.0, 0.0, 0.0),
 			TESTCASE(1.0, 0.0, 0.0, 0.0),
@@ -367,7 +367,7 @@ TYPED_TEST(Quaternion_T, Comparison)
 		};
 #undef TESTCASE
 
-	const uintptr_t caseSize = testData.size();
+	uintptr_t const caseSize = testData.size();
 
 	for(uintptr_t i = 0; i < caseSize; ++i)
 	{
@@ -395,16 +395,16 @@ TYPED_TEST(Quaternion_T, Operator_unary_minus)
 
 	struct TestCase
 	{
-		const Quaternion<real_t> m_sideA;
-		const Quaternion<real_t> m_sideB;
+		Quaternion<real_t> const m_sideA;
+		Quaternion<real_t> const m_sideB;
 	};
 
 	struct CasePrint: public core::toPrint_base
 	{
 	public:
-		CasePrint(const TestCase& p_data): m_data{p_data}{}
+		CasePrint(TestCase const& p_data): m_data{p_data}{}
 
-		uintptr_t size(const char8_t&) const
+		uintptr_t size(char8_t const&) const
 		{
 			return to_chars_quat_estimate(m_data.m_sideA) + to_chars_quat_estimate(m_data.m_sideB) + 1;
 		}
@@ -416,14 +416,14 @@ TYPED_TEST(Quaternion_T, Operator_unary_minus)
 			to_chars_quat_unsafe(m_data.m_sideB, p_out);
 		}
 	private:
-		const TestCase& m_data;
+		TestCase const& m_data;
 	};
 
 
 
 #define TESTCASE_D(R, I, J, K) {{R, I, J, K}, {-R, -I, -J, -K}}
 #define TESTCASE(R, I, J, K) TESTCASE_D(static_cast<real_t>(R), static_cast<real_t>(I), static_cast<real_t>(J), static_cast<real_t>(K))
-	const std::vector<TestCase> testData =
+	std::vector<TestCase> const testData =
 		{
 			TESTCASE(0.0, 0.0, 0.0, 0.0),
 			TESTCASE(1.0, 0.0, 0.0, 0.0),
@@ -440,7 +440,7 @@ TYPED_TEST(Quaternion_T, Operator_unary_minus)
 #undef TESTCASE
 #undef TESTCASE_D
 
-	for(const TestCase& tcase: testData)
+	for(TestCase const& tcase: testData)
 	{
 		ASSERT_EQ(-tcase.m_sideA, tcase.m_sideB) << CasePrint{tcase};
 		ASSERT_EQ(tcase.m_sideA, -tcase.m_sideB) << CasePrint{tcase};
@@ -453,17 +453,17 @@ TYPED_TEST(Quaternion_T, Operator_add)
 
 	struct TestCase
 	{
-		const Quaternion<real_t> m_A;
-		const Quaternion<real_t> m_B;
-		const Quaternion<real_t> m_sum;
+		Quaternion<real_t> const m_A;
+		Quaternion<real_t> const m_B;
+		Quaternion<real_t> const m_sum;
 	};
 
 	struct CasePrint: public core::toPrint_base
 	{
 	public:
-		CasePrint(const TestCase& p_data): m_data{p_data}{}
+		CasePrint(TestCase const& p_data): m_data{p_data}{}
 
-		uintptr_t size(const char8_t&) const
+		uintptr_t size(char8_t const&) const
 		{
 			return to_chars_quat_estimate(m_data.m_A) + to_chars_quat_estimate(m_data.m_B) + 1;
 		}
@@ -475,14 +475,14 @@ TYPED_TEST(Quaternion_T, Operator_add)
 			to_chars_quat_unsafe(m_data.m_B, p_out);
 		}
 	private:
-		const TestCase& m_data;
+		TestCase const& m_data;
 	};
 
 
 #define TESTCASE_R(R1, I1, J1, K1, R2, I2, J2, K2) {{R1, I1, J1, K1}, {R2, I2, J2, K2}, {(R1 + R2), (I1 + I2), (J1 + J2), (K1 + K2)}} 
 #define TESTCASE(R1, I1, J1, K1, R2, I2, J2, K2) TESTCASE_R(static_cast<real_t>(R1), static_cast<real_t>(I1), static_cast<real_t>(J1), static_cast<real_t>(K1), \
 	static_cast<real_t>(R2), static_cast<real_t>(I2), static_cast<real_t>(J2), static_cast<real_t>(K2))
-	const std::vector<TestCase> testData =
+	std::vector<TestCase> const testData =
 		{
 			TESTCASE(0.0, 0.0, 0.0, 0.0,	0.0, 0.0, 0.0, 0.0),
 			TESTCASE(1.0, 0.0, 0.0, 0.0,	0.0, 0.0, 0.0, 0.0),
@@ -496,14 +496,14 @@ TYPED_TEST(Quaternion_T, Operator_add)
 #undef TESTCASE
 
 	//+
-	for(const TestCase& tcase: testData)
+	for(TestCase const& tcase: testData)
 	{
 		ASSERT_EQ(tcase.m_A + tcase.m_B, tcase.m_sum) << "A + B - " << CasePrint{tcase};
 		ASSERT_EQ(tcase.m_B + tcase.m_A, tcase.m_sum) << "B + A - " << CasePrint{tcase};
 	}
 
 	//+=
-	for(const TestCase& tcase: testData)
+	for(TestCase const& tcase: testData)
 	{
 		{
 			Quaternion<real_t> tval{tcase.m_A};
@@ -524,17 +524,17 @@ TYPED_TEST(Quaternion_T, Operator_minus)
 
 	struct TestCase
 	{
-		const Quaternion<real_t> m_A;
-		const Quaternion<real_t> m_B;
-		const Quaternion<real_t> m_sub;
+		Quaternion<real_t> const m_A;
+		Quaternion<real_t> const m_B;
+		Quaternion<real_t> const m_sub;
 	};
 
 	struct CasePrint: public core::toPrint_base
 	{
 	public:
-		CasePrint(const TestCase& p_data): m_data{p_data}{}
+		CasePrint(TestCase const& p_data): m_data{p_data}{}
 
-		uintptr_t size(const char8_t&) const
+		uintptr_t size(char8_t const&) const
 		{
 			return to_chars_quat_estimate(m_data.m_A) + to_chars_quat_estimate(m_data.m_B) + 1;
 		}
@@ -546,13 +546,13 @@ TYPED_TEST(Quaternion_T, Operator_minus)
 			to_chars_quat_unsafe(m_data.m_B, p_out);
 		}
 	private:
-		const TestCase& m_data;
+		TestCase const& m_data;
 	};
 
 #define TESTCASE_R(R1, I1, J1, K1, R2, I2, J2, K2) {{R1, I1, J1, K1}, {R2, I2, J2, K2}, {(R1 - R2), (I1 - I2), (J1 - J2), (K1 - K2)}} 
 #define TESTCASE(R1, I1, J1, K1, R2, I2, J2, K2) TESTCASE_R(static_cast<real_t>(R1), static_cast<real_t>(I1), static_cast<real_t>(J1), static_cast<real_t>(K1), \
 	static_cast<real_t>(R2), static_cast<real_t>(I2), static_cast<real_t>(J2), static_cast<real_t>(K2))
-	const std::vector<TestCase> testData =
+	std::vector<TestCase> const testData =
 	{
 		TESTCASE(0.0, 0.0, 0.0, 0.0,	0.0, 0.0, 0.0, 0.0),
 		TESTCASE(1.0, 0.0, 0.0, 0.0,	0.0, 0.0, 0.0, 0.0),
@@ -566,14 +566,14 @@ TYPED_TEST(Quaternion_T, Operator_minus)
 #undef TESTCASE
 
 	//-
-	for(const TestCase& tcase: testData)
+	for(TestCase const& tcase: testData)
 	{
 		ASSERT_EQ(tcase.m_A - tcase.m_B, tcase.m_sub) << "A-B - " << CasePrint{tcase};
 		ASSERT_EQ(tcase.m_B - tcase.m_A, -tcase.m_sub) << "B-A - " << CasePrint{tcase};
 	}
 
 	//-=
-	for(const TestCase& tcase: testData)
+	for(TestCase const& tcase: testData)
 	{
 		{
 			Quaternion<real_t> tval{tcase.m_A};
@@ -595,17 +595,17 @@ TYPED_TEST(Quaternion_T, scalar_multiply)
 
 	struct TestCase
 	{
-		const Quaternion<real_t>	m_quat;
-		const real_t				m_scalar;
-		const Quaternion<real_t>	m_result;
+		Quaternion<real_t> const	m_quat;
+		real_t const				m_scalar;
+		Quaternion<real_t> const	m_result;
 	};
 
 	struct CasePrint: public core::toPrint_base
 	{
 	public:
-		CasePrint(const TestCase& p_data): m_data{p_data}{}
+		CasePrint(TestCase const& p_data): m_data{p_data}{}
 
-		uintptr_t size(const char8_t&) const
+		uintptr_t size(char8_t const&) const
 		{
 			return to_chars_quat_estimate(m_data.m_quat) + core::to_chars_size(m_data.m_scalar) + 3;
 		}
@@ -619,12 +619,12 @@ TYPED_TEST(Quaternion_T, scalar_multiply)
 			core::to_chars_unsafe(m_data.m_scalar, p_out);
 		}
 	private:
-		const TestCase& m_data;
+		TestCase const& m_data;
 	};
 
 #define TESTCASE_R(R, I, J, K, S) {{R, I, J, K}, S, {(R * S), (I * S), (J * S), (K * S)}} 
 #define TESTCASE(R, I, J, K, S) TESTCASE_R(static_cast<real_t>(R), static_cast<real_t>(I), static_cast<real_t>(J), static_cast<real_t>(K), static_cast<real_t>(S))
-	const std::vector<TestCase> testData =
+	std::vector<TestCase> const testData =
 	{
 		TESTCASE(0.0, 0.0, 0.0, 0.0,	0.0),
 		TESTCASE(0.0, 0.0, 0.0, 0.0,	1.0),
@@ -640,12 +640,12 @@ TYPED_TEST(Quaternion_T, scalar_multiply)
 #undef TESTCASE_R
 #undef TESTCASE
 
-	for(const TestCase& tcase: testData)
+	for(TestCase const& tcase: testData)
 	{
 		ASSERT_EQ(tcase.m_quat * tcase.m_scalar, tcase.m_result) << "* - " << CasePrint{tcase};
 	}
 
-	for(const TestCase& tcase: testData)
+	for(TestCase const& tcase: testData)
 	{
 		Quaternion<real_t> test{tcase.m_quat};
 		test *= tcase.m_scalar;
@@ -660,17 +660,17 @@ TYPED_TEST(Quaternion_T, scalar_division)
 
 	struct TestCase
 	{
-		const Quaternion<real_t>	m_quat;
-		const real_t				m_scalar;
-		const Quaternion<real_t>	m_result;
+		Quaternion<real_t> const	m_quat;
+		real_t const				m_scalar;
+		Quaternion<real_t> const	m_result;
 	};
 
 	struct CasePrint: public core::toPrint_base
 	{
 	public:
-		CasePrint(const TestCase& p_data): m_data{p_data}{}
+		CasePrint(TestCase const& p_data): m_data{p_data}{}
 
-		uintptr_t size(const char8_t&) const
+		uintptr_t size(char8_t const&) const
 		{
 			return to_chars_quat_estimate(m_data.m_quat) + core::to_chars_size(m_data.m_scalar) + 3;
 		}
@@ -684,12 +684,12 @@ TYPED_TEST(Quaternion_T, scalar_division)
 			core::to_chars_unsafe(m_data.m_scalar, p_out);
 		}
 	private:
-		const TestCase& m_data;
+		TestCase const& m_data;
 	};
 
 #define TESTCASE_R(R, I, J, K, S) {{R, I, J, K}, S, {(R / S), (I / S), (J / S), (K / S)}} 
 #define TESTCASE(R, I, J, K, S) TESTCASE_R(static_cast<real_t>(R), static_cast<real_t>(I), static_cast<real_t>(J), static_cast<real_t>(K), static_cast<real_t>(S))
-	const std::vector<TestCase> testData =
+	std::vector<TestCase> const testData =
 	{
 		TESTCASE(0.0, 0.0, 0.0, 0.0,	0.1),
 		TESTCASE(0.0, 0.0, 0.0, 0.0,	1.0),
@@ -705,12 +705,12 @@ TYPED_TEST(Quaternion_T, scalar_division)
 #undef TESTCASE_R
 #undef TESTCASE
 
-	for(const TestCase& tcase: testData)
+	for(TestCase const& tcase: testData)
 	{
 		ASSERT_EQ(tcase.m_quat / tcase.m_scalar, tcase.m_result) << "/ - " << CasePrint{tcase};
 	}
 
-	for(const TestCase& tcase: testData)
+	for(TestCase const& tcase: testData)
 	{
 		Quaternion<real_t> test{tcase.m_quat};
 		test /= tcase.m_scalar;
@@ -725,17 +725,17 @@ TYPED_TEST(Quaternion_T, quaternion_multiplication)
 
 	struct TestCase
 	{
-		const Quaternion<real_t> m_first;
-		const Quaternion<real_t> m_second;
-		const Quaternion<real_t> m_result;
+		Quaternion<real_t> const m_first;
+		Quaternion<real_t> const m_second;
+		Quaternion<real_t> const m_result;
 	};
 
 	struct CasePrint: public core::toPrint_base
 	{
 	public:
-		CasePrint(const TestCase& p_data): m_data{p_data}{}
+		CasePrint(TestCase const& p_data): m_data{p_data}{}
 
-		uintptr_t size(const char8_t&) const
+		uintptr_t size(char8_t const&) const
 		{
 			return to_chars_quat_estimate(m_data.m_first) + to_chars_quat_estimate(m_data.m_second) + 1;
 		}
@@ -747,12 +747,12 @@ TYPED_TEST(Quaternion_T, quaternion_multiplication)
 			to_chars_quat_unsafe(m_data.m_second, p_out);
 		}
 	private:
-		const TestCase& m_data;
+		TestCase const& m_data;
 	};
 
 
 #define QUAT_T(R, I, J, K) {static_cast<real_t>(R), static_cast<real_t>(I), static_cast<real_t>(J), static_cast<real_t>(K)}
-	const std::vector<TestCase> testData =
+	std::vector<TestCase> const testData =
 	{
 		//null
 		{QUAT_T(0.0, 0.0, 0.0, 0.0), QUAT_T(0.0, 0.0, 0.0, 0.0), QUAT_T(0.0, 0.0, 0.0, 0.0)},
@@ -783,9 +783,9 @@ TYPED_TEST(Quaternion_T, quaternion_multiplication)
 
 	constexpr real_t epsilon =  std::numeric_limits<real_t>::epsilon();
 
-	for(const TestCase& tcase: testData)
+	for(TestCase const& tcase: testData)
 	{
-		const Quaternion<real_t> res = tcase.m_first * tcase.m_second;
+		Quaternion<real_t> const res = tcase.m_first * tcase.m_second;
 
 		ASSERT_NEAR(static_cast<double>(res.r()), static_cast<double>(tcase.m_result.r()), epsilon) << "* " << CasePrint{tcase};
 		ASSERT_NEAR(static_cast<double>(res.i()), static_cast<double>(tcase.m_result.i()), epsilon) << "* " << CasePrint{tcase};
@@ -793,7 +793,7 @@ TYPED_TEST(Quaternion_T, quaternion_multiplication)
 		ASSERT_NEAR(static_cast<double>(res.k()), static_cast<double>(tcase.m_result.k()), epsilon) << "* " << CasePrint{tcase};
 	}
 
-	for(const TestCase& tcase: testData)
+	for(TestCase const& tcase: testData)
 	{
 		Quaternion<real_t> res{tcase.m_first};
 		res *= tcase.m_second;
@@ -809,10 +809,10 @@ TYPED_TEST(Quaternion_T, isZero)
 	using real_t = TypeParam;
 	using TestCase = Quaternion<real_t>;
 
-	const real_t infinitesimal	= std::numeric_limits<real_t>::denorm_min();
+	real_t const infinitesimal	= std::numeric_limits<real_t>::denorm_min();
 
 #define TESTCASE(R, I, J, K) {static_cast<real_t>(R), static_cast<real_t>(I), static_cast<real_t>(J), static_cast<real_t>(K)}
-	const std::vector<TestCase> testData =
+	std::vector<TestCase> const testData =
 	{
 		TESTCASE(1.0, 0.0, 0.0, 0.0),
 		TESTCASE(0.0, 1.0, 0.0, 0.0),
@@ -829,7 +829,7 @@ TYPED_TEST(Quaternion_T, isZero)
 		ASSERT_TRUE(qt0.isZero()) << toPrint{qt0};
 	}
 
-	for(const TestCase& tcase: testData)
+	for(TestCase const& tcase: testData)
 	{
 		ASSERT_FALSE(tcase.isZero()) << toPrint{tcase};
 	}
@@ -841,12 +841,12 @@ TYPED_TEST(Quaternion_T, norm_squared)
 
 	struct TestCase
 	{
-		const Quaternion<real_t> m_quat;
-		const real_t norm_sqrd;
+		Quaternion<real_t> const m_quat;
+		real_t const norm_sqrd;
 	};
 
 #define TESTCASE(R, I, J, K, N) {{static_cast<real_t>(R), static_cast<real_t>(I), static_cast<real_t>(J), static_cast<real_t>(K)}, static_cast<real_t>(N)}
-	const std::vector<TestCase> testData =
+	std::vector<TestCase> const testData =
 	{
 		TESTCASE(0.0, 0.0, 0.0, 0.0,	0.0),
 		TESTCASE(1.0, 0.0, 0.0, 0.0,	1.0),
@@ -864,7 +864,7 @@ TYPED_TEST(Quaternion_T, norm_squared)
 	};
 #undef TESTCASE
 
-	for(const TestCase& tcase: testData)
+	for(TestCase const& tcase: testData)
 	{
 		ASSERT_EQ(tcase.m_quat.norm_squared(), tcase.norm_sqrd) << toPrint{tcase.m_quat};
 	}
@@ -876,9 +876,9 @@ TYPED_TEST(Quaternion_T, norm)
 
 	struct TestCase
 	{
-		const Quaternion<real_t> m_quat;
-		const real_t norm;
-		const real_t error;
+		Quaternion<real_t> const m_quat;
+		real_t const norm;
+		real_t const error;
 	};
 
 	//manual calculations where not done with more than 12 digits of precision
@@ -886,7 +886,7 @@ TYPED_TEST(Quaternion_T, norm)
 
 	//computations may loose further precision proportional to the size of the number
 #define TESTCASE(R, I, J, K, N, E) {{real_t{R}, real_t{I}, real_t{J}, real_t{K}}, static_cast<real_t>(N), static_cast<real_t>(E * N * 3.0)}
-	const std::vector<TestCase> testData =
+	std::vector<TestCase> const testData =
 	{
 		TESTCASE(0.0, 0.0, 0.0, 0.0,	0.0,	0.0),
 		TESTCASE(1.0, 0.0, 0.0, 0.0,	1.0,	0.0),
@@ -904,7 +904,7 @@ TYPED_TEST(Quaternion_T, norm)
 	};
 #undef TESTCASE
 
-	for(const TestCase& tcase: testData)
+	for(TestCase const& tcase: testData)
 	{
 		ASSERT_NEAR(static_cast<double>(tcase.m_quat.norm()), static_cast<double>(tcase.norm), static_cast<double>(tcase.error)) << toPrint{tcase.m_quat};
 	}
@@ -916,9 +916,9 @@ TYPED_TEST(Quaternion_T, renormalized)
 
 	struct TestCase
 	{
-		const Quaternion<real_t> m_quat;
-		const Quaternion<real_t> m_result;
-		const real_t m_error;
+		Quaternion<real_t> const m_quat;
+		Quaternion<real_t> const m_result;
+		real_t const m_error;
 	};
 
 	//manual calculations where not done with more than 12 digits of precision
@@ -926,7 +926,7 @@ TYPED_TEST(Quaternion_T, renormalized)
 	//computations may loose further precision proportional to the size of the number
 
 #define QUAT_T(R, I, J, K) {static_cast<real_t>(R), static_cast<real_t>(I), static_cast<real_t>(J), static_cast<real_t>(K)}
-	const std::vector<TestCase> testData =
+	std::vector<TestCase> const testData =
 	{
 		{ QUAT_T(1.0, 0.0, 0.0, 0.0),		QUAT_T(1.0, 0.0, 0.0, 0.0),		real_t{0.0}},
 		{ QUAT_T(0.0, 1.0, 0.0, 0.0),		QUAT_T(0.0, 1.0, 0.0, 0.0),		real_t{0.0}},
@@ -949,7 +949,7 @@ TYPED_TEST(Quaternion_T, renormalized)
 		ASSERT_FALSE(val.has_value());
 	}
 
-	for(const TestCase& tcase: testData)
+	for(TestCase const& tcase: testData)
 	{
 		std::optional<Quaternion<real_t>> res = tcase.m_quat.renormalized();
 		ASSERT_TRUE(res.has_value());
@@ -968,14 +968,14 @@ TYPED_TEST(Quaternion_T, inverse)
 
 	struct TestCase
 	{
-		const Quaternion<real_t> m_quat;
-		const real_t m_error;
+		Quaternion<real_t> const m_quat;
+		real_t const m_error;
 	};
 
 	constexpr real_t epsilon = std::numeric_limits<real_t>::epsilon();
 
 #define QUAT_T(R, I, J, K) {static_cast<real_t>(R), static_cast<real_t>(I), static_cast<real_t>(J), static_cast<real_t>(K)}
-	const std::vector<TestCase> testData =
+	std::vector<TestCase> const testData =
 	{
 		{ QUAT_T(1.0, 0.0, 0.0, 0.0),		real_t{0.0}},
 		{ QUAT_T(0.0, 1.0, 0.0, 0.0),		real_t{0.0}},
@@ -998,12 +998,12 @@ TYPED_TEST(Quaternion_T, inverse)
 		ASSERT_FALSE(res.has_value());
 	}
 
-	for(const TestCase& tcase: testData)
+	for(TestCase const& tcase: testData)
 	{
 		std::optional<Quaternion<real_t>> res = tcase.m_quat.inverse();
 		ASSERT_TRUE(res.has_value());
 
-		const Quaternion<real_t> val = res.value() * tcase.m_quat;
+		Quaternion<real_t> const val = res.value() * tcase.m_quat;
 
 		ASSERT_NEAR(static_cast<double>(val.r()), 1.0, static_cast<double>(tcase.m_error)) << toPrint{tcase.m_quat};
 		ASSERT_NEAR(static_cast<double>(val.i()), 0.0, static_cast<double>(tcase.m_error)) << toPrint{tcase.m_quat};
@@ -1018,12 +1018,12 @@ TYPED_TEST(Quaternion_T, isFinite)
 	using real_t = TypeParam;
 	using TestCase = Quaternion<real_t>;
 
-	const real_t nan			= std::numeric_limits<real_t>::quiet_NaN();
-	const real_t infinity		= std::numeric_limits<real_t>::infinity();
-	const real_t infinitesimal	= std::numeric_limits<real_t>::denorm_min();
+	real_t const nan			= std::numeric_limits<real_t>::quiet_NaN();
+	real_t const infinity		= std::numeric_limits<real_t>::infinity();
+	real_t const infinitesimal	= std::numeric_limits<real_t>::denorm_min();
 
 #define TESTCASE(R, I, J, K) {real_t{R}, real_t{I}, real_t{J}, real_t{K}}
-	const std::vector<TestCase> testDataPositive =
+	std::vector<TestCase> const testDataPositive =
 	{
 		TESTCASE(0.0, 0.0, 0.0, 0.0),
 		TESTCASE(1.0, 0.0, 0.0, 0.0),
@@ -1036,7 +1036,7 @@ TYPED_TEST(Quaternion_T, isFinite)
 		TESTCASE(0.0, 0.0, 0.0, infinitesimal),
 	};
 
-	const std::vector<TestCase> testDataNegative =
+	std::vector<TestCase> const testDataNegative =
 	{
 		TESTCASE(infinity, 0.0, 0.0, 0.0),
 		TESTCASE(0.0, infinity, 0.0, 0.0),
@@ -1053,12 +1053,12 @@ TYPED_TEST(Quaternion_T, isFinite)
 	};
 #undef TESTCASE
 
-	for(const TestCase& tcase: testDataPositive)
+	for(TestCase const& tcase: testDataPositive)
 	{
 		ASSERT_TRUE(tcase.isFinite()) << toPrint{tcase};
 	}
 
-	for(const TestCase& tcase: testDataNegative)
+	for(TestCase const& tcase: testDataNegative)
 	{
 		ASSERT_FALSE(tcase.isFinite()) << toPrint{tcase};
 	}

@@ -47,23 +47,23 @@ namespace core
 
 static void aux_debug_output(std::u8string_view const p_out, std::span<char16_t> const p_buffer)
 {
-	core::_p::UTF8_to_UTF16_faulty_unsafe(p_out, '?', p_buffer.data());
+	UTF8_to_UTF16_faulty_unsafe(p_out, '?', p_buffer.data());
 	p_buffer[p_buffer.size() - 1] = 0;
-	OutputDebugStringW(reinterpret_cast<const wchar_t*>(p_buffer.data()));
+	OutputDebugStringW(reinterpret_cast<wchar_t const*>(p_buffer.data()));
 }
 
 static void aux_debug_output(std::u16string_view const p_out, std::span<char16_t> const p_buffer)
 {
 	memcpy(p_buffer.data(), p_out.data(), p_out.size() * sizeof(char16_t));
 	p_buffer[p_buffer.size() - 1] = 0;
-	OutputDebugStringW(reinterpret_cast<const wchar_t*>(p_buffer.data()));
+	OutputDebugStringW(reinterpret_cast<wchar_t const*>(p_buffer.data()));
 }
 
 static void aux_debug_output(std::u32string_view const p_out, std::span<char16_t> const p_buffer)
 {
-	core::_p::UCS4_to_UTF16_faulty_unsafe(p_out, '?', p_buffer.data());
+	UCS4_to_UTF16_faulty_unsafe(p_out, '?', p_buffer.data());
 	p_buffer[p_buffer.size() - 1] = 0;
-	OutputDebugStringW(reinterpret_cast<const wchar_t*>(p_buffer.data()));
+	OutputDebugStringW(reinterpret_cast<wchar_t const*>(p_buffer.data()));
 }
 
 
@@ -71,19 +71,19 @@ static constexpr uintptr_t alloca_treshold = 0x8000;
 
 void debugger_out::write(std::string_view const p_out)
 {
-	debugger_out::write(std::u8string_view{reinterpret_cast<const char8_t*>(p_out.data()), p_out.size()});
+	debugger_out::write(std::u8string_view{reinterpret_cast<char8_t const*>(p_out.data()), p_out.size()});
 }
 
 void debugger_out::write(std::wstring_view const p_out)
 {
-	debugger_out::write(std::u16string_view{reinterpret_cast<const char16_t*>(p_out.data()), p_out.size()});
+	debugger_out::write(std::u16string_view{reinterpret_cast<char16_t const*>(p_out.data()), p_out.size()});
 }
 
 NO_INLINE void debugger_out::write(std::u8string_view const p_out)
 {
 	if(IsDebuggerPresent())
 	{
-		uintptr_t const buff_size = core::_p::UTF8_to_UTF16_faulty_estimate(p_out, '?') + 1;
+		uintptr_t const buff_size = UTF8_to_UTF16_faulty_size(p_out, '?') + 1;
 		if(buff_size > alloca_treshold)
 		{
 			std::vector<char16_t> buff;
@@ -121,7 +121,7 @@ NO_INLINE void debugger_out::write(std::u32string_view const p_out)
 {
 	if(IsDebuggerPresent())
 	{
-		uintptr_t const buff_size = core::_p::UCS4_to_UTF16_faulty_estimate(p_out, '?') + 1;
+		uintptr_t const buff_size = UCS4_to_UTF16_faulty_size(p_out, '?') + 1;
 		if(buff_size > alloca_treshold)
 		{
 			std::vector<char16_t> buff;

@@ -102,13 +102,13 @@ namespace core
 			///	\brief Sets the blocking mode of the socket. Sockets are by default blocking.
 			///	\param[in] p_blocking - If true sets the socket to blocking, if false sets the socket to non-blocking
 			///	\return \ref core::NET_Error
-			NET_Error set_blocking(const bool p_blocking);
+			NET_Error set_blocking(bool p_blocking);
 
 			///	\brief Marks the socket address to allow re-use. Sockets by default do not allow re-use.
 			///	\param[in] p_blocking - If true sets the socket address to permitted for re-use, if false revokes this permission.
 			///	\return \ref core::NET_Error
 			///	\remark There is never an absolute guarantee that the address is not re-used.
-			NET_Error set_reuse_address	(const bool p_reuse);
+			NET_Error set_reuse_address(bool p_reuse);
 
 			///	\brief Sets the linger structure for the socket
 			///	\return \ref core::NET_Error
@@ -116,7 +116,7 @@ namespace core
 			///		For more details pelase see:
 			///			https://docs.microsoft.com/en-us/windows/desktop/api/winsock/nf-winsock-closesocket
 			///			https://linux.die.net/man/7/socket
-			NET_Error set_linger			(const bool p_linger, const uint16_t p_timeout);
+			NET_Error set_linger(bool p_linger, uint16_t p_timeout);
 
 			///	\brief Used to wait until data arrives on the reading end of the socket
 			///	\param[in] p_microseconds - Time in microseconds to wait for data to arrive at the socket before abandoning the operation
@@ -126,20 +126,20 @@ namespace core
 			///	\remarks
 			///			If input time is larger than std::numeric_limits<long>::max() x 1000000,
 			///			then the call will block indefinitely on blocking sockets.
-			NET_Error poll(const uint64_t p_microseconds);
+			NET_Error poll(uint64_t p_microseconds);
 
 			///	\brief Closes the communication on a specific endpoint of the socket
 			///	\param[in] p_direction - core::core_p::Net_Socket::Endpoint_t, Endpoint to close the communication on.
 			///	\return \ref core::NET_Error
-			NET_Error shutdown(const Endpoint p_direction);
+			NET_Error shutdown(Endpoint p_direction);
 
 			///	\brief Swaps this socket with another
 			void swap(Net_Socket& p_other);
 
 		private:
 			Net_Socket(Net_Socket&& p_other)				= delete;
-			Net_Socket(const Net_Socket&)					= delete;
-			Net_Socket& operator = (const Net_Socket&)		= delete;
+			Net_Socket(Net_Socket const&)					= delete;
+			Net_Socket& operator = (Net_Socket const&)		= delete;
 			Net_Socket& operator = (Net_Socket&& p_other)	= delete;
 		};
 

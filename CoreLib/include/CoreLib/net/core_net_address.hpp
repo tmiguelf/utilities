@@ -50,12 +50,11 @@ namespace core
 		concept c_ipconv_char = is_supported_IPconv_c<T>::value;
 
 		template<c_ipconv_char CharT>
-		uintptr_t to_chars_IPv4(std::span<const uint8_t, 4> p_raw, std::span<CharT, 15> p_output);
-
+		uintptr_t to_chars_IPv4(std::span<uint8_t const, 4> p_raw, std::span<CharT, 15> p_output);
 
 
 		template<c_ipconv_char CharT>
-		uintptr_t to_chars_IPv6(std::span<const uint16_t, 8> p_raw, std::span<CharT, 39> p_out);
+		uintptr_t to_chars_IPv6(std::span<uint16_t const, 8> p_raw, std::span<CharT, 39> p_out);
 
 
 		template<c_ipconv_char CharT>
@@ -66,15 +65,15 @@ namespace core
 	} //namespace _p
 
 
-[[nodiscard]] uintptr_t to_chars_IPv4_size(std::span<const uint8_t, 4> p_raw);
+[[nodiscard]] uintptr_t to_chars_IPv4_size(std::span<uint8_t const, 4> p_raw);
 
 template<_p::c_ipconv_char CharT>
-CharT* to_chars_IPv4_unsafe(std::span<const uint8_t, 4> p_raw, CharT* p_out);
+CharT* to_chars_IPv4_unsafe(std::span<uint8_t const, 4> p_raw, CharT* p_out);
 
-[[nodiscard]] uintptr_t to_chars_IPv6_size(std::span<const uint16_t, 8> p_raw);
+[[nodiscard]] uintptr_t to_chars_IPv6_size(std::span<uint16_t const, 8> p_raw);
 
 template<_p::c_ipconv_char CharT>
-CharT* to_chars_IPv6_unsafe(std::span<const uint16_t, 8> p_raw, CharT* p_out);
+CharT* to_chars_IPv6_unsafe(std::span<uint16_t const, 8> p_raw, CharT* p_out);
 
 /// \brief provides a wrapper for a IP v4 and v6 addresses
 struct IP_address
@@ -104,13 +103,13 @@ struct IP_address
 	} m_ipv = IPv::None;
 
 	IP_address();
-	IP_address(std::span<const uint8_t, 4> p_init);
-	IP_address(std::span<const uint16_t, 8> p_init);
+	IP_address(std::span<uint8_t  const, 4> p_init);
+	IP_address(std::span<uint16_t const, 8> p_init);
 	IP_address(std::u8string_view  p_address);
 	IP_address(std::u16string_view p_address);
 	IP_address(std::u32string_view p_address);
 
-	constexpr IP_address(const IP_address& p_other)	= default;
+	constexpr IP_address(IP_address const& p_other)	= default;
 	constexpr IP_address(IP_address&& p_other)		= default;
 
 	///	\brief Tries to initialize an IPv4 address from string
@@ -165,18 +164,18 @@ struct IP_address
 	///	\brief  Checks if  object is set to either IPv4 or IPv6 address
 	bool is_valid() const;
 
-	IP_address&	operator =	(const IP_address&) = default;
+	IP_address&	operator =	(IP_address const&) = default;
 
-	IP_address&	operator |=	(const IP_address& p_other);
-	IP_address&	operator &=	(const IP_address& p_other);
-	IP_address&	operator ^=	(const IP_address& p_other);
-	IP_address	operator |	(const IP_address& p_other) const;
-	IP_address	operator &	(const IP_address& p_other) const;
-	IP_address	operator ^	(const IP_address& p_other) const;
+	IP_address&	operator |=	(IP_address const& p_other);
+	IP_address&	operator &=	(IP_address const& p_other);
+	IP_address&	operator ^=	(IP_address const& p_other);
+	IP_address	operator |	(IP_address const& p_other) const;
+	IP_address	operator &	(IP_address const& p_other) const;
+	IP_address	operator ^	(IP_address const& p_other) const;
 	IP_address	operator ~	() const;
-	bool		operator ==	(const IP_address& p_other) const;
-	bool		operator !=	(const IP_address& p_other) const;
-	bool		operator <	(const IP_address& p_other) const;
+	bool		operator ==	(IP_address const& p_other) const;
+	bool		operator !=	(IP_address const& p_other) const;
+	bool		operator <	(IP_address const& p_other) const;
 
 	///	\brief The IP version of this address
 	/// \return \ref core::IP_netAddr::IPv
@@ -198,8 +197,8 @@ struct IPv4_address
 
 	IPv4_address();
 	IPv4_address(uint32_t						p_init);
-	IPv4_address(std::span<const uint8_t, 4>	p_init);
-	IPv4_address(const IPv4_address&			p_other);
+	IPv4_address(std::span<uint8_t const, 4>	p_init);
+	IPv4_address(IPv4_address const&			p_other);
 	IPv4_address(std::u8string_view  p_address);
 	IPv4_address(std::u16string_view p_address);
 	IPv4_address(std::u32string_view p_address);
@@ -215,7 +214,7 @@ struct IPv4_address
 	///	\brief Outputs current IP into a string
 	///	\param[out] p_address - Non-null-terminated string in dot-decimal notation. Buffer size must be at least 15 Bytes
 	///	\return Number of output bytes used
-	uintptr_t to_string(std::span<char8_t, 15> p_output) const;
+	uintptr_t to_string(std::span<char8_t , 15> p_output) const;
 	uintptr_t to_string(std::span<char16_t, 15> p_output) const;
 	uintptr_t to_string(std::span<char32_t, 15> p_output) const;
 
@@ -231,17 +230,17 @@ struct IPv4_address
 	///	\brief  Checks if IP is set to 0.0.0.0
 	bool is_null() const;
 
-	IPv4_address&	operator =	(const IPv4_address& p_other);
-	IPv4_address&	operator |=	(const IPv4_address& p_other);
-	IPv4_address&	operator &=	(const IPv4_address& p_other);
-	IPv4_address&	operator ^=	(const IPv4_address& p_other);
-	IPv4_address	operator |	(const IPv4_address& p_other) const;
-	IPv4_address	operator &	(const IPv4_address& p_other) const;
-	IPv4_address	operator ^	(const IPv4_address& p_other) const;
+	IPv4_address&	operator =	(IPv4_address const& p_other);
+	IPv4_address&	operator |=	(IPv4_address const& p_other);
+	IPv4_address&	operator &=	(IPv4_address const& p_other);
+	IPv4_address&	operator ^=	(IPv4_address const& p_other);
+	IPv4_address	operator |	(IPv4_address const& p_other) const;
+	IPv4_address	operator &	(IPv4_address const& p_other) const;
+	IPv4_address	operator ^	(IPv4_address const& p_other) const;
 	IPv4_address	operator ~	() const;
-	bool			operator ==	(const IPv4_address& p_other) const;
-	bool			operator !=	(const IPv4_address& p_other) const;
-	bool			operator <	(const IPv4_address& p_other) const;
+	bool			operator ==	(IPv4_address const& p_other) const;
+	bool			operator !=	(IPv4_address const& p_other) const;
+	bool			operator <	(IPv4_address const& p_other) const;
 };
 
 
@@ -256,8 +255,8 @@ struct IPv6_address
 	};
 
 	IPv6_address();
-	IPv6_address(std::span<const uint16_t, 8> p_init);
-	IPv6_address(const IPv6_address& p_other);
+	IPv6_address(std::span<uint16_t const, 8> p_init);
+	IPv6_address(IPv6_address const& p_other);
 	IPv6_address(std::u8string_view  p_address);
 	IPv6_address(std::u16string_view p_address);
 	IPv6_address(std::u32string_view p_address);
@@ -289,17 +288,17 @@ struct IPv6_address
 	///	\brief Checks if IP is set to ::0
 	bool is_null() const;
 
-	IPv6_address&	operator =	(const IPv6_address& p_other);
-	IPv6_address&	operator |=	(const IPv6_address& p_other);
-	IPv6_address&	operator &=	(const IPv6_address& p_other);
-	IPv6_address&	operator ^=	(const IPv6_address& p_other);
-	IPv6_address	operator |	(const IPv6_address& p_other) const;
-	IPv6_address	operator &	(const IPv6_address& p_other) const;
-	IPv6_address	operator ^	(const IPv6_address& p_other) const;
+	IPv6_address&	operator =	(IPv6_address const& p_other);
+	IPv6_address&	operator |=	(IPv6_address const& p_other);
+	IPv6_address&	operator &=	(IPv6_address const& p_other);
+	IPv6_address&	operator ^=	(IPv6_address const& p_other);
+	IPv6_address	operator |	(IPv6_address const& p_other) const;
+	IPv6_address	operator &	(IPv6_address const& p_other) const;
+	IPv6_address	operator ^	(IPv6_address const& p_other) const;
 	IPv6_address	operator ~	() const;
-	bool			operator ==	(const IPv6_address& p_other) const;
-	bool			operator !=	(const IPv6_address& p_other) const;
-	bool			operator <	(const IPv6_address& p_other) const;
+	bool			operator ==	(IPv6_address const& p_other) const;
+	bool			operator !=	(IPv6_address const& p_other) const;
+	bool			operator <	(IPv6_address const& p_other) const;
 };
 
 //======== ======== ======== inline optimization ======== ======== ========
@@ -318,8 +317,8 @@ inline void IP_address::swap(IP_address& p_other) { std::swap(*this, p_other); }
 //======== ======== IPv4_address ======== ========
 inline IPv4_address::IPv4_address()								: ui32Type(0) {}
 inline IPv4_address::IPv4_address(uint32_t p_init)				: ui32Type(p_init){}
-inline IPv4_address::IPv4_address(std::span<const uint8_t, 4> p_init) { memcpy(byteField, p_init.data(), 4); }
-inline IPv4_address::IPv4_address(const IPv4_address& p_other)	: ui32Type(p_other.ui32Type) { }
+inline IPv4_address::IPv4_address(std::span<uint8_t const, 4> p_init) { memcpy(byteField, p_init.data(), 4); }
+inline IPv4_address::IPv4_address(IPv4_address const& p_other)	: ui32Type(p_other.ui32Type) { }
 
 inline IPv4_address::IPv4_address(std::u8string_view  p_address){ from_string(p_address); }
 inline IPv4_address::IPv4_address(std::u16string_view p_address){ from_string(p_address); }
@@ -333,23 +332,23 @@ inline void IPv4_address::set_any() { ui32Type = 0; }
 inline void IPv4_address::swap(IPv4_address& p_other) { std::swap(ui32Type, p_other.ui32Type); }
 inline bool IPv4_address::is_null() const {return ui32Type == 0;}
 
-inline IPv4_address& IPv4_address::operator  = (const IPv4_address& p_other) { ui32Type = p_other.ui32Type; return *this; }
-inline IPv4_address& IPv4_address::operator |= (const IPv4_address& p_other) { ui32Type |= p_other.ui32Type; return *this; }
-inline IPv4_address& IPv4_address::operator &= (const IPv4_address& p_other) { ui32Type &= p_other.ui32Type; return *this; }
-inline IPv4_address& IPv4_address::operator ^= (const IPv4_address& p_other) { ui32Type ^= p_other.ui32Type; return *this; }
-inline IPv4_address  IPv4_address::operator |  (const IPv4_address& p_other) const { return IPv4_address(ui32Type | p_other.ui32Type); }
-inline IPv4_address  IPv4_address::operator &  (const IPv4_address& p_other) const { return IPv4_address(ui32Type & p_other.ui32Type); }
-inline IPv4_address  IPv4_address::operator ^  (const IPv4_address& p_other) const { return IPv4_address(ui32Type ^ p_other.ui32Type); }
+inline IPv4_address& IPv4_address::operator  = (IPv4_address const& p_other) { ui32Type = p_other.ui32Type; return *this; }
+inline IPv4_address& IPv4_address::operator |= (IPv4_address const& p_other) { ui32Type |= p_other.ui32Type; return *this; }
+inline IPv4_address& IPv4_address::operator &= (IPv4_address const& p_other) { ui32Type &= p_other.ui32Type; return *this; }
+inline IPv4_address& IPv4_address::operator ^= (IPv4_address const& p_other) { ui32Type ^= p_other.ui32Type; return *this; }
+inline IPv4_address  IPv4_address::operator |  (IPv4_address const& p_other) const { return IPv4_address(ui32Type | p_other.ui32Type); }
+inline IPv4_address  IPv4_address::operator &  (IPv4_address const& p_other) const { return IPv4_address(ui32Type & p_other.ui32Type); }
+inline IPv4_address  IPv4_address::operator ^  (IPv4_address const& p_other) const { return IPv4_address(ui32Type ^ p_other.ui32Type); }
 inline IPv4_address  IPv4_address::operator ~  () const { return IPv4_address(~ui32Type); }
 
-inline bool IPv4_address::operator == (const IPv4_address& p_other) const { return ui32Type == p_other.ui32Type; }
-inline bool IPv4_address::operator != (const IPv4_address& p_other) const { return ui32Type != p_other.ui32Type; }
-inline bool IPv4_address::operator <  (const IPv4_address& p_other) const { return ui32Type < p_other.ui32Type; }
+inline bool IPv4_address::operator == (IPv4_address const& p_other) const { return ui32Type == p_other.ui32Type; }
+inline bool IPv4_address::operator != (IPv4_address const& p_other) const { return ui32Type != p_other.ui32Type; }
+inline bool IPv4_address::operator <  (IPv4_address const& p_other) const { return ui32Type < p_other.ui32Type; }
 
 //======== ======== IPv6_address ======== ========
 
 inline IPv6_address::IPv6_address() { ui64Type[0] = 0; ui64Type[1] = 0; }
-inline IPv6_address::IPv6_address(const IPv6_address& p_other) { ui64Type[0] = p_other.ui64Type[0]; ui64Type[1] = p_other.ui64Type[1]; }
+inline IPv6_address::IPv6_address(IPv6_address const& p_other) { ui64Type[0] = p_other.ui64Type[0]; ui64Type[1] = p_other.ui64Type[1]; }
 inline IPv6_address::IPv6_address(std::u8string_view  const p_address){ from_string(p_address); }
 inline IPv6_address::IPv6_address(std::u16string_view const p_address){ from_string(p_address); }
 inline IPv6_address::IPv6_address(std::u32string_view const p_address){ from_string(p_address); }

@@ -53,8 +53,8 @@ public:
 //======== constexpr ========
 //-------- constructors --------
 	constexpr Quaternion() = default;
-	constexpr Quaternion(const Quaternion&) = default;
-	constexpr Quaternion& operator = (const Quaternion&) = default;
+	constexpr Quaternion(Quaternion const&) = default;
+	constexpr Quaternion& operator = (Quaternion const&) = default;
 	constexpr Quaternion(T p_real, T p_i, T p_j, T p_k) : m_data{p_real, p_i, p_j, p_k} {}
 
 //-------- accessors --------
@@ -64,7 +64,7 @@ public:
 	inline constexpr T k() const { return m_data[3]; };
 
 //-------- operators --------
-	constexpr bool operator == (const Quaternion& p_other) const
+	constexpr bool operator == (Quaternion const& p_other) const
 	{
 		return 
 			m_data[0] == p_other.m_data[0] &&
@@ -73,9 +73,9 @@ public:
 			m_data[3] == p_other.m_data[3];
 	}
 
-	inline constexpr bool operator != (const Quaternion& p_other) const { return !operator == (p_other); }
+	inline constexpr bool operator != (Quaternion const& p_other) const { return !operator == (p_other); }
 
-	constexpr Quaternion operator + (const Quaternion& p_other) const
+	constexpr Quaternion operator + (Quaternion const& p_other) const
 	{
 		return Quaternion
 		{
@@ -86,7 +86,7 @@ public:
 		};
 	}
 
-	constexpr Quaternion operator - (const Quaternion& p_other) const
+	constexpr Quaternion operator - (Quaternion const& p_other) const
 	{
 		return Quaternion
 		{
@@ -108,7 +108,7 @@ public:
 		};
 	}
 
-	constexpr Quaternion operator * (const Quaternion& p_other) const
+	constexpr Quaternion operator * (Quaternion const& p_other) const
 	{
 		return Quaternion
 			{
@@ -129,7 +129,7 @@ public:
 		//	};
 	}
 
-	constexpr Quaternion operator * (const T p_scalar) const
+	constexpr Quaternion operator * (T const p_scalar) const
 	{
 		return Quaternion
 		{
@@ -140,7 +140,7 @@ public:
 		};
 	}
 
-	constexpr Quaternion operator / (const T p_scalar) const
+	constexpr Quaternion operator / (T const p_scalar) const
 	{
 		return Quaternion
 		{
@@ -193,7 +193,7 @@ public:
 
 //======== runtime ========
 //-------- operators --------
-	Quaternion& operator += (const Quaternion& p_other)
+	Quaternion& operator += (Quaternion const& p_other)
 	{
 		m_data[0] += p_other.m_data[0];
 		m_data[1] += p_other.m_data[1];
@@ -202,7 +202,7 @@ public:
 		return *this;
 	}
 
-	Quaternion& operator -= (const Quaternion& p_other)
+	Quaternion& operator -= (Quaternion const& p_other)
 	{
 		m_data[0] -= p_other.m_data[0];
 		m_data[1] -= p_other.m_data[1];
@@ -211,12 +211,12 @@ public:
 		return *this;
 	}
 
-	Quaternion& operator *= (const Quaternion& p_other)
+	Quaternion& operator *= (Quaternion const& p_other)
 	{
 		return operator = (operator * (p_other));
 	}
 
-	Quaternion& operator *= (const T p_scalar)
+	Quaternion& operator *= (T const p_scalar)
 	{
 		m_data[0] *= p_scalar;
 		m_data[1] *= p_scalar;
@@ -225,7 +225,7 @@ public:
 		return *this;
 	}
 
-	Quaternion& operator /= (const T p_scalar)
+	Quaternion& operator /= (T const p_scalar)
 	{
 		m_data[0] /= p_scalar;
 		m_data[1] /= p_scalar;
@@ -239,7 +239,7 @@ public:
 
 	std::optional<Quaternion> renormalized() const
 	{
-		T normV = norm();
+		T const normV = norm();
 		if(T{0} == normV)
 		{
 			return {};
@@ -248,7 +248,7 @@ public:
 	}
 
 //-------- setters --------
-	void set(const T p_r, const T p_i, const T p_j, const T p_k)
+	void set(T const p_r, T const p_i, T const p_j, T const p_k)
 	{
 		m_data[0] = p_r;
 		m_data[1] = p_i;
@@ -256,10 +256,10 @@ public:
 		m_data[3] = p_k;
 	}
 
-	inline void setR(const T p_val) { m_data[0] = p_val; };
-	inline void setI(const T p_val) { m_data[1] = p_val; };
-	inline void setJ(const T p_val) { m_data[2] = p_val; };
-	inline void setK(const T p_val) { m_data[3] = p_val; };
+	inline void setR(T const p_val) { m_data[0] = p_val; };
+	inline void setI(T const p_val) { m_data[1] = p_val; };
+	inline void setJ(T const p_val) { m_data[2] = p_val; };
+	inline void setK(T const p_val) { m_data[3] = p_val; };
 
 //-------- other --------
 	bool isFinite() const
@@ -277,7 +277,7 @@ private:
 
 
 template <_p::is_arithmetic T1, _p::is_non_const_arithmetic T2>
-[[nodiscard]] Quaternion<T2> operator * (const T1 p_1, const Quaternion<T2>& p_2)
+[[nodiscard]] Quaternion<T2> operator * (T1 const p_1, Quaternion<T2> const& p_2)
 {
 	return p_2 * p_1;
 }
