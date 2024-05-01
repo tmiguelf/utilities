@@ -58,7 +58,6 @@ static inline char8_t __convert_UTF8_ANSI_unsafe(char8_t const*& p_input)
 static uintptr_t __estimate_UTF8_UTF16(char8_t const*& p_input, char8_t const* const p_end)
 {
 	char8_t const testp = *p_input;
-
 	if((testp & 0x80) == 0) //level 0
 	{
 		return 1;
@@ -121,7 +120,6 @@ static uintptr_t __estimate_UTF8_UTF16(char8_t const*& p_input, char8_t const* c
 		p_input += 3;
 		return 2;
 	}
-
 	return 0;
 }
 
@@ -346,6 +344,7 @@ static void __fmove_UTF8_failForward(char8_t const*& p_input, char8_t const* con
 		else p_input += 2;
 		return;
 	}
+
 	if((*testp & 0xF8) == 0xF0) //level 3
 	{
 		if(	p_end - testp < 4) goto unwind_as_much_as_possible;
@@ -358,6 +357,7 @@ static void __fmove_UTF8_failForward(char8_t const*& p_input, char8_t const* con
 		else p_input += 3;
 		return;
 	}
+#if 0
 	if((*testp & 0xFC) == 0xF8) //level 4
 	{
 		if(	p_end - testp < 5) goto unwind_as_much_as_possible;
@@ -400,7 +400,7 @@ static void __fmove_UTF8_failForward(char8_t const*& p_input, char8_t const* con
 		else p_input += 6;
 		return;
 	}
-
+#endif
 unwind_as_much_as_possible:
 	while(++testp != p_end && (*testp & 0xC0) == 0x80);
 	p_input = testp -1;
@@ -443,7 +443,7 @@ static char8_t __convert_UTF8_ANSI_failforward(char8_t const*& p_input, char8_t 
 		else p_input += 2;
 		return p_placeholder;
 	}
-	else if((*testp & 0xF8) == 0xF0) //level 3
+	if((*testp & 0xF8) == 0xF0) //level 3
 	{
 		if(	p_end - testp < 4) goto unwind_as_much_as_possible;
 		if(	(*++testp & 0xC0) != 0x80	||
@@ -455,7 +455,9 @@ static char8_t __convert_UTF8_ANSI_failforward(char8_t const*& p_input, char8_t 
 		else p_input += 3;
 		return p_placeholder;
 	}
-	else if((*testp & 0xFC) == 0xF8) //level 4
+
+#if 0
+	if((*testp & 0xFC) == 0xF8) //level 4
 	{
 		if(	p_end - testp < 5) goto unwind_as_much_as_possible;
 		if(	(*++testp & 0xC0) != 0x80	||
@@ -468,7 +470,7 @@ static char8_t __convert_UTF8_ANSI_failforward(char8_t const*& p_input, char8_t 
 		else p_input += 4;
 		return p_placeholder;
 	}
-	else if((*testp & 0xFE) == 0xFC) //level 5
+	if((*testp & 0xFE) == 0xFC) //level 5
 	{
 		if(	p_end - testp < 6) goto unwind_as_much_as_possible;
 		if(	(*++testp & 0xC0) != 0x80	||
@@ -482,7 +484,7 @@ static char8_t __convert_UTF8_ANSI_failforward(char8_t const*& p_input, char8_t 
 		else p_input += 5;
 		return p_placeholder;
 	}
-	else if(*testp == 0xFE) //level 6
+	if(*testp == 0xFE) //level 6
 	{
 		if(	p_end - testp < 7) goto unwind_as_much_as_possible;
 		if(	(*++testp & 0xC0) != 0x80	||
@@ -497,7 +499,7 @@ static char8_t __convert_UTF8_ANSI_failforward(char8_t const*& p_input, char8_t 
 		else p_input += 6;
 		return p_placeholder;
 	}
-
+#endif
 unwind_as_much_as_possible:
 	while(++testp != p_end && (*testp & 0xC0) == 0x80);
 	p_input = testp -1;
@@ -551,6 +553,7 @@ static char16_t __convert_UTF8_UCS2_failforward(char8_t const*& p_input, char8_t
 		tcode |= static_cast<char16_t>(static_cast<char16_t>(*++testp & 0x3F) << 6);
 		return tcode | static_cast<char16_t>(*++testp & 0x3F);
 	}
+
 	if((*testp & 0xF8) == 0xF0) //level 3
 	{
 		if(	p_end - testp < 4) goto unwind_as_much_as_possible;
@@ -563,6 +566,8 @@ static char16_t __convert_UTF8_UCS2_failforward(char8_t const*& p_input, char8_t
 		else p_input += 3;
 		return p_placeholder;
 	}
+
+#if 0
 	if((*testp & 0xFC) == 0xF8) //level 4
 	{
 		if(	p_end - testp < 5) goto unwind_as_much_as_possible;
@@ -605,7 +610,7 @@ static char16_t __convert_UTF8_UCS2_failforward(char8_t const*& p_input, char8_t
 		else p_input += 6;
 		return p_placeholder;
 	}
-
+#endif
 unwind_as_much_as_possible:
 	while(++testp != p_end && (*testp & 0xC0) == 0x80);
 	p_input = testp -1;
@@ -687,7 +692,7 @@ static char32_t __convert_UTF8_UCS4_failforward(char8_t const*& p_input, char8_t
 		tcode |= static_cast<char32_t>(*++codeStart & 0x3F) << 6;
 		return tcode | static_cast<char32_t>(*++codeStart & 0x3F);
 	}
-
+#if 0
 	if((*testp & 0xFC) == 0xF8) //level 4
 	{
 		if(	p_end - testp < 5) goto unwind_as_much_as_possible;
@@ -731,7 +736,7 @@ static char32_t __convert_UTF8_UCS4_failforward(char8_t const*& p_input, char8_t
 
 		return p_placeholder;
 	}
-
+#endif
 unwind_as_much_as_possible:
 	while(++testp != p_end && (*testp & 0xC0) == 0x80);
 	p_input = testp -1;
@@ -804,6 +809,8 @@ static uintptr_t __estimate_UTF8_UTF16_failforward(char8_t const*& p_input, char
 
 		return 2;
 	}
+
+#if 0
 	if((*testp & 0xFC) == 0xF8) //level 4
 	{
 		if(	p_end - testp < 5) goto unwind_as_much_as_possible;
@@ -813,9 +820,8 @@ static uintptr_t __estimate_UTF8_UTF16_failforward(char8_t const*& p_input, char
 			(*++testp & 0xC0) != 0x80	)
 		{
 			p_input = testp -1;
-			return 0;
 		}
-		p_input += 4;
+		else p_input += 4;
 		return 0;
 	}
 	if((*testp & 0xFE) == 0xFC) //level 5
@@ -828,9 +834,8 @@ static uintptr_t __estimate_UTF8_UTF16_failforward(char8_t const*& p_input, char
 			(*++testp & 0xC0) != 0x80	)
 		{
 			p_input = testp -1;
-			return 0;
 		}
-		p_input += 5;
+		else p_input += 5;
 		return 0;
 	}
 	if(*testp == 0xFE) //level 6
@@ -844,12 +849,11 @@ static uintptr_t __estimate_UTF8_UTF16_failforward(char8_t const*& p_input, char
 			(*++testp & 0xC0) != 0x80	)
 		{
 			p_input = testp -1;
-			return 0;
 		}
-		p_input += 6;
+		else p_input += 6;
 		return 0;
 	}
-
+#endif
 unwind_as_much_as_possible:
 	while(++testp != p_end && (*testp & 0xC0) == 0x80);
 	p_input = testp -1;
@@ -943,7 +947,7 @@ static uintptr_t __convert_UTF8_UTF16_failforward(char8_t const*& p_input, char8
 
 		return 2;
 	}
-
+#if 0
 	if((*testp & 0xFC) == 0xF8) //level 4
 	{
 		if(	p_end - testp < 5) goto unwind_as_much_as_possible;
@@ -986,7 +990,7 @@ static uintptr_t __convert_UTF8_UTF16_failforward(char8_t const*& p_input, char8
 		else p_input += 6;
 		return 0;
 	}
-
+#endif
 unwind_as_much_as_possible:
 	while(++testp != p_end && (*testp & 0xC0) == 0x80);
 	p_input = testp -1;
@@ -1484,7 +1488,7 @@ char8_t* ANSI_to_UTF8_unsafe(std::u8string_view const p_input, char8_t* p_output
 	for(; pos < end; ++pos)
 	{
 		uintptr_t const res = __estimate_UTF16_UTF8(pos, end);
-		if(res == 0)
+		if(!res)
 		{
 			return {};
 		}
@@ -1596,7 +1600,7 @@ char16_t* ANSI_to_UTF16_unsafe(std::u8string_view const p_input, char16_t* p_out
 	for(; pos < end; ++pos)
 	{
 		uintptr_t const res = __estimate_UTF8_UTF16(pos, end);
-		if(res == 0)
+		if(!res)
 		{
 			return {};
 		}

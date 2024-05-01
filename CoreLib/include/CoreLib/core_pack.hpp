@@ -36,7 +36,12 @@ namespace core
 {
 
 	template<typename ...>
-	struct pack {};
+	struct pack
+	{
+		pack()            = delete;
+		pack(pack const&) = delete;
+		pack(pack &&)     = delete;
+	};
 
 
 	template<typename>

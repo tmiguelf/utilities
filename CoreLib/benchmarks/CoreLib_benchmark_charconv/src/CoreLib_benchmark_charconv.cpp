@@ -1544,7 +1544,7 @@ BENCHMARK_TEMPLATE(core_to_chars_shortest_convert, float64_t, char8_t);
 static void no_op(benchmark::State& state)
 {
 	bool const volatile ok = false;
-	for(auto _ : state)
+	while(state.KeepRunning())
 	{
 		benchmark::DoNotOptimize(ok);
 	}
