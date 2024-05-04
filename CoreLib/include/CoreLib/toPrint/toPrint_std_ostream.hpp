@@ -32,6 +32,7 @@
 
 #include <ostream>
 #include <vector>
+#include <type_traits>
 
 #include "toPrint_sink.hpp"
 #include "toPrint_base.hpp"
@@ -44,142 +45,155 @@
 namespace core
 {
 
-template<>
-class sink_toPrint<std::ostream>: public sink_toPrint_base
-{
-public:
-	sink_toPrint(std::ostream& p_stream): m_stream(p_stream){}
-
-	void write(std::u8string_view const p_message)
+	template<typename ostream_t> requires std::is_base_of_v<std::basic_ostream<char>, ostream_t>
+	class sink_toPrint<ostream_t>: public sink_toPrint_base
 	{
-		m_stream.write(reinterpret_cast<char const*>(p_message.data()), p_message.size());
-	}
+	public:
+		sink_toPrint(ostream_t& p_stream): m_stream(p_stream){}
 
-private:
-	std::ostream& m_stream;
-};
-
-namespace _p
-{
-	template<typename C, typename T> requires is_toPrint_v<T>
-	void push_ostream_toPrint(std::basic_ostream<C>& p_sink, T const& p_data, C* const p_buff, uintptr_t const p_size)
-	{
-		p_data.get_print(p_buff);
-		p_sink.write(p_buff, p_size);
-	}
-
-	template<typename C, typename T> requires is_toPrint_v<T>
-	NO_INLINE void handle_ostream_toPrint(std::basic_ostream<C>& p_stream, T const& p_data)
-	{
-		uintptr_t /*const*/ size = p_data.size(C{0});
-		if(size)
+		void write(std::u8string_view const p_message)
 		{
-			constexpr uintptr_t alloca_treshold = 0x10000 / sizeof(C);
-			if(size > alloca_treshold)
+			m_stream.write(reinterpret_cast<char const*>(p_message.data()), p_message.size());
+		}
+
+	private:
+		ostream_t& m_stream;
+	};
+
+	namespace _p
+	{
+		template<_p::c_toPrint_char C, typename T> requires is_toPrint_v<T>
+		void push_ostream_toPrint(std::basic_ostream<C>& p_sink, T const& p_data, C* const p_buff, uintptr_t const p_size)
+		{
+			p_data.get_print(p_buff);
+			p_sink.write(p_buff, p_size);
+		}
+
+		template<_p::c_toPrint_char C, typename T> requires is_toPrint_v<T>
+		NO_INLINE void handle_ostream_toPrint(std::basic_ostream<C>& p_stream, T const& p_data)
+		{
+			uintptr_t /*const*/ size = p_data.size(C{0});
+			if(size)
 			{
-				std::vector<C> buff;
-				buff.resize(size);
-				push_ostream_toPrint(p_stream, p_data, buff.data(), size);
-			}
-			else
-			{
-				C* buff = reinterpret_cast<C*>(core_alloca(size * sizeof(C)));
-				push_ostream_toPrint(p_stream, p_data, buff, size);
+				constexpr uintptr_t alloca_treshold = 0x10000 / sizeof(C);
+				if(size > alloca_treshold)
+				{
+					std::vector<C> buff;
+					buff.resize(size);
+					push_ostream_toPrint(p_stream, p_data, buff.data(), size);
+				}
+				else
+				{
+					C* buff = reinterpret_cast<C*>(core_alloca(size * sizeof(C)));
+					push_ostream_toPrint(p_stream, p_data, buff, size);
+				}
 			}
 		}
-	}
 
-	template<typename T> requires is_toPrint_v<T>
-	void push_ostream_toPrint_alias(std::basic_ostream<char>& p_sink, T const& p_data, char8_t* const p_buff, uintptr_t const p_size)
-	{
-		p_data.get_print(p_buff);
-		p_sink.write(reinterpret_cast<char const*>(p_buff), p_size);
-	}
-
-	template<typename T> requires is_toPrint_v<T>
-	NO_INLINE void handle_ostream_toPrint_alias(std::basic_ostream<char>& p_stream, T const& p_data)
-	{
-		uintptr_t /*const*/ size = p_data.size(char8_t{0});
-		if(size)
+		template<typename T> requires is_toPrint_v<T>
+		void push_ostream_toPrint_alias(std::basic_ostream<char>& p_sink, T const& p_data, char8_t* const p_buff, uintptr_t const p_size)
 		{
-			constexpr uintptr_t alloca_treshold = 0x10000;
-			if(size > alloca_treshold)
+			p_data.get_print(p_buff);
+			p_sink.write(reinterpret_cast<char const*>(p_buff), p_size);
+		}
+
+		template<typename T> requires is_toPrint_v<T>
+		NO_INLINE void handle_ostream_toPrint_alias(std::basic_ostream<char>& p_stream, T const& p_data)
+		{
+			uintptr_t /*const*/ size = p_data.size(char8_t{0});
+			if(size)
 			{
-				std::vector<char8_t> buff;
-				buff.resize(size);
-				push_ostream_toPrint_alias(p_stream, p_data, buff.data(), size);
-			}
-			else
-			{
-				char8_t* buff = reinterpret_cast<char8_t*>(core_alloca(size));
-				push_ostream_toPrint_alias(p_stream, p_data, buff, size);
+				constexpr uintptr_t alloca_treshold = 0x10000;
+				if(size > alloca_treshold)
+				{
+					std::vector<char8_t> buff;
+					buff.resize(size);
+					push_ostream_toPrint_alias(p_stream, p_data, buff.data(), size);
+				}
+				else
+				{
+					char8_t* buff = reinterpret_cast<char8_t*>(core_alloca(size));
+					push_ostream_toPrint_alias(p_stream, p_data, buff, size);
+				}
 			}
 		}
-	}
 
-	template<typename T> requires is_toPrint_v<T>
-	void push_ostream_toPrint_alias(std::basic_ostream<wchar_t>& p_sink, T const& p_data, wchar_alias* const p_buff, uintptr_t const p_size)
-	{
-		p_data.get_print(p_buff);
-		p_sink.write(reinterpret_cast<wchar_t const*>(p_buff), p_size);
-	}
-
-	template<typename T> requires is_toPrint_v<T>
-	NO_INLINE void handle_ostream_toPrint_alias(std::basic_ostream<wchar_t>& p_stream, T const& p_data)
-	{
-		uintptr_t const size = p_data.size(wchar_alias{0});
-		if(size)
+		template<typename T> requires is_toPrint_v<T>
+		void push_ostream_toPrint_alias(std::basic_ostream<wchar_t>& p_sink, T const& p_data, wchar_alias* const p_buff, uintptr_t const p_size)
 		{
-			constexpr uintptr_t alloca_treshold = 0x10000 / sizeof(wchar_alias);
-			if(size > alloca_treshold)
+			p_data.get_print(p_buff);
+			p_sink.write(reinterpret_cast<wchar_t const*>(p_buff), p_size);
+		}
+
+		template<typename T> requires is_toPrint_v<T>
+		NO_INLINE void handle_ostream_toPrint_alias(std::basic_ostream<wchar_t>& p_stream, T const& p_data)
+		{
+			uintptr_t const size = p_data.size(wchar_alias{0});
+			if(size)
 			{
-				std::vector<wchar_alias> buff;
-				buff.resize(size);
-				push_ostream_toPrint_alias(p_stream, p_data, buff.data(), size);
-			}
-			else
-			{
-				wchar_alias* buff = reinterpret_cast<wchar_alias*>(core_alloca(size * sizeof(wchar_alias)));
-				push_ostream_toPrint_alias(p_stream, p_data, buff, size);
+				constexpr uintptr_t alloca_treshold = 0x10000 / sizeof(wchar_alias);
+				if(size > alloca_treshold)
+				{
+					std::vector<wchar_alias> buff;
+					buff.resize(size);
+					push_ostream_toPrint_alias(p_stream, p_data, buff.data(), size);
+				}
+				else
+				{
+					wchar_alias* buff = reinterpret_cast<wchar_alias*>(core_alloca(size * sizeof(wchar_alias)));
+					push_ostream_toPrint_alias(p_stream, p_data, buff, size);
+				}
 			}
 		}
-	}
-} //namespace _p
+	} //namespace _p
 
 } //namespace core
 
 
-template<typename T> requires core::_p::is_toPrint_v<T>
-std::basic_ostream<char8_t>& operator << (std::basic_ostream<char8_t>& p_stream, T const& p_data)
+template<typename ostream_t, typename T> requires
+(
+	std::is_base_of_v<std::basic_ostream<typename ostream_t::char_type>, ostream_t>
+	&& core::_p::is_toPrint_v<T>
+	&& core::_p::c_toPrint_char<typename ostream_t::char_type>
+	)
+	ostream_t& operator << (ostream_t& p_stream, T const& p_data)
 {
 	core::_p::handle_ostream_toPrint(p_stream, p_data);
 	return p_stream;
 }
 
-template<typename T> requires core::_p::is_toPrint_v<T>
-std::basic_ostream<char16_t>& operator << (std::basic_ostream<char16_t>& p_stream, T const& p_data)
+template<typename ostream_t, typename T> requires
+(
+	std::is_base_of_v<std::basic_ostream<typename ostream_t::char_type>, ostream_t>
+	&& core::_p::is_toPrint_v<T>
+	&& core::_p::c_toPrint_char<typename ostream_t::char_type>
+	)
+	ostream_t&& operator << (ostream_t&& p_stream, T const& p_data)
 {
 	core::_p::handle_ostream_toPrint(p_stream, p_data);
-	return p_stream;
+	return std::move(p_stream);
 }
 
-template<typename T> requires core::_p::is_toPrint_v<T>
-std::basic_ostream<char32_t>& operator << (std::basic_ostream<char32_t>& p_stream, T const& p_data)
-{
-	core::_p::handle_ostream_toPrint(p_stream, p_data);
-	return p_stream;
-}
-
-template<typename T> requires core::_p::is_toPrint_v<T>
-std::basic_ostream<char>& operator << (std::basic_ostream<char>& p_stream, T const& p_data)
+template<typename ostream_t, typename T> requires
+(
+	std::is_base_of_v<std::basic_ostream<typename ostream_t::char_type>, ostream_t>
+	&& core::_p::is_toPrint_v<T>
+	&& !core::_p::c_toPrint_char<typename ostream_t::char_type>
+	)
+	ostream_t& operator << (ostream_t& p_stream, T const& p_data)
 {
 	core::_p::handle_ostream_toPrint_alias(p_stream, p_data);
 	return p_stream;
 }
 
-template<typename T> requires core::_p::is_toPrint_v<T>
-std::basic_ostream<wchar_t>& operator << (std::basic_ostream<wchar_t>& p_stream, T const& p_data)
+template<typename ostream_t, typename T> requires
+(
+	std::is_base_of_v<std::basic_ostream<typename ostream_t::char_type>, ostream_t>
+	&& core::_p::is_toPrint_v<T>
+	&& !core::_p::c_toPrint_char<typename ostream_t::char_type>
+	)
+	ostream_t&& operator << (ostream_t&& p_stream, T const& p_data)
 {
 	core::_p::handle_ostream_toPrint_alias(p_stream, p_data);
-	return p_stream;
+	return std::move(p_stream);
 }
