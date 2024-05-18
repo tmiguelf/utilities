@@ -154,6 +154,9 @@ namespace core
 	void to_chars_bin_fix_unsafe(num_T p_val, char_T* p_out);
 
 
+	template <char_conv_hex_supported_c num_T>
+	uint8_t* to_digits_unsafe(num_T p_val, uint8_t* p_out);
+
 
 	//======== Low level ========
 

@@ -902,6 +902,7 @@ namespace core
 			return p_str;
 		}
 
+
 		template <charconv_char_c char_T, charconv_sint_c num_T>
 		static inline char_T* int2dec(num_T const p_val, char_T* const p_str)
 		{
@@ -957,6 +958,22 @@ namespace core
 			*(pivot++) = (p_val & 1) ? '1' : '0';
 			return pivot;
 		}
+
+
+		template <charconv_uint_c num_T>
+		static inline uint8_t* uint2digits(num_T p_val, uint8_t* p_out)
+		{
+			p_out += uint2dec_estimate(p_val);
+			uint8_t* pivot = p_out;
+			while(p_val > 9)
+			{
+				*(--pivot) = static_cast<uint8_t>( p_val % 10);
+				p_val /= 10;
+			}
+			*(--pivot) = static_cast<uint8_t>(p_val);
+			return p_out;
+		}
+
 
 		template <charconv_char_c T>
 		static inline void uint2hex_fix(uint8_t const p_val, T* p_str)
@@ -1500,6 +1517,20 @@ namespace core
 		}
 
 	} //namespace _p
+
+
+	template <char_conv_hex_supported_c num_T>
+	uint8_t* to_digits_unsafe(num_T const p_val, uint8_t* const p_out)
+	{
+		return _p::uint2digits(p_val, p_out);
+	}
+
+	template uint8_t* to_digits_unsafe<uint8_t >(uint8_t , uint8_t*);
+	template uint8_t* to_digits_unsafe<uint16_t>(uint16_t, uint8_t*);
+	template uint8_t* to_digits_unsafe<uint32_t>(uint32_t, uint8_t*);
+	template uint8_t* to_digits_unsafe<uint64_t>(uint64_t, uint8_t*);
+
+
 
 //======== Explicit instantiation ========
 

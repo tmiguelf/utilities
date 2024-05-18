@@ -855,6 +855,61 @@ static void core_to_chars(benchmark::State& state)
 	}
 }
 
+
+template<typename num_T>
+static void core_to_digits(benchmark::State& state)
+{
+	std::vector<num_T> const& testList = get_num<num_T>();
+	uintptr_t index = 0;
+
+	constexpr uintptr_t buffSize = core::to_chars_dec_max_size_v<num_T>;
+	std::array<uint8_t, buffSize> buffer;
+	for (auto _ : state)
+	{
+		num_T const testCase = testList[index];
+		uint8_t const* last = core::to_digits_unsafe(testCase, buffer.data());
+
+		benchmark::DoNotOptimize(buffer.data());
+		benchmark::DoNotOptimize(last);
+		if(++index >= testList.size()) index = 0;
+	}
+}
+
+
+template<typename num_T>
+static void core_to_digits_chars(benchmark::State& state)
+{
+	std::vector<num_T> const& testList = get_num<num_T>();
+	uintptr_t index = 0;
+
+	constexpr uintptr_t buffSize = core::to_chars_dec_max_size_v<num_T>;
+	std::array<uint8_t, buffSize> buffer;
+	std::array<char16_t, buffSize> buffer2;
+	for (auto _ : state)
+	{
+		num_T const testCase = testList[index];
+		uint8_t const* last = core::to_digits_unsafe(testCase, buffer.data());
+		uintptr_t const res_size = static_cast<uintptr_t>(last - buffer.data());
+
+		{
+			uint8_t* pivot = buffer.data();
+			char16_t* pivot2 = buffer2.data();
+			do
+			{
+				*(pivot2++) = static_cast<char16_t>(*(pivot++) + '0');
+			}
+			while(pivot < last);
+		}
+
+		std::u16string_view const result {buffer2.data(), res_size};
+
+		benchmark::DoNotOptimize(result);
+		if(++index >= testList.size()) index = 0;
+	}
+}
+
+
+
 template<typename num_T>
 static void core_to_chars_size(benchmark::State& state)
 {
@@ -1042,6 +1097,7 @@ static void core_to_chars_bin_size(benchmark::State& state)
 
 //======== ======== ======== ======== Benchmark Instantiation ======== ======== ======== ========
 
+#if 0
 BENCHMARK_TEMPLATE( std_from_chars_good, uint8_t );
 BENCHMARK_TEMPLATE(core_from_chars_good, uint8_t );
 BENCHMARK_TEMPLATE( std_from_chars_good, uint16_t);
@@ -1111,15 +1167,27 @@ BENCHMARK_TEMPLATE( std_from_chars_bin_bad, uint32_t);
 BENCHMARK_TEMPLATE(core_from_chars_bin_bad, uint32_t);
 BENCHMARK_TEMPLATE( std_from_chars_bin_bad, uint64_t);
 BENCHMARK_TEMPLATE(core_from_chars_bin_bad, uint64_t);
+#endif
 
 BENCHMARK_TEMPLATE( std_to_chars, uint8_t );
 BENCHMARK_TEMPLATE(core_to_chars, uint8_t );
+BENCHMARK_TEMPLATE(core_to_digits, uint8_t );
+BENCHMARK_TEMPLATE(core_to_digits_chars, uint8_t);
 BENCHMARK_TEMPLATE( std_to_chars, uint16_t);
 BENCHMARK_TEMPLATE(core_to_chars, uint16_t);
+BENCHMARK_TEMPLATE(core_to_digits, uint16_t);
+BENCHMARK_TEMPLATE(core_to_digits_chars, uint16_t);
 BENCHMARK_TEMPLATE( std_to_chars, uint32_t);
 BENCHMARK_TEMPLATE(core_to_chars, uint32_t);
+BENCHMARK_TEMPLATE(core_to_digits, uint32_t);
+BENCHMARK_TEMPLATE(core_to_digits_chars, uint32_t);
 BENCHMARK_TEMPLATE( std_to_chars, uint64_t);
 BENCHMARK_TEMPLATE(core_to_chars, uint64_t);
+BENCHMARK_TEMPLATE(core_to_digits, uint64_t);
+BENCHMARK_TEMPLATE(core_to_digits_chars, uint64_t);
+
+
+#if 0
 BENCHMARK_TEMPLATE( std_to_chars, int8_t  );
 BENCHMARK_TEMPLATE(core_to_chars, int8_t  );
 BENCHMARK_TEMPLATE( std_to_chars, int16_t );
@@ -1128,6 +1196,7 @@ BENCHMARK_TEMPLATE( std_to_chars, int32_t );
 BENCHMARK_TEMPLATE(core_to_chars, int32_t );
 BENCHMARK_TEMPLATE( std_to_chars, int64_t );
 BENCHMARK_TEMPLATE(core_to_chars, int64_t );
+
 
 BENCHMARK_TEMPLATE(core_to_chars_size, uint8_t);
 BENCHMARK_TEMPLATE(core_to_chars_size, uint16_t);
@@ -1539,6 +1608,8 @@ BENCHMARK_TEMPLATE(core_to_chars_shortest_convert, float64_t, char8_t);
 //BENCHMARK_TEMPLATE(core_to_chars_sci, float32_t);
 //BENCHMARK_TEMPLATE(core_to_chars_fix, float32_t);
 //BENCHMARK_TEMPLATE(core_to_chars_sci, float64_t);
+
+#endif
 
 
 static void no_op(benchmark::State& state)
