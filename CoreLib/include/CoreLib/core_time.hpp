@@ -34,8 +34,7 @@
 namespace core
 {
 
-/// \brief holds date and time data
-struct date_time
+struct date_time_t
 {
 	struct
 	{
@@ -49,7 +48,7 @@ struct date_time
 		uint8_t		hour;
 		uint8_t		minute;
 		uint8_t		second;
-		uint16_t	msecond;	//!< milliseconds
+		uint32_t	nsecond;	//!< nanoseconds
 	} time;
 };
 
@@ -141,15 +140,129 @@ public:
 [[nodiscard]] uint64_t clock_stamp();
 
 /// \brief	gets the current local date and time based on internal clock
-void date_time_local(date_time& p_out);
+void date_time_local(date_time_t& p_out);
 
 /// \brief	gets the current local date and time based on internal clock
-void date_time_local(date_time& p_out, date_time_extra& p_extra);
+void date_time_local(date_time_t& p_out, date_time_extra& p_extra);
 
-/// \brief	gets the current UTC date and time based on internal clock
-void date_time_UTC(date_time& p_out);
 
-/// \brief	gets the current UTC date and time based on internal clock
-void date_time_UTC(date_time& p_out, uint8_t& p_weekDay);
+
+class time_delta_t;
+
+class time_point_t
+{
+public:
+	constexpr time_point_t() = default;
+	constexpr time_point_t(time_point_t&&) = default;
+	constexpr time_point_t(time_point_t const&) = default;
+
+	explicit constexpr time_point_t(uint64_t const p_raw) : raw_data{p_raw} {}
+
+	time_point_t& operator = (time_point_t const &) = default;
+	time_point_t& operator = (time_point_t &&) = default;
+
+	constexpr bool operator == (time_point_t const p_other) const { return raw_data == p_other.raw_data; }
+	constexpr bool operator != (time_point_t const p_other) const { return raw_data != p_other.raw_data; }
+	constexpr bool operator <  (time_point_t const p_other) const { return raw_data <  p_other.raw_data; }
+	constexpr bool operator >  (time_point_t const p_other) const { return raw_data >  p_other.raw_data; }
+	constexpr bool operator <= (time_point_t const p_other) const { return raw_data <= p_other.raw_data; }
+	constexpr bool operator >= (time_point_t const p_other) const { return raw_data >= p_other.raw_data; }
+
+	constexpr time_delta_t operator -  (time_point_t const p_other) const;
+	time_point_t operator + (time_delta_t const p_other);
+	time_point_t operator - (time_delta_t const p_other);
+
+	time_point_t& operator += (time_delta_t const p_other);
+	time_point_t& operator -= (time_delta_t const p_other);
+
+	constexpr uint64_t raw() const { return raw_data; }
+
+private:
+	uint64_t raw_data = 0;
+};
+
+class time_delta_t
+{
+public:
+	constexpr time_delta_t() = default;
+	constexpr time_delta_t(time_delta_t&&) = default;
+	constexpr time_delta_t(time_delta_t const&) = default;
+
+	explicit constexpr time_delta_t(int64_t const p_raw) : raw_data{p_raw} {}
+
+	time_delta_t& operator = (time_delta_t const &) = default;
+	time_delta_t& operator = (time_delta_t &&) = default;
+
+	constexpr bool operator == (time_delta_t const p_other) const { return raw_data == p_other.raw_data; }
+	constexpr bool operator != (time_delta_t const p_other) const { return raw_data != p_other.raw_data; }
+	constexpr bool operator <  (time_delta_t const p_other) const { return raw_data <  p_other.raw_data; }
+	constexpr bool operator >  (time_delta_t const p_other) const { return raw_data >  p_other.raw_data; }
+	constexpr bool operator <= (time_delta_t const p_other) const { return raw_data <= p_other.raw_data; }
+	constexpr bool operator >= (time_delta_t const p_other) const { return raw_data >= p_other.raw_data; }
+
+
+	constexpr time_delta_t  operator - () const
+	{
+		return time_delta_t{-raw_data};
+	}
+
+	constexpr time_delta_t  operator - (time_delta_t const p_other) const
+	{
+		return time_delta_t{raw_data - p_other.raw_data};
+	}
+
+	time_delta_t& operator += (time_delta_t const & p_other)
+	{
+		raw_data += p_other.raw_data;
+		return *this;
+	}
+
+	time_delta_t& operator -= (time_delta_t const & p_other)
+	{
+		raw_data -= p_other.raw_data;
+		return *this;
+	}
+
+	constexpr int64_t raw() const { return raw_data; }
+
+private:
+	int64_t raw_data = 0;
+};
+
+inline constexpr time_delta_t time_point_t::operator - (time_point_t const p_other) const
+{
+	return time_delta_t{static_cast<int64_t>(raw_data - p_other.raw_data)};
+}
+
+inline time_point_t time_point_t::operator + (time_delta_t const p_other)
+{
+	return time_point_t{raw_data + static_cast<uint64_t>(p_other.raw())};
+}
+
+inline time_point_t time_point_t::operator - (time_delta_t const p_other)
+{
+	return time_point_t{raw_data - static_cast<uint64_t>(p_other.raw())};
+}
+
+inline time_point_t& time_point_t::operator += (time_delta_t const p_other)
+{
+	raw_data += static_cast<uint64_t>(p_other.raw());
+	return *this;
+}
+
+inline time_point_t& time_point_t::operator -= (time_delta_t const p_other)
+{
+	raw_data -= static_cast<uint64_t>(p_other.raw());
+	return *this;
+}
+
+[[nodiscard]] time_point_t system_time_fast();
+[[nodiscard]] time_point_t system_time_precise();
+
+time_point_t date_to_system_time(date_time_t const& value);
+date_time_t system_time_to_date(time_point_t value);
+
+
+
 
 } //namespace core
