@@ -30,6 +30,7 @@
 
 #include <cstdint>
 #include <cstring>
+#include <chrono>
 
 namespace core
 {
@@ -262,7 +263,7 @@ inline time_point_t& time_point_t::operator -= (time_delta_t const p_other)
 time_point_t date_to_system_time(date_time_t const& value);
 date_time_t system_time_to_date(time_point_t value);
 
-
+core::date_time_t to_date(std::chrono::system_clock::time_point p_time);
 
 
 } //namespace core
