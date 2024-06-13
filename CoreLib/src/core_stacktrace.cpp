@@ -474,7 +474,7 @@ namespace
 	{
 		if(!g_straceOpt.m_output_file.empty())
 		{
-			date_time t_time;
+			date_time_t t_time;
 			date_time_local(t_time);	//current date
 
 			file_write o_file;		// file to be output
@@ -493,7 +493,8 @@ namespace
 				OUTPUT(o_file
 					, t_time.date.year, '/', toPrint_fix_2{t_time.date.month}, '/', toPrint_fix_2{t_time.date.day}
 					, ' ', toPrint_fix_2{t_time.time.hour}, ':', toPrint_fix_2{t_time.time.minute}, ':'
-					, toPrint_fix_2{t_time.time.second}, '.', toPrint_fix_3{t_time.time.msecond}, '\n');
+					, toPrint_fix_2{t_time.time.second}, '.',
+					toPrint_fix_3{static_cast<uint16_t>(t_time.time.nsecond / 1000000)}, '\n');
 
 
 				//---- The reason of the crash see: https://msdn.microsoft.com/en-us/library/cc704588.aspx
@@ -970,7 +971,7 @@ namespace
 			if(!g_straceOpt.m_output_file.empty())
 			{
 				file_write		o_file;						// file to be output
-				date_time		t_time;
+				date_time_t		t_time;
 				date_time_local(t_time);	//current date
 
 				{
@@ -990,7 +991,8 @@ namespace
 					OUTPUT(o_file
 						, t_time.date.year, '/', toPrint_fix_2{t_time.date.month}, '/', toPrint_fix_2{t_time.date.day}
 						, ' ', toPrint_fix_2{t_time.time.hour}, ':', toPrint_fix_2{t_time.time.minute}, ':'
-						, toPrint_fix_2{t_time.time.second}, '.', toPrint_fix_3{t_time.time.msecond}, '\n');
+						, toPrint_fix_2{t_time.time.second}, '.',
+						toPrint_fix_3{static_cast<uint16_t>(t_time.time.nsecond/1000000)}, '\n');
 
 					ucontext_t* t_context = (ucontext_t*) context;
 					void* t_criticalAddr;	// the address were the crash occurred
