@@ -229,33 +229,31 @@ uint64_t clock_stamp() //1 nanosecond resolution
 
 namespace
 {
-	constexpr uint64_t sec_nsec = 1'000'000'000_ui64;
+	constexpr uint64_t sec_100nsec = 1'000'000'0_ui64;
 	constexpr uint64_t min_sec  = 60_ui64;
 	constexpr uint64_t hour_min = 60_ui64;
 	constexpr uint64_t day_hour = 24_ui64;
 
-	constexpr uint64_t minute_nsec = min_sec * sec_nsec;
-	constexpr uint64_t hour_nsec   = hour_min * min_sec * sec_nsec;
-	constexpr uint64_t day_nsec    = day_hour * hour_min * min_sec * sec_nsec;
+	constexpr uint64_t minute_100nsec = min_sec * sec_100nsec;
+	constexpr uint64_t hour_100nsec   = hour_min * min_sec * sec_100nsec;
+	constexpr uint64_t day_100nsec    = day_hour * hour_min * min_sec * sec_100nsec;
 
 	constexpr uint64_t days_per_1year   = 365;
 	constexpr uint64_t days_per_4year   = days_per_1year   *  4 + 1;
 	constexpr uint64_t days_per_100year = days_per_4year   * 25 - 1;
 	constexpr uint64_t days_per_400year = days_per_100year *  4 + 1;
 
-	constexpr uint64_t time_in_1year   = days_per_1year   * day_nsec;
-	constexpr uint64_t time_in_4year   = days_per_4year   * day_nsec;
-	constexpr uint64_t time_in_100year = days_per_100year * day_nsec;
-	constexpr uint64_t time_in_400year = days_per_400year * day_nsec;
+	constexpr uint64_t time_in_1year   = days_per_1year   * day_100nsec;
+	constexpr uint64_t time_in_4year   = days_per_4year   * day_100nsec;
+	constexpr uint64_t time_in_100year = days_per_100year * day_100nsec;
+	constexpr uint64_t time_in_400year = days_per_400year * day_100nsec;
 
 #ifdef _WIN32
-	//1601 - 2001
-	constexpr uint64_t epoch_offset = 0 - time_in_400year;
+	constexpr uint64_t epoch_offset = 0;
 #else
-	//1970 - 2001
-	constexpr uint64_t epoch_offset = time_in_100year * 3 + time_in_4year * 17 + time_in_1year - time_in_400year;
+	constexpr uint64_t epoch_offset = time_in_100year * 3 + time_in_4year * 17 + time_in_1year;
 #endif // _WIN32
-	constexpr uint16_t reference_year = 2001;
+	constexpr uint16_t reference_year = 1601;
 
 	consteval uint8_t _h_days_in_month(uint8_t const p_month, bool const p_leapYear)
 	{
@@ -278,14 +276,14 @@ namespace
 	{
 		if (p_month == 0)
 			return 0;
-		return _h_time_till_month(p_month - 1, p_leapYear) + _h_days_in_month(p_month - 1, p_leapYear) * day_nsec;
+		return _h_time_till_month(p_month - 1, p_leapYear) + _h_days_in_month(p_month - 1, p_leapYear) * day_100nsec;
 	}
 
 
 
 	/// \brief Lookup for time until start of the month (regular year)
 	//
-	static std::array<uint64_t, 12> const g_nsTillMonth =
+	static std::array<uint64_t, 12> const g_100nsTillMonth =
 	{
 		_h_time_till_month( 0, false),
 		_h_time_till_month( 1, false),
@@ -303,7 +301,7 @@ namespace
 
 	/// \brief Lookup for time until start of the month (leap year)
 	//
-	static std::array<uint64_t, 12> const g_nsTillMonthLeap =
+	static std::array<uint64_t, 12> const g_100nsTillMonthLeap =
 	{
 		_h_time_till_month( 0, true),
 		_h_time_till_month( 1, true),
@@ -395,7 +393,7 @@ namespace
 		//but it follows January which has 31 days, by the time 1 of March comes around 59 days have passed,
 		//which leads to an average of 29.5 days, this is as low as the "average days in a month since the start of the year" can go
 		//since max days in a month is 31, and there are only 12 months in a year, the real month can not be more then 1 off
-		constexpr uint64_t lowerMonthMs = 29 * day_nsec;
+		constexpr uint64_t lowerMonthMs = 29 * day_100nsec;
 
 		uint8_t pivot = static_cast<uint8_t>(p_100ns / lowerMonthMs /*+ 1*/);
 
@@ -411,14 +409,14 @@ namespace
 	{
 		if(p_leapYear)
 		{
-			uint8_t const criticalIndex = find_month_from_ns(p_100ns, g_nsTillMonthLeap);
-			p_rem = (p_100ns - g_nsTillMonthLeap[criticalIndex]);
+			uint8_t const criticalIndex = find_month_from_ns(p_100ns, g_100nsTillMonthLeap);
+			p_rem = (p_100ns - g_100nsTillMonthLeap[criticalIndex]);
 			return criticalIndex;
 		}
 		else
 		{
-			uint8_t const criticalIndex = find_month_from_ns(p_100ns, g_nsTillMonth);
-			p_rem = (p_100ns - g_nsTillMonth[criticalIndex]);
+			uint8_t const criticalIndex = find_month_from_ns(p_100ns, g_100nsTillMonth);
+			p_rem = (p_100ns - g_100nsTillMonth[criticalIndex]);
 			return criticalIndex;
 		}
 	}
@@ -426,8 +424,8 @@ namespace
 	uint64_t time_till_month(uint8_t const p_month, bool const p_leapYear)
 	{
 		if (p_leapYear)
-			return g_nsTillMonthLeap[p_month];
-		return g_nsTillMonth[p_month];
+			return g_100nsTillMonthLeap[p_month];
+		return g_100nsTillMonth[p_month];
 	}
 
 #if 0
@@ -462,8 +460,8 @@ void date_time_local(date_time_t& p_out)
 	gettimeofday(&curTime, nullptr);
 	localtime_r(&curTime.tv_sec, &timeinfo);
 	p_out.time.nsecond	= static_cast<uint16_t>(curTime.tv_usec * 1000);
-	p_out.date.year		= static_cast<uint16_t>(static_cast<uint16_t>(timeinfo.tm_year)	+ 1900_ui16);
-	p_out.date.month	= static_cast<uint8_t> (static_cast<uint8_t> (timeinfo.tm_mon)	+ 1_ui8);
+	p_out.date.year		= static_cast<uint16_t>(static_cast<uint16_t>(timeinfo.tm_year)	+ uint16_t{1900});
+	p_out.date.month	= static_cast<uint8_t> (static_cast<uint8_t> (timeinfo.tm_mon)	+ uint8_t{1});
 	p_out.date.day		= static_cast<uint8_t> (timeinfo.tm_mday);
 	p_out.time.hour		= static_cast<uint8_t> (timeinfo.tm_hour);
 	p_out.time.minute	= static_cast<uint8_t> (timeinfo.tm_min);
@@ -505,39 +503,36 @@ void date_time_local(date_time_t& p_out, date_time_extra& p_extra)
 
 [[nodiscard]] time_point_t system_time_fast()
 {
+	//1601
 	FILETIME temp;
 	GetSystemTimeAsFileTime(&temp);
-	return time_point_t
-		{
-			((static_cast<uint64_t>(temp.dwHighDateTime) << 32) | static_cast<uint64_t>(temp.dwLowDateTime)) * 100
-			+ epoch_offset
-		};
+	return time_point_t{(static_cast<uint64_t>(temp.dwHighDateTime) << 32) | static_cast<uint64_t>(temp.dwLowDateTime)};
 }
 
 [[nodiscard]] time_point_t system_time_precise()
 {
+	//1601
 	FILETIME temp;
 	GetSystemTimePreciseAsFileTime(&temp);
-	return time_point_t
-		{
-			((static_cast<uint64_t>(temp.dwHighDateTime) << 32) | static_cast<uint64_t>(temp.dwLowDateTime))
-			* 100 + epoch_offset
-		};
+	return time_point_t{(static_cast<uint64_t>(temp.dwHighDateTime) << 32) | static_cast<uint64_t>(temp.dwLowDateTime)};
 }
 #else
 [[nodiscard]] time_point_t system_time_fast()
 {
+	//1970
 	timeval curTime;
 	gettimeofday(&curTime, nullptr);
-	return time_point_t{static_cast<uint64_t>(curTime.tv_sec) * sec_nsec + curTime.tv_usec * 1000 + epoch_offset};
+	return time_point_t{static_cast<uint64_t>(curTime.tv_sec) * sec_100nsec + curTime.tv_usec * 10 + epoch_offset};
 }
 
 [[nodiscard]] time_point_t system_time_precise()
 {
+	//1970
 	struct timespec temp{};
+
 	timespec_get(&temp, TIME_UTC);
 	//clock_gettime(CLOCK_REALTIME, &temp);
-	return time_point_t{static_cast<uint64_t>(temp.tv_sec) * sec_nsec + temp.tv_nsec + epoch_offset};
+	return time_point_t{static_cast<uint64_t>(temp.tv_sec) * sec_100nsec + temp.tv_nsec / 100 + epoch_offset};
 }
 #endif
 
@@ -548,11 +543,11 @@ time_point_t date_to_system_time(date_time_t const& value)
 
 	return time_point_t{year_to_time(value.date.year)
 		+ time_till_month(month, is_leap_year(value.date.year))
-		+ (value.date.day -1) * day_nsec
-		+ value.time.hour   * hour_nsec
-		+ value.time.minute * minute_nsec
-		+ value.time.second * sec_nsec
-		+ value.time.nsecond};
+		+ (value.date.day -1) * day_100nsec
+		+ value.time.hour * hour_100nsec
+		+ value.time.minute * minute_100nsec
+		+ value.time.second * sec_100nsec
+		+ value.time.nsecond / 100};
 }
 
 date_time_t system_time_to_date(time_point_t value)
@@ -565,17 +560,17 @@ date_time_t system_time_to_date(time_point_t value)
 		out.date.month = time_2_Month(t_rem, t_rem, is_leap_year(t_year)) + 1_ui8;
 	}
 
-	out.date.day = static_cast<uint8_t>(t_rem / day_nsec + 1_ui8);
-	t_rem       %= day_nsec;
+	out.date.day = static_cast<uint8_t>(t_rem / day_100nsec + 1_ui8);
+	t_rem       %= day_100nsec;
 
-	out.time.hour = static_cast<uint8_t>(t_rem / hour_nsec);
-	t_rem        %= hour_nsec;
+	out.time.hour = static_cast<uint8_t>(t_rem / hour_100nsec);
+	t_rem        %= hour_100nsec;
 
-	out.time.minute = static_cast<uint8_t>(t_rem / minute_nsec);
-	t_rem         %= minute_nsec;
+	out.time.minute = static_cast<uint8_t>(t_rem / minute_100nsec);
+	t_rem         %= minute_100nsec;
 
-	out.time.second  = static_cast<uint8_t>(t_rem / sec_nsec);
-	out.time.nsecond = static_cast<uint32_t>(t_rem % sec_nsec);
+	out.time.second  = static_cast<uint8_t>(t_rem / sec_100nsec);
+	out.time.nsecond = static_cast<uint32_t>((t_rem % sec_100nsec) * 100);
 
 	return out;
 }
