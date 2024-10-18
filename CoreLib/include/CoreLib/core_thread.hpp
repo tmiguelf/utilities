@@ -213,15 +213,8 @@ public:
 	}
 };
 
-#ifdef _WIN32
-inline thread_id_t	thread::id			() const { return m_id;					}
-inline bool			thread::joinable	() const { return m_handle != nullptr;	}
-
 ///	\brief Gets the current thread ID as seen by the OS
 [[nodiscard]] thread_id_t current_thread_id();
-
-///	\brief Yields the currently alloted time slot for the current thread
-void thread_yield();
 
 ///	\brief Suspends the thread execution by a number of milliseconds
 ///
@@ -232,6 +225,13 @@ void thread_yield();
 ///			The thread may wake up later than the requested time depending on the operating system scheduling
 ///			The thread may wake up earlier in case an alertable interrupt occurs
 void milli_sleep(uint16_t p_time);
+
+#ifdef _WIN32
+inline thread_id_t	thread::id			() const { return m_id;					}
+inline bool			thread::joinable	() const { return m_handle != nullptr;	}
+
+///	\brief Yields the currently alloted time slot for the current thread
+void thread_yield();
 
 #else
 
@@ -239,21 +239,8 @@ inline thread_id_t	thread::id			() const { return m_handle;		}
 inline bool			thread::joinable	() const { return m_hasThread;	}
 
 
-///	\brief Gets the current thread ID as seen by the OS
-[[nodiscard]] thread_id_t current_thread_id();
-
 ///	\brief Yields the currently alloted time slot for the current thread
 inline void thread_yield() { pthread_yield(); }
-
-///	\brief Suspends the thread execution by a number of milliseconds
-///
-///	`\param[in] p_time - The number of milliseconds to sleep
-///
-///	\warning
-///			The time the thread actually sleeps for is not accurate.
-///			The thread may wake up later than the requested time depending on the operating system scheduling
-///			The thread may wake up earlier in case an alertable interrupt occurs
-void milli_sleep(uint16_t p_time);
 
 #endif
 

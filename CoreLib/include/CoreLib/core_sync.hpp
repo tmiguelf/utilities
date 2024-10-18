@@ -209,7 +209,7 @@ public:
 	}
 };
 
-///	\brief	Uses atomic bool to implement simple spinlock
+///	\brief	Uses atomic flag to implement simple spinlock
 class atomic_spinlock
 {
 private:
@@ -221,18 +221,18 @@ public:
 	/// \note	Each call to lock() must have a subsequent call to unlock()
 	/// \warning
 	///		There are no deadlock safety checks, including calls on the same thread.
-	inline void lock   () { while(m_lock.test_and_set(std::memory_order_acquire)); }
+	inline void lock   () { while(m_lock.test_and_set(std::memory_order::acquire)); }
 
 	/// \brief		Releases the lock.
 	/// \warning	This happens regardless of either or not the current thread has acquired the lock.
-	inline void unlock () { m_lock.clear(std::memory_order_release); }
+	inline void unlock () { m_lock.clear(std::memory_order::release); }
 
 	/// \brief	Attempts to acquire the lock
 	/// \note
 	///			If lock is acquired there should be a subsequent call to unlock(),
 	///			otherwise it should not.
 	/// \return	true if lock was acquired sucessfully, false if otherwise
-	inline bool try_lock() { return !m_lock.test_and_set(std::memory_order_acquire); }
+	inline bool try_lock() { return !m_lock.test_and_set(std::memory_order::acquire); }
 
 public:
 

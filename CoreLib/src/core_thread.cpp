@@ -93,7 +93,7 @@ static DWORD WINAPI launch_thread(void* const p_param)
 
 
 
-uint32_t current_thread_id ()
+thread_id_t current_thread_id ()
 {
 	return GetCurrentThreadId();
 }
@@ -349,9 +349,15 @@ thread::Error thread::set_affinity_mask(uint64_t const p_affinity)
 }
 
 
-[[nodiscard]] thread_id_t current_thread_id() { return static_cast<thread_id_t>(syscall(SYS_gettid)); }
+thread_id_t current_thread_id()
+{
+	return static_cast<thread_id_t>(syscall(SYS_gettid));
+}
 
-void milli_sleep(uint16_t p_time) { usleep(p_time * 1000); }
+void milli_sleep(uint16_t p_time)
+{
+	usleep(p_time * 1000);
+}
 
 #endif
 
