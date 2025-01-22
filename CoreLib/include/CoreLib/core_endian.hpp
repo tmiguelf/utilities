@@ -31,12 +31,12 @@
 #include <bit>
 #include <cstdint>
 #include <type_traits>
-#include <bit>
 
 #include "core_type.hpp"
 
-#ifdef _WIN32
-#	include	<stdlib.h>
+
+#if (defined(_MSC_VER) && defined(_WIN32))
+#    include    <stdlib.h>
 #endif
 
 namespace core
@@ -47,68 +47,81 @@ namespace _p
 	///	\brief Swaps the byte order of a 2Byte variable
 	[[nodiscard]] inline constexpr uint16_t byte_swap_16(uint16_t const p_in)
 	{
-	#ifdef _WIN32
-		if(std::is_constant_evaluated())
+#if (defined (__GNUG__) || defined(__GNUC__) || defined(__clang__))
+		if(!std::is_constant_evaluated())
 		{
-			return (p_in >> 8) | (p_in << 8);
+			return __builtin_bswap16(p_in);
 		}
 		else
+#elif (defined(_MSC_VER) && defined(_WIN32))
+		if(!std::is_constant_evaluated())
 		{
 			return _byteswap_ushort(p_in);
 		}
-	#else
-		return __builtin_bswap16(p_in);
-	#endif
+		else
+#endif
+		{
+			return static_cast<uint16_t>((p_in >> 8) | (p_in << 8));
+		}
 	}
 
 	///	\brief Reverses the byte order of a 4Byte variable
 	[[nodiscard]] inline constexpr uint32_t byte_swap_32(uint32_t const p_in)
 	{
-	#ifdef _WIN32
-		if(std::is_constant_evaluated())
+#if (defined (__GNUG__) || defined(__GNUC__) || defined(__clang__))
+		if(!std::is_constant_evaluated())
 		{
-			return
-				(p_in >> 24) |
-				(p_in >> 8) & 0x0000FF00 |
-				(p_in << 8) & 0x00FF0000 | 
-				(p_in << 24);
+			return __builtin_bswap32(p_in);
 		}
 		else
+#elif (defined(_MSC_VER) && defined(_WIN32))
+		if(!std::is_constant_evaluated())
 		{
 			return _byteswap_ulong(p_in);
 		}
-	#else
-		return __builtin_bswap32(p_in);
-	#endif
+		else
+#endif
+		{
+			return static_cast<uint32_t>(
+				 (p_in >> 24) |
+				((p_in >>  8) & 0x0000FF00)|
+				((p_in <<  8) & 0x00FF0000) | 
+				 (p_in << 24));
+		}
 	}
 
 	///	\brief Reverses the byte order of a 8Byte variable
 	[[nodiscard]] inline constexpr uint64_t byte_swap_64(uint64_t const p_in)
 	{
-	#ifdef _WIN32
-		if(std::is_constant_evaluated())
+#if (defined (__GNUG__) || defined(__GNUC__) || defined(__clang__))
+		if(!std::is_constant_evaluated())
 		{
-			return
-				(p_in >> 56) |
-				(p_in >> 40) & 0x0000'0000'0000'FF00 |
-				(p_in >> 24) & 0x0000'0000'00FF'0000 |
-				(p_in >>  8) & 0x0000'0000'FF00'0000 |
-				(p_in <<  8) & 0x0000'00FF'0000'0000 |
-				(p_in << 24) & 0x0000'FF00'0000'0000 |
-				(p_in << 40) & 0x00FF'0000'0000'0000 |
-				(p_in << 56);
+			return __builtin_bswap64(p_in);
 		}
 		else
+#elif (defined(_MSC_VER) && defined(_WIN32))
+		if(!std::is_constant_evaluated())
 		{
 			return _byteswap_uint64(p_in);
 		}
-	#else
-		return __builtin_bswap64(p_in);
-	#endif
+		else
+#endif
+		{
+			return static_cast<uint64_t>(
+				 (p_in >> 56) |
+				((p_in >> 40) & 0x0000'0000'0000'FF00) |
+				((p_in >> 24) & 0x0000'0000'00FF'0000) |
+				((p_in >>  8) & 0x0000'0000'FF00'0000) |
+				((p_in <<  8) & 0x0000'00FF'0000'0000) |
+				((p_in << 24) & 0x0000'FF00'0000'0000) |
+				((p_in << 40) & 0x00FF'0000'0000'0000) |
+				 (p_in << 56));
+		}
 	}
 
+
 	template<typename T>
-	constexpr bool endian_supported_base_type_v = std::is_fundamental_v<T> && !std::is_floating_point_v<T> &&
+	constexpr bool endian_swap_support_base_v = std::is_integral_v<T> &&
 		(
 			(sizeof(T) == sizeof(uint8_t ) && alignof(T) == alignof(uint8_t )) ||
 			(sizeof(T) == sizeof(uint16_t) && alignof(T) == alignof(uint16_t)) ||
@@ -116,17 +129,6 @@ namespace _p
 			(sizeof(T) == sizeof(uint64_t) && alignof(T) == alignof(uint64_t))
 		);
 
-	template<typename T>
-	struct assist_underlying_type { using type = T; };
-
-	template<typename T> requires std::is_enum_v<T>
-	struct assist_underlying_type<T> { using type = std::underlying_type_t<T>; };
-
-	template<typename T>
-	constexpr bool endian_supported_type_v = endian_supported_base_type_v<typename assist_underlying_type<T>::type>;
-
-	template<typename T>
-	concept endian_supported_type_c = endian_supported_type_v<T>;
 
 	template<uintptr_t, uintptr_t>
 	struct suitable_uint
@@ -140,43 +142,44 @@ namespace _p
 	template<> struct suitable_uint<sizeof(uint64_t), alignof(uint64_t)> { using type = uint64_t; static constexpr bool has_type = true; };
 
 	template<typename T>
-	constexpr bool is_endian_swap_suitable_v =
+	constexpr bool endian_swap_support_cast_v =
+		endian_swap_support_base_v<T> ||
 		(
-			endian_supported_type_v<T> ||
-			std::is_trivially_constructible_v<T> &&
-			std::is_trivially_copy_constructible_v<T> &&
-			std::is_trivially_destructible_v<T>
-		) &&
-		suitable_uint<sizeof(T), alignof(T)>::has_type;
+			suitable_uint<sizeof(T), alignof(T)>::has_type &&
+			std::is_enum_v<T>
+		);
+
 
 	template<typename T>
-	constexpr bool is_endian_alias_exclusive_v =
-		(
-			!endian_supported_type_v<T> &&
-			std::is_trivially_constructible_v<T> &&
-			std::is_trivially_copy_constructible_v<T> &&
-			std::is_trivially_destructible_v<T>
-		) &&
-		suitable_uint<sizeof(T), alignof(T)>::has_type;
+	constexpr bool endian_swap_support_alias_ex_v =
+		suitable_uint<sizeof(T), alignof(T)>::has_type &&
+		std::is_floating_point_v<T>;
 
 	template<typename T>
-	concept is_endian_swap_suitable_c = is_endian_swap_suitable_v<T>;
+	constexpr bool endian_swap_supported_v = endian_swap_support_cast_v<T> || endian_swap_support_alias_ex_v<T>;
 
 	template<typename T>
-	concept is_endian_alias_exclusive_c = is_endian_alias_exclusive_v<T>;
+	concept endian_support_cast_c = endian_swap_support_cast_v<T>;
 
+	template<typename T>
+	concept endian_support_alias_ex_c = endian_swap_support_alias_ex_v<T>;
 
-	template<typename T> requires is_endian_swap_suitable_v<T>
+	template<typename T>
+	concept endian_swap_supported_c = endian_swap_supported_v<T>;
+
+	template<endian_swap_supported_c T>
 	struct endianess_uint_align
 	{
 		using type = typename suitable_uint<sizeof(T), alignof(T)>::type;
 	};
 
-	template<typename T>
+	template<endian_swap_supported_c T>
 	using endianess_uint_align_t = typename endianess_uint_align<T>::type;
+
+
 } //namespace _p
 
-template<_p::endian_supported_type_c T>
+template<_p::endian_support_cast_c T>
 [[nodiscard]] inline constexpr T byte_swap(T const& p_value)
 {
 	if constexpr(std::is_same_v<uint8_t, _p::endianess_uint_align_t<T>>)
@@ -206,13 +209,13 @@ template<_p::endian_supported_type_c T>
 	}
 }
 
-template<_p::is_endian_alias_exclusive_c T>
+template<_p::endian_support_alias_ex_c T>
 [[nodiscard]] inline constexpr T byte_swap(T const& p_value)
 {
 	return std::bit_cast<const T>(byte_swap(std::bit_cast<_p::endianess_uint_align_t<T> const>(p_value)));
 }
 
-template <_p::is_endian_swap_suitable_c T>
+template <_p::endian_swap_supported_c T>
 [[nodiscard]] inline constexpr T endian_host2little(T const p_in)
 {
 	if constexpr(std::endian::native == std::endian::little)
@@ -232,13 +235,13 @@ template <_p::is_endian_swap_suitable_c T>
 	}
 }
 
-template <_p::is_endian_swap_suitable_c T>
+template <_p::endian_swap_supported_c T>
 [[nodiscard]] inline constexpr T endian_little2host(T const p_in)
 {
 	return endian_host2little(p_in);
 }
 
-template <_p::is_endian_swap_suitable_c T>
+template <_p::endian_swap_supported_c T>
 [[nodiscard]] inline constexpr T endian_host2big(T const p_in)
 {
 	if constexpr(std::endian::native == std::endian::little)
@@ -258,7 +261,7 @@ template <_p::is_endian_swap_suitable_c T>
 	}
 }
 
-template <_p::is_endian_swap_suitable_c T>
+template <_p::endian_swap_supported_c T>
 [[nodiscard]] inline constexpr T endian_big2host(T const p_in)
 {
 	return endian_host2big(p_in);

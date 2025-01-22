@@ -559,7 +559,7 @@ static void std_from_chars_good(benchmark::State& state)
 	std::vector<std::u8string> const& testList = get_goodStr<num_T, char8_t>();
 	uintptr_t index = 0;
 
-	for (auto _ : state)
+	while(state.KeepRunning())
 	{
 		std::u8string const& testCase = testList[index];
 		char const* const first = reinterpret_cast<char const*>(testCase.data());
@@ -582,7 +582,7 @@ static void core_from_chars_good(benchmark::State& state)
 	std::vector<std::u8string> const& testList = get_goodStr<num_T, char8_t>();
 	uintptr_t index = 0;
 
-	for (auto _ : state)
+	while(state.KeepRunning())
 	{
 		std::u8string const& testCase = testList[index];
 		core::from_chars_result<num_T> const result = core::from_chars<num_T>(testCase);
@@ -603,7 +603,7 @@ static void std_from_chars_bad(benchmark::State& state)
 	std::vector<std::u8string> const& testList = get_badStr<num_T, char8_t>();
 	uintptr_t index = 0;
 
-	for (auto _ : state)
+	while(state.KeepRunning())
 	{
 		std::u8string const& testCase = testList[index];
 		char const* const first = reinterpret_cast<char const*>(testCase.data());
@@ -625,7 +625,7 @@ static void core_from_chars_bad(benchmark::State& state)
 	std::vector<std::u8string> const& testList = get_badStr<num_T, char8_t>();
 	uintptr_t index = 0;
 
-	for (auto _ : state)
+	while(state.KeepRunning())
 	{
 		std::u8string const& testCase = testList[index];
 		core::from_chars_result<num_T> const result = core::from_chars<num_T>(testCase);
@@ -644,7 +644,7 @@ static void std_from_chars_hex_good(benchmark::State& state)
 	std::vector<std::u8string> const& testList = get_goodStr_hex<num_T, char8_t>();
 	uintptr_t index = 0;
 
-	for (auto _ : state)
+	while(state.KeepRunning())
 	{
 		std::u8string const& testCase = testList[index];
 		char const* const first = reinterpret_cast<char const*>(testCase.data());
@@ -667,7 +667,7 @@ static void core_from_chars_hex_good(benchmark::State& state)
 	std::vector<std::u8string> const& testList = get_goodStr_hex<num_T, char8_t>();
 	uintptr_t index = 0;
 
-	for (auto _ : state)
+	while(state.KeepRunning())
 	{
 		std::u8string const& testCase = testList[index];
 		core::from_chars_result<num_T> const result = core::from_chars_hex<num_T>(testCase);
@@ -688,7 +688,7 @@ static void std_from_chars_hex_bad(benchmark::State& state)
 	std::vector<std::u8string> const& testList = get_badStr_hex<num_T, char8_t>();
 	uintptr_t index = 0;
 
-	for (auto _ : state)
+	while(state.KeepRunning())
 	{
 		std::u8string const& testCase = testList[index];
 		char const* const first = reinterpret_cast<char const*>(testCase.data());
@@ -710,7 +710,7 @@ static void core_from_chars_hex_bad(benchmark::State& state)
 	std::vector<std::u8string> const& testList = get_badStr_hex<num_T, char8_t>();
 	uintptr_t index = 0;
 
-	for (auto _ : state)
+	while(state.KeepRunning())
 	{
 		std::u8string const& testCase = testList[index];
 		core::from_chars_result<num_T> const result = core::from_chars_hex<num_T>(testCase);
@@ -730,7 +730,7 @@ static void std_from_chars_bin_good(benchmark::State& state)
 	std::vector<std::u8string> const& testList = get_goodStr_bin<num_T, char8_t>();
 	uintptr_t index = 0;
 
-	for (auto _ : state)
+	while(state.KeepRunning())
 	{
 		std::u8string const& testCase = testList[index];
 		char const* const first = reinterpret_cast<char const*>(testCase.data());
@@ -753,7 +753,7 @@ static void core_from_chars_bin_good(benchmark::State& state)
 	std::vector<std::u8string> const& testList = get_goodStr_bin<num_T, char8_t>();
 	uintptr_t index = 0;
 
-	for (auto _ : state)
+	while(state.KeepRunning())
 	{
 		std::u8string const& testCase = testList[index];
 		core::from_chars_result<num_T> const result = core::from_chars_bin<num_T>(testCase);
@@ -774,7 +774,7 @@ static void std_from_chars_bin_bad(benchmark::State& state)
 	std::vector<std::u8string> const& testList = get_badStr_bin<num_T, char8_t>();
 	uintptr_t index = 0;
 
-	for (auto _ : state)
+	while(state.KeepRunning())
 	{
 		std::u8string const& testCase = testList[index];
 		char const* const first = reinterpret_cast<char const*>(testCase.data());
@@ -796,7 +796,7 @@ static void core_from_chars_bin_bad(benchmark::State& state)
 	std::vector<std::u8string> const& testList = get_badStr_bin<num_T, char8_t>();
 	uintptr_t index = 0;
 
-	for (auto _ : state)
+	while(state.KeepRunning())
 	{
 		std::u8string const& testCase = testList[index];
 		core::from_chars_result<num_T> const result = core::from_chars_bin<num_T>(testCase);
@@ -819,7 +819,7 @@ static void std_to_chars(benchmark::State& state)
 	constexpr uintptr_t buffSize = core::to_chars_dec_max_size_v<num_T>;
 	std::array<char8_t, buffSize> buffer;
 
-	for (auto _ : state)
+	while(state.KeepRunning())
 	{
 		num_T const testCase = testList[index];
 		char* const first = reinterpret_cast<char*>(buffer.data());
@@ -843,7 +843,7 @@ static void core_to_chars(benchmark::State& state)
 	constexpr uintptr_t buffSize = core::to_chars_dec_max_size_v<num_T>;
 	std::array<char8_t, buffSize> buffer;
 
-	for (auto _ : state)
+	while(state.KeepRunning())
 	{
 		num_T const testCase = testList[index];
 		uintptr_t const res_size = core::to_chars(testCase, std::span<char8_t, buffSize>(buffer));
@@ -861,7 +861,7 @@ static void core_to_chars_size(benchmark::State& state)
 	std::vector<num_T> const& testList = get_num<num_T>();
 	uintptr_t index = 0;
 
-	for (auto _ : state)
+	while(state.KeepRunning())
 	{
 		num_T const testCase = testList[index];
 		uintptr_t const res_size = core::to_chars_size(testCase);
@@ -882,7 +882,7 @@ static void std_to_chars_hex(benchmark::State& state)
 	constexpr uintptr_t buffSize = core::to_chars_hex_max_size_v<num_T>;
 	std::array<char8_t, buffSize> buffer;
 
-	for (auto _ : state)
+	while(state.KeepRunning())
 	{
 		num_T const testCase = testList[index];
 		char* const first = reinterpret_cast<char*>(buffer.data());
@@ -905,7 +905,7 @@ static void core_to_chars_hex(benchmark::State& state)
 	constexpr uintptr_t buffSize = core::to_chars_hex_max_size_v<num_T>;
 	std::array<char8_t, buffSize> buffer;
 
-	for (auto _ : state)
+	while(state.KeepRunning())
 	{
 		num_T const testCase = testList[index];
 		uintptr_t const res_size = core::to_chars_hex(testCase, std::span<char8_t, buffSize>(buffer));
@@ -926,7 +926,7 @@ static void core_to_chars_hex_fix(benchmark::State& state)
 	constexpr uintptr_t buffSize = core::to_chars_hex_max_size_v<num_T>;
 	std::array<char8_t, buffSize> buffer;
 
-	for (auto _ : state)
+	while(state.KeepRunning())
 	{
 		num_T const testCase = testList[index];
 		core::to_chars_hex_fix(testCase, std::span<char8_t, buffSize>(buffer));
@@ -944,7 +944,7 @@ static void core_to_chars_hex_size(benchmark::State& state)
 	std::vector<num_T> const& testList = get_num_hex<num_T>();
 	uintptr_t index = 0;
 
-	for (auto _ : state)
+	while(state.KeepRunning())
 	{
 		num_T const testCase = testList[index];
 		uintptr_t const res_size = core::to_chars_hex_size(testCase);
@@ -953,9 +953,6 @@ static void core_to_chars_hex_size(benchmark::State& state)
 		if (++index >= testList.size()) index = 0;
 	}
 }
-
-
-
 
 
 template<typename num_T>
@@ -967,7 +964,7 @@ static void std_to_chars_bin(benchmark::State& state)
 	constexpr uintptr_t buffSize = core::to_chars_bin_max_size_v<num_T>;
 	std::array<char8_t, buffSize> buffer;
 
-	for (auto _ : state)
+	while(state.KeepRunning())
 	{
 		num_T const testCase = testList[index];
 		char* const first = reinterpret_cast<char*>(buffer.data());
@@ -991,7 +988,7 @@ static void core_to_chars_bin(benchmark::State& state)
 	constexpr uintptr_t buffSize = core::to_chars_bin_max_size_v<num_T>;
 	std::array<char8_t, buffSize> buffer;
 
-	for (auto _ : state)
+	while(state.KeepRunning())
 	{
 		num_T const testCase = testList[index];
 		uintptr_t const res_size = core::to_chars_bin(testCase, std::span<char8_t, buffSize>(buffer));
@@ -1012,7 +1009,7 @@ static void core_to_chars_bin_fix(benchmark::State& state)
 	constexpr uintptr_t buffSize = core::to_chars_bin_max_size_v<num_T>;
 	std::array<char8_t, buffSize> buffer;
 
-	for (auto _ : state)
+	while(state.KeepRunning())
 	{
 		num_T const testCase = testList[index];
 		core::to_chars_bin_fix(testCase, std::span<char8_t, buffSize>(buffer));
@@ -1030,7 +1027,7 @@ static void core_to_chars_bin_size(benchmark::State& state)
 	std::vector<num_T> const& testList = get_num_hex<num_T>();
 	uintptr_t index = 0;
 
-	for (auto _ : state)
+	while(state.KeepRunning())
 	{
 		num_T const testCase = testList[index];
 		uintptr_t const res_size = core::to_chars_bin_size(testCase);
@@ -1041,7 +1038,6 @@ static void core_to_chars_bin_size(benchmark::State& state)
 }
 
 //======== ======== ======== ======== Benchmark Instantiation ======== ======== ======== ========
-
 BENCHMARK_TEMPLATE( std_from_chars_good, uint8_t );
 BENCHMARK_TEMPLATE(core_from_chars_good, uint8_t );
 BENCHMARK_TEMPLATE( std_from_chars_good, uint16_t);
