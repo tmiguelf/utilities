@@ -35,25 +35,25 @@
 template<typename T> requires (sizeof(T) == sizeof(uint8_t))
 consteval std::pair<T, T> getTestCase_const()
 {
-	return {static_cast<T const>(uint8_t{0x01}), static_cast<T const>(uint8_t{0x01})};
+	return {std::bit_cast<T const>(uint8_t{0x01}), std::bit_cast<T const>(uint8_t{0x01})};
 }
 
 template<typename T> requires (sizeof(T) == sizeof(uint16_t))
 consteval std::pair<T, T> getTestCase_const()
 {
-	return {static_cast<T const>(uint16_t{0x0123}), static_cast<T const>(uint16_t{0x2301})};
+	return {std::bit_cast<T const>(uint16_t{0x0123}), std::bit_cast<T const>(uint16_t{0x2301})};
 }
 
 template<typename T> requires (sizeof(T) == sizeof(uint32_t))
 consteval std::pair<T, T> getTestCase_const()
 {
-	return {static_cast<T const>(uint32_t{0x01234567}), static_cast<T const>(uint32_t{0x67452301})};
+	return {std::bit_cast<T const>(uint32_t{0x01234567}), std::bit_cast<T const>(uint32_t{0x67452301})};
 }
 
 template<typename T> requires (sizeof(T) == sizeof(uint64_t))
 consteval std::pair<T, T> getTestCase_const()
 {
-	return {static_cast<T const>(uint64_t{0x01456789ABCDEF23}), static_cast<T const>(uint64_t{0x23EFCDAB89674501})};
+	return {std::bit_cast<T const>(uint64_t{0x01456789ABCDEF23}), std::bit_cast<T const>(uint64_t{0x23EFCDAB89674501})};
 }
 
 
@@ -139,110 +139,6 @@ TEST(core_endian, validateTestCase)
 }
 
 template<typename T>
-class endian_conv_constexpr_T : public testing::Test {
-protected:
-	endian_conv_constexpr_T() {}
-};
-
-using endianConstexprTypes = ::testing::Types<
-	uint8_t,
-	uint16_t,
-	uint32_t,
-	uint64_t,
-	int8_t,
-	int16_t,
-	int32_t,
-	int64_t,
-	enumu8,
-	enums8,
-	enumu16,
-	enums16,
-	enumu32,
-	enums32,
-	enumu64,
-	enums64
-	>;
-
-TYPED_TEST_SUITE(endian_conv_constexpr_T, endianConstexprTypes);
-
-TYPED_TEST(endian_conv_constexpr_T, byte_swap)
-{
-	using num_T = TypeParam;
-	constexpr std::pair<num_T, num_T> tcase = getTestCase_const<num_T>();
-	constexpr num_T result = core::byte_swap(tcase.first);
-
-	static_assert(result == tcase.second, "Test failed");
-}
-
-TYPED_TEST(endian_conv_constexpr_T, endian_host2little)
-{
-	using num_T = TypeParam;
-	constexpr std::pair<num_T, num_T> tcase = getTestCase_const<num_T>();
-
-	constexpr num_T result = core::endian_host2little(tcase.first);
-
-	if constexpr(std::endian::native == std::endian::little)
-	{
-		static_assert(result == tcase.first, "Test failed");
-	}
-	else if constexpr(std::endian::native == std::endian::big)
-	{
-		static_assert(result == tcase.second, "Test failed");
-	}
-}
-
-TYPED_TEST(endian_conv_constexpr_T, endian_little2host)
-{
-	using num_T = TypeParam;
-	constexpr std::pair<num_T, num_T> tcase = getTestCase_const<num_T>();
-
-	constexpr num_T result = core::endian_little2host(tcase.first);
-
-	if constexpr(std::endian::native == std::endian::little)
-	{
-		static_assert(result == tcase.first, "Test failed");
-	}
-	else if constexpr(std::endian::native == std::endian::big)
-	{
-		static_assert(result == tcase.second, "Test failed");
-	}
-}
-
-TYPED_TEST(endian_conv_constexpr_T, endian_host2big)
-{
-	using num_T = TypeParam;
-	constexpr std::pair<num_T, num_T> tcase = getTestCase_const<num_T>();
-
-	constexpr num_T result = core::endian_host2big(tcase.first);
-
-	if constexpr(std::endian::native == std::endian::little)
-	{
-		static_assert(result == tcase.second, "Test failed");
-	}
-	else if constexpr(std::endian::native == std::endian::big)
-	{
-		static_assert(result == tcase.first, "Test failed");
-	}
-}
-
-TYPED_TEST(endian_conv_constexpr_T, endian_big2host)
-{
-	using num_T = TypeParam;
-	constexpr std::pair<num_T, num_T> tcase = getTestCase_const<num_T>();
-
-	constexpr num_T result = core::endian_big2host(tcase.first);
-
-	if constexpr(std::endian::native == std::endian::little)
-	{
-		static_assert(result == tcase.second, "Test failed");
-	}
-	else if constexpr(std::endian::native == std::endian::big)
-	{
-		static_assert(result == tcase.first, "Test failed");
-	}
-}
-
-template<typename T>
 class endian_conv_T : public testing::Test {
 protected:
 	endian_conv_T() {}
@@ -268,7 +164,86 @@ using endianTypes = ::testing::Types<
 	float,
 	double
 >;
+
+
 TYPED_TEST_SUITE(endian_conv_T, endianTypes);
+
+TYPED_TEST(endian_conv_T, constexpr_byte_swap)
+{
+	using num_T = TypeParam;
+	constexpr std::pair<num_T, num_T> tcase = getTestCase_const<num_T>();
+	constexpr num_T result = core::byte_swap(tcase.first);
+
+	static_assert(result == tcase.second, "Test failed");
+}
+
+TYPED_TEST(endian_conv_T, constexpr_endian_host2little)
+{
+	using num_T = TypeParam;
+	constexpr std::pair<num_T, num_T> tcase = getTestCase_const<num_T>();
+
+	constexpr num_T result = core::endian_host2little(tcase.first);
+
+	if constexpr(std::endian::native == std::endian::little)
+	{
+		static_assert(result == tcase.first, "Test failed");
+	}
+	else if constexpr(std::endian::native == std::endian::big)
+	{
+		static_assert(result == tcase.second, "Test failed");
+	}
+}
+
+TYPED_TEST(endian_conv_T, constexpr_endian_little2host)
+{
+	using num_T = TypeParam;
+	constexpr std::pair<num_T, num_T> tcase = getTestCase_const<num_T>();
+
+	constexpr num_T result = core::endian_little2host(tcase.first);
+
+	if constexpr(std::endian::native == std::endian::little)
+	{
+		static_assert(result == tcase.first, "Test failed");
+	}
+	else if constexpr(std::endian::native == std::endian::big)
+	{
+		static_assert(result == tcase.second, "Test failed");
+	}
+}
+
+TYPED_TEST(endian_conv_T, constexpr_endian_host2big)
+{
+	using num_T = TypeParam;
+	constexpr std::pair<num_T, num_T> tcase = getTestCase_const<num_T>();
+
+	constexpr num_T result = core::endian_host2big(tcase.first);
+
+	if constexpr(std::endian::native == std::endian::little)
+	{
+		static_assert(result == tcase.second, "Test failed");
+	}
+	else if constexpr(std::endian::native == std::endian::big)
+	{
+		static_assert(result == tcase.first, "Test failed");
+	}
+}
+
+TYPED_TEST(endian_conv_T, constexpr_endian_big2host)
+{
+	using num_T = TypeParam;
+	constexpr std::pair<num_T, num_T> tcase = getTestCase_const<num_T>();
+
+	constexpr num_T result = core::endian_big2host(tcase.first);
+
+	if constexpr(std::endian::native == std::endian::little)
+	{
+		static_assert(result == tcase.second, "Test failed");
+	}
+	else if constexpr(std::endian::native == std::endian::big)
+	{
+		static_assert(result == tcase.first, "Test failed");
+	}
+}
 
 TYPED_TEST(endian_conv_T, byte_swap)
 {
