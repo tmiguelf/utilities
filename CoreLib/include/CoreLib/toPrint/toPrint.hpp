@@ -46,6 +46,20 @@
 
 namespace core::_p
 {
+
+	template<typename T> requires is_toPrint_v<std::remove_cvref_t<T>>
+	inline T const& to_print_transform(T const& obj)
+	{
+		return obj;
+	}
+
+	template<typename T> requires (!is_toPrint_v<std::remove_cvref_t<T>>)
+	inline auto to_print_transform(T const& obj)
+	{
+		return ::core::toPrint<std::remove_cvref_t<T>>(obj);
+	}
+
+
 	template<typename T>
 	struct transform_toPrint_sink
 	{
@@ -246,6 +260,8 @@ namespace core::_p
 			push_toPrint(p_sink, std::basic_string_view<wchar_alias>{reinterpret_cast<wchar_alias const*>(p_message.data()), p_message.size()});
 		};
 
+#define newMod
+
 		template<typename Sink, c_tuple_toPrint Tuple> requires is_valid_sink_toPrint_v<CharT, Sink>
 		NO_INLINE static void push_toPrint(Sink& p_sink, Tuple const& p_data)
 		{
@@ -258,17 +274,18 @@ namespace core::_p
 				{
 					constexpr uintptr_t alloca_treshold = (0x10000 / sizeof(CharT));
 
+					std::vector<CharT> buff2;
+					CharT* buff;
 					if(char_count > alloca_treshold)
 					{
-						std::vector<CharT> buff;
-						buff.resize(char_count);
-						finish_toPrint(p_sink, p_data, sizeTable.data(), buff.data(), char_count);
+						buff2.resize(char_count);
+						buff = buff2.data();
 					}
 					else
 					{
-						CharT* buff = reinterpret_cast<CharT*>(core_alloca(char_count * sizeof(CharT)));
-						finish_toPrint(p_sink, p_data, sizeTable.data(), buff, char_count);
+						buff = reinterpret_cast<CharT*>(core_alloca(char_count * sizeof(CharT)));
 					}
+					finish_toPrint(p_sink, p_data, sizeTable.data(), buff, char_count);
 					return;
 				}
 			}
@@ -287,23 +304,118 @@ namespace core::_p
 				{
 					constexpr uintptr_t alloca_treshold = (0x10000 / sizeof(CharT));
 
+					std::vector<CharT> buff2;
+					CharT* buff;
 					if(char_count > alloca_treshold)
 					{
-						std::vector<CharT> buff;
-						buff.resize(char_count);
-						finish_toPrint(p_sink, p_data, sizeTable.data(), buff.data(), char_count);
+						buff2.resize(char_count);
+						buff = buff2.data();
 					}
 					else
 					{
-						CharT* buff = reinterpret_cast<CharT*>(core_alloca(char_count * sizeof(CharT)));
-						finish_toPrint(p_sink, p_data, sizeTable.data(), buff, char_count);
+						buff = reinterpret_cast<CharT*>(core_alloca(char_count * sizeof(CharT)));
 					}
+					finish_toPrint(p_sink, p_data, sizeTable.data(), buff, char_count);
 					return;
 				}
 			}
 			p_sink.write(std::basic_string_view<CharT>{nullptr, 0});
 		};
 	};
+
+
+
+	inline uintptr_t addRet(uintptr_t ret, uintptr_t& state)
+	{
+		state += ret;
+		return ret;
+	}
+
+	template<c_toPrint_char CharT>
+	struct toPrint_assist2
+	{
+#if 0
+		template<typename Sink, typename... Args> requires is_valid_sink_toPrint_v<CharT, Sink>
+		NO_INLINE static void push_toPrint(Sink const& sink,  Args const&... args)
+		{
+			constexpr uintptr_t arg_count = sizeof...(args);
+			if constexpr (arg_count > 0)
+			{
+				std::array<uintptr_t const, arg_count> sizeTable { args.size(CharT{})... };
+				uintptr_t char_count = 0;
+				for(uintptr_t temp: sizeTable)
+				{
+					char_count += temp;
+				}
+
+				if(char_count)
+				{
+					constexpr uintptr_t alloca_treshold = (0x10000 / sizeof(CharT));
+
+					std::vector<CharT> buff2;
+					CharT* buff;
+					if(char_count > alloca_treshold)
+					{
+						buff2.resize(char_count);
+						buff = buff2.data();
+					}
+					else
+					{
+						buff = reinterpret_cast<CharT*>(core_alloca(char_count * sizeof(CharT)));
+					}
+					
+					//uintptr_t const* pSize = sizeTable.data();
+					((buff = args.get_print(buff)), ...);
+					return;
+				}
+			}
+			sink.write(std::basic_string_view<CharT>{nullptr, 0});
+		}
+#endif
+		template<typename Sink, typename... Args> requires is_valid_sink_toPrint_v<CharT, Sink>
+		NO_INLINE static void push_toPrint(Sink& sink,  Args const&... args)
+		{
+			constexpr uintptr_t arg_count = sizeof...(args);
+			if constexpr (arg_count > 0)
+			{
+				uintptr_t char_count = 0;
+				std::array<uintptr_t const, arg_count> sizeTable { addRet(args.size(CharT{}), char_count)... };
+				
+				//for(uintptr_t temp: sizeTable)
+				//{
+				//	char_count += temp;
+				//}
+				
+
+				//uintptr_t char_count = 0;
+				//((char_count += args.size(CharT{})), ...);
+
+				if(char_count)
+				{
+					constexpr uintptr_t alloca_treshold = (0x10000 / sizeof(CharT));
+
+					std::vector<CharT> buff2;
+					CharT* buff;
+					if(char_count > alloca_treshold)
+					{
+						buff2.resize(char_count);
+						buff = buff2.data();
+					}
+					else
+					{
+						buff = reinterpret_cast<CharT*>(core_alloca(char_count * sizeof(CharT)));
+					}
+
+					uintptr_t const* pSize = sizeTable.data();
+					((args.get_print(buff), buff += *(pSize++)), ...);
+					return;
+				}
+			}
+			sink.write(std::basic_string_view<CharT>{nullptr, 0});
+		}
+
+	};
+
 
 } //namespace core::_p
 
@@ -340,4 +452,21 @@ namespace core
 			::core::_p::toPrint_assist<Char_t>::push_toPrint(real_sink, args_t(args...));
 		}
 	}
+
+	template<typename Char_t, typename Sink, typename... Args>
+	inline void print2(Sink& sink, Args const&... args)
+	{
+		if constexpr(::core::_p::is_sink_toPrint_v<Sink>)
+		{
+			::core::_p::toPrint_assist2<Char_t>::push_toPrint(sink, _p::to_print_transform(args)...);
+		}
+		else
+		{
+			using compatible_sink_t = ::core::_p::transform_toPrint_sink<Sink>::type;
+			compatible_sink_t real_sink{sink};
+			::core::_p::toPrint_assist2<Char_t>::push_toPrint(real_sink, _p::to_print_transform(args)...);
+		}
+	}
+
+
 } //namespace core

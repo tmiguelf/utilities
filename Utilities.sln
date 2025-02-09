@@ -23,6 +23,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MathLibTest", "MathLib\Test
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Crashy", "Crashy\Crashy.vcxproj", "{12BFA461-2442-4083-A115-594A970632CB}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "toPrint_benchmark", "CoreLib\benchmarks\toPrint_benchmark\toPrint_benchmark.vcxproj", "{65A48613-E06C-4B97-82A1-FDFA708F82F7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -115,6 +117,16 @@ Global
 		{12BFA461-2442-4083-A115-594A970632CB}.WSL_Debug|x64.Build.0 = WSL_Debug|x64
 		{12BFA461-2442-4083-A115-594A970632CB}.WSL_Release|x64.ActiveCfg = WSL_Release|x64
 		{12BFA461-2442-4083-A115-594A970632CB}.WSL_Release|x64.Build.0 = WSL_Release|x64
+		{65A48613-E06C-4B97-82A1-FDFA708F82F7}.Debug|x64.ActiveCfg = Debug|x64
+		{65A48613-E06C-4B97-82A1-FDFA708F82F7}.Debug|x64.Build.0 = Debug|x64
+		{65A48613-E06C-4B97-82A1-FDFA708F82F7}.Release|x64.ActiveCfg = Release|x64
+		{65A48613-E06C-4B97-82A1-FDFA708F82F7}.Release|x64.Build.0 = Release|x64
+		{65A48613-E06C-4B97-82A1-FDFA708F82F7}.WSL_Debug|x64.ActiveCfg = WSL_Debug|x64
+		{65A48613-E06C-4B97-82A1-FDFA708F82F7}.WSL_Debug|x64.Build.0 = WSL_Debug|x64
+		{65A48613-E06C-4B97-82A1-FDFA708F82F7}.WSL_Debug|x64.Deploy.0 = WSL_Debug|x64
+		{65A48613-E06C-4B97-82A1-FDFA708F82F7}.WSL_Release|x64.ActiveCfg = WSL_Release|x64
+		{65A48613-E06C-4B97-82A1-FDFA708F82F7}.WSL_Release|x64.Build.0 = WSL_Release|x64
+		{65A48613-E06C-4B97-82A1-FDFA708F82F7}.WSL_Release|x64.Deploy.0 = WSL_Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
