@@ -239,7 +239,7 @@ namespace core
 			if(p_handle) _fflush_nolock(reinterpret_cast<FILE*>(p_handle));
 		}
 #else
-		constexpr int fixed_flags = O_CLOEXEC;
+		constexpr int fixed_flags = O_CLOEXEC | O_LARGEFILE | O_NOCTTY;
 		constexpr mode_t fixed_permissions = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
 		static inline void* os_open_read(std::filesystem::path const& p_path)
 		{

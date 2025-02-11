@@ -136,7 +136,7 @@ namespace core
 
 
 
-	/// \brief Gets a pack with only the members that satisfy a preicate
+	/// \brief Gets a pack with only the members that satisfy a predicate
 	/// \tparam Pack_t - source pack
 	/// \tparam Predicate - Predicate template with a value that evaluates to true when to keep, and false when to discard
 	template<c_pack Pack_t, template <typename> typename Predicate>

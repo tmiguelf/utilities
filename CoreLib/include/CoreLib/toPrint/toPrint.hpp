@@ -32,441 +32,168 @@
 
 #include <string>
 #include <string_view>
-#include <tuple>
 #include <vector>
 
 #include <CoreLib/core_extra_compiler.hpp>
 #include <CoreLib/core_type.hpp>
 #include <CoreLib/core_alloca.hpp>
 #include <CoreLib/string/core_wchar_alias.hpp>
+#include <CoreLib/core_pack.hpp>
 
 #include "toPrint_sink.hpp"
 #include "toPrint_encoders.hpp"
 #include "toPrint_support.hpp"
 
-namespace core::_p
-{
-
-	template<typename T> requires is_toPrint_v<std::remove_cvref_t<T>>
-	inline T const& to_print_transform(T const& obj)
-	{
-		return obj;
-	}
-
-	template<typename T> requires (!is_toPrint_v<std::remove_cvref_t<T>>)
-	inline auto to_print_transform(T const& obj)
-	{
-		return ::core::toPrint<std::remove_cvref_t<T>>(obj);
-	}
-
-
-	template<typename T>
-	struct transform_toPrint_sink
-	{
-	private:
-		using evaluated_t = std::remove_cvref_t<T>;
-		static constexpr bool is_sink = is_sink_toPrint_v<evaluated_t>;
-		
-	public:
-		using type = std::conditional_t<is_sink_toPrint_v<evaluated_t>,
-			evaluated_t,
-			::core::sink_toPrint<evaluated_t>>;
-	};
-	
-	template <c_tuple Tuple>
-	struct tuple_toPrint
-	{
-	private:
-		static constexpr uintptr_t tuple_size = std::tuple_size_v<Tuple>;
-	
-		template<uintptr_t Pos, uintptr_t TSize = tuple_size>
-		struct transform
-		{
-			using evaluated_t = std::remove_cvref_t<std::tuple_element_t<Pos, Tuple>>;
-			using current_t   = std::conditional_t<is_toPrint_v<evaluated_t>, evaluated_t const&, ::core::toPrint<evaluated_t>>;
-			using type = decltype(std::tuple_cat(std::declval<std::tuple<current_t>>(), std::declval<typename transform<Pos + 1>::type>()));
-		};
-
-		template<uintptr_t Pos>
-		struct transform<Pos, Pos>
-		{
-			using type = std::tuple<>;
-		};
-
-	public:
-		using type = transform<0>::type;
-	};
-	
-	template <c_tuple Tuple>
-	struct is_all_toPrint
-	{
-	private:
-		static constexpr uintptr_t tuple_size = std::tuple_size_v<Tuple>;
-	
-		template<uintptr_t Pos, uintptr_t TSize = tuple_size>
-		struct check
-		{
-			using evaluated_t = std::remove_cvref_t<std::tuple_element_t<Pos, Tuple>>;
-			static constexpr bool value = is_toPrint_v<evaluated_t> && check<Pos + 1>::value;
-		};
-
-		template<uintptr_t Pos>
-		struct check<Pos, Pos>: public std::true_type{};
-
-	public:
-		static constexpr bool value = check<0>::value;
-	};
-	
-	template<typename> struct is_tuple_toPrint: public std::false_type{};
-	template<c_tuple T> struct is_tuple_toPrint<T>: public is_all_toPrint<T>{};
-	template<typename T>
-	concept c_tuple_toPrint = is_tuple_toPrint<T>::value;
-
-	template<c_toPrint_char Char_t, c_tuple Tuple>
-	struct tuple_toPrint_or_string_view { using type = tuple_toPrint<Tuple>::type; };
-	
-	template<c_toPrint_char Char_t>
-	struct tuple_toPrint_or_string_view<Char_t, std::tuple<std::basic_string_view<Char_t>>> { using type = std::basic_string_view<Char_t>; };
-	
-	template<c_toPrint_char Char_t>
-	struct tuple_toPrint_or_string_view<Char_t, std::tuple<std::basic_string<Char_t>>> { using type = std::basic_string_view<Char_t>; };
-	
-	template<>
-	struct tuple_toPrint_or_string_view<char8_t, std::tuple<std::string_view>> { using type = std::string_view; };
-	
-	template<>
-	struct tuple_toPrint_or_string_view<char8_t, std::tuple<std::string>> { using type = std::string_view; };
-
-	template<>
-	struct tuple_toPrint_or_string_view<wchar_alias, std::tuple<std::wstring_view>> { using type = std::wstring_view; };
-
-	template<>
-	struct tuple_toPrint_or_string_view<wchar_alias, std::tuple<std::wstring>> { using type = std::wstring_view; };
-
-
-
-	template<c_toPrint_char CharT>
-	struct toPrint_fill_assist
-	{
-		template<c_tuple_toPrint Tuple, uintptr_t Pos = 0>
-		static inline uintptr_t count_toPrint(Tuple const& p_tuple, uintptr_t* const p_sizeTable)
-		{
-			auto const& res = std::get<Pos>(p_tuple);
-			uintptr_t const size = res.size(CharT{0});
-			if constexpr (Pos + 1 < std::tuple_size_v<Tuple>)
-			{
-				*p_sizeTable = size;
-				return size + count_toPrint<Tuple, Pos + 1>(p_tuple, p_sizeTable + 1);
-			}
-			else
-			{
-				return size;
-			}
-		}
-
-		template<c_tuple_toPrint Tuple, uintptr_t Pos = 0>
-		static inline void fill_toPrint(
-			Tuple const&			p_tuple,
-			uintptr_t const* const	p_sizeTable,
-			CharT* const			p_buff)
-		{
-			auto const& res = std::get<Pos>(p_tuple);
-			res.get_print(p_buff);
-
-			if constexpr (Pos + 1 < std::tuple_size_v<Tuple>)
-			{
-				fill_toPrint<Tuple, Pos + 1>(p_tuple, p_sizeTable + 1, p_buff + *p_sizeTable);
-			}
-		}
-	};
-
-
-	template<c_toPrint_char CharT>
-	struct toPrint_assist
-	{
-	private:
-
-		template<typename Sink, c_tuple_toPrint Tuple> requires is_valid_sink_toPrint_v<CharT, Sink>
-		static void finish_toPrint(
-			Sink& p_sink,
-			Tuple const& p_data,
-			uintptr_t const* const	p_sizeTable,
-			CharT* const			p_buff,
-			uintptr_t const			p_size)
-		{
-			toPrint_fill_assist<CharT>::fill_toPrint(p_data, p_sizeTable, p_buff);
-			p_sink.write(std::basic_string_view<CharT>{p_buff, p_size});
-		}
-
-		template<typename Sink, c_tuple_toPrint Tuple> requires is_valid_sink_toPrint_v<CharT, Sink>
-		static void finish_toPrint(
-			Sink const& p_sink,
-			Tuple const& p_data,
-			uintptr_t const* const	p_sizeTable,
-			CharT* const			p_buff,
-			uintptr_t const			p_size)
-		{
-			toPrint_fill_assist<CharT>::fill_toPrint(p_data, p_sizeTable, p_buff);
-			p_sink.write(std::basic_string_view<CharT>{p_buff, p_size});
-		}
-
-	public:
-		template<typename Sink> requires is_valid_sink_toPrint_v<CharT, Sink>
-		static inline void push_toPrint(Sink const& p_sink)
-		{
-			p_sink.write(std::basic_string_view<CharT>{nullptr, 0});
-		};
-
-		template<typename Sink> requires is_valid_sink_toPrint_v<CharT, Sink>
-		static inline void push_toPrint(Sink& p_sink)
-		{
-			p_sink.write(std::basic_string_view<CharT>{nullptr, 0});
-		};
-
-
-		template<typename Sink> requires is_valid_sink_toPrint_v<CharT, Sink>
-		static inline void push_toPrint(Sink& p_sink, std::basic_string_view<CharT> const p_message)
-		{
-			p_sink.write(p_message);
-		};
-
-		template<typename Sink> requires is_valid_sink_toPrint_v<CharT, Sink>
-		static inline void push_toPrint(Sink const& p_sink, std::basic_string_view<CharT> const p_message)
-		{
-			p_sink.write(p_message);
-		};
-
-		template<typename Sink> requires is_valid_sink_toPrint_v<CharT, Sink> && std::is_same_v<CharT, char8_t>
-		static inline void push_toPrint(Sink& p_sink, std::string_view const p_message)
-		{
-			push_toPrint(p_sink, std::u8string_view{reinterpret_cast<char8_t const*>(p_message.data()), p_message.size()});
-		};
-
-		template<typename Sink> requires is_valid_sink_toPrint_v<CharT, Sink> && std::is_same_v<CharT, char8_t>
-		static inline void push_toPrint(Sink const& p_sink, std::string_view const p_message)
-		{
-			push_toPrint(p_sink, std::u8string_view{reinterpret_cast<char8_t const*>(p_message.data()), p_message.size()});
-		};
-
-		template<typename Sink> requires is_valid_sink_toPrint_v<CharT, Sink> && std::is_same_v<CharT, wchar_alias>
-		static inline void push_toPrint(Sink& p_sink, std::wstring_view const p_message)
-		{
-			push_toPrint(p_sink, std::basic_string_view<wchar_alias>{reinterpret_cast<wchar_alias const*>(p_message.data()), p_message.size()});
-		};
-
-		template<typename Sink> requires is_valid_sink_toPrint_v<CharT, Sink> && std::is_same_v<CharT, wchar_alias>
-		static inline void push_toPrint(Sink const& p_sink, std::wstring_view const p_message)
-		{
-			push_toPrint(p_sink, std::basic_string_view<wchar_alias>{reinterpret_cast<wchar_alias const*>(p_message.data()), p_message.size()});
-		};
-
-#define newMod
-
-		template<typename Sink, c_tuple_toPrint Tuple> requires is_valid_sink_toPrint_v<CharT, Sink>
-		NO_INLINE static void push_toPrint(Sink& p_sink, Tuple const& p_data)
-		{
-			constexpr uintptr_t tuple_size = std::tuple_size_v<Tuple>;
-			if constexpr (tuple_size > 0)
-			{
-				std::array<uintptr_t, tuple_size -1> sizeTable;
-				uintptr_t const char_count = toPrint_fill_assist<CharT>::count_toPrint(p_data, sizeTable.data());
-				if(char_count > 0)
-				{
-					constexpr uintptr_t alloca_treshold = (0x10000 / sizeof(CharT));
-
-					std::vector<CharT> buff2;
-					CharT* buff;
-					if(char_count > alloca_treshold)
-					{
-						buff2.resize(char_count);
-						buff = buff2.data();
-					}
-					else
-					{
-						buff = reinterpret_cast<CharT*>(core_alloca(char_count * sizeof(CharT)));
-					}
-					finish_toPrint(p_sink, p_data, sizeTable.data(), buff, char_count);
-					return;
-				}
-			}
-			p_sink.write(std::basic_string_view<CharT>{nullptr, 0});
-		};
-
-		template<typename Sink, c_tuple_toPrint Tuple> requires is_valid_sink_toPrint_v<CharT, Sink>
-		NO_INLINE static void push_toPrint(Sink const& p_sink, Tuple const& p_data)
-		{
-			constexpr uintptr_t tuple_size = std::tuple_size_v<Tuple>;
-			if constexpr (tuple_size > 0)
-			{
-				std::array<uintptr_t, tuple_size -1> sizeTable;
-				uintptr_t const char_count = toPrint_fill_assist<CharT>::count_toPrint(p_data, sizeTable.data());
-				if(char_count > 0)
-				{
-					constexpr uintptr_t alloca_treshold = (0x10000 / sizeof(CharT));
-
-					std::vector<CharT> buff2;
-					CharT* buff;
-					if(char_count > alloca_treshold)
-					{
-						buff2.resize(char_count);
-						buff = buff2.data();
-					}
-					else
-					{
-						buff = reinterpret_cast<CharT*>(core_alloca(char_count * sizeof(CharT)));
-					}
-					finish_toPrint(p_sink, p_data, sizeTable.data(), buff, char_count);
-					return;
-				}
-			}
-			p_sink.write(std::basic_string_view<CharT>{nullptr, 0});
-		};
-	};
-
-
-
-	inline uintptr_t addRet(uintptr_t ret, uintptr_t& state)
-	{
-		state += ret;
-		return ret;
-	}
-
-	template<c_toPrint_char CharT>
-	struct toPrint_assist2
-	{
-#if 0
-		template<typename Sink, typename... Args> requires is_valid_sink_toPrint_v<CharT, Sink>
-		NO_INLINE static void push_toPrint(Sink const& sink,  Args const&... args)
-		{
-			constexpr uintptr_t arg_count = sizeof...(args);
-			if constexpr (arg_count > 0)
-			{
-				std::array<uintptr_t const, arg_count> sizeTable { args.size(CharT{})... };
-				uintptr_t char_count = 0;
-				for(uintptr_t temp: sizeTable)
-				{
-					char_count += temp;
-				}
-
-				if(char_count)
-				{
-					constexpr uintptr_t alloca_treshold = (0x10000 / sizeof(CharT));
-
-					std::vector<CharT> buff2;
-					CharT* buff;
-					if(char_count > alloca_treshold)
-					{
-						buff2.resize(char_count);
-						buff = buff2.data();
-					}
-					else
-					{
-						buff = reinterpret_cast<CharT*>(core_alloca(char_count * sizeof(CharT)));
-					}
-					
-					//uintptr_t const* pSize = sizeTable.data();
-					((buff = args.get_print(buff)), ...);
-					return;
-				}
-			}
-			sink.write(std::basic_string_view<CharT>{nullptr, 0});
-		}
-#endif
-		template<typename Sink, typename... Args> requires is_valid_sink_toPrint_v<CharT, Sink>
-		NO_INLINE static void push_toPrint(Sink& sink,  Args const&... args)
-		{
-			constexpr uintptr_t arg_count = sizeof...(args);
-			if constexpr (arg_count > 0)
-			{
-				uintptr_t char_count = 0;
-				std::array<uintptr_t const, arg_count> sizeTable { addRet(args.size(CharT{}), char_count)... };
-				
-				//for(uintptr_t temp: sizeTable)
-				//{
-				//	char_count += temp;
-				//}
-				
-
-				//uintptr_t char_count = 0;
-				//((char_count += args.size(CharT{})), ...);
-
-				if(char_count)
-				{
-					constexpr uintptr_t alloca_treshold = (0x10000 / sizeof(CharT));
-
-					std::vector<CharT> buff2;
-					CharT* buff;
-					if(char_count > alloca_treshold)
-					{
-						buff2.resize(char_count);
-						buff = buff2.data();
-					}
-					else
-					{
-						buff = reinterpret_cast<CharT*>(core_alloca(char_count * sizeof(CharT)));
-					}
-
-					uintptr_t const* pSize = sizeTable.data();
-					((args.get_print(buff), buff += *(pSize++)), ...);
-					return;
-				}
-			}
-			sink.write(std::basic_string_view<CharT>{nullptr, 0});
-		}
-
-	};
-
-
-} //namespace core::_p
 
 namespace core
 {
-	template<typename Char_t, typename Sink, typename... Args>
+
+	namespace _p
+	{
+
+		inline uintptr_t add_ret(uintptr_t ret, uintptr_t& state)
+		{
+			state += ret;
+			return ret;
+		}
+
+		template<typename T> requires is_toPrint_v<std::remove_cvref_t<T>>
+		inline T const& to_print_transform(T const& obj)
+		{
+			return obj;
+		}
+
+		template<typename T> requires (!is_toPrint_v<std::remove_cvref_t<T>>)
+			inline auto to_print_transform(T const& obj)
+		{
+			return ::core::toPrint<std::remove_cvref_t<T>>(obj);
+		}
+
+		template<typename CharT, typename T>
+		struct to_print_short_opt: std::false_type{};
+
+		template<typename CharT>
+		struct to_print_short_opt<CharT, core::pack<std::basic_string_view<CharT>>>: std::true_type{ static constexpr bool type_alias = false; };
+
+		template<typename CharT>
+		struct to_print_short_opt<CharT, core::pack<std::basic_string<CharT>>>: std::true_type{ static constexpr bool type_alias = false; };
+
+		template<>
+		struct to_print_short_opt<char8_t, core::pack<std::basic_string_view<char>>>: std::true_type{ static constexpr bool type_alias = true; };
+
+		template<>
+		struct to_print_short_opt<char8_t, core::pack<std::basic_string<char>>>: std::true_type{ static constexpr bool type_alias = true; };
+
+		template<>
+		struct to_print_short_opt<wchar_alias, core::pack<std::basic_string_view<wchar_t>>>: std::true_type{ static constexpr bool type_alias = true; };
+
+		template<>
+		struct to_print_short_opt<wchar_alias, core::pack<std::basic_string<wchar_t>>>: std::true_type{ static constexpr bool type_alias = true; };
+
+
+		template<c_toPrint_char CharT>
+		struct toPrint_assist2
+		{
+
+			template<typename Sink, typename... Args> requires (
+				is_valid_sink_toPrint_v<CharT, Sink> &&
+				( is_toPrint_v<Args> &&... )
+				)
+			NO_INLINE static void push_toPrint(Sink& sink,  Args const&... args)
+			{
+				constexpr uintptr_t arg_count = sizeof...(Args);
+				static_assert( arg_count > 0); 
+
+				uintptr_t char_count = 0;
+				std::array<uintptr_t const, arg_count> sizeTable { add_ret(args.size(CharT{}), char_count)... };
+
+				if(char_count)
+				{
+					constexpr uintptr_t alloca_treshold = (0x10000 / sizeof(CharT));
+
+					std::vector<CharT> buff2;
+					CharT* buff;
+					if(char_count > alloca_treshold)
+					{
+						buff2.resize(char_count);
+						buff = buff2.data();
+					}
+					else
+					{
+						buff = reinterpret_cast<CharT*>(core_alloca(char_count * sizeof(CharT)));
+					}
+
+					CharT* const origin = buff;
+					uintptr_t const* pSize = sizeTable.data();
+					((args.get_print(buff), buff += *(pSize++)), ...);
+					//((buff = args.get_print(buff)), ...);
+
+					sink.write(std::basic_string_view<CharT>{origin, char_count});
+					return;
+				}
+				sink.write(std::basic_string_view<CharT>{nullptr, 0});
+			}
+
+			template<typename Sink, typename... Args>
+			FORCE_INLINE static void print(Sink& sink)
+			{
+				sink.write(std::basic_string_view<CharT>{nullptr, 0});
+			}
+
+			template<typename Sink, typename... Args>
+			FORCE_INLINE static void print(Sink& sink, Args const&... args)
+			{
+				static_assert(sizeof...(Args) > 0);
+				if constexpr(sizeof...(Args) == 1 && _p::to_print_short_opt<CharT, core::pack<std::remove_cvref_t<Args>...>>::value)
+				{
+					if constexpr(_p::to_print_short_opt<CharT, core::pack<std::remove_cvref_t<Args>...>>::type_alias)
+					{
+						sink.write((std::basic_string_view<CharT>{reinterpret_cast<CharT const* const>(args.data()), args.size()})...);
+					}
+					else
+					{
+						sink.write(args...);
+					}
+				}
+				else
+				{
+					push_toPrint(sink, _p::to_print_transform(args)...);
+				}
+			}
+
+		};
+
+	} //namespace _p
+
+
+	template<_p::c_toPrint_char CharT, typename Sink, typename... Args>
 	inline void print(Sink& sink, Args const&... args)
 	{
-		using args_t = ::core::_p::tuple_toPrint_or_string_view<Char_t, decltype(::std::make_tuple(args...))>::type;
 		if constexpr(::core::_p::is_sink_toPrint_v<Sink>)
 		{
-			::core::_p::toPrint_assist<Char_t>::push_toPrint(sink, args_t(args...));
+			::core::_p::toPrint_assist2<CharT>::print(sink, args...);
 		}
 		else
 		{
-			using compatible_sink_t = ::core::_p::transform_toPrint_sink<Sink>::type;
+			using compatible_sink_t = ::core::sink_toPrint<std::remove_cvref_t<Sink>>;
 			compatible_sink_t real_sink{sink};
-			::core::_p::toPrint_assist<Char_t>::push_toPrint(real_sink, args_t(args...));
+			::core::_p::toPrint_assist2<CharT>::print(real_sink, args...);
 		}
 	}
 
-	template<typename Char_t, typename Sink, typename... Args>
-	inline void print(Sink const& sink, Args const&... args)
-	{
-		using args_t = ::core::_p::tuple_toPrint_or_string_view<Char_t, decltype(::std::make_tuple(args...))>::type;
-		if constexpr(::core::_p::is_sink_toPrint_v<Sink>)
-		{
-			::core::_p::toPrint_assist<Char_t>::push_toPrint(sink, args_t(args...));
-		}
-		else
-		{
-			using compatible_sink_t = ::core::_p::transform_toPrint_sink<Sink>::type;
-			compatible_sink_t real_sink{sink};
-			::core::_p::toPrint_assist<Char_t>::push_toPrint(real_sink, args_t(args...));
-		}
-	}
-
-	template<typename Char_t, typename Sink, typename... Args>
-	inline void print2(Sink& sink, Args const&... args)
+	template<_p::c_toPrint_char CharT, typename Sink, typename... Args>
+	inline void print(Sink&& sink, Args const&... args)
 	{
 		if constexpr(::core::_p::is_sink_toPrint_v<Sink>)
 		{
-			::core::_p::toPrint_assist2<Char_t>::push_toPrint(sink, _p::to_print_transform(args)...);
+			::core::_p::toPrint_assist2<CharT>::print(sink, args...);
 		}
 		else
 		{
-			using compatible_sink_t = ::core::_p::transform_toPrint_sink<Sink>::type;
+			using compatible_sink_t = ::core::sink_toPrint<std::remove_cvref_t<Sink>>;
 			compatible_sink_t real_sink{sink};
-			::core::_p::toPrint_assist2<Char_t>::push_toPrint(real_sink, _p::to_print_transform(args)...);
+			::core::_p::toPrint_assist2<CharT>::print(real_sink, args...);
 		}
 	}
-
 
 } //namespace core

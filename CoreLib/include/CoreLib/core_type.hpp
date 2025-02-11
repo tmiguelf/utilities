@@ -42,7 +42,7 @@ template<typename T>
 concept c_tuple = is_tuple<T>::value;
 
 template<typename Derived, typename Base>
-constexpr bool is_derived_v = std::is_base_of_v<Base, Derived> && std::is_convertible_v<Derived const volatile*, Base const volatile*>;
+constexpr bool is_derived_v = std::is_base_of_v<Base, Derived> && std::is_convertible_v<std::remove_cvref_t<Derived>*, std::remove_cvref_t<Base>*>;
 
 namespace literals
 {
