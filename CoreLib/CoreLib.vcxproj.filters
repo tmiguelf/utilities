@@ -12,9 +12,6 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="Header Files\string">
-      <UniqueIdentifier>{c301001c-0842-4aa8-955d-667f19a57e45}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\string">
       <UniqueIdentifier>{fe8fc368-1042-4701-950d-f6ab80a01935}</UniqueIdentifier>
     </Filter>
@@ -35,6 +32,9 @@
     </Filter>
     <Filter Include="Source Files\toPrint">
       <UniqueIdentifier>{c9fec4d6-a2c3-4bba-b14c-0a117dae515c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\string">
+      <UniqueIdentifier>{c301001c-0842-4aa8-955d-667f19a57e45}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

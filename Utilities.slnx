@@ -1,0 +1,42 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Debug" />
+    <BuildType Name="Release" />
+    <BuildType Name="WSL_Debug" />
+    <BuildType Name="WSL_Release" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Folder Name="/submodules/">
+    <Project Path="submodules/benchmark/benchmark/benchmark.vcxproj" Id="2b8a8daf-b3e6-401b-89f7-3f7c3fd4b76f">
+      <Deploy Solution="WSL_Debug|*" />
+      <Deploy Solution="WSL_Release|*" />
+    </Project>
+    <Project Path="submodules/googletest/googlemock/googlemock.vcxproj" Id="d093761a-08df-4a74-a0e3-f34db77a2118">
+      <Deploy Solution="WSL_Debug|*" />
+      <Deploy Solution="WSL_Release|*" />
+    </Project>
+    <Project Path="submodules/googletest/googletest/googletest.vcxproj" Id="0db6a04f-669b-47b3-9689-7b1a7f4c0943">
+      <Deploy Solution="WSL_Debug|*" />
+      <Deploy Solution="WSL_Release|*" />
+    </Project>
+  </Folder>
+  <Project Path="CoreLib/benchmarks/CoreLib_benchmark_charconv/CoreLib_benchmark_charconv.vcxproj" Id="085670cc-b4a6-4ee8-ae6f-7b9fc34fc1de">
+    <Deploy Solution="WSL_Debug|*" />
+    <Deploy Solution="WSL_Release|*" />
+  </Project>
+  <Project Path="CoreLib/benchmarks/toPrint_benchmark/toPrint_benchmark.vcxproj" Id="65a48613-e06c-4b97-82a1-fdfa708f82f7">
+    <Deploy Solution="WSL_Debug|*" />
+    <Deploy Solution="WSL_Release|*" />
+  </Project>
+  <Project Path="CoreLib/CoreLib.vcxproj" Id="ea04e8e6-b05b-416e-b0a3-218406672173" />
+  <Project Path="CoreLib/tests/CoreLib_Test.vcxproj" Id="290592c2-399c-4e12-8599-baa3af962939">
+    <Deploy Solution="WSL_Debug|*" />
+    <Deploy Solution="WSL_Release|*" />
+  </Project>
+  <Project Path="Crashy/Crashy.vcxproj" Id="12bfa461-2442-4083-a115-594a970632cb" />
+  <Project Path="MathLib/MathLib.vcxproj" Id="77943016-2d04-4451-96cb-9fdcbb6b9c8c" />
+  <Project Path="MathLib/Tests/MathLibTest.vcxproj" Id="f0920b5d-5d5e-4f37-b9da-45b73e241c09">
+    <Deploy Solution="WSL_Debug|*" />
+    <Deploy Solution="WSL_Release|*" />
+  </Project>
+</Solution>
