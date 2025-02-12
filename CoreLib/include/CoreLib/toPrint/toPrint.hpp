@@ -51,20 +51,20 @@ namespace core
 	namespace _p
 	{
 
-		inline uintptr_t add_ret(uintptr_t ret, uintptr_t& state)
+		FORCE_INLINE uintptr_t add_ret(uintptr_t ret, uintptr_t& state)
 		{
 			state += ret;
 			return ret;
 		}
 
 		template<typename T> requires is_toPrint_v<std::remove_cvref_t<T>>
-		inline T const& to_print_transform(T const& obj)
+		FORCE_INLINE T const& to_print_transform(T const& obj)
 		{
 			return obj;
 		}
 
 		template<typename T> requires (!is_toPrint_v<std::remove_cvref_t<T>>)
-			inline auto to_print_transform(T const& obj)
+		FORCE_INLINE auto to_print_transform(T const& obj)
 		{
 			return ::core::toPrint<std::remove_cvref_t<T>>(obj);
 		}
