@@ -92,7 +92,7 @@ namespace core
 
 
 		template<c_toPrint_char CharT>
-		struct toPrint_assist2
+		struct toPrint_assist
 		{
 
 			template<typename Sink, typename... Args> requires (
@@ -167,32 +167,32 @@ namespace core
 
 
 	template<_p::c_toPrint_char CharT, typename Sink, typename... Args>
-	inline void print(Sink& sink, Args const&... args)
+	FORCE_INLINE void print(Sink& sink, Args const&... args)
 	{
 		if constexpr(::core::_p::is_sink_toPrint_v<Sink>)
 		{
-			::core::_p::toPrint_assist2<CharT>::print(sink, args...);
+			::core::_p::toPrint_assist<CharT>::print(sink, args...);
 		}
 		else
 		{
 			using compatible_sink_t = ::core::sink_toPrint<std::remove_cvref_t<Sink>>;
 			compatible_sink_t real_sink{sink};
-			::core::_p::toPrint_assist2<CharT>::print(real_sink, args...);
+			::core::_p::toPrint_assist<CharT>::print(real_sink, args...);
 		}
 	}
 
 	template<_p::c_toPrint_char CharT, typename Sink, typename... Args>
-	inline void print(Sink&& sink, Args const&... args)
+	FORCE_INLINE void print(Sink&& sink, Args const&... args)
 	{
 		if constexpr(::core::_p::is_sink_toPrint_v<Sink>)
 		{
-			::core::_p::toPrint_assist2<CharT>::print(sink, args...);
+			::core::_p::toPrint_assist<CharT>::print(sink, args...);
 		}
 		else
 		{
 			using compatible_sink_t = ::core::sink_toPrint<std::remove_cvref_t<Sink>>;
 			compatible_sink_t real_sink{sink};
-			::core::_p::toPrint_assist2<CharT>::print(real_sink, args...);
+			::core::_p::toPrint_assist<CharT>::print(real_sink, args...);
 		}
 	}
 
