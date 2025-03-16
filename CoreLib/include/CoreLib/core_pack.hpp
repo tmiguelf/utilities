@@ -63,11 +63,8 @@ namespace core
 	template<c_pack>
 	struct pack_count {};
 
-	template<>
-	struct pack_count<pack<>> { static constexpr uintptr_t value = uintptr_t{0}; };
-
-	template<typename T1, typename ...T2>
-	struct pack_count<pack<T1, T2...>> { static constexpr uintptr_t value = uintptr_t{1} + pack_count<pack<T2...>>::value; };
+	template<typename ...T>
+	struct pack_count<pack<T...>> { static constexpr uintptr_t value = sizeof...(T); };
 
 	template<c_pack T>
 	constexpr uintptr_t pack_count_v = pack_count<T>::value;
@@ -184,7 +181,6 @@ namespace core
 
 	template<c_pack Pack_t, template <typename> typename Transformation>
 	using pack_transform_t = typename pack_transform<Pack_t, Transformation>::type;
-
 
 
 	static constexpr uintptr_t pack_npos = std::numeric_limits<uintptr_t>::max();
