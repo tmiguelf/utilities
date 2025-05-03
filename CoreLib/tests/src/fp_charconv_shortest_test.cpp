@@ -150,3 +150,59 @@ TEST(fp_charconv, round_trip)
 	}
 
 }
+
+/*
+template<typename T>
+class float_char_conv_T : public testing::Test {
+protected:
+	float_char_conv_T() {}
+};
+
+using floatTypes = ::testing::Types<
+	float32_t,
+	float64_t
+>;
+
+
+TYPED_TEST_SUITE(float_char_conv_T, floatTypes);
+*/
+
+using ::core::literals::operator "" _ui32;
+
+TEST(fp_charconv, special_cases)
+{
+	struct TestCase
+	{
+		std::u8string_view units;
+		std::u8string_view decimals;
+		std::u8string_view exp;
+		bool sign;
+		bool exp_sign;
+		float32_t expected;
+	};
+
+	std::array const fix_cases
+	{
+		TestCase{ .units = u8"0"sv, .decimals = u8"0"sv, .exp=u8"2789"sv, .sign = false, .exp_sign = false, .expected = 0.f },
+		TestCase{ .units = u8"1"sv, .decimals = u8"0"sv, .exp=u8"2789"sv, .sign = false, .exp_sign = true , .expected = 0.f },
+		TestCase{ .units = u8"1"sv, .decimals = u8"0"sv, .exp=u8"2789"sv, .sign = false, .exp_sign = false, .expected = std::bit_cast<float>(0x7F800000_ui32) },
+	};
+
+	for( const TestCase& tcase: fix_cases )
+	{
+		core::from_chars_result<float32_t> const result = core::from_chars_fp<float32_t>(
+			tcase.sign,
+			tcase.units,
+			tcase.decimals,
+			tcase.exp_sign,
+			tcase.exp);
+
+		ASSERT_TRUE(result.has_value());
+		ASSERT_EQ(tcase.expected, result.value());
+	}
+}
+
+
+
+
+

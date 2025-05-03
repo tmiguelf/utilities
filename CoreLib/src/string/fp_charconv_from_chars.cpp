@@ -362,7 +362,7 @@ namespace core
 				}
 				if(adjusted_e10 < fp_utils_t::min_scientific_exponent_10)
 				{
-					uint_t const t_resut = sign_bit ? (fp_utils_t::sign_mask | fp_utils_t::exponent_mask) : fp_utils_t::exponent_mask;
+					uint_t const t_resut = sign_bit ? fp_utils_t::sign_mask : uint_t{0};
 					return std::bit_cast<fp_t const>(t_resut);
 				}
 				e10 = static_cast<exp_st>(e_temp);
