@@ -31,6 +31,7 @@
 
 #include <CoreLib/string/core_string_numeric.hpp>
 #include <CoreLib/string/core_fp_charconv.hpp>
+#include <CoreLib/core_extra_compiler.hpp>
 
 #include <CoreLib/core_type.hpp>
 
@@ -45,7 +46,8 @@ namespace core
 	using ::core::literals::operator "" _uip;
 
 	//======== Private implementation ========
-
+	namespace _p
+	{
 	namespace
 	{
 		template <typename T>
@@ -76,10 +78,7 @@ namespace core
 		{
 			static constexpr uint64_t threshold_val	= std::numeric_limits<T>::max() / 2;
 		};
-	} //namespace
 
-	namespace _p
-	{
 		///	\brief	Converts a base 10 encoded string to unsigned integer.
 		template <charconv_uint_c uint_T, charconv_char_c char_T>
 		[[nodiscard]] static inline from_chars_result<uint_T> dec2uint(std::basic_string_view<char_T> const p_str)
@@ -337,7 +336,7 @@ namespace core
 			return false;
 		}
 
-		template<_p::charconv_char_c char_T>
+		template<charconv_char_c char_T>
 		static bool is_nan(std::basic_string_view<char_T> const p_str)
 		{
 			if(p_str.size() == 3)
@@ -488,46 +487,10 @@ namespace core
 			//return dec2fp<fp_T>(std::basic_string_view<char8_t>{buff.data(), tsize});
 		}
 
-#if 1
-		template <charconv_uint_c num_T>
-		[[nodiscard]] static constexpr uintptr_t uint2dec_estimate(num_T);
 
-		template <>
-		[[nodiscard]] inline constexpr uintptr_t uint2dec_estimate<uint8_t>(uint8_t const p_val)
+		consteval uintptr_t primitive_digits(uint64_t const p_val)
 		{
-			if(p_val <  10_ui8) return 1;
-			if(p_val < 100_ui8) return 2;
-			return 3;
-		}
-
-		template <>
-		[[nodiscard]] inline constexpr uintptr_t uint2dec_estimate<uint16_t>(uint16_t const p_val)
-		{
-			if(p_val <    10_ui16) return 1;
-			if(p_val <   100_ui16) return 2;
-			if(p_val <  1000_ui16) return 3;
-			if(p_val < 10000_ui16) return 4;
-			return 5;
-		}
-
-		template <>
-		[[nodiscard]] inline constexpr uintptr_t uint2dec_estimate<uint32_t>(uint32_t const p_val)
-		{
-			if(p_val <         10_ui32) return 1;
-			if(p_val <        100_ui32) return 2;
-			if(p_val <       1000_ui32) return 3;
-			if(p_val <      10000_ui32) return 4;
-			if(p_val <     100000_ui32) return 5;
-			if(p_val <    1000000_ui32) return 6;
-			if(p_val <   10000000_ui32) return 7;
-			if(p_val <  100000000_ui32) return 8;
-			if(p_val < 1000000000_ui32) return 9;
-			return 10;
-		}
-
-		template <>
-		[[nodiscard]] inline constexpr uintptr_t uint2dec_estimate<uint64_t>(uint64_t const p_val)
-		{
+			//if(p_val <                    1_ui64) return  0;
 			if(p_val <                   10_ui64) return  1;
 			if(p_val <                  100_ui64) return  2;
 			if(p_val <                 1000_ui64) return  3;
@@ -549,248 +512,125 @@ namespace core
 			if(p_val < 10000000000000000000_ui64) return 19;
 			return 20;
 		}
-#else
-
-		static constexpr std::array<uintptr_t, 65> dec_base_digits_table =
-		{
-			 1_uip,
-			 1_uip,
-			 1_uip,
-			 1_uip,
-			 1_uip,
-			 2_uip,
-			 2_uip,
-			 2_uip,
-			 3_uip,
-			 3_uip,
-			 3_uip,
-			 4_uip,
-			 4_uip,
-			 4_uip,
-			 4_uip,
-			 5_uip,
-			 5_uip,
-			 5_uip,
-			 6_uip,
-			 6_uip,
-			 6_uip,
-			 7_uip,
-			 7_uip,
-			 7_uip,
-			 7_uip,
-			 8_uip,
-			 8_uip,
-			 8_uip,
-			 9_uip,
-			 9_uip,
-			 9_uip,
-			10_uip,
-			10_uip,
-			10_uip,
-			10_uip,
-			11_uip,
-			11_uip,
-			11_uip,
-			12_uip,
-			12_uip,
-			12_uip,
-			13_uip,
-			13_uip,
-			13_uip,
-			13_uip,
-			14_uip,
-			14_uip,
-			14_uip,
-			15_uip,
-			15_uip,
-			15_uip,
-			16_uip,
-			16_uip,
-			16_uip,
-			16_uip,
-			17_uip,
-			17_uip,
-			17_uip,
-			18_uip,
-			18_uip,
-			18_uip,
-			19_uip,
-			19_uip,
-			19_uip,
-			19_uip,
-		};
 
 		template<charconv_uint_c T>
-		struct count_helper;
+		struct num_props;
 
 		template<>
-		struct count_helper<uint64_t>
+		struct num_props<uint64_t>
 		{
-			static constexpr std::array<uint64_t, 65>  dec_extra_digit_table =
-			{
-				0xFFFFFFFFFFFFFFFF_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				9_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				99_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				999_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				9999_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				99999_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				999999_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				9999999_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				99999999_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				999999999_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				9999999999_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				99999999999_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				999999999999_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				9999999999999_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				99999999999999_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				999999999999999_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				9999999999999999_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				99999999999999999_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				999999999999999999_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				0xFFFFFFFFFFFFFFFF_ui64,
-				9999999999999999999_ui64,
-			};
+			static constexpr uint64_t max_10 = 10000000000000000000_ui64;
 		};
 
 		template<>
-		struct count_helper<uint32_t>
+		struct num_props<uint32_t>
 		{
-			static constexpr std::array<uint32_t, 33>  dec_extra_digit_table =
-			{
-				0xFFFFFFFF_ui32,
-				0xFFFFFFFF_ui32,
-				0xFFFFFFFF_ui32,
-				0xFFFFFFFF_ui32,
-				9_ui32,
-				0xFFFFFFFF_ui32,
-				0xFFFFFFFF_ui32,
-				99_ui32,
-				0xFFFFFFFF_ui32,
-				0xFFFFFFFF_ui32,
-				999_ui32,
-				0xFFFFFFFF_ui32,
-				0xFFFFFFFF_ui32,
-				0xFFFFFFFF_ui32,
-				9999_ui32,
-				0xFFFFFFFF_ui32,
-				0xFFFFFFFF_ui32,
-				99999_ui32,
-				0xFFFFFFFF_ui32,
-				0xFFFFFFFF_ui32,
-				999999_ui32,
-				0xFFFFFFFF_ui32,
-				0xFFFFFFFF_ui32,
-				0xFFFFFFFF_ui32,
-				9999999_ui32,
-				0xFFFFFFFF_ui32,
-				0xFFFFFFFF_ui32,
-				99999999_ui32,
-				0xFFFFFFFF_ui32,
-				0xFFFFFFFF_ui32,
-				999999999_ui32,
-				0xFFFFFFFF_ui32,
-				0xFFFFFFFF_ui32,
-			};
+			static constexpr uint32_t max_10 = 1000000000_ui32;
 		};
 
 		template<>
-		struct count_helper<uint16_t>
+		struct num_props<uint16_t>
 		{
-			static constexpr std::array<uint16_t, 17>  dec_extra_digit_table =
-			{
-				0xFFFF_ui16,
-				0xFFFF_ui16,
-				0xFFFF_ui16,
-				0xFFFF_ui16,
-				9_ui16,
-				0xFFFF_ui16,
-				0xFFFF_ui16,
-				99_ui16,
-				0xFFFF_ui16,
-				0xFFFF_ui16,
-				999_ui16,
-				0xFFFF_ui16,
-				0xFFFF_ui16,
-				0xFFFF_ui16,
-				9999_ui16,
-				0xFFFF_ui16,
-				0xFFFF_ui16,
-			};
+			static constexpr uint16_t max_10 = 10000_ui16;
 		};
 
 		template<>
-		struct count_helper<uint8_t>
+		struct num_props<uint8_t>
 		{
-			static constexpr std::array<uint8_t, 9>  dec_extra_digit_table =
-			{
-				0xFF_ui8,
-				0xFF_ui8,
-				0xFF_ui8,
-				0xFF_ui8,
-				9_ui8,
-				0xFF_ui8,
-				0xFF_ui8,
-				99_ui8,
-				0xFF_ui8,
-			};
+			static constexpr uint8_t max_10 = 100_ui8;
 		};
 
-
-		template <charconv_uint_c num_T>
-		[[nodiscard]] static constexpr uintptr_t uint2dec_estimate(num_T const p_val)
+		template<charconv_uint_c uint_t>
+		struct num_helper
 		{
-			constexpr uintptr_t num_bits = sizeof(num_T) * 8;
-			uintptr_t const sig_bits = (num_bits - std::countl_zero(p_val));
-			return dec_base_digits_table[sig_bits] + (p_val > count_helper<uint64_t>::dec_extra_digit_table[sig_bits]);
+			static constexpr uintptr_t num_bits = sizeof(uint_t) * 8;
+			static consteval std::array<uintptr_t, num_bits + 1> make_digits_table()
+			{
+				std::array<uintptr_t, num_bits + 1> ret{};
+				uint_t temp = static_cast<uint_t>(uint_t{1} << (sizeof(uint_t) * 8 - 1));
+
+				for(uintptr_t& val : ret)
+				{
+					val = primitive_digits(temp);
+					temp >>= 1;
+				}
+
+				return ret;
+			}
+
+			static consteval std::array<uint_t, num_bits + 1> make_compare_table()
+			{
+				std::array<uint_t, num_bits + 1> ret{};
+				{
+					constexpr uint_t max = std::numeric_limits<uint_t>::max();
+
+					for(uint_t& val : ret)
+					{
+						val = max;
+					}
+				}
+
+				{
+					uint_t temp = num_props<uint_t>::max_10;;
+					do
+					{
+						const auto pos = std::countl_zero(temp);
+						ret[pos] = temp - 1;
+
+						temp /= 10;
+					}
+					while(temp > 9);
+				}
+
+				return ret;
+			}
+
+			static constexpr std::array digits_table = make_digits_table();
+			static constexpr std::array compare_table = make_compare_table();
+		};
+
+		template<charconv_uint_c uint_t>
+		[[nodiscard]]constexpr uintptr_t uint2dec_estimate(uint_t const p_val);
+
+		template<>
+		[[nodiscard]] FORCE_INLINE constexpr uintptr_t uint2dec_estimate<uint8_t>(uint8_t const p_val)
+		{
+			if(p_val <  10_ui8) return 1;
+			if(p_val < 100_ui8) return 2;
+			return 3;
 		}
+
+		template<>
+		[[nodiscard]] FORCE_INLINE constexpr uintptr_t uint2dec_estimate<uint16_t>(uint16_t const p_val)
+		{
+#if 0
+			auto const offset = std::countl_zero<uint16_t>(p_val);
+			return num_helper<uint16_t>::digits_table[offset] + (p_val > num_helper<uint16_t>::compare_table[offset]);
+#else
+			if(p_val <    10_ui16) return 1;
+			if(p_val <   100_ui16) return 2;
+			if(p_val <  1000_ui16) return 3;
+			if(p_val < 10000_ui16) return 4;
+			return 5;
 #endif
+		}
+
+		template<>
+		[[nodiscard]] FORCE_INLINE constexpr uintptr_t uint2dec_estimate<uint32_t>(uint32_t const p_val)
+		{
+			auto const offset = std::countl_zero<uint32_t>(p_val);
+			return num_helper<uint32_t>::digits_table[offset] + (p_val > num_helper<uint32_t>::compare_table[offset]);
+		}
+
+		template<>
+		[[nodiscard]] FORCE_INLINE constexpr uintptr_t uint2dec_estimate<uint64_t>(uint64_t const p_val)
+		{
+			auto const offset = std::countl_zero<uint64_t>(p_val);
+			return num_helper<uint64_t>::digits_table[offset] + (p_val > num_helper<uint64_t>::compare_table[offset]);
+		}
 
 		template <charconv_sint_c num_T>
-		[[nodiscard]] inline constexpr uintptr_t int2dec_estimate(num_T const p_val)
+		[[nodiscard]] FORCE_INLINE constexpr uintptr_t int2dec_estimate(num_T const p_val)
 		{
 			using unsigned_t = std::make_unsigned_t<num_T>;
 
@@ -802,7 +642,7 @@ namespace core
 		}
 
 		template<charconv_fp_c Fp_t>
-		[[nodiscard]] static inline uintptr_t fp2dec_estimate(Fp_t const p_val)
+		[[nodiscard]] inline uintptr_t fp2dec_estimate(Fp_t const p_val)
 		{
 
 			fp_to_chars_shortest_context<Fp_t> context;
@@ -859,7 +699,7 @@ namespace core
 		}
 
 		template <charconv_uint_c num_T>
-		[[nodiscard]] static inline constexpr uintptr_t uint2hex_estimate(num_T const p_val)
+		[[nodiscard]] FORCE_INLINE constexpr uintptr_t uint2hex_estimate(num_T const p_val)
 		{
 			if(p_val)
 			{
@@ -871,7 +711,7 @@ namespace core
 		}
 
 		template <charconv_uint_c num_T>
-		[[nodiscard]] static inline constexpr uintptr_t uint2bin_estimate(num_T const p_val)
+		[[nodiscard]] FORCE_INLINE constexpr uintptr_t uint2bin_estimate(num_T const p_val)
 		{
 			if (p_val)
 			{
@@ -882,14 +722,14 @@ namespace core
 			return 1;
 		}
 
-		static constexpr std::array x2NibTable = {u8'0', u8'1', u8'2', u8'3', u8'4', u8'5', u8'6', u8'7', u8'8', u8'9', u8'A', u8'B', u8'C', u8'D', u8'E', u8'F'};
-		[[nodiscard]] static inline constexpr char8_t Hex2Nible(uintptr_t const p_val)
+		constexpr std::array x2NibTable = {u8'0', u8'1', u8'2', u8'3', u8'4', u8'5', u8'6', u8'7', u8'8', u8'9', u8'A', u8'B', u8'C', u8'D', u8'E', u8'F'};
+		[[nodiscard]] FORCE_INLINE constexpr char8_t Hex2Nible(uintptr_t const p_val)
 		{
 			return x2NibTable[p_val & 0x0F];
 		}
 
 		template <charconv_char_c char_T, charconv_uint_c num_T>
-		static inline char_T* uint2dec(num_T p_val, char_T* p_str)
+		inline char_T* uint2dec(num_T p_val, char_T* p_str)
 		{
 			p_str += uint2dec_estimate(p_val);
 			char_T* pivot = p_str;
@@ -903,7 +743,7 @@ namespace core
 		}
 
 		template <charconv_char_c char_T, charconv_sint_c num_T>
-		static inline char_T* int2dec(num_T const p_val, char_T* const p_str)
+		static FORCE_INLINE char_T* int2dec(num_T const p_val, char_T* const p_str)
 		{
 			using unsigned_t = std::make_unsigned_t<num_T>;
 
@@ -952,9 +792,9 @@ namespace core
 
 			for (uint8_t t_bias = index; t_bias; --t_bias)
 			{
-				*(pivot++) = ((p_val >> t_bias) & 1) ? '1' : '0';
+				*(pivot++) = '0' + ((p_val >> t_bias) & 1);
 			}
-			*(pivot++) = (p_val & 1) ? '1' : '0';
+			*(pivot++) = '0' + (p_val & 1);
 			return pivot;
 		}
 
@@ -1021,141 +861,141 @@ namespace core
 		template <charconv_char_c T>
 		static inline void uint2bin_fix(uint8_t const p_val, T* p_str)
 		{
-			*p_str   = ((p_val >> 7) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 6) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 5) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 4) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 3) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 2) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 1) & 1) ? '1' : '0';
-			*++p_str = ( p_val       & 1) ? '1' : '0';
+			*p_str   = '0' + ((p_val >> 7) & 1);
+			*++p_str = '0' + ((p_val >> 6) & 1);
+			*++p_str = '0' + ((p_val >> 5) & 1);
+			*++p_str = '0' + ((p_val >> 4) & 1);
+			*++p_str = '0' + ((p_val >> 3) & 1);
+			*++p_str = '0' + ((p_val >> 2) & 1);
+			*++p_str = '0' + ((p_val >> 1) & 1);
+			*++p_str = '0' + ( p_val       & 1);
 		}
 
 		template <charconv_char_c T>
 		static inline void uint2bin_fix(uint16_t const p_val, T* p_str)
 		{
-			*p_str   = ((p_val >> 15) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 14) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 13) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 12) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 11) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 10) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 9 ) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 8 ) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 7 ) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 6 ) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 5 ) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 4 ) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 3 ) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 2 ) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 1 ) & 1) ? '1' : '0';
-			*++p_str = ( p_val        & 1) ? '1' : '0';
+			*p_str   = '0' + ((p_val >> 15) & 1);
+			*++p_str = '0' + ((p_val >> 14) & 1);
+			*++p_str = '0' + ((p_val >> 13) & 1);
+			*++p_str = '0' + ((p_val >> 12) & 1);
+			*++p_str = '0' + ((p_val >> 11) & 1);
+			*++p_str = '0' + ((p_val >> 10) & 1);
+			*++p_str = '0' + ((p_val >> 9 ) & 1);
+			*++p_str = '0' + ((p_val >> 8 ) & 1);
+			*++p_str = '0' + ((p_val >> 7 ) & 1);
+			*++p_str = '0' + ((p_val >> 6 ) & 1);
+			*++p_str = '0' + ((p_val >> 5 ) & 1);
+			*++p_str = '0' + ((p_val >> 4 ) & 1);
+			*++p_str = '0' + ((p_val >> 3 ) & 1);
+			*++p_str = '0' + ((p_val >> 2 ) & 1);
+			*++p_str = '0' + ((p_val >> 1 ) & 1);
+			*++p_str = '0' + ( p_val        & 1);
 		}
 
 		template <charconv_char_c T>
 		static inline void uint2bin_fix(uint32_t const p_val, T* p_str)
 		{
-			*p_str   = ((p_val >> 31) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 30) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 29) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 28) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 27) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 26) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 25) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 24) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 23) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 22) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 21) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 20) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 19) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 18) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 17) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 16) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 15) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 14) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 13) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 12) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 11) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 10) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 9 ) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 8 ) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 7 ) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 6 ) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 5 ) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 4 ) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 3 ) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 2 ) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 1 ) & 1) ? '1' : '0';
-			*++p_str = ( p_val        & 1) ? '1' : '0';
+			*p_str   = '0' + ((p_val >> 31) & 1);
+			*++p_str = '0' + ((p_val >> 30) & 1);
+			*++p_str = '0' + ((p_val >> 29) & 1);
+			*++p_str = '0' + ((p_val >> 28) & 1);
+			*++p_str = '0' + ((p_val >> 27) & 1);
+			*++p_str = '0' + ((p_val >> 26) & 1);
+			*++p_str = '0' + ((p_val >> 25) & 1);
+			*++p_str = '0' + ((p_val >> 24) & 1);
+			*++p_str = '0' + ((p_val >> 23) & 1);
+			*++p_str = '0' + ((p_val >> 22) & 1);
+			*++p_str = '0' + ((p_val >> 21) & 1);
+			*++p_str = '0' + ((p_val >> 20) & 1);
+			*++p_str = '0' + ((p_val >> 19) & 1);
+			*++p_str = '0' + ((p_val >> 18) & 1);
+			*++p_str = '0' + ((p_val >> 17) & 1);
+			*++p_str = '0' + ((p_val >> 16) & 1);
+			*++p_str = '0' + ((p_val >> 15) & 1);
+			*++p_str = '0' + ((p_val >> 14) & 1);
+			*++p_str = '0' + ((p_val >> 13) & 1);
+			*++p_str = '0' + ((p_val >> 12) & 1);
+			*++p_str = '0' + ((p_val >> 11) & 1);
+			*++p_str = '0' + ((p_val >> 10) & 1);
+			*++p_str = '0' + ((p_val >> 9 ) & 1);
+			*++p_str = '0' + ((p_val >> 8 ) & 1);
+			*++p_str = '0' + ((p_val >> 7 ) & 1);
+			*++p_str = '0' + ((p_val >> 6 ) & 1);
+			*++p_str = '0' + ((p_val >> 5 ) & 1);
+			*++p_str = '0' + ((p_val >> 4 ) & 1);
+			*++p_str = '0' + ((p_val >> 3 ) & 1);
+			*++p_str = '0' + ((p_val >> 2 ) & 1);
+			*++p_str = '0' + ((p_val >> 1 ) & 1);
+			*++p_str = '0' + ( p_val        & 1);
 		}
 
 		template <charconv_char_c T>
 		static inline void uint2bin_fix(uint64_t const p_val, T* p_str)
 		{
-			*p_str   = ((p_val >> 63) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 62) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 61) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 60) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 59) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 58) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 57) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 56) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 55) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 54) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 53) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 52) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 51) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 50) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 49) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 48) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 47) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 46) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 45) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 44) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 43) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 42) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 41) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 40) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 39) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 38) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 37) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 36) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 35) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 34) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 33) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 32) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 31) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 30) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 29) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 28) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 27) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 26) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 25) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 24) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 23) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 22) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 21) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 20) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 19) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 18) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 17) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 16) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 15) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 14) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 13) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 12) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 11) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 10) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 9 ) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 8 ) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 7 ) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 6 ) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 5 ) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 4 ) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 3 ) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 2 ) & 1) ? '1' : '0';
-			*++p_str = ((p_val >> 1 ) & 1) ? '1' : '0';
-			*++p_str = ( p_val        & 1) ? '1' : '0';
+			*p_str   = '0' + ((p_val >> 63) & 1);
+			*++p_str = '0' + ((p_val >> 62) & 1);
+			*++p_str = '0' + ((p_val >> 61) & 1);
+			*++p_str = '0' + ((p_val >> 60) & 1);
+			*++p_str = '0' + ((p_val >> 59) & 1);
+			*++p_str = '0' + ((p_val >> 58) & 1);
+			*++p_str = '0' + ((p_val >> 57) & 1);
+			*++p_str = '0' + ((p_val >> 56) & 1);
+			*++p_str = '0' + ((p_val >> 55) & 1);
+			*++p_str = '0' + ((p_val >> 54) & 1);
+			*++p_str = '0' + ((p_val >> 53) & 1);
+			*++p_str = '0' + ((p_val >> 52) & 1);
+			*++p_str = '0' + ((p_val >> 51) & 1);
+			*++p_str = '0' + ((p_val >> 50) & 1);
+			*++p_str = '0' + ((p_val >> 49) & 1);
+			*++p_str = '0' + ((p_val >> 48) & 1);
+			*++p_str = '0' + ((p_val >> 47) & 1);
+			*++p_str = '0' + ((p_val >> 46) & 1);
+			*++p_str = '0' + ((p_val >> 45) & 1);
+			*++p_str = '0' + ((p_val >> 44) & 1);
+			*++p_str = '0' + ((p_val >> 43) & 1);
+			*++p_str = '0' + ((p_val >> 42) & 1);
+			*++p_str = '0' + ((p_val >> 41) & 1);
+			*++p_str = '0' + ((p_val >> 40) & 1);
+			*++p_str = '0' + ((p_val >> 39) & 1);
+			*++p_str = '0' + ((p_val >> 38) & 1);
+			*++p_str = '0' + ((p_val >> 37) & 1);
+			*++p_str = '0' + ((p_val >> 36) & 1);
+			*++p_str = '0' + ((p_val >> 35) & 1);
+			*++p_str = '0' + ((p_val >> 34) & 1);
+			*++p_str = '0' + ((p_val >> 33) & 1);
+			*++p_str = '0' + ((p_val >> 32) & 1);
+			*++p_str = '0' + ((p_val >> 31) & 1);
+			*++p_str = '0' + ((p_val >> 30) & 1);
+			*++p_str = '0' + ((p_val >> 29) & 1);
+			*++p_str = '0' + ((p_val >> 28) & 1);
+			*++p_str = '0' + ((p_val >> 27) & 1);
+			*++p_str = '0' + ((p_val >> 26) & 1);
+			*++p_str = '0' + ((p_val >> 25) & 1);
+			*++p_str = '0' + ((p_val >> 24) & 1);
+			*++p_str = '0' + ((p_val >> 23) & 1);
+			*++p_str = '0' + ((p_val >> 22) & 1);
+			*++p_str = '0' + ((p_val >> 21) & 1);
+			*++p_str = '0' + ((p_val >> 20) & 1);
+			*++p_str = '0' + ((p_val >> 19) & 1);
+			*++p_str = '0' + ((p_val >> 18) & 1);
+			*++p_str = '0' + ((p_val >> 17) & 1);
+			*++p_str = '0' + ((p_val >> 16) & 1);
+			*++p_str = '0' + ((p_val >> 15) & 1);
+			*++p_str = '0' + ((p_val >> 14) & 1);
+			*++p_str = '0' + ((p_val >> 13) & 1);
+			*++p_str = '0' + ((p_val >> 12) & 1);
+			*++p_str = '0' + ((p_val >> 11) & 1);
+			*++p_str = '0' + ((p_val >> 10) & 1);
+			*++p_str = '0' + ((p_val >> 9 ) & 1);
+			*++p_str = '0' + ((p_val >> 8 ) & 1);
+			*++p_str = '0' + ((p_val >> 7 ) & 1);
+			*++p_str = '0' + ((p_val >> 6 ) & 1);
+			*++p_str = '0' + ((p_val >> 5 ) & 1);
+			*++p_str = '0' + ((p_val >> 4 ) & 1);
+			*++p_str = '0' + ((p_val >> 3 ) & 1);
+			*++p_str = '0' + ((p_val >> 2 ) & 1);
+			*++p_str = '0' + ((p_val >> 1 ) & 1);
+			*++p_str = '0' + ( p_val        & 1);
 		}
 
 		//template <charconv_char_c T, charconv_uint_c NUM_T>
@@ -1281,76 +1121,74 @@ namespace core
 			return pivot;
 		}
 
-		namespace
+
+		template<typename>
+		struct help_char_conv;
+
+		template<charconv_fp_c num_T>
+		struct help_char_conv<num_T>
 		{
-
-			template<typename>
-			struct help_char_conv;
-
-			template<charconv_fp_c num_T>
-			struct help_char_conv<num_T>
+			template<typename char_T>
+			[[nodiscard]] static inline from_chars_result<num_T> from_chars(std::basic_string_view<char_T> const p_str)
 			{
-				template<typename char_T>
-				[[nodiscard]] static inline from_chars_result<num_T> from_chars(std::basic_string_view<char_T> const p_str)
-				{
-					return dec2fp<num_T>(p_str);
-				}
+				return dec2fp<num_T>(p_str);
+			}
 
-				template<typename char_T>
-				static inline char_T* to_chars(num_T const p_val, char_T* const p_str)
-				{
-					return fp2dec(p_val, p_str);
-				}
-
-				static inline uintptr_t estimate(num_T const p_val)
-				{
-					return fp2dec_estimate(p_val);
-				}
-			};
-
-			template<charconv_sint_c num_T>
-			struct help_char_conv<num_T>
+			template<typename char_T>
+			static inline char_T* to_chars(num_T const p_val, char_T* const p_str)
 			{
-				template<typename char_T>
-				[[nodiscard]] static inline from_chars_result<num_T> from_chars(std::basic_string_view<char_T> const p_str)
-				{
-					return dec2int<num_T>(p_str);
-				}
+				return fp2dec(p_val, p_str);
+			}
 
-				template<typename char_T>
-				static inline char_T* to_chars(num_T const p_val, char_T* const p_str)
-				{
-					return int2dec(p_val, p_str);
-				}
-
-				static inline uintptr_t estimate(num_T const p_val)
-				{
-					return int2dec_estimate(p_val);
-				}
-			};
-
-			template<charconv_uint_c num_T>
-			struct help_char_conv<num_T>
+			static inline uintptr_t estimate(num_T const p_val)
 			{
-				template<typename char_T>
-				[[nodiscard]] static inline from_chars_result<num_T> from_chars(std::basic_string_view<char_T> const p_str)
-				{
-					return dec2uint<num_T>(p_str);
-				}
+				return fp2dec_estimate(p_val);
+			}
+		};
 
-				template<typename char_T>
-				static inline char_T* to_chars(num_T const p_val, char_T* const p_str)
-				{
-					return uint2dec(p_val, p_str);
-				}
+		template<charconv_sint_c num_T>
+		struct help_char_conv<num_T>
+		{
+			template<typename char_T>
+			[[nodiscard]] static inline from_chars_result<num_T> from_chars(std::basic_string_view<char_T> const p_str)
+			{
+				return dec2int<num_T>(p_str);
+			}
 
-				static inline uintptr_t estimate(num_T const p_val)
-				{
-					return uint2dec_estimate(p_val);
-				}
+			template<typename char_T>
+			static inline char_T* to_chars(num_T const p_val, char_T* const p_str)
+			{
+				return int2dec(p_val, p_str);
+			}
 
-			};
-		}	//namespace
+			static inline uintptr_t estimate(num_T const p_val)
+			{
+				return int2dec_estimate(p_val);
+			}
+		};
+
+		template<charconv_uint_c num_T>
+		struct help_char_conv<num_T>
+		{
+			template<typename char_T>
+			[[nodiscard]] static inline from_chars_result<num_T> from_chars(std::basic_string_view<char_T> const p_str)
+			{
+				return dec2uint<num_T>(p_str);
+			}
+
+			template<typename char_T>
+			static inline char_T* to_chars(num_T const p_val, char_T* const p_str)
+			{
+				return uint2dec(p_val, p_str);
+			}
+
+			static inline uintptr_t estimate(num_T const p_val)
+			{
+				return uint2dec_estimate(p_val);
+			}
+
+		};
+	} //namespace
 	} //namespace _p
 
 
