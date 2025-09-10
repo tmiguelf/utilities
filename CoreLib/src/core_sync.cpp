@@ -463,7 +463,7 @@ SYNC_Error event_trap::signal()
 	int ret;
 	pthread_mutex_lock(&m_mutex);
 	m_cond = true;
-	ret = pthread_cond_signal(&m_condition);
+	ret = pthread_cond_broadcast(&m_condition);
 	pthread_mutex_unlock(&m_mutex);
 
 	if(ret == 0) return SYNC_Error::NoErr;
