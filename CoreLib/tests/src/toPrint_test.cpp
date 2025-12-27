@@ -34,6 +34,7 @@
 #include <CoreLib/toPrint/toPrint_filesystem.hpp>
 #include <CoreLib/toPrint/toPrint_net.hpp>
 #include <CoreLib/toPrint/toPrint_enum.hpp>
+#include <CoreLib/toPrint/toPrint_string_sink.hpp>
 
 using core::literals::operator "" _ui8;
 using core::literals::operator "" _i8;
@@ -202,4 +203,12 @@ TEST(toPrint, toPrint_type_support)
 
 	[[maybe_unused]] constexpr bool test_derived = core::_p::is_sink_toPrint_v<test_type_sink<wchar_t> const>;
 
+}
+
+TEST(toPrint, toPrint_string_sink)
+{
+	std::u8string tsink;
+	core::print<char8_t>(tsink, u8"Test "sv, 23);
+
+	ASSERT_EQ(tsink, u8"Test 23"sv);
 }

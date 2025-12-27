@@ -29,7 +29,7 @@
 
 #include <cstdint>
 
-#if defined(_M_AMD64) || defined(__amd64__)
+#if defined(_M_AMD64) or defined(__amd64__)
 #	ifdef _WIN32
 #		include <intrin.h>
 #	endif

@@ -139,6 +139,7 @@
     <ClInclude Include="include\CoreLib\toPrint\toPrint_net.hpp" />
     <ClInclude Include="include\CoreLib\toPrint\toPrint_sink.hpp" />
     <ClInclude Include="include\CoreLib\toPrint\toPrint_std_ostream.hpp" />
+    <ClInclude Include="include\CoreLib\toPrint\toPrint_string_sink.hpp" />
     <ClInclude Include="include\CoreLib\toPrint\toPrint_support.hpp" />
     <ClInclude Include="src\string\fp_traits.hpp" />
     <ClInclude Include="src\string\ryu\common.hpp" />
