@@ -33,7 +33,7 @@
 
 namespace core
 {
-#if defined(_M_AMD64) || defined(__amd64__)
+#if defined(_M_AMD64) or defined(__amd64__)
 
 	namespace amd64
 	{

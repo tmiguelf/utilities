@@ -22,7 +22,7 @@
 ///		FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 ///		AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 ///		LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-///		OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+///		OUT OFs OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ///		SOFTWARE.
 //======== ======== ======== ======== ======== ======== ======== ========
 
@@ -43,14 +43,20 @@ void doBadStuff(std::vector<int>& p_vect)
 	p_vect[1258466] = var;
 }
 
+using fn_t = void (*)();
+
 int main(
 	[[maybe_unused]] int argc,
 	[[maybe_unused]] char* argv[])
 {
+	core::register_crash_trace("Test.strace");
+
+
+	//fn_t fn = (fn_t) static_cast<uintptr_t>( argc );
+	//fn();
+
 	std::vector<int> tes = {1, 2, 3};
 
-
-	core::register_crash_trace("Test.strace");
 
 	doBadStuff(tes);
 	doBadStuff(tes);

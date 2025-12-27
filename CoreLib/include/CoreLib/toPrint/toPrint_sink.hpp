@@ -39,11 +39,17 @@
 
 namespace core
 {
+
 class sink_toPrint_base {};
 
 template<typename>
 class sink_toPrint;
 template<typename T> sink_toPrint(T) -> sink_toPrint<std::remove_cvref_t<T>>;
+
+struct sink_toPrint_properties_t
+{
+	bool const has_own_buffer;
+};
 
 namespace _p
 {
@@ -53,11 +59,24 @@ namespace _p
 	template<c_toPrint_char Char_t, typename Type> requires requires(Type x) { x.write(std::declval<std::basic_string_view<Char_t>>()); }
 	struct toPrint_has_write<Char_t, Type>: public std::true_type{};
 
+
+	template<c_toPrint_char, typename>
+	struct toPrint_has_own_buffer : public std::false_type{};
+
+	template<c_toPrint_char Char_t, typename Type> requires
+	(
+		( std::declval<Type>().sink_toPrint_properties.has_own_buffer == true ) and
+		std::is_same_v<Char_t*, decltype(std::declval<Type>().buffer_acquire(uintptr_t{}))> and
+		requires(Type x) { x.buffer_released(std::declval<Char_t*>(), uintptr_t{}); }
+	)
+	struct toPrint_has_own_buffer<Char_t, Type>: public std::true_type{};
+
+
 	template<typename T>
 	constexpr bool is_sink_toPrint_v = is_derived_v<T, ::core::sink_toPrint_base>;
 
 	template<c_toPrint_char Char_t, typename T>
-	constexpr bool is_valid_sink_toPrint_v = is_sink_toPrint_v<T> && toPrint_has_write<Char_t, T>::value;
+	constexpr bool is_valid_sink_toPrint_v = is_sink_toPrint_v<T> and ( toPrint_has_write<Char_t, T>::value or toPrint_has_own_buffer<Char_t, T>::value);
 
 } //namespace _p
 

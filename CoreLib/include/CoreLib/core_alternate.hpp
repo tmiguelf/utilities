@@ -37,7 +37,7 @@ template <typename T_primary, typename T_alternate, T_alternate Good_v, T_altern
 class alternate
 {
 	static_assert(!std::is_same_v<std::remove_cv_t<T_primary>, std::remove_cv_t<T_alternate>>, "Types must be distinct");
-	//static_assert(std::is_integral_v<T_alternate> || std::is_enum_v<T_alternate>, "Alternate Type must be an error core");
+	//static_assert(std::is_integral_v<T_alternate> or std::is_enum_v<T_alternate>, "Alternate Type must be an error core");
 	static_assert(Good_v != Default_v, "Good_v and Default_v must differ");
 public:
 	inline constexpr alternate()						: m_errorCode{Default_v} {}

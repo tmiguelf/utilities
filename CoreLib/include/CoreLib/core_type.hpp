@@ -65,13 +65,13 @@ namespace literals
 } //namespace core
 
 #define CORE_MAKE_ENUM_FLAG(TYPE) \
-inline constexpr TYPE  operator |  (TYPE const p_1, TYPE const p_2){ using u_t = std::underlying_type_t<TYPE>; return static_cast<TYPE>(static_cast<u_t>(p_1) | static_cast<u_t>(p_2)); } \
-inline constexpr TYPE  operator &  (TYPE const p_1, TYPE const p_2){ using u_t = std::underlying_type_t<TYPE>; return static_cast<TYPE>(static_cast<u_t>(p_1) & static_cast<u_t>(p_2)); } \
-inline constexpr TYPE  operator ^  (TYPE const p_1, TYPE const p_2){ using u_t = std::underlying_type_t<TYPE>; return static_cast<TYPE>(static_cast<u_t>(p_1) ^ static_cast<u_t>(p_2)); } \
-inline constexpr TYPE& operator |= (TYPE&      p_1, TYPE const p_2){ using u_t = std::underlying_type_t<TYPE>; return p_1 = static_cast<TYPE>(static_cast<u_t>(p_1) | static_cast<u_t>(p_2)); } \
-inline constexpr TYPE& operator &= (TYPE&      p_1, TYPE const p_2){ using u_t = std::underlying_type_t<TYPE>; return p_1 = static_cast<TYPE>(static_cast<u_t>(p_1) & static_cast<u_t>(p_2)); } \
-inline constexpr TYPE& operator ^= (TYPE&      p_1, TYPE const p_2){ using u_t = std::underlying_type_t<TYPE>; return p_1 = static_cast<TYPE>(static_cast<u_t>(p_1) ^ static_cast<u_t>(p_2)); } \
-inline constexpr TYPE  operator ~  (TYPE const p_1)                { using u_t = std::underlying_type_t<TYPE>; return static_cast<TYPE>(~static_cast<u_t>(p_1)); }
+inline constexpr TYPE  operator bitor  (TYPE const p_1, TYPE const p_2){ using u_t = std::underlying_type_t<TYPE>; return static_cast<TYPE>(static_cast<u_t>(p_1) bitor  static_cast<u_t>(p_2)); } \
+inline constexpr TYPE  operator bitand (TYPE const p_1, TYPE const p_2){ using u_t = std::underlying_type_t<TYPE>; return static_cast<TYPE>(static_cast<u_t>(p_1) bitand static_cast<u_t>(p_2)); } \
+inline constexpr TYPE  operator xor    (TYPE const p_1, TYPE const p_2){ using u_t = std::underlying_type_t<TYPE>; return static_cast<TYPE>(static_cast<u_t>(p_1) xor    static_cast<u_t>(p_2)); } \
+inline constexpr TYPE& operator |=     (TYPE&      p_1, TYPE const p_2){ using u_t = std::underlying_type_t<TYPE>; return p_1 = static_cast<TYPE>(static_cast<u_t>(p_1) bitor  static_cast<u_t>(p_2)); } \
+inline constexpr TYPE& operator &=     (TYPE&      p_1, TYPE const p_2){ using u_t = std::underlying_type_t<TYPE>; return p_1 = static_cast<TYPE>(static_cast<u_t>(p_1) bitand static_cast<u_t>(p_2)); } \
+inline constexpr TYPE& operator ^=     (TYPE&      p_1, TYPE const p_2){ using u_t = std::underlying_type_t<TYPE>; return p_1 = static_cast<TYPE>(static_cast<u_t>(p_1) xor    static_cast<u_t>(p_2)); } \
+inline constexpr TYPE  operator compl  (TYPE const p_1)                { using u_t = std::underlying_type_t<TYPE>; return static_cast<TYPE>(~static_cast<u_t>(p_1)); }
 
 #define CORE_MAKE_ENUM_ORDERABLE(TYPE) \
 inline constexpr bool operator <  (TYPE const p_1, TYPE const p_2){ using u_t = std::underlying_type_t<TYPE>; return static_cast<u_t>(p_1) <  static_cast<u_t>(p_2); } \

@@ -94,11 +94,14 @@ namespace core
 		template<c_toPrint_char CharT>
 		struct toPrint_assist
 		{
+		private:
 
-			template<typename Sink, typename... Args> requires (
-				is_valid_sink_toPrint_v<CharT, Sink> &&
-				( is_toPrint_v<Args> &&... )
-				)
+			template<typename Sink, typename... Args> requires 
+			(
+				is_valid_sink_toPrint_v<CharT, Sink> and
+				not _p::toPrint_has_own_buffer<CharT, Sink>::value and
+				( is_toPrint_v<Args> and... )
+			)
 			NO_INLINE static void push_toPrint(Sink& sink,  Args const&... args)
 			{
 				constexpr uintptr_t arg_count = sizeof...(Args);
@@ -134,13 +137,73 @@ namespace core
 				sink.write(std::basic_string_view<CharT>{nullptr, 0});
 			}
 
-			template<typename Sink, typename... Args>
+			template<typename Sink, typename... Args> requires (
+				is_valid_sink_toPrint_v<CharT, Sink> and
+				_p::toPrint_has_own_buffer<CharT, Sink>::value and
+				( is_toPrint_v<Args> and... )
+				)
+			NO_INLINE static void push_toPrint(Sink& sink,  Args const&... args)
+			{
+				constexpr uintptr_t arg_count = sizeof...(Args);
+				static_assert( arg_count > 0); 
+
+				uintptr_t char_count = 0;
+				std::array<uintptr_t const, arg_count> sizeTable { add_ret(args.size(CharT{}), char_count)... };
+
+				if (char_count)
+				{
+					CharT* const buff = sink.buffer_acquire(char_count);
+					CharT* pivot = buff;
+					uintptr_t const* pSize = sizeTable.data();
+					((args.get_print(pivot), pivot += *(pSize++)), ...);
+
+					sink.buffer_released(buff, char_count);
+				}
+				else
+				{
+					CharT* const buff = sink.buffer_acquire(0);
+					sink.buffer_released(buff, 0);
+				}
+			}
+
+		public:
+			template<typename Sink, typename... Args> requires
+			(
+				_p::is_sink_toPrint_v<Sink> and
+				_p::toPrint_has_own_buffer<CharT, Sink>::value
+			)
+			FORCE_INLINE static void print(Sink& sink)
+			{
+				CharT* const buff = sink.buffer_acquire(0);
+				sink.buffer_released(buff, 0);
+			}
+
+			template<typename Sink, typename... Args> requires
+			(
+				_p::is_sink_toPrint_v<Sink> and
+				_p::toPrint_has_own_buffer<CharT, Sink>::value
+			)
+			FORCE_INLINE static void print(Sink& sink, Args const&... args)
+			{
+				push_toPrint(sink, _p::to_print_transform(args)...);
+			}
+
+
+			template<typename Sink, typename... Args> requires
+			(
+				_p::is_sink_toPrint_v<Sink> and
+				not _p::toPrint_has_own_buffer<CharT, Sink>::value
+			)
 			FORCE_INLINE static void print(Sink& sink)
 			{
 				sink.write(std::basic_string_view<CharT>{nullptr, 0});
 			}
 
-			template<typename Sink, typename... Args>
+			template<typename Sink, typename... Args> requires
+			(
+				_p::is_sink_toPrint_v<Sink> and
+				not _p::toPrint_has_own_buffer<CharT, Sink>::value
+			)
 			FORCE_INLINE static void print(Sink& sink, Args const&... args)
 			{
 				static_assert(sizeof...(Args) > 0);
