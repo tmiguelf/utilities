@@ -222,11 +222,6 @@ uint64_t clock_stamp() //1 nanosecond resolution
 #endif
 }
 
-
-
-
-
-
 namespace
 {
 	constexpr uint64_t sec_100nsec = 1'000'000'0_ui64;

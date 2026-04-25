@@ -822,8 +822,7 @@ namespace
 	/// \brief Helper function to print environment variables
 	static void PrintEnv(file_write& p_file)
 	{
-		char** current;
-		for(current = environ; *current; ++current)
+		for(char* const* current = environ; *current; ++current)
 		{
 			OUTPUT(p_file, std::string_view{*current}, '\n');
 		}

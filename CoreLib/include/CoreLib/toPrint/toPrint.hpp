@@ -150,20 +150,16 @@ namespace core
 				uintptr_t char_count = 0;
 				std::array<uintptr_t const, arg_count> sizeTable { add_ret(args.size(CharT{}), char_count)... };
 
-				if (char_count)
+				CharT* const buff = sink.buffer_acquire(char_count);
+				if (char_count and buff)
 				{
-					CharT* const buff = sink.buffer_acquire(char_count);
 					CharT* pivot = buff;
 					uintptr_t const* pSize = sizeTable.data();
 					((args.get_print(pivot), pivot += *(pSize++)), ...);
-
 					sink.buffer_released(buff, char_count);
+					return;
 				}
-				else
-				{
-					CharT* const buff = sink.buffer_acquire(0);
-					sink.buffer_released(buff, 0);
-				}
+				sink.buffer_released(buff, 0);
 			}
 
 		public:

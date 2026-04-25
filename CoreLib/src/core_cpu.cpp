@@ -52,35 +52,23 @@ namespace core
 
 	namespace amd64
 	{
-#if !defined(_WIN32)
-		static inline void direct_cpu_id(
-			uint32_t p_leaf,
-			uint32_t& p_eax,
-			uint32_t& p_ebx,
-			uint32_t& p_ecx,
-			uint32_t& p_edx)
-		{
-			__cpuid (p_leaf, p_eax, p_ebx, p_ecx, p_edx);
-		}
-#endif
 
 		void cpu_id(EX_Reg& p_registers, uint32_t p_leaf)
 		{
 #if defined(_WIN32)
 			__cpuid(reinterpret_cast<int*>(&p_registers.eax), reinterpret_cast<int&>(p_leaf));
 #else
-			direct_cpu_id(
-				p_leaf,
-				p_registers.eax,
-				p_registers.ebx,
-				p_registers.ecx,
-				p_registers.edx);
+			__cpuid(p_leaf, p_registers.eax, p_registers.ebx, p_registers.ecx, p_registers.edx);
 #endif
 		}
 
 		void cpu_id_ex(EX_Reg& p_registers, uint32_t p_leaf, uint32_t p_subleaf)
 		{
+#if defined(_WIN32)
 			__cpuidex(reinterpret_cast<int*>(&p_registers.eax), reinterpret_cast<int&>(p_leaf), reinterpret_cast<int&>(p_subleaf));
+#else
+			__cpuid_count(p_leaf, p_subleaf, p_registers.eax, p_registers.ebx, p_registers.ecx, p_registers.edx);
+#endif
 		}
 
 

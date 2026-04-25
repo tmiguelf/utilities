@@ -926,7 +926,7 @@ static inline NET_Error Core_Send_size(_p::SocketHandle_t const p_sock, void con
 	if(p_size > static_cast<uintptr_t>(std::numeric_limits<int>::max())) p_size = static_cast<uintptr_t>(std::numeric_limits<int>::max());
 	int const ret = send(p_sock, reinterpret_cast<char const*>(p_buffer), static_cast<int>(p_size), 0);
 #else
-	intptr_t const ret = send(p_sock, reinterpret_cast<char const*>(p_buffer), p_size, 0);
+	intptr_t const ret = send(p_sock, reinterpret_cast<char const*>(p_buffer), p_size, MSG_NOSIGNAL);
 #endif
 	if(ret == SOCKET_ERROR)
 	{
@@ -950,7 +950,7 @@ static inline NET_Error Core_Send_context(_p::SocketHandle_t const p_sock, void 
 	if(currentSize > static_cast<uintptr_t>(std::numeric_limits<int>::max())) currentSize = static_cast<uintptr_t>(std::numeric_limits<int>::max());
 	int const ret = send(p_sock, reinterpret_cast<char const*>(p_buffer) + p_context, static_cast<int>(currentSize), 0);
 #else
-	intptr_t const ret = send(p_sock, reinterpret_cast<char const*>(p_buffer) + p_context, currentSize, 0);
+	intptr_t const ret = send(p_sock, reinterpret_cast<char const*>(p_buffer) + p_context, currentSize, MSG_NOSIGNAL);
 #endif
 	if(ret == SOCKET_ERROR)
 	{
@@ -1055,7 +1055,7 @@ static inline NET_Error Core_SendToIPv4(_p::SocketHandle_t const p_sock, void co
 #ifdef _WIN32
 		if(sendto(p_sock, reinterpret_cast<char const*>(p_data), static_cast<int>(p_size), 0, reinterpret_cast<sockaddr*>(&addr_info4), sizeof(addr_info4)) == SOCKET_ERROR)
 #else
-		if(sendto(p_sock, reinterpret_cast<char const*>(p_data), p_size, 0, reinterpret_cast<sockaddr const*>(&addr_info4), sizeof(addr_info4)) == SOCKET_ERROR)
+		if(sendto(p_sock, reinterpret_cast<char const*>(p_data), p_size, MSG_NOSIGNAL, reinterpret_cast<sockaddr const*>(&addr_info4), sizeof(addr_info4)) == SOCKET_ERROR)
 #endif
 		{
 			if(SockWouldBlock(p_sock))
@@ -1090,7 +1090,7 @@ static inline NET_Error Core_SendToIPv6(_p::SocketHandle_t const p_sock, void co
 #ifdef _WIN32
 		if(sendto(p_sock, reinterpret_cast<char const*>(p_data), static_cast<int>(p_size), 0, reinterpret_cast<sockaddr const*>(&addr_info6), sizeof(addr_info6)) == SOCKET_ERROR)
 #else
-		if(sendto(p_sock, reinterpret_cast<char const*>(p_data), p_size, 0, reinterpret_cast<sockaddr const*>(&addr_info6), sizeof(addr_info6)) == SOCKET_ERROR)
+		if(sendto(p_sock, reinterpret_cast<char const*>(p_data), p_size, MSG_NOSIGNAL, reinterpret_cast<sockaddr const*>(&addr_info6), sizeof(addr_info6)) == SOCKET_ERROR)
 #endif
 		{
 			if(SockWouldBlock(p_sock))
