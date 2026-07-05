@@ -36,9 +36,9 @@
 #include <CoreLib/toPrint/toPrint_enum.hpp>
 #include <CoreLib/toPrint/toPrint_string_sink.hpp>
 
-using core::literals::operator "" _ui8;
-using core::literals::operator "" _i8;
-using core::literals::operator "" _uip;
+using core::literals::operator ""_ui8;
+using core::literals::operator ""_i8;
+using core::literals::operator ""_uip;
 
 
 class TestStr

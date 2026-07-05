@@ -40,7 +40,7 @@
 
 #include <CoreLib/core_type.hpp>
 
-using ::core::literals::operator "" _ui32;
+using ::core::literals::operator ""_ui32;
 
 //======== ======== ======== Stream helper ======== ======== ========
 
@@ -167,7 +167,7 @@ using floatTypes = ::testing::Types<
 TYPED_TEST_SUITE(float_char_conv_T, floatTypes);
 */
 
-using ::core::literals::operator "" _ui32;
+using ::core::literals::operator ""_ui32;
 
 TEST(fp_charconv, special_cases)
 {

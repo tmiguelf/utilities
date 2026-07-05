@@ -25,7 +25,7 @@
 
 #include <CoreLib/core_type.hpp>
 
-using core::literals::operator"" _ui32;
+using core::literals::operator ""_ui32;
 
 // Returns the number of decimal digits in v, which must not contain more than 9 digits.
 [[nodiscard]] static inline constexpr uint32_t decimalLength9(uint32_t const v)

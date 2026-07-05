@@ -44,6 +44,8 @@ std::optional<core::os_string>	machine_name();
 
 std::filesystem::path application_path();
 
+std::filesystem::path user_home_path();
+
 inline std::filesystem::path to_absolute_lexical(std::filesystem::path const& p_path, std::filesystem::path const& p_base)
 {
 	if(p_path.is_absolute())

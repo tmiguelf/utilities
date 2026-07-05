@@ -41,8 +41,8 @@
 #include <CoreLib/string/core_fp_to_chars_round.hpp>
 #include <CoreLib/core_type.hpp>
 
-using ::core::literals::operator "" _ui64;
-using ::core::literals::operator "" _ui32;
+using ::core::literals::operator ""_ui64;
+using ::core::literals::operator ""_ui32;
 
 //======== ======== ======== ======== Auxiliary Test case generator ======== ======== ======== ========
 

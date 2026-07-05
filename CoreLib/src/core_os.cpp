@@ -31,10 +31,13 @@
 
 #if	defined(_WIN32) //OS
 #	include <windows.h>
+#	include <shlobj_core.h>
 #else
 #	include <unistd.h>
 #	include <climits>
 #	include <sys/stat.h>
+#	include <sys/types.h>
+#	include <pwd.h>
 #endif
 
 namespace core
@@ -100,6 +103,33 @@ std::filesystem::path application_path()
 	return {};
 }
 
+std::filesystem::path user_home_path()
+{
+#if 0
+	std::optional<os_string> path = get_env(L"USERPROFILE");
+
+	if (path.has_value())
+	{
+		return std::filesystem::path{ path.value() };
+	}
+
+	return {};
+#else
+	wchar_t* mem;
+	HRESULT result = SHGetKnownFolderPath(FOLDERID_Profile, KF_FLAG_DONT_UNEXPAND | KF_FLAG_NO_ALIAS, NULL, &mem); //CSIDL_PROFILE
+
+	if (result == S_OK)
+	{
+		std::filesystem::path path{ mem };
+		CoTaskMemFree(mem);
+		return path;
+	}
+
+	return {};
+#endif
+}
+
+
 static void __cdecl noop_invalid_parameter_handler(wchar_t const*, wchar_t const*, wchar_t const*, unsigned int, uintptr_t){}
 void disable_critical_invalid_c_param()
 {
@@ -157,6 +187,33 @@ std::filesystem::path application_path()
 
 	return {};
 }
+
+std::filesystem::path user_home_path()
+{
+
+#if 0
+	std::optional<os_string> path = get_env("HOME");
+
+	if (path.has_value())
+	{
+		return std::filesystem::path{ path.value() };
+	}
+
+	return {};
+#else
+	struct passwd pw {};
+	std::array<char, 2048> buff;
+	struct passwd* result = nullptr;
+
+	if( getpwuid_r(getuid(), &pw, buff.data(), buff.size(), &result) )
+	{
+		return {};
+	}
+
+	return std::filesystem::path{ result->pw_dir };
+#endif
+}
+
 #endif
 
 } //namespace core

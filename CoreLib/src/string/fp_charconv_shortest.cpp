@@ -38,11 +38,11 @@
 
 namespace core
 {
-	using ::core::literals::operator "" _ui64;
-	using ::core::literals::operator "" _ui32;
-	using ::core::literals::operator "" _ui16;
-	using ::core::literals::operator "" _i16;
-	using ::core::literals::operator "" _ui8;
+	using ::core::literals::operator ""_ui64;
+	using ::core::literals::operator ""_ui32;
+	using ::core::literals::operator ""_ui16;
+	using ::core::literals::operator ""_i16;
+	using ::core::literals::operator ""_ui8;
 
 	namespace
 	{
