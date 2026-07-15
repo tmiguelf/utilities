@@ -240,7 +240,7 @@ inline bool			thread::joinable	() const { return m_hasThread;	}
 
 
 ///	\brief Yields the currently alloted time slot for the current thread
-inline void thread_yield() { pthread_yield(); }
+inline void thread_yield() { sched_yield(); }
 
 #endif
 

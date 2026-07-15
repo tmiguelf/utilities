@@ -249,7 +249,7 @@ template<>
 class toPrint<char>: public toPrint<char8_t>
 {
 public:
-	constexpr toPrint(char const p_data): toPrint<char8_t>(static_cast<char8_t const>(p_data))
+	constexpr toPrint(char const p_data): toPrint<char8_t>(static_cast<char8_t>(p_data))
 	{}
 };
 
@@ -257,7 +257,7 @@ template<>
 class toPrint<wchar_t>: public toPrint<core::wchar_alias>
 {
 public:
-	constexpr toPrint(wchar_t const p_data): toPrint<core::wchar_alias>(static_cast<core::wchar_alias const>(p_data))
+	constexpr toPrint(wchar_t const p_data): toPrint<core::wchar_alias>(static_cast<core::wchar_alias>(p_data))
 	{}
 };
 
@@ -517,7 +517,7 @@ class toPrint<Num_T>: public toPrint<_p::toPrint_int_aliased_t<Num_T>>
 {
 	using alias_t = _p::toPrint_int_aliased_t<Num_T>;
 public:
-	constexpr toPrint(Num_T const p_data): toPrint<alias_t>(static_cast<alias_t const>(p_data)) {}
+	constexpr toPrint(Num_T const p_data): toPrint<alias_t>(static_cast<alias_t>(p_data)) {}
 };
 
 
@@ -723,7 +723,7 @@ class toPrint_hex_fix<Num_T>: public toPrint_hex_fix<_p::toPrint_uint_clobber_t<
 {
 	using alias_t = _p::toPrint_uint_clobber_t<Num_T>;
 public:
-	constexpr toPrint_hex_fix(Num_T const p_data): toPrint_hex_fix<alias_t>(static_cast<alias_t const>(p_data)) {}
+	constexpr toPrint_hex_fix(Num_T const p_data): toPrint_hex_fix<alias_t>(static_cast<alias_t>(p_data)) {}
 };
 
 
@@ -764,7 +764,7 @@ class toPrint_bin<Num_T>: public toPrint_bin<_p::toPrint_uint_clobber_t<Num_T>>
 {
 	using alias_t = _p::toPrint_uint_clobber_t<Num_T>;
 public:
-	constexpr toPrint_bin(Num_T const p_data): toPrint_bin<alias_t>(static_cast<alias_t const>(p_data)) {}
+	constexpr toPrint_bin(Num_T const p_data): toPrint_bin<alias_t>(static_cast<alias_t>(p_data)) {}
 };
 
 //-------- Hexadecimal fixed size -------- 
@@ -801,7 +801,7 @@ class toPrint_bin_fix<Num_T>: public toPrint_bin_fix<_p::toPrint_uint_clobber_t<
 {
 	using alias_t = _p::toPrint_uint_clobber_t<Num_T>;
 public:
-	constexpr toPrint_bin_fix(Num_T const p_data): toPrint_bin_fix<alias_t>(static_cast<alias_t const>(p_data)) {}
+	constexpr toPrint_bin_fix(Num_T const p_data): toPrint_bin_fix<alias_t>(static_cast<alias_t>(p_data)) {}
 };
 
 

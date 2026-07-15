@@ -95,9 +95,9 @@ namespace core
 		{ //nan or inf
 			if(mantissa_bits)
 			{ //nan
-				return fp_base_classify{.classification=fp_classify::nan};
+				return fp_base_classify{.classification = fp_classify::nan, .is_negative = false};
 			} //else inf
-			return fp_base_classify{.classification=fp_classify::inf, .is_negative = sign_bit};
+			return fp_base_classify{.classification = fp_classify::inf, .is_negative = sign_bit};
 		} // else number
 
 		exp_st exponent;
@@ -321,15 +321,15 @@ namespace core
 
 		uint_t const exponent_bits = fp_utils_t::get_exponent_bits(value);
 		uint_t const mantissa_bits = fp_utils_t::get_mantissa(value);
-		bool const   sign_bit      = fp_utils_t::get_sign(value);
+		bool   const sign_bit      = fp_utils_t::get_sign(value);
 
 		if(exponent_bits == fp_utils_t::exponent_mask)
 		{ //nan or inf
 			if(mantissa_bits)
 			{ //nan
-				return fp_base_classify{.classification=fp_classify::nan};
+				return fp_base_classify{.classification = fp_classify::nan, .is_negative = false};
 			} //else inf
-			return fp_base_classify{.classification=fp_classify::inf, .is_negative = sign_bit};
+			return fp_base_classify{.classification = fp_classify::inf, .is_negative = sign_bit};
 		} // else number
 
 		exp_st exponent;

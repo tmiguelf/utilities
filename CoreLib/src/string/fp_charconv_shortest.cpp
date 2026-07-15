@@ -123,39 +123,21 @@ namespace core
 	} //namespace
 
 
-	template<>
-	[[nodiscard]] fp_to_chars_sci_size to_chars_shortest_sci_size<float32_t>(fp_to_chars_shortest_context<float32_t> const context)
+	template<_p::charconv_fp_c fp_t>
+	[[nodiscard]] fp_to_chars_sci_size to_chars_shortest_sci_size(fp_to_chars_shortest_context<fp_t> const context)
 	{
-		using fp_type = float32_t;
+		using fp_type = fp_t;
 		using fp_utils_t = fp_utils<fp_type>;
 		return fp_utils_t::sci_size(context.sig_digits, context.exponent);
 	}
 
-	template<>
-	[[nodiscard]] fp_to_chars_sci_size to_chars_shortest_sci_size<float64_t>(fp_to_chars_shortest_context<float64_t> const context)
+	template<_p::charconv_fp_c fp_t>
+	[[nodiscard]] fp_to_chars_fix_size to_chars_shortest_fix_size<fp_t>(fp_to_chars_shortest_context<fp_t> const context)
 	{
-		using fp_type = float64_t;
-		using fp_utils_t = fp_utils<fp_type>;
-		return fp_utils_t::sci_size(context.sig_digits, context.exponent);
-	}
-
-
-	template<>
-	[[nodiscard]] fp_to_chars_fix_size to_chars_shortest_fix_size<float32_t>(fp_to_chars_shortest_context<float32_t> const context)
-	{
-		using fp_type = float32_t;
+		using fp_type = fp_t;
 		using fp_utils_t = fp_utils<fp_type>;
 		return fp_utils_t::fix_size(context.sig_digits, context.exponent);
 	}
-
-	template<>
-	[[nodiscard]] fp_to_chars_fix_size to_chars_shortest_fix_size<float64_t>(fp_to_chars_shortest_context<float64_t> const context)
-	{
-		using fp_type = float64_t;
-		using fp_utils_t = fp_utils<fp_type>;
-		return fp_utils_t::fix_size(context.sig_digits, context.exponent);
-	}
-
 
 	template<_p::charconv_fp_c fp_t, _p::charconv_char_c char_t>
 	void to_chars_shortest_sci_unsafe(fp_to_chars_shortest_context<fp_t> const context, char_t* unit_char, char_t* decimal_chars)
@@ -262,6 +244,15 @@ namespace core
 		}
 	}
 
+
+	template fp_base_classify to_chars_shortest_classify<float32_t>(float32_t value, fp_to_chars_shortest_context<float32_t>& context);
+	template fp_base_classify to_chars_shortest_classify<float64_t>(float64_t value, fp_to_chars_shortest_context<float64_t>& context);
+
+	template [[nodiscard]] fp_to_chars_sci_size to_chars_shortest_sci_size<float32_t>(fp_to_chars_shortest_context<float32_t> context);
+	template [[nodiscard]] fp_to_chars_sci_size to_chars_shortest_sci_size<float64_t>(fp_to_chars_shortest_context<float64_t> context);
+
+	template [[nodiscard]] fp_to_chars_fix_size to_chars_shortest_fix_size<float32_t>(fp_to_chars_shortest_context<float32_t> context);
+	template [[nodiscard]] fp_to_chars_fix_size to_chars_shortest_fix_size<float64_t>(fp_to_chars_shortest_context<float64_t> context);
 
 	template void to_chars_shortest_sci_unsafe<float32_t , char8_t >(fp_to_chars_shortest_context<float32_t >, char8_t *, char8_t *);
 	template void to_chars_shortest_sci_unsafe<float32_t , char16_t>(fp_to_chars_shortest_context<float32_t >, char16_t*, char16_t*);

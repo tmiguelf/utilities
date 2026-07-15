@@ -79,7 +79,7 @@ namespace core
 			{
 				Dl_info t_info;
 
-				void const * const addr = reinterpret_cast<void const * const>(get_current_module_base);
+				void const * const addr = reinterpret_cast<void const*>(get_current_module_base);
 				if(dladdr(addr, &t_info) && (t_info.dli_fbase < addr))
 				{
 					module_addr = t_info.dli_fbase;

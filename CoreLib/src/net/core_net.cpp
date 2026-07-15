@@ -32,7 +32,7 @@
 #include <CoreLib/net/core_net_UDP.hpp>
 #include <CoreLib/net/core_net_TCP.hpp>
 
-#include <CoreLib/Core_Endian.hpp>
+#include <CoreLib/core_endian.hpp>
 
 #include <limits>
 
@@ -975,9 +975,9 @@ static inline NET_Error Core_Receive_size(_p::SocketHandle_t const p_sock, void*
 {
 #ifdef _WIN32
 	if(p_size > static_cast<uintptr_t>(std::numeric_limits<int>::max())) p_size =static_cast<uintptr_t>( std::numeric_limits<int>::max());
-	int const ret = recv(p_sock, reinterpret_cast<char* const>(p_buffer), static_cast<int>(p_size), 0);
+	int const ret = recv(p_sock, reinterpret_cast<char*>(p_buffer), static_cast<int>(p_size), 0);
 #else
-	intptr_t const ret = recv(p_sock, reinterpret_cast<char* const>(p_buffer), p_size, 0);
+	intptr_t const ret = recv(p_sock, reinterpret_cast<char*>(p_buffer), p_size, 0);
 #endif
 	if(ret == SOCKET_ERROR)
 	{

@@ -216,7 +216,7 @@ namespace _p
 	//
 	static void* launch_thread(void* const p_param)
 	{
-		FP_Func* t_param = reinterpret_cast<FP_Func*const >(p_param);
+		FP_Func* const t_param = reinterpret_cast<FP_Func*>(p_param);
 		void (*const t_function)(void *) = t_param->m_func;
 		void* t_arg = t_param->m_param;
 		delete t_param;

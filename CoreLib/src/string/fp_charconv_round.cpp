@@ -31,7 +31,7 @@
 #include <bit>
 
 #include <CoreLib/string/core_fp_to_chars_round.hpp>
-#include <CoreLib/Core_Type.hpp>
+#include <CoreLib/core_type.hpp>
 #include <CoreLib/cpu/x64.hpp>
 
 #include "fp_traits.hpp"
@@ -975,9 +975,10 @@ namespace core
 		}
 	};
 
-	fp_to_chars_sci_result to_chars_sci_size(float32_t value, fp_to_chars_sci_context<float32_t>& context, uint16_t significant_digits, fp_round rounding_mode)
+	template<_p::charconv_fp_c fp_t>
+	fp_to_chars_sci_result to_chars_sci_size(fp_t value, fp_to_chars_sci_context<fp_t>& context, uint16_t significant_digits, fp_round rounding_mode)
 	{
-		using fp_type = float32_t;
+		using fp_type = fp_t;
 		using fp_utils_t = fp_utils<fp_type>;
 		using uint_t = fp_utils_t::uint_t;
 		using exp_st = fp_utils_t::exp_st;
@@ -992,9 +993,9 @@ namespace core
 		{ //nan or inf
 			if(mantissa_bits)
 			{ //nan
-				return fp_to_chars_sci_result{fp_base_classify{.classification=fp_classify::nan}};
+				return fp_to_chars_sci_result{fp_base_classify{.classification=fp_classify::nan, .is_negative = false}, 0};
 			} //else inf
-			return fp_to_chars_sci_result{fp_base_classify{.classification=fp_classify::inf, .is_negative = sign_bit}};
+			return fp_to_chars_sci_result{fp_base_classify{.classification=fp_classify::inf, .is_negative = sign_bit}, 0};
 		} // else number
 
 
@@ -1071,9 +1072,10 @@ namespace core
 		return res;
 	}
 
-	fp_to_chars_fix_result to_chars_fix_size(float32_t const value, fp_to_chars_fix_context<float32_t>& context, int16_t precision, fp_round rounding_mode)
+	template<_p::charconv_fp_c fp_t>
+	fp_to_chars_fix_result to_chars_fix_size(fp_t const value, fp_to_chars_fix_context<fp_t>& context, int16_t precision, fp_round rounding_mode)
 	{
-		using fp_type = float32_t;
+		using fp_type = fp_t;
 		using fp_utils_t = fp_utils<fp_type>;
 		using uint_t = fp_utils_t::uint_t;
 		using exp_st = fp_utils_t::exp_st;
@@ -1088,9 +1090,9 @@ namespace core
 		{ //nan or inf
 			if(mantissa_bits)
 			{ //nan
-				return fp_to_chars_fix_result{fp_base_classify{.classification=fp_classify::nan}};
+				return fp_to_chars_fix_result{fp_base_classify{.classification=fp_classify::nan, .is_negative = false}, 0};
 			} //else inf
-			return fp_to_chars_fix_result{fp_base_classify{.classification=fp_classify::inf, .is_negative = sign_bit}};
+			return fp_to_chars_fix_result{fp_base_classify{.classification=fp_classify::inf, .is_negative = sign_bit}, 0};
 		} // else number
 
 
@@ -1242,10 +1244,10 @@ namespace core
 		return res;
 	}
 
-
-	void to_chars_sci_mantissa_unsafe(fp_to_chars_sci_context<float32_t> const& context, char8_t* const unit_char, char8_t* const decimal_chars)
+	template<_p::charconv_fp_c fp_t, _p::charconv_char_c char_t>
+	void to_chars_sci_mantissa_unsafe(fp_to_chars_sci_context<fp_t> const& context, char_t* const unit_char, char_t* const decimal_chars)
 	{
-		using fp_type = float32_t;
+		using fp_type = fp_t;
 		using fp_utils_t = fp_utils<fp_type>;
 		using exp_ut = fp_utils_t::exp_ut;
 
@@ -1258,17 +1260,19 @@ namespace core
 		fp_utils_t::to_chars_sci_mantissa(context.digits, unit_char, decimal_chars, last_block, last_num_digits, sig_digits);
 	}
 
-	void to_chars_sci_exp_unsafe(fp_to_chars_sci_context<float32_t> const& context, char8_t* exp_chars)
+	template<_p::charconv_fp_c fp_t, _p::charconv_char_c char_t>
+	void to_chars_sci_exp_unsafe(fp_to_chars_sci_context<fp_t> const& context, char_t* const exp_chars)
 	{
-		using fp_type = float32_t;
+		using fp_type = fp_t;
 		using fp_utils_t = fp_utils<fp_type>;
 
 		fp_utils_t::to_chars_exp(context.exponent, exp_chars);
 	}
 
-	void to_chars_fix_unsafe(fp_to_chars_fix_context<float32_t> const& context, char8_t* unit_chars, char8_t* decimal_chars)
+	template<_p::charconv_fp_c fp_t, _p::charconv_char_c char_t>
+	void to_chars_fix_unsafe(fp_to_chars_fix_context<fp_t> const& context, char_t* const unit_chars, char_t* const decimal_chars)
 	{
-		using fp_type = float32_t;
+		using fp_type = fp_t;
 		using fp_utils_t = fp_utils<fp_type>;
 		using exp_ut = fp_utils_t::exp_ut;
 
@@ -1281,137 +1285,32 @@ namespace core
 			unit_chars, decimal_chars, last_block, last_num_digits, leading_zeros);
 	}
 
-	fp_to_chars_sci_result to_chars_sci_size(float64_t value, fp_to_chars_sci_context<float64_t>& context, uint16_t significant_digits, fp_round rounding_mode)
-	{
-		using fp_type = float64_t;
-		using fp_utils_t = fp_utils<fp_type>;
-		using uint_t = fp_utils_t::uint_t;
-		using exp_st = fp_utils_t::exp_st;
-		using exp_ut = fp_utils_t::exp_ut;
-		using bignum_t = fp_utils_t::bignum_t;
 
-		uint_t const exponent_bits = fp_utils_t::get_exponent_bits(value);
-		uint_t const mantissa_bits = fp_utils_t::get_mantissa(value);
-		bool const sign_bit        = fp_utils_t::get_sign(value);
+	template fp_to_chars_sci_result to_chars_sci_size<float32_t>(float32_t value, fp_to_chars_sci_context<float32_t>& context, uint16_t significant_digits, fp_round rounding_mode);
+	template fp_to_chars_sci_result to_chars_sci_size<float64_t>(float64_t value, fp_to_chars_sci_context<float64_t>& context, uint16_t significant_digits, fp_round rounding_mode);
 
-		if(exponent_bits == fp_utils_t::exponent_mask)
-		{ //nan or inf
-			if(mantissa_bits)
-			{ //nan
-				return fp_to_chars_sci_result{fp_base_classify{.classification=fp_classify::nan}};
-			} //else inf
-			return fp_to_chars_sci_result{fp_base_classify{.classification=fp_classify::inf, .is_negative = sign_bit}};
-		} // else number
+	template fp_to_chars_fix_result to_chars_fix_size<float32_t>(float32_t value, fp_to_chars_fix_context<float32_t>& context,  int16_t precision, fp_round rounding_mode);
+	template fp_to_chars_fix_result to_chars_fix_size<float64_t>(float64_t value, fp_to_chars_fix_context<float64_t>& context,  int16_t precision, fp_round rounding_mode);
 
+	template void to_chars_sci_mantissa_unsafe<float32_t, char8_t >(fp_to_chars_sci_context<float32_t> const& context, char8_t * unit_char, char8_t * decimal_chars);
+	template void to_chars_sci_mantissa_unsafe<float32_t, char16_t>(fp_to_chars_sci_context<float32_t> const& context, char16_t* unit_char, char16_t* decimal_chars);
+	template void to_chars_sci_mantissa_unsafe<float32_t, char32_t>(fp_to_chars_sci_context<float32_t> const& context, char32_t* unit_char, char32_t* decimal_chars);
+	template void to_chars_sci_mantissa_unsafe<float32_t, char8_t >(fp_to_chars_sci_context<float32_t> const& context, char8_t * unit_char, char8_t * decimal_chars);
+	template void to_chars_sci_mantissa_unsafe<float32_t, char16_t>(fp_to_chars_sci_context<float32_t> const& context, char16_t* unit_char, char16_t* decimal_chars);
+	template void to_chars_sci_mantissa_unsafe<float32_t, char32_t>(fp_to_chars_sci_context<float32_t> const& context, char32_t* unit_char, char32_t* decimal_chars);
 
-		fp_to_chars_sci_result res;
-		res.is_negative = sign_bit;
+	template void to_chars_sci_exp_unsafe<float32_t, char8_t >(fp_to_chars_sci_context<float32_t> const& context, char8_t * exp_chars);
+	template void to_chars_sci_exp_unsafe<float32_t, char16_t>(fp_to_chars_sci_context<float32_t> const& context, char16_t* exp_chars);
+	template void to_chars_sci_exp_unsafe<float32_t, char32_t>(fp_to_chars_sci_context<float32_t> const& context, char32_t* exp_chars);
+	template void to_chars_sci_exp_unsafe<float64_t, char8_t >(fp_to_chars_sci_context<float64_t> const& context, char8_t * exp_chars);
+	template void to_chars_sci_exp_unsafe<float64_t, char16_t>(fp_to_chars_sci_context<float64_t> const& context, char16_t* exp_chars);
+	template void to_chars_sci_exp_unsafe<float64_t, char32_t>(fp_to_chars_sci_context<float64_t> const& context, char32_t* exp_chars);
 
-		exp_st exponent;
-		uint_t mantissa = mantissa_bits;
-
-		if(exponent_bits)
-		{	//normal
-			exponent = static_cast<exp_st>(exponent_bits >> fp_utils_t::exponent_offset) - fp_utils_t::exponent_fix_bias;
-			mantissa |= fp_utils_t::mantissa_implicit_bit;
-		}
-		else
-		{	//denormal
-			if(mantissa == 0)
-			{ //Zero
-				res.classification = fp_classify::zero;
-				return res;
-			}
-			exponent = 1 - fp_utils_t::exponent_fix_bias;
-		}
-
-		res.classification = fp_classify::finite;
-
-		bignum_t& digits = context.digits;
-		exp_ut const decimal_seperator_offset = fp_utils_t::load_digits(digits, mantissa, exponent);
-
-		exp_ut last_block      = fp_utils_t::last_block(digits);
-		exp_ut last_num_digits = fp_utils_t::num_digits(digits[last_block]);
-		exp_ut num_digits      = static_cast<exp_ut>(last_block * fp_utils_t::max_pow_10_digits + last_num_digits);
-		exp_ut leading_zeros   = fp_utils_t::leading_zeros(digits);
-		exp_ut sig_digits      = static_cast<exp_ut>((num_digits - 1) - leading_zeros);
-
-		significant_digits = std::min(significant_digits, fp_utils_t::max_scientific_decimal_digits_10);
-		if(significant_digits < sig_digits)
-		{
-			exp_ut const round_pos = static_cast<exp_ut>((num_digits - 1) - significant_digits);
-
-			fp_utils_t::fix_rounding_mode(rounding_mode, sign_bit);
-
-			switch(rounding_mode)
-			{
-			default:
-			case fp_round::nearest:
-				fp_utils_t::round_nearest_at(digits, round_pos);
-				break;
-			case fp_round::to_zero:
-				fp_utils_t::round_down_at(digits, round_pos);
-				goto lbl$leading;
-				break;
-			case fp_round::away_zero:
-				fp_utils_t::round_up_at(digits, round_pos);
-				break;
-			}
-
-			last_block      = fp_utils_t::last_block(digits);
-			last_num_digits = fp_utils_t::num_digits(digits[last_block]);
-			num_digits      = static_cast<exp_ut>(last_block * fp_utils_t::max_pow_10_digits + last_num_digits);
-		lbl$leading:
-			leading_zeros   = fp_utils_t::leading_zeros(digits);
-
-			sig_digits = static_cast<exp_ut>((num_digits - 1) - leading_zeros);
-		}
-
-		res.size.mantissa_decimal_size = sig_digits;
-		context.exponent = static_cast<exp_st>(num_digits - 1) - static_cast<exp_st>(decimal_seperator_offset);
-
-		fp_utils_t::exp_load(
-			context.exponent,
-			res.size);
-
-		return res;
-	}
-
-	void to_chars_sci_mantissa_unsafe(fp_to_chars_sci_context<float64_t> const& context, char8_t* unit_char, char8_t* decimal_chars)
-	{
-		using fp_type = float64_t;
-		using fp_utils_t = fp_utils<fp_type>;
-		using exp_ut = fp_utils_t::exp_ut;
-
-		exp_ut last_block      = fp_utils_t::last_block(context.digits);
-		exp_ut last_num_digits = fp_utils_t::num_digits(context.digits[last_block]);
-		exp_ut num_digits      = static_cast<exp_ut>(last_block * fp_utils_t::max_pow_10_digits + last_num_digits);
-		exp_ut leading_zeros   = fp_utils_t::leading_zeros(context.digits);
-		exp_ut sig_digits      = static_cast<exp_ut>((num_digits - 1) - leading_zeros);
-
-		fp_utils_t::to_chars_sci_mantissa(context.digits, unit_char, decimal_chars, last_block, last_num_digits, sig_digits);
-	}
-
-	void to_chars_sci_exp_unsafe(fp_to_chars_sci_context<float64_t> const& context, char8_t* exp_chars)
-	{
-		using fp_type = float64_t;
-		using fp_utils_t = fp_utils<fp_type>;
-		fp_utils_t::to_chars_exp(context.exponent, exp_chars);
-	}
-
-	void to_chars_fix_unsafe(fp_to_chars_fix_context<float64_t> const& context, char8_t* unit_chars, char8_t* decimal_chars)
-	{
-		using fp_type = float64_t;
-		using fp_utils_t = fp_utils<fp_type>;
-		using exp_ut = fp_utils_t::exp_ut;
-
-		exp_ut last_block      = fp_utils_t::last_block(context.digits);
-		exp_ut last_num_digits = fp_utils_t::num_digits(context.digits[last_block]);
-		//exp_ut num_digits      = static_cast<exp_ut>(last_block * fp_utils_t::max_pow_10_digits + last_num_digits);
-		exp_ut leading_zeros   = fp_utils_t::leading_zeros(context.digits);
-
-		fp_utils_t::to_chars_fix(context.digits, context.decimal_offset,
-			unit_chars, decimal_chars, last_block, last_num_digits, leading_zeros);
-	}
+	template void to_chars_fix_unsafe<float32_t, char8_t >(fp_to_chars_fix_context<float32_t> const& context, char8_t * unit_chars, char8_t * decimal_chars);
+	template void to_chars_fix_unsafe<float32_t, char16_t>(fp_to_chars_fix_context<float32_t> const& context, char16_t* unit_chars, char16_t* decimal_chars);
+	template void to_chars_fix_unsafe<float32_t, char32_t>(fp_to_chars_fix_context<float32_t> const& context, char32_t* unit_chars, char32_t* decimal_chars);
+	template void to_chars_fix_unsafe<float64_t, char8_t >(fp_to_chars_fix_context<float64_t> const& context, char8_t * unit_chars, char8_t * decimal_chars);
+	template void to_chars_fix_unsafe<float64_t, char16_t>(fp_to_chars_fix_context<float64_t> const& context, char16_t* unit_chars, char16_t* decimal_chars);
+	template void to_chars_fix_unsafe<float64_t, char32_t>(fp_to_chars_fix_context<float64_t> const& context, char32_t* unit_chars, char32_t* decimal_chars);
 
 } //namespace core

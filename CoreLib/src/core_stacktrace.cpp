@@ -40,13 +40,13 @@
 #	include <link.h>
 #	include <cstring>
 #	include <sys/utsname.h>
-#	include <CoreLib/Core_extra_compiler.hpp>
+#	include <CoreLib/core_extra_compiler.hpp>
 #endif
 
-#include <CoreLib/Core_OS.hpp>
-#include <CoreLib/Core_Time.hpp>
-#include <CoreLib/Core_File.hpp>
-#include <CoreLib/Core_cpu.hpp>
+#include <CoreLib/core_os.hpp>
+#include <CoreLib/core_time.hpp>
+#include <CoreLib/core_file.hpp>
+#include <CoreLib/core_cpu.hpp>
 
 #include <CoreLib/toPrint/toPrint.hpp>
 #include <CoreLib/toPrint/toPrint_filesystem.hpp>
@@ -993,24 +993,22 @@ namespace
 						, toPrint_fix_2{t_time.time.second}, '.',
 						toPrint_fix_3{static_cast<uint16_t>(t_time.time.nsecond/1000000)}, '\n');
 
-					ucontext_t* t_context = (ucontext_t*) context;
-					void* t_criticalAddr;	// the address were the crash occurred
+					void const* t_criticalAddr = nullptr;	// the address were the crash occurred
 
 					if(context)
 					{
+						[[maybe_unused]] ucontext_t const* t_context = reinterpret_cast<ucontext_t const*>(context);
+						static_assert(sizeof(struct sigcontext) == sizeof(decltype(t_context->uc_mcontext)));
+						static_assert(alignof(struct sigcontext) == alignof(decltype(t_context->uc_mcontext)));
 #if defined(__i386__) // gcc specific
-						t_criticalAddr = (void*) reinterpret_cast<struct sigcontext*>(&(t_context->uc_mcontext))->eip;
+						t_criticalAddr = reinterpret_cast<void const*>(reinterpret_cast<struct sigcontext const&>(t_context->uc_mcontext).eip);
 #elif defined(__x86_64__) // gcc specific
-						t_criticalAddr = (void*) reinterpret_cast<struct sigcontext*>(&(t_context->uc_mcontext))->rip;
+						t_criticalAddr = reinterpret_cast<void const*>(reinterpret_cast<struct sigcontext const&>(t_context->uc_mcontext).rip);
+#elif defined(__aarch64__) // gcc specific
+						t_criticalAddr = reinterpret_cast<void const*>(reinterpret_cast<struct sigcontext const&>(t_context->uc_mcontext).pc);
 #elif defined(__ppc__) || defined(__powerpc__)
-						t_criticalAddr = (void*) reinterpret_cast<struct sigcontext*>(&(t_context->uc_mcontext))->nip; //probably wrong
-#else
-						t_criticalAddr = nullptr;
+						t_criticalAddr = reinterpret_cast<void const*>(reinterpret_cast<struct sigcontext const&>(t_context->uc_mcontext).nip); //probably wrong
 #endif
-					}
-					else
-					{
-						t_criticalAddr = nullptr;
 					}
 
 					OUTPUT(o_file,

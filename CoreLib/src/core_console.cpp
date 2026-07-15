@@ -43,7 +43,7 @@
 #endif
 
 #include <CoreLib/string/core_string_encoding.hpp>
-#include <CoreLib/Core_Alloca.hpp>
+#include <CoreLib/core_alloca.hpp>
 #include <CoreLib/string/core_wchar_alias.hpp>
 
 namespace core
@@ -73,7 +73,7 @@ namespace core
 		}
 		else
 		{
-			char8_t* const buff = reinterpret_cast<char8_t* const>(core_alloca(buff_size));
+			char8_t* const buff = reinterpret_cast<char8_t*>(core_alloca(buff_size));
 			UTF16_to_UTF8_faulty_unsafe(p_out, '?', buff);
 			write(std::u8string_view{buff, buff_size});
 		}
@@ -92,7 +92,7 @@ namespace core
 		}
 		else
 		{
-			char8_t* const buff = reinterpret_cast<char8_t* const>(core_alloca(buff_size));
+			char8_t* const buff = reinterpret_cast<char8_t*>(core_alloca(buff_size));
 			UCS4_to_UTF8_faulty_unsafe(p_out, '?', buff);
 			write(std::u8string_view{buff, buff_size});
 		}

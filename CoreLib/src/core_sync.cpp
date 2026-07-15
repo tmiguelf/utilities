@@ -345,18 +345,18 @@ SYNC_Error mutex::unlock()
 }
 
 
-semaphore::semaphore(uint32_t p_range)
+semaphore::semaphore(uint32_t p_range):
+	is_named{ false }
 {
-	is_named = false;
-	if(!sem_init(m_semaphore, 0, p_range))
+	if(!sem_init(&m_unSem, 0, p_range))
 	{
 		m_semaphore = &m_unSem;
 	}
 }
 
-semaphore::semaphore(std::u8string const& p_name, uint32_t p_range)
+semaphore::semaphore(std::u8string const& p_name, uint32_t p_range):
+	is_named{ true }
 {
-	is_named = true;
 	m_semaphore = sem_open(reinterpret_cast<char const*>(p_name.c_str()), O_CREAT | O_CLOEXEC, DEFFILEMODE, p_range);
 }
 

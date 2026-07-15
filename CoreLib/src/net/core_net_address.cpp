@@ -27,7 +27,7 @@
 
 #include <CoreLib/net/core_net_address.hpp>
 #include <CoreLib/string/core_string_numeric.hpp>
-#include <CoreLib/Core_Endian.hpp>
+#include <CoreLib/core_endian.hpp>
 
 
 namespace core
