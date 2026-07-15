@@ -132,7 +132,7 @@ namespace core
 	}
 
 	template<_p::charconv_fp_c fp_t>
-	[[nodiscard]] fp_to_chars_fix_size to_chars_shortest_fix_size<fp_t>(fp_to_chars_shortest_context<fp_t> const context)
+	[[nodiscard]] fp_to_chars_fix_size to_chars_shortest_fix_size(fp_to_chars_shortest_context<fp_t> const context)
 	{
 		using fp_type = fp_t;
 		using fp_utils_t = fp_utils<fp_type>;
@@ -243,10 +243,6 @@ namespace core
 			}
 		}
 	}
-
-
-	template fp_base_classify to_chars_shortest_classify<float32_t>(float32_t value, fp_to_chars_shortest_context<float32_t>& context);
-	template fp_base_classify to_chars_shortest_classify<float64_t>(float64_t value, fp_to_chars_shortest_context<float64_t>& context);
 
 	template [[nodiscard]] fp_to_chars_sci_size to_chars_shortest_sci_size<float32_t>(fp_to_chars_shortest_context<float32_t> context);
 	template [[nodiscard]] fp_to_chars_sci_size to_chars_shortest_sci_size<float64_t>(fp_to_chars_shortest_context<float64_t> context);

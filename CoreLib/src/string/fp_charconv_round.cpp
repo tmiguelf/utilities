@@ -993,9 +993,15 @@ namespace core
 		{ //nan or inf
 			if(mantissa_bits)
 			{ //nan
-				return fp_to_chars_sci_result{fp_base_classify{.classification=fp_classify::nan, .is_negative = false}, 0};
+				return fp_to_chars_sci_result{
+					fp_base_classify{.classification=fp_classify::nan, .is_negative = false},
+					fp_to_chars_sci_size{.mantissa_decimal_size=0, .exponent_size=0, .is_exp_negative=0}
+				};
 			} //else inf
-			return fp_to_chars_sci_result{fp_base_classify{.classification=fp_classify::inf, .is_negative = sign_bit}, 0};
+			return fp_to_chars_sci_result{
+				fp_base_classify{.classification=fp_classify::inf, .is_negative = sign_bit},
+				fp_to_chars_sci_size{.mantissa_decimal_size=0, .exponent_size=0, .is_exp_negative=0}
+			};
 		} // else number
 
 
@@ -1090,9 +1096,15 @@ namespace core
 		{ //nan or inf
 			if(mantissa_bits)
 			{ //nan
-				return fp_to_chars_fix_result{fp_base_classify{.classification=fp_classify::nan, .is_negative = false}, 0};
+				return fp_to_chars_fix_result{
+					fp_base_classify{.classification = fp_classify::nan, .is_negative = false},
+					fp_to_chars_fix_size{.unit_size = 0, .decimal_size = 0}
+				};
 			} //else inf
-			return fp_to_chars_fix_result{fp_base_classify{.classification=fp_classify::inf, .is_negative = sign_bit}, 0};
+			return fp_to_chars_fix_result{
+				fp_base_classify{.classification = fp_classify::inf, .is_negative = sign_bit},
+				fp_to_chars_fix_size{.unit_size = 0, .decimal_size = 0}
+			};
 		} // else number
 
 
@@ -1285,7 +1297,6 @@ namespace core
 			unit_chars, decimal_chars, last_block, last_num_digits, leading_zeros);
 	}
 
-
 	template fp_to_chars_sci_result to_chars_sci_size<float32_t>(float32_t value, fp_to_chars_sci_context<float32_t>& context, uint16_t significant_digits, fp_round rounding_mode);
 	template fp_to_chars_sci_result to_chars_sci_size<float64_t>(float64_t value, fp_to_chars_sci_context<float64_t>& context, uint16_t significant_digits, fp_round rounding_mode);
 
@@ -1295,9 +1306,9 @@ namespace core
 	template void to_chars_sci_mantissa_unsafe<float32_t, char8_t >(fp_to_chars_sci_context<float32_t> const& context, char8_t * unit_char, char8_t * decimal_chars);
 	template void to_chars_sci_mantissa_unsafe<float32_t, char16_t>(fp_to_chars_sci_context<float32_t> const& context, char16_t* unit_char, char16_t* decimal_chars);
 	template void to_chars_sci_mantissa_unsafe<float32_t, char32_t>(fp_to_chars_sci_context<float32_t> const& context, char32_t* unit_char, char32_t* decimal_chars);
-	template void to_chars_sci_mantissa_unsafe<float32_t, char8_t >(fp_to_chars_sci_context<float32_t> const& context, char8_t * unit_char, char8_t * decimal_chars);
-	template void to_chars_sci_mantissa_unsafe<float32_t, char16_t>(fp_to_chars_sci_context<float32_t> const& context, char16_t* unit_char, char16_t* decimal_chars);
-	template void to_chars_sci_mantissa_unsafe<float32_t, char32_t>(fp_to_chars_sci_context<float32_t> const& context, char32_t* unit_char, char32_t* decimal_chars);
+	template void to_chars_sci_mantissa_unsafe<float64_t, char8_t >(fp_to_chars_sci_context<float64_t> const& context, char8_t * unit_char, char8_t * decimal_chars);
+	template void to_chars_sci_mantissa_unsafe<float64_t, char16_t>(fp_to_chars_sci_context<float64_t> const& context, char16_t* unit_char, char16_t* decimal_chars);
+	template void to_chars_sci_mantissa_unsafe<float64_t, char32_t>(fp_to_chars_sci_context<float64_t> const& context, char32_t* unit_char, char32_t* decimal_chars);
 
 	template void to_chars_sci_exp_unsafe<float32_t, char8_t >(fp_to_chars_sci_context<float32_t> const& context, char8_t * exp_chars);
 	template void to_chars_sci_exp_unsafe<float32_t, char16_t>(fp_to_chars_sci_context<float32_t> const& context, char16_t* exp_chars);
