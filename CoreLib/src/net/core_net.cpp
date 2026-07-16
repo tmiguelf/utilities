@@ -51,6 +51,7 @@
 #	include <netinet/tcp.h>
 #	include <arpa/inet.h>
 #	include <unistd.h>
+#	include <errno.h>
 #endif
 
 #ifndef _WIN32
@@ -514,29 +515,42 @@ typedef socklen_t CoreSockLen_t;
 //
 static inline int SockLastError(_p::SocketHandle_t const p_socket)
 {
-	int error;
-	socklen_t len;
-	len = 4;
+	int error = 0;
+	socklen_t len = 4;
 	getsockopt(p_socket, SOL_SOCKET, SO_ERROR, reinterpret_cast<void*>(&error), &len);
 	return error;
 }
 
 /// \brief Used to check if last error on the socket was to a timeout on a non-blocking socket
 //
-static bool SockWouldBlock(_p::SocketHandle_t const p_socket)
+static bool SockWouldBlock([[maybe_unused]] _p::SocketHandle_t const p_socket)
 {
-	int error;
-	socklen_t len;
-	len = 4;
-	if(getsockopt(p_socket, SOL_SOCKET, SO_ERROR, reinterpret_cast<void*>(&error), &len) != 0) return false;
-	return (error == EAGAIN || error == EWOULDBLOCK);
+#if 0
+	int error = 0;
+	socklen_t len = 4;
+
+	if(getsockopt(p_socket, SOL_SOCKET, SO_ERROR, reinterpret_cast<void*>(&error), &len) != 0)
+	{
+		return false;
+	}
+#else
+	auto const error = errno; //hack because getsockopt at some point stopped working for this purpose, need to find alternative
+#endif
+
+	if constexpr (EAGAIN == EWOULDBLOCK)
+	{
+		return error == EWOULDBLOCK;
+	}
+	else
+	{
+		return error == EAGAIN || error == EWOULDBLOCK;
+	}
 }
 
 static inline bool SockNonBlockingConnectCheck(_p::SocketHandle_t const p_socket)
 {
-	int error;
-	socklen_t len;
-	len = 4;
+	int error = 0;
+	socklen_t len = 4;
 	getsockopt(p_socket, SOL_SOCKET, SO_ERROR, reinterpret_cast<void*>(&error), &len);
 	return error == EINPROGRESS;
 }
@@ -610,7 +624,6 @@ static inline NET_Error Core_SetKeepAlive(_p::SocketHandle_t const p_sock, bool 
 
 	int const opt = 0;
 	return setsockopt(p_sock, SOL_SOCKET, SO_KEEPALIVE, &opt, sizeof(opt)) ? NET_Error::Sock_Option : NET_Error::NoErr;
-
 }
 
 //========	========	========	========	========
@@ -679,7 +692,11 @@ static inline NET_Error Core_PeekSize(_p::SocketHandle_t const p_sock, uintptr_t
 	ssize_t	const check = recvfrom(p_sock, c, 0, MSG_PEEK, nullptr, nullptr);
 	if(check == SOCKET_ERROR)
 	{
-		if(SockWouldBlock(p_sock))	return NET_Error::WouldBlock;
+		if(SockWouldBlock(p_sock))
+		{
+			return NET_Error::WouldBlock;
+		}
+
 		return NET_Error::Connection;
 	}
 
