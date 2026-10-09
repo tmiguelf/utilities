@@ -50,7 +50,7 @@ namespace core
 		struct fp_utils_pre_ex;
 
 		template<>
-		struct fp_utils_pre_ex<float32_t>: public fp_utils_pre<float32_t>
+		struct fp_utils_pre_ex<float>: public fp_utils_pre<float>
 		{
 			[[nodiscard]] static inline constexpr exp_ut exp_digits_size(exp_st exp)
 			{
@@ -64,7 +64,7 @@ namespace core
 		};
 
 		template<>
-		struct fp_utils_pre_ex<float64_t>: public fp_utils_pre<float64_t>
+		struct fp_utils_pre_ex<double>: public fp_utils_pre<double>
 		{
 			[[nodiscard]] static inline constexpr exp_ut exp_digits_size(exp_st exp)
 			{
@@ -244,31 +244,31 @@ namespace core
 		}
 	}
 
-	template [[nodiscard]] fp_to_chars_sci_size to_chars_shortest_sci_size<float32_t>(fp_to_chars_shortest_context<float32_t> context);
-	template [[nodiscard]] fp_to_chars_sci_size to_chars_shortest_sci_size<float64_t>(fp_to_chars_shortest_context<float64_t> context);
+	template fp_to_chars_sci_size to_chars_shortest_sci_size<float>(fp_to_chars_shortest_context<float> context);
+	template fp_to_chars_sci_size to_chars_shortest_sci_size<double>(fp_to_chars_shortest_context<double> context);
 
-	template [[nodiscard]] fp_to_chars_fix_size to_chars_shortest_fix_size<float32_t>(fp_to_chars_shortest_context<float32_t> context);
-	template [[nodiscard]] fp_to_chars_fix_size to_chars_shortest_fix_size<float64_t>(fp_to_chars_shortest_context<float64_t> context);
+	template fp_to_chars_fix_size to_chars_shortest_fix_size<float>(fp_to_chars_shortest_context<float> context);
+	template fp_to_chars_fix_size to_chars_shortest_fix_size<double>(fp_to_chars_shortest_context<double> context);
 
-	template void to_chars_shortest_sci_unsafe<float32_t , char8_t >(fp_to_chars_shortest_context<float32_t >, char8_t *, char8_t *);
-	template void to_chars_shortest_sci_unsafe<float32_t , char16_t>(fp_to_chars_shortest_context<float32_t >, char16_t*, char16_t*);
-	template void to_chars_shortest_sci_unsafe<float32_t , char32_t>(fp_to_chars_shortest_context<float32_t >, char32_t*, char32_t*);
-	template void to_chars_shortest_sci_unsafe<float64_t, char8_t >(fp_to_chars_shortest_context<float64_t>, char8_t *, char8_t *);
-	template void to_chars_shortest_sci_unsafe<float64_t, char16_t>(fp_to_chars_shortest_context<float64_t>, char16_t*, char16_t*);
-	template void to_chars_shortest_sci_unsafe<float64_t, char32_t>(fp_to_chars_shortest_context<float64_t>, char32_t*, char32_t*);
+	template void to_chars_shortest_sci_unsafe<float , char8_t >(fp_to_chars_shortest_context<float >, char8_t *, char8_t *);
+	template void to_chars_shortest_sci_unsafe<float , char16_t>(fp_to_chars_shortest_context<float >, char16_t*, char16_t*);
+	template void to_chars_shortest_sci_unsafe<float , char32_t>(fp_to_chars_shortest_context<float >, char32_t*, char32_t*);
+	template void to_chars_shortest_sci_unsafe<double, char8_t >(fp_to_chars_shortest_context<double>, char8_t *, char8_t *);
+	template void to_chars_shortest_sci_unsafe<double, char16_t>(fp_to_chars_shortest_context<double>, char16_t*, char16_t*);
+	template void to_chars_shortest_sci_unsafe<double, char32_t>(fp_to_chars_shortest_context<double>, char32_t*, char32_t*);
 
-	template void to_chars_shortest_sci_exp_unsafe<float32_t , char8_t >(fp_to_chars_shortest_context<float32_t >, char8_t *);
-	template void to_chars_shortest_sci_exp_unsafe<float32_t , char16_t>(fp_to_chars_shortest_context<float32_t >, char16_t*);
-	template void to_chars_shortest_sci_exp_unsafe<float32_t , char32_t>(fp_to_chars_shortest_context<float32_t >, char32_t*);
-	template void to_chars_shortest_sci_exp_unsafe<float64_t, char8_t >(fp_to_chars_shortest_context<float64_t>, char8_t *);
-	template void to_chars_shortest_sci_exp_unsafe<float64_t, char16_t>(fp_to_chars_shortest_context<float64_t>, char16_t*);
-	template void to_chars_shortest_sci_exp_unsafe<float64_t, char32_t>(fp_to_chars_shortest_context<float64_t>, char32_t*);
+	template void to_chars_shortest_sci_exp_unsafe<float , char8_t >(fp_to_chars_shortest_context<float >, char8_t *);
+	template void to_chars_shortest_sci_exp_unsafe<float , char16_t>(fp_to_chars_shortest_context<float >, char16_t*);
+	template void to_chars_shortest_sci_exp_unsafe<float , char32_t>(fp_to_chars_shortest_context<float >, char32_t*);
+	template void to_chars_shortest_sci_exp_unsafe<double, char8_t >(fp_to_chars_shortest_context<double>, char8_t *);
+	template void to_chars_shortest_sci_exp_unsafe<double, char16_t>(fp_to_chars_shortest_context<double>, char16_t*);
+	template void to_chars_shortest_sci_exp_unsafe<double, char32_t>(fp_to_chars_shortest_context<double>, char32_t*);
 
-	template void to_chars_shortest_fix_unsafe<float32_t , char8_t >(fp_to_chars_shortest_context<float32_t >, char8_t *, char8_t *);
-	template void to_chars_shortest_fix_unsafe<float32_t , char16_t>(fp_to_chars_shortest_context<float32_t >, char16_t*, char16_t*);
-	template void to_chars_shortest_fix_unsafe<float32_t , char32_t>(fp_to_chars_shortest_context<float32_t >, char32_t*, char32_t*);
-	template void to_chars_shortest_fix_unsafe<float64_t, char8_t >(fp_to_chars_shortest_context<float64_t>, char8_t *, char8_t *);
-	template void to_chars_shortest_fix_unsafe<float64_t, char16_t>(fp_to_chars_shortest_context<float64_t>, char16_t*, char16_t*);
-	template void to_chars_shortest_fix_unsafe<float64_t, char32_t>(fp_to_chars_shortest_context<float64_t>, char32_t*, char32_t*);
+	template void to_chars_shortest_fix_unsafe<float , char8_t >(fp_to_chars_shortest_context<float >, char8_t *, char8_t *);
+	template void to_chars_shortest_fix_unsafe<float , char16_t>(fp_to_chars_shortest_context<float >, char16_t*, char16_t*);
+	template void to_chars_shortest_fix_unsafe<float , char32_t>(fp_to_chars_shortest_context<float >, char32_t*, char32_t*);
+	template void to_chars_shortest_fix_unsafe<double, char8_t >(fp_to_chars_shortest_context<double>, char8_t *, char8_t *);
+	template void to_chars_shortest_fix_unsafe<double, char16_t>(fp_to_chars_shortest_context<double>, char16_t*, char16_t*);
+	template void to_chars_shortest_fix_unsafe<double, char32_t>(fp_to_chars_shortest_context<double>, char32_t*, char32_t*);
 
 } //namespace core

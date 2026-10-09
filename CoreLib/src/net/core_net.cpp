@@ -232,7 +232,7 @@ typedef int CoreSockLen_t;
 
 //========	========	========	========	========
 //========	========	Error Check	========	========
-//========	========	========	========	========
+//========	========	========	========	========.
 
 /// \brief Gets socket last error
 //
@@ -250,10 +250,10 @@ static inline bool SockWouldBlock(_p::SocketHandle_t const p_socket)
 
 /// \brief Used to check if last error on the socket was a buffer overflow
 //
-static inline bool SockBuffOverflow(_p::SocketHandle_t const p_socket)
-{
-	return (SockLastError(p_socket) == WSAEMSGSIZE);
-}
+//static inline bool SockBuffOverflow(_p::SocketHandle_t const p_socket)
+//{
+//	return (SockLastError(p_socket) == WSAEMSGSIZE);
+//}
 
 static inline bool SockNonBlockingConnectCheck(_p::SocketHandle_t const p_socket)
 {
@@ -513,7 +513,7 @@ typedef socklen_t CoreSockLen_t;
 
 /// \brief Gets socket last error
 //
-static inline int SockLastError(_p::SocketHandle_t const p_socket)
+[[maybe_unused]] static inline int SockLastError(_p::SocketHandle_t const p_socket)
 {
 	int error = 0;
 	socklen_t len = 4;
@@ -547,11 +547,16 @@ static bool SockWouldBlock([[maybe_unused]] _p::SocketHandle_t const p_socket)
 	}
 }
 
-static inline bool SockNonBlockingConnectCheck(_p::SocketHandle_t const p_socket)
+static inline bool SockNonBlockingConnectCheck([[maybe_unused]] _p::SocketHandle_t const p_socket)
 {
+#if 0
 	int error = 0;
 	socklen_t len = 4;
 	getsockopt(p_socket, SOL_SOCKET, SO_ERROR, reinterpret_cast<void*>(&error), &len);
+#else
+	auto const error = errno;
+#endif
+
 	return error == EINPROGRESS;
 }
 
@@ -1154,15 +1159,22 @@ static inline NET_Error Core_ReceiveFromIPv4(_p::SocketHandle_t const p_sock, vo
 	uintptr_t size = p_size;
 	if(size > static_cast<uintptr_t>(std::numeric_limits<int32_t>::max())) size = static_cast<uintptr_t>(std::numeric_limits<int32_t>::max());
 	int const check = recvfrom(p_sock, reinterpret_cast<char*>(p_data), static_cast<int>(size), 0, reinterpret_cast<sockaddr*>(&addr_info4), &addr_size);
-#else
-	intptr_t const check = recvfrom(p_sock, reinterpret_cast<char*>(p_data), p_size, 0, reinterpret_cast<sockaddr*>(&addr_info4), &addr_size);
-#endif
+
 	if(SockWouldBlock(p_sock)) return NET_Error::WouldBlock;
 
 	if(check == SOCKET_ERROR)
 	{
 		return NET_Error::Connection;
 	}
+#else
+	intptr_t const check = recvfrom(p_sock, reinterpret_cast<char*>(p_data), p_size, 0, reinterpret_cast<sockaddr*>(&addr_info4), &addr_size);
+
+	if(check == SOCKET_ERROR)
+	{
+		if(SockWouldBlock(p_sock)) return NET_Error::WouldBlock;
+		return NET_Error::Connection;
+	}
+#endif
 
 	p_rawAddr	= addr_info4.sin_addr.s_addr;
 	p_size		= check;
@@ -1180,15 +1192,24 @@ static inline NET_Error Core_ReceiveFromIPv6(_p::SocketHandle_t const p_sock, vo
 	uintptr_t size = p_size;
 	if(size > static_cast<uintptr_t>(std::numeric_limits<int>::max())) size = static_cast<uintptr_t>(std::numeric_limits<int>::max());
 	int const check = recvfrom(p_sock, reinterpret_cast<char*>(p_data), static_cast<int>(size), 0, reinterpret_cast<sockaddr*>(&addr_info6), &addr_size);
-#else
-	intptr_t const check = recvfrom(p_sock, reinterpret_cast<char*>(p_data), p_size, 0, reinterpret_cast<sockaddr*>(&addr_info6), &addr_size);
-#endif
+
 	if(SockWouldBlock(p_sock)) return NET_Error::WouldBlock;
 
 	if(check == SOCKET_ERROR)
 	{
 		return NET_Error::Connection;
 	}
+
+#else
+	intptr_t const check = recvfrom(p_sock, reinterpret_cast<char*>(p_data), p_size, 0, reinterpret_cast<sockaddr*>(&addr_info6), &addr_size);
+
+	if(check == SOCKET_ERROR)
+	{
+		if(SockWouldBlock(p_sock)) return NET_Error::WouldBlock;
+		return NET_Error::Connection;
+	}
+#endif
+
 
 	p_size = check;
 

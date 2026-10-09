@@ -77,29 +77,28 @@ static uintptr_t to_chars_quat_unsafe(mathlib::Quaternion<T> const& p_data, char
 	return p_out - begin;
 }
 
-
-
-
-template<typename T>
-class core::toPrint<mathlib::Quaternion<T>>: public core::toPrint_base
+namespace core
 {
-public:
-	toPrint(mathlib::Quaternion<T> const& p_data): m_data(p_data) {}
-
-	uintptr_t size(char8_t const&) const
+	template<typename T>
+	class toPrint<mathlib::Quaternion<T>>: public toPrint_base
 	{
-		return to_chars_quat_estimate(m_data);
-	}
+	public:
+		toPrint(mathlib::Quaternion<T> const& p_data): m_data(p_data) {}
 
-	void get_print(char8_t* p_out) const
-	{
-		to_chars_quat_unsafe(m_data, p_out);
-	}
+		uintptr_t size(char8_t const&) const
+		{
+			return to_chars_quat_estimate(m_data);
+		}
 
-private:
-	mathlib::Quaternion<T> const& m_data;
-};
+		void get_print(char8_t* p_out) const
+		{
+			to_chars_quat_unsafe(m_data, p_out);
+		}
 
+	private:
+		mathlib::Quaternion<T> const& m_data;
+	};
+} //namespace core
 
 
 using core::toPrint;
@@ -120,7 +119,7 @@ protected:
 	Quaternion_T() {}
 };
 
-using TestTypes = ::testing::Types<float, double/*, long double*/>;
+using TestTypes = ::testing::Types<float, double>;
 TYPED_TEST_SUITE(Quaternion_T, TestTypes);
 
 
@@ -327,10 +326,10 @@ TYPED_TEST(Quaternion_T, Setters)
 		testK.setK(tcase);
 
 		//independence test
-		ASSERT_EQ(testR, (Quaternion<real_t>{tcase, 42.0, -43.0, 44.0} )) << toPrint{tcase};
-		ASSERT_EQ(testI, (Quaternion<real_t>{-41.0, tcase, -43.0, 44.0})) << toPrint{tcase};
-		ASSERT_EQ(testJ, (Quaternion<real_t>{-41.0, 42.0, tcase, 44.0} )) << toPrint{tcase};
-		ASSERT_EQ(testK, (Quaternion<real_t>{-41.0, 42.0, -43.0, tcase})) << toPrint{tcase};
+		ASSERT_EQ(testR, (Quaternion<real_t>{tcase, 42.0, -43.0, 44.0} )) << core::toPrint{tcase};
+		ASSERT_EQ(testI, (Quaternion<real_t>{-41.0, tcase, -43.0, 44.0})) << core::toPrint{tcase};
+		ASSERT_EQ(testJ, (Quaternion<real_t>{-41.0, 42.0, tcase, 44.0} )) << core::toPrint{tcase};
+		ASSERT_EQ(testK, (Quaternion<real_t>{-41.0, 42.0, -43.0, tcase})) << core::toPrint{tcase};
 
 		//negated test
 		testR.setR(-tcase);

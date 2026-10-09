@@ -263,5 +263,11 @@ namespace mathlib
 			};
 	}
 
+	template <_p::is_non_const_arithmetic T>
+	[[nodiscard]] constexpr auto crossProduct(Vector<T, 2> const& p_1, Vector<T, 2> const& p_2)
+	{
+		return p_1[0] * p_2[1] - p_1[1] * p_2[0];
+	}
+
 }	//namespace mathLib
 

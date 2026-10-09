@@ -49,9 +49,9 @@ namespace core
 
 
 	template<>
-	struct fp_traits<float32_t>: public fp_type_traits<float32_t>, public fp_common_traits
+	struct fp_traits<float>: public fp_type_traits<float>, public fp_common_traits
 	{
-		using fp_type = float32_t;
+		using fp_type = float;
 		using uint_t = uint32_t;
 
 		static constexpr uint_t  sign_mask		= 0x80000000_ui32;
@@ -67,9 +67,9 @@ namespace core
 	};
 
 	template<>
-	struct fp_traits<float64_t>: public fp_type_traits<float64_t>, public fp_common_traits
+	struct fp_traits<double>: public fp_type_traits<double>, public fp_common_traits
 	{
-		using fp_type = float64_t;
+		using fp_type = double;
 		using uint_t = uint64_t;
 
 		static constexpr uint_t sign_mask		= 0x8000000000000000_ui64;

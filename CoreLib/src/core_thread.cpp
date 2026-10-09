@@ -223,7 +223,7 @@ namespace _p
 		
 		t_function(t_arg);
 		
-		return (void*) 0;
+		return nullptr;
 	}
 
 }	//namespace core_p
@@ -256,7 +256,7 @@ thread::Error thread::create(void (*const p_function)(void *), void* const p_par
 	data->m_func	= p_function;
 	data->m_param	= p_param;
 
-	if(pthread_create(&m_handle, nullptr, _p::launch_thread, (void*) data) == 0)
+	if(pthread_create(&m_handle, nullptr, _p::launch_thread, reinterpret_cast<void*>(data)) == 0)
 	{
 		m_hasThread = true;
 		return Error::None;

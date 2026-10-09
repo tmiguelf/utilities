@@ -2,6 +2,10 @@
 	path = submodules/quickMSBuild
 	url = ../quickMSBuild.git
 	ignore = dirty
+[submodule "submodules/quick_cmake"]
+	path = submodules/quick_cmake
+	url = ../quick_cmake.git
+	ignore = dirty
 [submodule "submodules/benchmark"]
 	path = submodules/benchmark
 	url = ../benchmark.git

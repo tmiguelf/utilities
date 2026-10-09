@@ -36,14 +36,15 @@ namespace core
 
 namespace
 {
-static inline bool __fmove_UTF8_ANSI(char8_t const*& p_input, char8_t const*& p_end)
-{
-	char8_t const testp = *p_input;
-	return !(testp & 0x80) ||
-		((testp == 0xC2 || testp == 0xC3) &&	//validate encoding 1, check range and unique representation simultaneously
-		(p_end - p_input) > 1	&&				//validate size
-		(*(++p_input) & 0xC0) == 0x80);			//validate encoding 2;
-}
+
+//static inline bool __fmove_UTF8_ANSI(char8_t const*& p_input, char8_t const*& p_end)
+//{
+//	char8_t const testp = *p_input;
+//	return !(testp & 0x80) ||
+//		((testp == 0xC2 || testp == 0xC3) &&	//validate encoding 1, check range and unique representation simultaneously
+//		(p_end - p_input) > 1	&&				//validate size
+//		(*(++p_input) & 0xC0) == 0x80);			//validate encoding 2;
+//}
 
 static inline char8_t __convert_UTF8_ANSI_unsafe(char8_t const*& p_input)
 {

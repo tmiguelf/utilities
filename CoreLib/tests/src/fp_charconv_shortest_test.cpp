@@ -85,14 +85,14 @@ TEST(fp_charconv, round_trip)
 		0x4E313FD4_ui32,
 	};
 
-	core::fp_to_chars_shortest_context<float32_t> context;
+	core::fp_to_chars_shortest_context<float> context;
 
 	std::array<char8_t, 1024> buff;
 
 
 	for(uint32_t const tcase : fix_cases)
 	{
-		float32_t const f_case = std::bit_cast<float32_t const>(tcase);
+		float const f_case = std::bit_cast<float const>(tcase);
 
 		core::fp_base_classify const classification = core::to_chars_shortest_classify(f_case, context);
 		core::fp_to_chars_sci_size const size = core::to_chars_shortest_sci_size(context);
@@ -106,7 +106,7 @@ TEST(fp_charconv, round_trip)
 		core::to_chars_shortest_sci_unsafe(context, units, decimal);
 		core::to_chars_shortest_sci_exp_unsafe(context, exp);
 
-		core::from_chars_result<float32_t> const result = core::from_chars_fp<float32_t>(
+		core::from_chars_result<float> const result = core::from_chars_fp<float>(
 			classification.is_negative,
 			std::u8string_view(units, 1),
 			std::u8string_view(decimal, decimal_size),
@@ -122,7 +122,7 @@ TEST(fp_charconv, round_trip)
 	for(uint16_t i = 0; i < 255; ++i)
 	{
 		uint32_t const tcase = make_valid_fp(distrib(gen));
-		float32_t const f_case = std::bit_cast<float32_t const>(tcase);
+		float const f_case = std::bit_cast<float const>(tcase);
 
 		core::fp_base_classify classification = core::to_chars_shortest_classify(f_case, context);
 		core::fp_to_chars_sci_size size = core::to_chars_shortest_sci_size(context);
@@ -136,7 +136,7 @@ TEST(fp_charconv, round_trip)
 		core::to_chars_shortest_sci_unsafe(context, units, decimal);
 		core::to_chars_shortest_sci_exp_unsafe(context, exp);
 
-		core::from_chars_result<float32_t> const result = core::from_chars_fp<float32_t>(
+		core::from_chars_result<float> const result = core::from_chars_fp<float>(
 			classification.is_negative,
 			std::u8string_view(units, 1),
 			std::u8string_view(decimal, decimal_size),
@@ -159,8 +159,8 @@ protected:
 };
 
 using floatTypes = ::testing::Types<
-	float32_t,
-	float64_t
+	float,
+	double
 >;
 
 
@@ -178,7 +178,7 @@ TEST(fp_charconv, special_cases)
 		std::u8string_view exp;
 		bool sign;
 		bool exp_sign;
-		float32_t expected;
+		float expected;
 	};
 
 	std::array const fix_cases
@@ -190,7 +190,7 @@ TEST(fp_charconv, special_cases)
 
 	for( const TestCase& tcase: fix_cases )
 	{
-		core::from_chars_result<float32_t> const result = core::from_chars_fp<float32_t>(
+		core::from_chars_result<float> const result = core::from_chars_fp<float>(
 			tcase.sign,
 			tcase.units,
 			tcase.decimals,

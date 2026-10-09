@@ -459,8 +459,7 @@ private:
 	using array_t = std::array<char8_t, core::to_chars_dec_max_size_v<Num_T>>;
 public:
 	toPrint(Num_T const p_data)
-		: m_size(core::to_chars(p_data, m_preCalc))
-
+		: m_size(core::to_chars<Num_T>(p_data, m_preCalc))
 	{
 	}
 
@@ -523,10 +522,10 @@ public:
 
 #ifdef _WIN32
 template<typename Num_T> requires std::same_as<Num_T, long double>
-class toPrint<Num_T>: public toPrint<float64_t>
+class toPrint<Num_T>: public toPrint<double>
 {
 public:
-	toPrint(Num_T const p_data): toPrint<float64_t>(reinterpret_cast<float64_t const&>(p_data)){}
+	toPrint(Num_T const p_data): toPrint<double>(reinterpret_cast<double const&>(p_data)){}
 };
 
 #else

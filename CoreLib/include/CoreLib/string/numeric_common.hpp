@@ -32,12 +32,6 @@
 #include <type_traits>
 #include <CoreLib/core_alternate.hpp>
 
-#if 0
-#include <stdfloat>
-#else
-using float32_t = float;
-using float64_t = double;
-#endif
 
 /// \n
 namespace core
@@ -84,8 +78,8 @@ namespace core
 
 		template<typename T>
 		concept charconv_fp_c = 
-			std::same_as<T, float32_t> ||
-			std::same_as<T, float64_t>;
+			std::same_as<T, float> ||
+			std::same_as<T, double>;
 
 	} //namespace _p
 

@@ -531,13 +531,13 @@ namespace core
 		template<>
 		struct num_props<uint16_t>
 		{
-			static constexpr uint16_t max_10 = 10000_ui16;
+			[[maybe_unused]] static constexpr uint16_t max_10 = 10000_ui16;
 		};
 
 		template<>
 		struct num_props<uint8_t>
 		{
-			static constexpr uint8_t max_10 = 100_ui8;
+			[[maybe_unused]] static constexpr uint8_t max_10 = 100_ui8;
 		};
 
 		template<charconv_uint_c uint_t>
@@ -771,9 +771,9 @@ namespace core
 
 			for(uint8_t t_bias = static_cast<uint8_t>(index * 4); t_bias; t_bias -= 4)
 			{
-				*(pivot++) = _p::Hex2Nible(static_cast<uint8_t> (p_val >> t_bias));
+				*(pivot++) = static_cast<char_T>(_p::Hex2Nible(static_cast<uint8_t> (p_val >> t_bias)));
 			}
-			*(pivot++) = _p::Hex2Nible(static_cast<uint8_t> (p_val));
+			*(pivot++) = static_cast<char_T>(_p::Hex2Nible(static_cast<uint8_t> (p_val)));
 			return pivot;
 		}
 
@@ -798,54 +798,54 @@ namespace core
 			return pivot;
 		}
 
-		template <charconv_char_c T>
-		static inline void uint2hex_fix(uint8_t const p_val, T* p_str)
+		template <charconv_char_c char_T>
+		static inline void uint2hex_fix(uint8_t const p_val, char_T* p_str)
 		{
-			*p_str   = _p::Hex2Nible(p_val >> 4);
-			*++p_str = _p::Hex2Nible(p_val);
+			*p_str   = static_cast<char_T>(_p::Hex2Nible(p_val >> 4));
+			*++p_str = static_cast<char_T>(_p::Hex2Nible(p_val));
 		}
 
-		template <charconv_char_c T>
-		static inline void uint2hex_fix(uint16_t const p_val, T* p_str)
+		template <charconv_char_c char_T>
+		static inline void uint2hex_fix(uint16_t const p_val, char_T* p_str)
 		{
-			*p_str   = _p::Hex2Nible(p_val >> 12);
-			*++p_str = _p::Hex2Nible(p_val >> 8);
-			*++p_str = _p::Hex2Nible(p_val >> 4);
-			*++p_str = _p::Hex2Nible(p_val);
+			*p_str   = static_cast<char_T>(_p::Hex2Nible(p_val >> 12));
+			*++p_str = static_cast<char_T>(_p::Hex2Nible(p_val >> 8));
+			*++p_str = static_cast<char_T>(_p::Hex2Nible(p_val >> 4));
+			*++p_str = static_cast<char_T>(_p::Hex2Nible(p_val));
 		}
 
-		template <charconv_char_c T>
-		static inline void uint2hex_fix(uint32_t const p_val, T* p_str)
+		template <charconv_char_c char_T>
+		static inline void uint2hex_fix(uint32_t const p_val, char_T* p_str)
 		{
-			*p_str   = _p::Hex2Nible(p_val >> 28);
-			*++p_str = _p::Hex2Nible(p_val >> 24);
-			*++p_str = _p::Hex2Nible(p_val >> 20);
-			*++p_str = _p::Hex2Nible(p_val >> 16);
-			*++p_str = _p::Hex2Nible(p_val >> 12);
-			*++p_str = _p::Hex2Nible(p_val >> 8);
-			*++p_str = _p::Hex2Nible(p_val >> 4);
-			*++p_str = _p::Hex2Nible(p_val);
+			*p_str   = static_cast<char_T>(_p::Hex2Nible(p_val >> 28));
+			*++p_str = static_cast<char_T>(_p::Hex2Nible(p_val >> 24));
+			*++p_str = static_cast<char_T>(_p::Hex2Nible(p_val >> 20));
+			*++p_str = static_cast<char_T>(_p::Hex2Nible(p_val >> 16));
+			*++p_str = static_cast<char_T>(_p::Hex2Nible(p_val >> 12));
+			*++p_str = static_cast<char_T>(_p::Hex2Nible(p_val >> 8));
+			*++p_str = static_cast<char_T>(_p::Hex2Nible(p_val >> 4));
+			*++p_str = static_cast<char_T>(_p::Hex2Nible(p_val));
 		}
 
-		template <charconv_char_c T>
-		static inline void uint2hex_fix(uint64_t const p_val, T* p_str)
+		template <charconv_char_c char_T>
+		static inline void uint2hex_fix(uint64_t const p_val, char_T* p_str)
 		{
-			*p_str   = _p::Hex2Nible(p_val >> 60);
-			*++p_str = _p::Hex2Nible(p_val >> 56);
-			*++p_str = _p::Hex2Nible(p_val >> 52);
-			*++p_str = _p::Hex2Nible(p_val >> 48);
-			*++p_str = _p::Hex2Nible(p_val >> 44);
-			*++p_str = _p::Hex2Nible(p_val >> 40);
-			*++p_str = _p::Hex2Nible(p_val >> 36);
-			*++p_str = _p::Hex2Nible(p_val >> 32);
-			*++p_str = _p::Hex2Nible(p_val >> 28);
-			*++p_str = _p::Hex2Nible(p_val >> 24);
-			*++p_str = _p::Hex2Nible(p_val >> 20);
-			*++p_str = _p::Hex2Nible(p_val >> 16);
-			*++p_str = _p::Hex2Nible(p_val >> 12);
-			*++p_str = _p::Hex2Nible(p_val >> 8);
-			*++p_str = _p::Hex2Nible(p_val >> 4);
-			*++p_str = _p::Hex2Nible(p_val);
+			*p_str   = static_cast<char_T>(_p::Hex2Nible(p_val >> 60));
+			*++p_str = static_cast<char_T>(_p::Hex2Nible(p_val >> 56));
+			*++p_str = static_cast<char_T>(_p::Hex2Nible(p_val >> 52));
+			*++p_str = static_cast<char_T>(_p::Hex2Nible(p_val >> 48));
+			*++p_str = static_cast<char_T>(_p::Hex2Nible(p_val >> 44));
+			*++p_str = static_cast<char_T>(_p::Hex2Nible(p_val >> 40));
+			*++p_str = static_cast<char_T>(_p::Hex2Nible(p_val >> 36));
+			*++p_str = static_cast<char_T>(_p::Hex2Nible(p_val >> 32));
+			*++p_str = static_cast<char_T>(_p::Hex2Nible(p_val >> 28));
+			*++p_str = static_cast<char_T>(_p::Hex2Nible(p_val >> 24));
+			*++p_str = static_cast<char_T>(_p::Hex2Nible(p_val >> 20));
+			*++p_str = static_cast<char_T>(_p::Hex2Nible(p_val >> 16));
+			*++p_str = static_cast<char_T>(_p::Hex2Nible(p_val >> 12));
+			*++p_str = static_cast<char_T>(_p::Hex2Nible(p_val >> 8));
+			*++p_str = static_cast<char_T>(_p::Hex2Nible(p_val >> 4));
+			*++p_str = static_cast<char_T>(_p::Hex2Nible(p_val));
 		}
 
 		//template <charconv_char_c T, charconv_uint_c NUM_T>
@@ -1349,8 +1349,8 @@ namespace core
 	template uintptr_t to_chars_size<int16_t  >(int16_t  );
 	template uintptr_t to_chars_size<int32_t  >(int32_t  );
 	template uintptr_t to_chars_size<int64_t  >(int64_t  );
-	template uintptr_t to_chars_size<float32_t>(float32_t);
-	template uintptr_t to_chars_size<float64_t>(float64_t);
+	template uintptr_t to_chars_size<float    >(float    );
+	template uintptr_t to_chars_size<double   >(double   );
 
 
 	template char8_t * to_chars_unsafe<char8_t , uint8_t  >(uint8_t  , char8_t *);
@@ -1361,8 +1361,8 @@ namespace core
 	template char8_t * to_chars_unsafe<char8_t , int16_t  >(int16_t  , char8_t *);
 	template char8_t * to_chars_unsafe<char8_t , int32_t  >(int32_t  , char8_t *);
 	template char8_t * to_chars_unsafe<char8_t , int64_t  >(int64_t  , char8_t *);
-	template char8_t * to_chars_unsafe<char8_t , float32_t>(float32_t, char8_t *);
-	template char8_t * to_chars_unsafe<char8_t , float64_t>(float64_t, char8_t *);
+	template char8_t * to_chars_unsafe<char8_t , float    >(float    , char8_t *);
+	template char8_t * to_chars_unsafe<char8_t , double   >(double   , char8_t *);
 
 	template char16_t* to_chars_unsafe<char16_t, uint8_t  >(uint8_t  , char16_t*);
 	template char16_t* to_chars_unsafe<char16_t, uint16_t >(uint16_t , char16_t*);
@@ -1372,8 +1372,8 @@ namespace core
 	template char16_t* to_chars_unsafe<char16_t, int16_t  >(int16_t  , char16_t*);
 	template char16_t* to_chars_unsafe<char16_t, int32_t  >(int32_t  , char16_t*);
 	template char16_t* to_chars_unsafe<char16_t, int64_t  >(int64_t  , char16_t*);
-	template char16_t* to_chars_unsafe<char16_t, float32_t>(float32_t, char16_t*);
-	template char16_t* to_chars_unsafe<char16_t, float64_t>(float64_t, char16_t*);
+	template char16_t* to_chars_unsafe<char16_t, float    >(float    , char16_t*);
+	template char16_t* to_chars_unsafe<char16_t, double   >(double   , char16_t*);
 
 	template char32_t* to_chars_unsafe<char32_t, uint8_t  >(uint8_t  , char32_t*);
 	template char32_t* to_chars_unsafe<char32_t, uint16_t >(uint16_t , char32_t*);
@@ -1383,8 +1383,8 @@ namespace core
 	template char32_t* to_chars_unsafe<char32_t, int16_t  >(int16_t  , char32_t*);
 	template char32_t* to_chars_unsafe<char32_t, int32_t  >(int32_t  , char32_t*);
 	template char32_t* to_chars_unsafe<char32_t, int64_t  >(int64_t  , char32_t*);
-	template char32_t* to_chars_unsafe<char32_t, float32_t>(float32_t, char32_t*);
-	template char32_t* to_chars_unsafe<char32_t, float64_t>(float64_t, char32_t*);
+	template char32_t* to_chars_unsafe<char32_t, float    >(float    , char32_t*);
+	template char32_t* to_chars_unsafe<char32_t, double   >(double   , char32_t*);
 
 
 	template uintptr_t to_chars_hex_size<uint8_t >(uint8_t );
@@ -1490,8 +1490,8 @@ namespace core
 		template from_chars_result<int16_t  > from_chars<int16_t  , char8_t >(std::basic_string_view<char8_t >);
 		template from_chars_result<int32_t  > from_chars<int32_t  , char8_t >(std::basic_string_view<char8_t >);
 		template from_chars_result<int64_t  > from_chars<int64_t  , char8_t >(std::basic_string_view<char8_t >);
-		template from_chars_result<float32_t> from_chars<float32_t, char8_t >(std::basic_string_view<char8_t >);
-		template from_chars_result<float64_t> from_chars<float64_t, char8_t >(std::basic_string_view<char8_t >);
+		template from_chars_result<float    > from_chars<float , char8_t >(std::basic_string_view<char8_t >);
+		template from_chars_result<double   > from_chars<double, char8_t >(std::basic_string_view<char8_t >);
 
 		template from_chars_result<uint8_t  > from_chars<uint8_t  , char16_t>(std::basic_string_view<char16_t>);
 		template from_chars_result<uint16_t > from_chars<uint16_t , char16_t>(std::basic_string_view<char16_t>);
@@ -1501,8 +1501,8 @@ namespace core
 		template from_chars_result<int16_t  > from_chars<int16_t  , char16_t>(std::basic_string_view<char16_t>);
 		template from_chars_result<int32_t  > from_chars<int32_t  , char16_t>(std::basic_string_view<char16_t>);
 		template from_chars_result<int64_t  > from_chars<int64_t  , char16_t>(std::basic_string_view<char16_t>);
-		template from_chars_result<float32_t> from_chars<float32_t, char16_t>(std::basic_string_view<char16_t>);
-		template from_chars_result<float64_t> from_chars<float64_t, char16_t>(std::basic_string_view<char16_t>);
+		template from_chars_result<float    > from_chars<float    , char16_t>(std::basic_string_view<char16_t>);
+		template from_chars_result<double   > from_chars<double   , char16_t>(std::basic_string_view<char16_t>);
 
 		template from_chars_result<uint8_t  > from_chars<uint8_t  , char32_t>(std::basic_string_view<char32_t>);
 		template from_chars_result<uint16_t > from_chars<uint16_t , char32_t>(std::basic_string_view<char32_t>);
@@ -1512,8 +1512,8 @@ namespace core
 		template from_chars_result<int16_t  > from_chars<int16_t  , char32_t>(std::basic_string_view<char32_t>);
 		template from_chars_result<int32_t  > from_chars<int32_t  , char32_t>(std::basic_string_view<char32_t>);
 		template from_chars_result<int64_t  > from_chars<int64_t  , char32_t>(std::basic_string_view<char32_t>);
-		template from_chars_result<float32_t> from_chars<float32_t, char32_t>(std::basic_string_view<char32_t>);
-		template from_chars_result<float64_t> from_chars<float64_t, char32_t>(std::basic_string_view<char32_t>);
+		template from_chars_result<float    > from_chars<float    , char32_t>(std::basic_string_view<char32_t>);
+		template from_chars_result<double   > from_chars<double   , char32_t>(std::basic_string_view<char32_t>);
 
 
 		template from_chars_result<uint8_t > from_chars_hex<uint8_t , char8_t >(std::basic_string_view<char8_t >);
@@ -1556,8 +1556,8 @@ namespace core
 		template uintptr_t to_chars<char8_t , int16_t  >(int16_t  , std::span<char8_t , to_chars_dec_max_size_v<int16_t  >>);
 		template uintptr_t to_chars<char8_t , int32_t  >(int32_t  , std::span<char8_t , to_chars_dec_max_size_v<int32_t  >>);
 		template uintptr_t to_chars<char8_t , int64_t  >(int64_t  , std::span<char8_t , to_chars_dec_max_size_v<int64_t  >>);
-		template uintptr_t to_chars<char8_t , float32_t>(float32_t, std::span<char8_t , to_chars_dec_max_size_v<float32_t>>);
-		template uintptr_t to_chars<char8_t , float64_t>(float64_t, std::span<char8_t , to_chars_dec_max_size_v<float64_t>>);
+		template uintptr_t to_chars<char8_t , float    >(float    , std::span<char8_t , to_chars_dec_max_size_v<float>>);
+		template uintptr_t to_chars<char8_t , double   >(double   , std::span<char8_t , to_chars_dec_max_size_v<double>>);
 
 		template uintptr_t to_chars<char16_t, uint8_t  >(uint8_t  , std::span<char16_t, to_chars_dec_max_size_v<uint8_t  >>);
 		template uintptr_t to_chars<char16_t, uint16_t >(uint16_t , std::span<char16_t, to_chars_dec_max_size_v<uint16_t >>);
@@ -1567,8 +1567,8 @@ namespace core
 		template uintptr_t to_chars<char16_t, int16_t  >(int16_t  , std::span<char16_t, to_chars_dec_max_size_v<int16_t  >>);
 		template uintptr_t to_chars<char16_t, int32_t  >(int32_t  , std::span<char16_t, to_chars_dec_max_size_v<int32_t  >>);
 		template uintptr_t to_chars<char16_t, int64_t  >(int64_t  , std::span<char16_t, to_chars_dec_max_size_v<int64_t  >>);
-		template uintptr_t to_chars<char16_t, float32_t>(float32_t, std::span<char16_t, to_chars_dec_max_size_v<float32_t>>);
-		template uintptr_t to_chars<char16_t, float64_t>(float64_t, std::span<char16_t, to_chars_dec_max_size_v<float64_t>>);
+		template uintptr_t to_chars<char16_t, float    >(float    , std::span<char16_t, to_chars_dec_max_size_v<float>>);
+		template uintptr_t to_chars<char16_t, double   >(double   , std::span<char16_t, to_chars_dec_max_size_v<double>>);
 
 		template uintptr_t to_chars<char32_t, uint8_t  >(uint8_t  , std::span<char32_t, to_chars_dec_max_size_v<uint8_t  >>);
 		template uintptr_t to_chars<char32_t, uint16_t >(uint16_t , std::span<char32_t, to_chars_dec_max_size_v<uint16_t >>);
@@ -1578,8 +1578,8 @@ namespace core
 		template uintptr_t to_chars<char32_t, int16_t  >(int16_t  , std::span<char32_t, to_chars_dec_max_size_v<int16_t  >>);
 		template uintptr_t to_chars<char32_t, int32_t  >(int32_t  , std::span<char32_t, to_chars_dec_max_size_v<int32_t  >>);
 		template uintptr_t to_chars<char32_t, int64_t  >(int64_t  , std::span<char32_t, to_chars_dec_max_size_v<int64_t  >>);
-		template uintptr_t to_chars<char32_t, float32_t>(float32_t, std::span<char32_t, to_chars_dec_max_size_v<float32_t>>);
-		template uintptr_t to_chars<char32_t, float64_t>(float64_t, std::span<char32_t, to_chars_dec_max_size_v<float64_t>>);
+		template uintptr_t to_chars<char32_t, float    >(float    , std::span<char32_t, to_chars_dec_max_size_v<float>>);
+		template uintptr_t to_chars<char32_t, double   >(double   , std::span<char32_t, to_chars_dec_max_size_v<double>>);
 
 
 		template uintptr_t to_chars_hex<char8_t , uint8_t >(uint8_t , std::span<char8_t , to_chars_hex_max_size_v<uint8_t >>);

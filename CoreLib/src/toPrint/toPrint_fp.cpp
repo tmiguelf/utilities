@@ -59,7 +59,7 @@ namespace core::_p
 		struct fp_utils_pre_ex;
 
 		template<>
-		struct fp_utils_pre_ex<float32_t>: public fp_utils_pre<float32_t>
+		struct fp_utils_pre_ex<float>: public fp_utils_pre<float>
 		{
 			[[nodiscard]] static inline constexpr exp_ut exp_digits_size(exp_st exp)
 			{
@@ -73,7 +73,7 @@ namespace core::_p
 		};
 
 		template<>
-		struct fp_utils_pre_ex<float64_t>: public fp_utils_pre<float64_t>
+		struct fp_utils_pre_ex<double>: public fp_utils_pre<double>
 		{
 			[[nodiscard]] static inline constexpr exp_ut exp_digits_size(exp_st exp)
 			{
@@ -229,7 +229,7 @@ namespace core::_p
 
 	}
 
-	template uintptr_t to_chars_fp_fancy<float32_t>(float32_t, std::span<char16_t, fp_fancy_props<float32_t>::max_size>);
-	template uintptr_t to_chars_fp_fancy<float64_t>(float64_t, std::span<char16_t, fp_fancy_props<float64_t>::max_size>);
+	template uintptr_t to_chars_fp_fancy<float>(float, std::span<char16_t, fp_fancy_props<float>::max_size>);
+	template uintptr_t to_chars_fp_fancy<double>(double, std::span<char16_t, fp_fancy_props<double>::max_size>);
 
 } //namespace core::_p
