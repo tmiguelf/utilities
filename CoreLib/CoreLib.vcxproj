@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{ea04e8e6-b05b-416e-b0a3-218406672173}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="WSL_Debug|x64">
+      <Configuration>WSL_Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="WSL_Release|x64">
+      <Configuration>WSL_Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="SSH_Debug|x64">
+      <Configuration>SSH_Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="SSH_Release|x64">
+      <Configuration>SSH_Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="quickMSBuild" Condition="'$(Configuration)'=='Debug'">
+    <CompilerFlavour>MSVC</CompilerFlavour>
+    <BuildMethod>native</BuildMethod>
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Label="quickMSBuild" Condition="'$(Configuration)'=='Release'">
+    <CompilerFlavour>MSVC</CompilerFlavour>
+    <BuildMethod>native</BuildMethod>
+    <UseDebugLibraries>false</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Label="quickMSBuild" Condition="'$(Configuration)'=='WSL_Debug'">
+    <CompilerFlavour>g++</CompilerFlavour>
+    <BuildMethod>WSL</BuildMethod>
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Label="quickMSBuild" Condition="'$(Configuration)'=='WSL_Release'">
+    <CompilerFlavour>g++</CompilerFlavour>
+    <BuildMethod>WSL</BuildMethod>
+    <UseDebugLibraries>false</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Label="quickMSBuild" Condition="'$(Configuration)'=='SSH_Debug'">
+    <CompilerFlavour>g++</CompilerFlavour>
+    <BuildMethod>ssh</BuildMethod>
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Label="quickMSBuild" Condition="'$(Configuration)'=='SSH_Release'">
+    <CompilerFlavour>g++</CompilerFlavour>
+    <BuildMethod>ssh</BuildMethod>
+    <UseDebugLibraries>false</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(SolutionDir)locations.props" />
+    <Import Project="$(quickMSBuildPath)default.cpp.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="src\core_console.cpp" />
+    <ClCompile Include="src\core_cpu.cpp" />
+    <ClCompile Include="src\core_debugger.cpp" />
+    <ClCompile Include="src\core_dll.cpp" />
+    <ClCompile Include="src\core_file.cpp" />
+    <ClCompile Include="src\core_module.cpp" />
+    <ClCompile Include="src\core_os.cpp" />
+    <ClCompile Include="src\core_stacktrace.cpp" />
+    <ClCompile Include="src\core_sync.cpp" />
+    <ClCompile Include="src\core_thread.cpp" />
+    <ClCompile Include="src\core_time.cpp" />
+    <ClCompile Include="src\net\core_net.cpp" />
+    <ClCompile Include="src\net\core_net_address.cpp" />
+    <ClCompile Include="src\net\core_net_init.cpp" />
+    <ClCompile Include="src\string\core_os_string.cpp" />
+    <ClCompile Include="src\string\core_string_encoding.cpp" />
+    <ClCompile Include="src\string\core_string_misc.cpp" />
+    <ClCompile Include="src\string\core_string_numeric.cpp" />
+    <ClCompile Include="src\string\fp_charconv_from_chars.cpp" />
+    <ClCompile Include="src\string\fp_charconv_round.cpp" />
+    <ClCompile Include="src\string\fp_charconv_ryu.cpp" />
+    <ClCompile Include="src\string\fp_charconv_shortest.cpp" />
+    <ClCompile Include="src\toPrint\toPrint_fp.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\CoreLib\core_alloca.hpp" />
+    <ClInclude Include="include\CoreLib\core_alternate.hpp" />
+    <ClInclude Include="include\CoreLib\core_console.hpp" />
+    <ClInclude Include="include\CoreLib\core_cpu.hpp" />
+    <ClInclude Include="include\CoreLib\core_debugger.hpp" />
+    <ClInclude Include="include\CoreLib\core_dll.hpp" />
+    <ClInclude Include="include\CoreLib\core_endian.hpp" />
+    <ClInclude Include="include\CoreLib\core_extra_compiler.hpp" />
+    <ClInclude Include="include\CoreLib\core_file.hpp" />
+    <ClInclude Include="include\CoreLib\core_module.hpp" />
+    <ClInclude Include="include\CoreLib\core_os.hpp" />
+    <ClInclude Include="include\CoreLib\core_pack.hpp" />
+    <ClInclude Include="include\CoreLib\core_stacktrace.hpp" />
+    <ClInclude Include="include\CoreLib\core_sync.hpp" />
+    <ClInclude Include="include\CoreLib\core_thread.hpp" />
+    <ClInclude Include="include\CoreLib\core_time.hpp" />
+    <ClInclude Include="include\CoreLib\core_type.hpp" />
+    <ClInclude Include="include\CoreLib\core_wide_arithmetic.hpp" />
+    <ClInclude Include="include\CoreLib\net\core_net_address.hpp" />
+    <ClInclude Include="include\CoreLib\net\core_net_init.hpp" />
+    <ClInclude Include="include\CoreLib\net\core_net_socket.hpp" />
+    <ClInclude Include="include\CoreLib\net\core_net_TCP.hpp" />
+    <ClInclude Include="include\CoreLib\net\core_net_UDP.hpp" />
+    <ClInclude Include="include\CoreLib\string\core_fp_to_chars_round.hpp" />
+    <ClInclude Include="include\CoreLib\string\core_fp_charconv.hpp" />
+    <ClInclude Include="include\CoreLib\string\core_os_string.hpp" />
+    <ClInclude Include="include\CoreLib\string\core_string_encoding.hpp" />
+    <ClInclude Include="include\CoreLib\string\core_string_misc.hpp" />
+    <ClInclude Include="include\CoreLib\string\core_string_numeric.hpp" />
+    <ClInclude Include="include\CoreLib\string\core_wchar_alias.hpp" />
+    <ClInclude Include="include\CoreLib\string\numeric_common.hpp" />
+    <ClInclude Include="include\CoreLib\toPrint\toPrint.hpp" />
+    <ClInclude Include="include\CoreLib\toPrint\toPrint_base.hpp" />
+    <ClInclude Include="include\CoreLib\toPrint\toPrint_encoders.hpp" />
+    <ClInclude Include="include\CoreLib\toPrint\toPrint_enum.hpp" />
+    <ClInclude Include="include\CoreLib\toPrint\toPrint_file.hpp" />
+    <ClInclude Include="include\CoreLib\toPrint\toPrint_filesystem.hpp" />
+    <ClInclude Include="include\CoreLib\toPrint\toPrint_net.hpp" />
+    <ClInclude Include="include\CoreLib\toPrint\toPrint_sink.hpp" />
+    <ClInclude Include="include\CoreLib\toPrint\toPrint_std_ostream.hpp" />
+    <ClInclude Include="include\CoreLib\toPrint\toPrint_string_sink.hpp" />
+    <ClInclude Include="include\CoreLib\toPrint\toPrint_support.hpp" />
+    <ClInclude Include="src\string\fp_traits.hpp" />
+    <ClInclude Include="src\string\ryu\common.hpp" />
+    <ClInclude Include="src\string\ryu\d2s_full_table.hpp" />
+    <ClInclude Include="src\string\ryu\d2s_intrinsics.hpp" />
+    <ClInclude Include="src\string\ryu\f2s_intrinsics.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CoreLib.import.props" />
+    <None Include="CoreLib.include.props" />
+  </ItemGroup>
+  <Import Project="$(quickMSBuildPath)default.cpp.targets" />
+</Project>
