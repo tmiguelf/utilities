@@ -1645,6 +1645,6 @@ namespace core
 		template void to_chars_bin_fix<char32_t, uint32_t>(uint32_t, std::span<char32_t, to_chars_bin_max_size_v<uint32_t>>);
 		template void to_chars_bin_fix<char32_t, uint64_t>(uint64_t, std::span<char32_t, to_chars_bin_max_size_v<uint64_t>>);
 
-	} //namespace
+	} //namespace _p
 
 } //namespace core
