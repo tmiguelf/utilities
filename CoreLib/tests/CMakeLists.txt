@@ -8,8 +8,8 @@ file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
-target_link_libraries(${PROJECT_NAME} LINK_PRIVATE CoreLib)
-target_link_libraries(${PROJECT_NAME} LINK_PRIVATE gtest gtest_main)
+target_link_libraries(${PROJECT_NAME} PRIVATE CoreLib)
+target_link_libraries(${PROJECT_NAME} PRIVATE gtest gtest_main)
 
 quick_default_post_config()
 
