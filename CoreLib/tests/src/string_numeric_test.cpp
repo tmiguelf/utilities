@@ -324,7 +324,7 @@ std::vector<std::pair<num_T, std::basic_string<char_T>>> get_goodCases()
 {
 	if constexpr(std::is_floating_point_v<num_T>)
 	{
-		if constexpr (std::is_same_v<num_T, float32_t>)
+		if constexpr (std::is_same_v<num_T, float>)
 		{
 			return
 			{
@@ -342,7 +342,7 @@ std::vector<std::pair<num_T, std::basic_string<char_T>>> get_goodCases()
 				{-0.1234f	, str2_Tstring<char_T>("-0.1234")},
 			};
 		}
-		else if constexpr (std::is_same_v<num_T, float64_t>)
+		else if constexpr (std::is_same_v<num_T, double>)
 		{
 			return
 			{
@@ -407,7 +407,7 @@ std::vector<std::pair<num_T, std::basic_string<char_T>>> get_goodCases()
 template <typename num_T, typename char_T>
 std::vector<std::pair<num_T, std::basic_string<char_T>>> getFpCases_extra()
 {
-	if constexpr (std::is_same_v<num_T, float32_t>)
+	if constexpr (std::is_same_v<num_T, float>)
 	{
 		return
 		{
@@ -417,7 +417,7 @@ std::vector<std::pair<num_T, std::basic_string<char_T>>> getFpCases_extra()
 			{-1.175494351e-38f	, str2_Tstring<char_T>("-1.175494351e-38")},
 		};
 	}
-	else if constexpr (std::is_same_v<num_T, float64_t>)
+	else if constexpr (std::is_same_v<num_T, double>)
 	{
 		return 
 		{
@@ -474,8 +474,8 @@ using DecTypes = ::testing::Types<
 	std::pair<int16_t		, char8_t >,
 	std::pair<int32_t		, char8_t >,
 	std::pair<int64_t		, char8_t >,
-	std::pair<float32_t		, char8_t >,
-	std::pair<float64_t		, char8_t >,
+	std::pair<float		, char8_t >,
+	std::pair<double		, char8_t >,
 	std::pair<uint8_t		, char16_t>,
 	std::pair<uint16_t		, char16_t>,
 	std::pair<uint32_t		, char16_t>,
@@ -484,8 +484,8 @@ using DecTypes = ::testing::Types<
 	std::pair<int16_t		, char16_t>,
 	std::pair<int32_t		, char16_t>,
 	std::pair<int64_t		, char16_t>,
-	std::pair<float32_t		, char16_t>,
-	std::pair<float64_t		, char16_t>,
+	std::pair<float		, char16_t>,
+	std::pair<double		, char16_t>,
 	std::pair<uint8_t		, char32_t>,
 	std::pair<uint16_t		, char32_t>,
 	std::pair<uint32_t		, char32_t>,
@@ -494,8 +494,8 @@ using DecTypes = ::testing::Types<
 	std::pair<int16_t		, char32_t>,
 	std::pair<int32_t		, char32_t>,
 	std::pair<int64_t		, char32_t>,
-	std::pair<float32_t		, char32_t>,
-	std::pair<float64_t		, char32_t>
+	std::pair<float		, char32_t>,
+	std::pair<double		, char32_t>
 >;
 
 TYPED_TEST_SUITE(charconv_Decimal_T, DecTypes);

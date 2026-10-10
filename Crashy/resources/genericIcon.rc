@@ -27,4 +27,4 @@
 //======== ======== ======== ======== ======== ======== ======== ========
 
 IDI_ICON1	ICON	DISCARDABLE	"generic.ico"
-#include <version.rc>
+#include <version/version.rc>

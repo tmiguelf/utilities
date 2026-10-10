@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemDefinitionGroup>
 		<ResourceCompile>
-			<AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)include\version;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+			<AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 		</ResourceCompile>
 	</ItemDefinitionGroup>
 </Project>

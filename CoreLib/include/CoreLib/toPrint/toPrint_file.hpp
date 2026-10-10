@@ -376,7 +376,7 @@ namespace core
 				}
 				else
 				{
-					char32_t* const buff = reinterpret_cast<char16_t*>(core_alloca(count * sizeof(char32_t)));
+					char32_t* const buff = reinterpret_cast<char32_t*>(core_alloca(count * sizeof(char32_t)));
 					memcpy(buff, p_out.data(), count * sizeof(char32_t));
 					commit({buff, count});
 				}
@@ -461,7 +461,7 @@ namespace core
 				}
 				else
 				{
-					char32_t* const buff = reinterpret_cast<char16_t*>(core_alloca(count * sizeof(char32_t)));
+					char32_t* const buff = reinterpret_cast<char32_t*>(core_alloca(count * sizeof(char32_t)));
 					memcpy(buff, p_out.data(), count * sizeof(char32_t));
 					commit({buff, count});
 				}
@@ -770,7 +770,7 @@ namespace core
 				}
 				else
 				{
-					char32_t* const buff = reinterpret_cast<char16_t*>(core_alloca(count * sizeof(char32_t)));
+					char32_t* const buff = reinterpret_cast<char32_t*>(core_alloca(count * sizeof(char32_t)));
 					memcpy(buff, p_out.data(), count * sizeof(char32_t));
 					commit({buff, count});
 				}
@@ -855,7 +855,7 @@ namespace core
 				}
 				else
 				{
-					char32_t* const buff = reinterpret_cast<char16_t*>(core_alloca(count * sizeof(char32_t)));
+					char32_t* const buff = reinterpret_cast<char32_t*>(core_alloca(count * sizeof(char32_t)));
 					memcpy(buff, p_out.data(), count * sizeof(char32_t));
 					commit({buff, count});
 				}

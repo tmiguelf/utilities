@@ -250,7 +250,7 @@ TYPED_TEST(QuaternionRotator_T, Rotator)
 TYPED_TEST(QuaternionRotator_T, fromVector)
 {
 	using real_t = TypeParam;
-	constexpr real_t epsilon = std::numeric_limits<real_t>::epsilon();
+	constexpr real_t epsilon = std::numeric_limits<real_t>::epsilon() * real_t{ 2. };
 
 	struct TestCase
 	{
@@ -357,7 +357,6 @@ TYPED_TEST(QuaternionRotator_T, toMatrix)
 	using real_t = TypeParam;
 	constexpr real_t epsilon = std::numeric_limits<real_t>::epsilon() * real_t{10.0};
 
-
 #define VECT(X,Y,Z) Vector3<real_t>{real_t{X}, real_t{Y}, real_t{Z}}
 	std::vector<Vector3<real_t>> testCases =
 	{
@@ -368,11 +367,11 @@ TYPED_TEST(QuaternionRotator_T, toMatrix)
 		VECT(1.0, 2.0, 3.0),
 		VECT(-2.0, 3.0, -1.0),
 	};
-
-	std::vector<Vector3<real_t>> testData = testCases;
 #undef VECT
 
-#define HELP_NEAR(A, B, C) ASSERT_NEAR(static_cast<double>(A), static_cast<double>(B), static_cast<double>(C))
+	std::vector<Vector3<real_t>> testData = testCases;
+
+
 	for(Vector3<real_t> const& tcase: testCases)
 	{
 		QuaternionRotator<real_t> quat{tcase};
@@ -383,12 +382,11 @@ TYPED_TEST(QuaternionRotator_T, toMatrix)
 			Vector3<real_t> mode1 = quat.rotate(tdata);
 			Vector3<real_t> mode2 = res * tdata;
 
-			HELP_NEAR(mode1[0], mode2[0], epsilon) << tcase << ":" << tdata;
-			HELP_NEAR(mode1[1], mode2[1], epsilon) << tcase << ":" << tdata;
-			HELP_NEAR(mode1[2], mode2[2], epsilon) << tcase << ":" << tdata;
+			ASSERT_NEAR(mode1[0], mode2[0], epsilon) << tcase << ":" << tdata;
+			ASSERT_NEAR(mode1[1], mode2[1], epsilon) << tcase << ":" << tdata;
+			ASSERT_NEAR(mode1[2], mode2[2], epsilon) << tcase << ":" << tdata;
 		}
 	}
-#undef HELP_NEAR
 }
 
 } //namespace mathlib

@@ -153,7 +153,7 @@ namespace core
 			{
 				for(char_t const cp : string_table::enum_name)
 				{
-					*(p_out++) = cp;
+					*(p_out++) = static_cast<CharT>(cp);
 				}
 			}
 
@@ -178,7 +178,7 @@ namespace core
 				{
 					for(char_t const cp : m_decoded)
 					{
-						*(p_out++) = cp;
+						*(p_out++) = static_cast<CharT>(cp);
 					}
 				}
 			}

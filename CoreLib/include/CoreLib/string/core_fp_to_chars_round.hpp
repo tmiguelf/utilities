@@ -62,14 +62,14 @@ namespace core
 	struct fp_to_chars_round_context;
 
 	template <>
-	struct fp_to_chars_round_context<float32_t>
+	struct fp_to_chars_round_context<float>
 	{
 		static constexpr uint8_t bignum_width = 6;
 		using bignum_t = std::array<uint64_t, bignum_width>;
 	};
 
 	template <>
-	struct fp_to_chars_round_context<float64_t>
+	struct fp_to_chars_round_context<double>
 	{
 		static constexpr uint8_t bignum_width = 41;
 		using bignum_t = std::array<uint64_t, bignum_width>;

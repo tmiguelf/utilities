@@ -59,9 +59,9 @@ namespace core
 		[[nodiscard]] static fp_t from_chars_b10_to_b2(bool sign_bit, typename fp_utils_pre<fp_t>::uint_t m10, typename fp_utils_pre<fp_t>::exp_st e10);
 
 		template<>
-		[[nodiscard]] float32_t from_chars_b10_to_b2<float32_t>(bool const sign_bit, typename fp_utils_pre<float32_t>::uint_t const m10, typename fp_utils_pre<float32_t>::exp_st const e10)
+		[[nodiscard]] float from_chars_b10_to_b2<float>(bool const sign_bit, typename fp_utils_pre<float>::uint_t const m10, typename fp_utils_pre<float>::exp_st const e10)
 		{
-			using fp_t = float32_t;
+			using fp_t = float;
 			using fp_utils_t = fp_utils_pre<fp_t>;
 			using uint_t = fp_utils_t::uint_t;
 			using exp_st = fp_utils_t::exp_st;
@@ -167,9 +167,9 @@ namespace core
 		}
 
 		template<>
-		[[nodiscard]] float64_t from_chars_b10_to_b2<float64_t>(bool const sign_bit, typename fp_utils_pre<float64_t>::uint_t const m10, typename fp_utils_pre<float64_t>::exp_st const e10)
+		[[nodiscard]] double from_chars_b10_to_b2<double>(bool const sign_bit, typename fp_utils_pre<double>::uint_t const m10, typename fp_utils_pre<double>::exp_st const e10)
 		{
-			using fp_t = float64_t;
+			using fp_t = double;
 			using fp_utils_t = fp_utils_pre<fp_t>;
 			using uint_t = fp_utils_t::uint_t;
 			using exp_st = fp_utils_t::exp_st;
@@ -298,7 +298,7 @@ namespace core
 					if(++sig_digits == max_sig_digits_10)
 					{
 						decimal_offset = static_cast<intptr_t>(end - pivot - 1);
-						goto $exp_parse;
+						goto label_exp_parse;
 					}
 				}
 			}
@@ -332,7 +332,7 @@ namespace core
 				return std::bit_cast<fp_t const>(t_resut);
 			}
 
-		$exp_parse:
+		label_exp_parse:
 			exp_st e10;
 			{
 				intptr_t e_temp = 0;
@@ -371,12 +371,12 @@ namespace core
 			return from_chars_b10_to_b2<fp_t>(sign_bit, m10, e10);
 		}
 
-		template from_chars_result<float32_t> from_chars_fp<float32_t , char8_t >(bool, std::basic_string_view<char8_t >, std::basic_string_view<char8_t >, bool, std::basic_string_view<char8_t >);
-		template from_chars_result<float32_t> from_chars_fp<float32_t , char16_t>(bool, std::basic_string_view<char16_t>, std::basic_string_view<char16_t>, bool, std::basic_string_view<char16_t>);
-		template from_chars_result<float32_t> from_chars_fp<float32_t , char32_t>(bool, std::basic_string_view<char32_t>, std::basic_string_view<char32_t>, bool, std::basic_string_view<char32_t>);
-		template from_chars_result<float64_t> from_chars_fp<float64_t, char8_t >(bool, std::basic_string_view<char8_t >, std::basic_string_view<char8_t >, bool, std::basic_string_view<char8_t >);
-		template from_chars_result<float64_t> from_chars_fp<float64_t, char16_t>(bool, std::basic_string_view<char16_t>, std::basic_string_view<char16_t>, bool, std::basic_string_view<char16_t>);
-		template from_chars_result<float64_t> from_chars_fp<float64_t, char32_t>(bool, std::basic_string_view<char32_t>, std::basic_string_view<char32_t>, bool, std::basic_string_view<char32_t>);
+		template from_chars_result<float> from_chars_fp<float , char8_t >(bool, std::basic_string_view<char8_t >, std::basic_string_view<char8_t >, bool, std::basic_string_view<char8_t >);
+		template from_chars_result<float> from_chars_fp<float , char16_t>(bool, std::basic_string_view<char16_t>, std::basic_string_view<char16_t>, bool, std::basic_string_view<char16_t>);
+		template from_chars_result<float> from_chars_fp<float , char32_t>(bool, std::basic_string_view<char32_t>, std::basic_string_view<char32_t>, bool, std::basic_string_view<char32_t>);
+		template from_chars_result<double> from_chars_fp<double, char8_t >(bool, std::basic_string_view<char8_t >, std::basic_string_view<char8_t >, bool, std::basic_string_view<char8_t >);
+		template from_chars_result<double> from_chars_fp<double, char16_t>(bool, std::basic_string_view<char16_t>, std::basic_string_view<char16_t>, bool, std::basic_string_view<char16_t>);
+		template from_chars_result<double> from_chars_fp<double, char32_t>(bool, std::basic_string_view<char32_t>, std::basic_string_view<char32_t>, bool, std::basic_string_view<char32_t>);
 
 	} //namespace _p
 }

@@ -567,7 +567,7 @@ static void std_from_chars_good(benchmark::State& state)
 		num_T result;
 		std::from_chars_result const res = std::from_chars(first, last, result);
 
-		bool const ok = (res.ec == std::error_code{} && res.ptr == last);
+		bool const ok = (res.ec == std::errc{} && res.ptr == last);
 
 		benchmark::DoNotOptimize(result);
 		benchmark::DoNotOptimize(ok);
@@ -596,7 +596,6 @@ static void core_from_chars_good(benchmark::State& state)
 	}
 }
 
-
 template<typename num_T>
 static void std_from_chars_bad(benchmark::State& state)
 {
@@ -611,7 +610,7 @@ static void std_from_chars_bad(benchmark::State& state)
 		num_T result;
 		std::from_chars_result const res = std::from_chars(first, last, result);
 
-		bool const ok = (res.ec == std::error_code{} && res.ptr == last);
+		bool const ok = (res.ec == std::errc{} && res.ptr == last);
 
 		benchmark::DoNotOptimize(ok);
 
@@ -652,7 +651,7 @@ static void std_from_chars_hex_good(benchmark::State& state)
 		num_T result;
 		std::from_chars_result const res = std::from_chars(first, last, result, 16);
 
-		bool const ok = (res.ec == std::error_code{} && res.ptr == last);
+		bool const ok = (res.ec == std::errc{} && res.ptr == last);
 
 		benchmark::DoNotOptimize(result);
 		benchmark::DoNotOptimize(ok);
@@ -696,7 +695,7 @@ static void std_from_chars_hex_bad(benchmark::State& state)
 		num_T result;
 		std::from_chars_result const res = std::from_chars(first, last, result, 16);
 
-		bool const ok = (res.ec == std::error_code{} && res.ptr == last);
+		bool const ok = (res.ec == std::errc{} && res.ptr == last);
 
 		benchmark::DoNotOptimize(ok);
 
@@ -738,7 +737,7 @@ static void std_from_chars_bin_good(benchmark::State& state)
 		num_T result;
 		std::from_chars_result const res = std::from_chars(first, last, result, 2);
 
-		bool const ok = (res.ec == std::error_code{} && res.ptr == last);
+		bool const ok = (res.ec == std::errc{} && res.ptr == last);
 
 		benchmark::DoNotOptimize(result);
 		benchmark::DoNotOptimize(ok);
@@ -782,7 +781,7 @@ static void std_from_chars_bin_bad(benchmark::State& state)
 		num_T result;
 		std::from_chars_result const res = std::from_chars(first, last, result, 2);
 
-		bool const ok = (res.ec == std::error_code{} && res.ptr == last);
+		bool const ok = (res.ec == std::errc{} && res.ptr == last);
 
 		benchmark::DoNotOptimize(ok);
 
@@ -1170,36 +1169,36 @@ template<typename T>
 struct fp_cases;
 
 template<>
-struct fp_cases<float32_t>
+struct fp_cases<float>
 {
 	static constexpr uint16_t buff_size = 256;
 
 	static constexpr uint16_t sig_digits = 111;
-	inline static constexpr float32_t sci_case()
+	inline static constexpr float sci_case()
 	{
-		return std::bit_cast<float32_t>(0xFFFFFF_ui32);
+		return std::bit_cast<float>(0xFFFFFF_ui32);
 	}
 
 	static constexpr uint16_t precision_digits = 2;
-	inline static constexpr float32_t fix_case()
+	inline static constexpr float fix_case()
 	{
 		return 1.125f;
 	}
 };
 
 template<>
-struct fp_cases<float64_t>
+struct fp_cases<double>
 {
 	static constexpr uint16_t buff_size = 2048;
 
 	static constexpr uint16_t sig_digits = 766;
-	inline static constexpr float64_t sci_case()
+	inline static constexpr double sci_case()
 	{
-		return std::bit_cast<float64_t>(0x001FFFFFFFFFFFFF_ui64);
+		return std::bit_cast<double>(0x001FFFFFFFFFFFFF_ui64);
 	}
 
 	static constexpr uint16_t precision_digits = 2;
-	inline static constexpr float64_t fix_case()
+	inline static constexpr double fix_case()
 	{
 		return 1.125;
 	}
@@ -1504,37 +1503,34 @@ static inline void core_to_chars_shortest_convert(benchmark::State& state)
 	}
 }
 
-BENCHMARK_TEMPLATE(std_to_chars_short, float32_t);
-BENCHMARK_TEMPLATE(std_to_chars_short, float64_t);
+BENCHMARK_TEMPLATE(std_to_chars_short, float);
+BENCHMARK_TEMPLATE(std_to_chars_short, double);
 
-BENCHMARK_TEMPLATE(core_to_chars_shortest, float32_t, char8_t);
-BENCHMARK_TEMPLATE(core_to_chars_shortest, float64_t, char8_t);
-BENCHMARK_TEMPLATE(core_to_chars_shortest, float32_t, char16_t);
-BENCHMARK_TEMPLATE(core_to_chars_shortest, float64_t, char16_t);
-BENCHMARK_TEMPLATE(core_to_chars_shortest, float32_t, char32_t);
-BENCHMARK_TEMPLATE(core_to_chars_shortest, float64_t, char32_t);
+BENCHMARK_TEMPLATE(core_to_chars_shortest, float, char8_t);
+BENCHMARK_TEMPLATE(core_to_chars_shortest, double, char8_t);
+BENCHMARK_TEMPLATE(core_to_chars_shortest, float, char16_t);
+BENCHMARK_TEMPLATE(core_to_chars_shortest, double, char16_t);
+BENCHMARK_TEMPLATE(core_to_chars_shortest, float, char32_t);
+BENCHMARK_TEMPLATE(core_to_chars_shortest, double, char32_t);
 
-BENCHMARK_TEMPLATE(core_to_chars_shortest_classify, float32_t);
-BENCHMARK_TEMPLATE(core_to_chars_shortest_classify, float64_t);
+BENCHMARK_TEMPLATE(core_to_chars_shortest_classify, float);
+BENCHMARK_TEMPLATE(core_to_chars_shortest_classify, double);
 
-BENCHMARK_TEMPLATE(core_to_chars_shortest_size, float32_t);
-BENCHMARK_TEMPLATE(core_to_chars_shortest_size, float64_t);
+BENCHMARK_TEMPLATE(core_to_chars_shortest_size, float);
+BENCHMARK_TEMPLATE(core_to_chars_shortest_size, double);
 
-BENCHMARK_TEMPLATE(core_to_chars_shortest_convert, float32_t, char8_t);
-BENCHMARK_TEMPLATE(core_to_chars_shortest_convert, float64_t, char8_t);
+BENCHMARK_TEMPLATE(core_to_chars_shortest_convert, float, char8_t);
+BENCHMARK_TEMPLATE(core_to_chars_shortest_convert, double, char8_t);
 
 
-//BENCHMARK_TEMPLATE(std_to_chars_sci, float32_t);
-//BENCHMARK_TEMPLATE(std_to_chars_fix, float32_t);
-//BENCHMARK_TEMPLATE(std_to_chars_short, float32_t);
+//BENCHMARK_TEMPLATE(std_to_chars_sci, float);
+//BENCHMARK_TEMPLATE(std_to_chars_fix, float);
+//BENCHMARK_TEMPLATE(std_to_chars_short, float);
 //
-//BENCHMARK_TEMPLATE(std_to_chars_sci, float64_t);
-//BENCHMARK_TEMPLATE(std_to_chars_fix, float64_t);
-//BENCHMARK_TEMPLATE(std_to_chars_short, float64_t);
-//
-//BENCHMARK_TEMPLATE(core_to_chars_sci, float32_t);
-//BENCHMARK_TEMPLATE(core_to_chars_fix, float32_t);
-//BENCHMARK_TEMPLATE(core_to_chars_sci, float64_t);
+//BENCHMARK_TEMPLATE(std_to_chars_sci, double);
+//BENCHMARK_TEMPLATE(std_to_chars_fix, double);
+//BENCHMARK_TEMPLATE(std_to_chars_short, double);
+
 
 
 static void no_op(benchmark::State& state)

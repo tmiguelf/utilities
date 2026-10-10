@@ -35,7 +35,7 @@ namespace core
 		struct fp_utils;
 
 		template<>
-		struct fp_utils<float32_t>: public fp_utils_pre<float32_t>
+		struct fp_utils<float>: public fp_utils_pre<float>
 		{
 			[[nodiscard]] static inline constexpr uint8_t sig_digits(uint32_t const mantissa)
 			{
@@ -52,7 +52,7 @@ namespace core
 		};
 
 		template<>
-		struct fp_utils<float64_t>: public fp_utils_pre<float64_t>
+		struct fp_utils<double>: public fp_utils_pre<double>
 		{
 			[[nodiscard]] static inline constexpr uint8_t sig_digits(uint64_t const mantissa)
 			{
@@ -79,9 +79,9 @@ namespace core
 
 
 	template<>
-	fp_base_classify to_chars_shortest_classify<float32_t>(float32_t const value, fp_to_chars_shortest_context<float32_t>& context)
+	fp_base_classify to_chars_shortest_classify<float>(float const value, fp_to_chars_shortest_context<float>& context)
 	{
-		using fp_type = float32_t;
+		using fp_type = float;
 		using fp_utils_t = fp_utils<fp_type>;
 		using uint_t = fp_utils_t::uint_t;
 		using exp_st = fp_utils_t::exp_st;
@@ -311,9 +311,9 @@ namespace core
 
 
 	template<>
-	fp_base_classify to_chars_shortest_classify<float64_t>(float64_t const value, fp_to_chars_shortest_context<float64_t>& context)
+	fp_base_classify to_chars_shortest_classify<double>(double const value, fp_to_chars_shortest_context<double>& context)
 	{
-		using fp_type = float64_t;
+		using fp_type = double;
 		using fp_utils_t = fp_utils<fp_type>;
 		using uint_t = fp_utils_t::uint_t;
 		using exp_st = fp_utils_t::exp_st;

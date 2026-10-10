@@ -39,7 +39,7 @@ namespace core
 	struct fp_type_traits;
 
 	template <>
-	struct fp_type_traits<float32_t>
+	struct fp_type_traits<float>
 	{
 		static constexpr int16_t max_scientific_exponent_10 = 38;
 		static constexpr int16_t min_scientific_exponent_10 = -45;
@@ -59,7 +59,7 @@ namespace core
 	};
 
 	template <>
-	struct fp_type_traits<float64_t>
+	struct fp_type_traits<double>
 	{
 		static constexpr int16_t max_scientific_exponent_10 = 308;
 		static constexpr int16_t min_scientific_exponent_10 = -324;
@@ -110,7 +110,7 @@ namespace core
 	struct fp_to_chars_shortest_context;
 
 	template <>
-	struct fp_to_chars_shortest_context<float32_t>
+	struct fp_to_chars_shortest_context<float>
 	{
 		uint32_t mantissa;
 		int16_t exponent;
@@ -118,7 +118,7 @@ namespace core
 	};
 
 	template <>
-	struct fp_to_chars_shortest_context<float64_t>
+	struct fp_to_chars_shortest_context<double>
 	{
 		uint64_t mantissa;
 		int16_t exponent;

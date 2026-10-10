@@ -31,9 +31,12 @@
 #include <cstdint>
 #include <type_traits>
 #include <tuple>
+#include <cstddef>
 
 namespace core
 {
+
+static_assert(std::is_same_v<uintptr_t, size_t>);
 
 template<typename> struct is_tuple : public std::false_type {};
 template<typename ...Type> struct is_tuple<std::tuple<Type...>> : public std::true_type{};

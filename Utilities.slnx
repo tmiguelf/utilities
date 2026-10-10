@@ -20,7 +20,7 @@
       <Deploy Solution="WSL_Release|*" />
     </Project>
   </Folder>
-  <Project Path="CoreLib/benchmarks/CoreLib_benchmark_charconv/CoreLib_benchmark_charconv.vcxproj" Id="085670cc-b4a6-4ee8-ae6f-7b9fc34fc1de">
+  <Project Path="CoreLib/benchmarks/charconv_benchmark/CoreLib_benchmark_charconv.vcxproj" Id="085670cc-b4a6-4ee8-ae6f-7b9fc34fc1de">
     <Deploy Solution="WSL_Debug|*" />
     <Deploy Solution="WSL_Release|*" />
   </Project>
@@ -35,7 +35,7 @@
   </Project>
   <Project Path="Crashy/Crashy.vcxproj" Id="12bfa461-2442-4083-a115-594a970632cb" />
   <Project Path="MathLib/MathLib.vcxproj" Id="77943016-2d04-4451-96cb-9fdcbb6b9c8c" />
-  <Project Path="MathLib/Tests/MathLibTest.vcxproj" Id="f0920b5d-5d5e-4f37-b9da-45b73e241c09">
+  <Project Path="MathLib/tests/MathLibTest.vcxproj" Id="f0920b5d-5d5e-4f37-b9da-45b73e241c09">
     <Deploy Solution="WSL_Debug|*" />
     <Deploy Solution="WSL_Release|*" />
   </Project>

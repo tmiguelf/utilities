@@ -116,7 +116,7 @@
     <ClInclude Include="include\CoreLib\core_thread.hpp" />
     <ClInclude Include="include\CoreLib\core_time.hpp" />
     <ClInclude Include="include\CoreLib\core_type.hpp" />
-    <ClInclude Include="include\CoreLib\cpu\x64.hpp" />
+    <ClInclude Include="include\CoreLib\core_wide_arithmetic.hpp" />
     <ClInclude Include="include\CoreLib\net\core_net_address.hpp" />
     <ClInclude Include="include\CoreLib\net\core_net_init.hpp" />
     <ClInclude Include="include\CoreLib\net\core_net_socket.hpp" />

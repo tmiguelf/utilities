@@ -125,7 +125,7 @@ namespace
 	};
 
 
-	static void PrintCPUinfo(file_write& p_file)
+	static void PrintCPUinfo([[maybe_unused]] file_write& p_file)
 	{
 #if defined(_M_AMD64) || defined(__amd64__)
 		OUTPUT(p_file, "CPU: AMD64\n"sv);
@@ -1001,13 +1001,11 @@ namespace
 						static_assert(sizeof(struct sigcontext) == sizeof(decltype(t_context->uc_mcontext)));
 						static_assert(alignof(struct sigcontext) == alignof(decltype(t_context->uc_mcontext)));
 #if defined(__i386__) // gcc specific
-						t_criticalAddr = reinterpret_cast<void const*>(reinterpret_cast<struct sigcontext const&>(t_context->uc_mcontext).eip);
+						t_criticalAddr = reinterpret_cast<void*>(t_context->uc_mcontext.gregs[REG_EIP]);
 #elif defined(__x86_64__) // gcc specific
-						t_criticalAddr = reinterpret_cast<void const*>(reinterpret_cast<struct sigcontext const&>(t_context->uc_mcontext).rip);
+						t_criticalAddr = reinterpret_cast<void*>(t_context->uc_mcontext.gregs[REG_RIP]);
 #elif defined(__aarch64__) // gcc specific
-						t_criticalAddr = reinterpret_cast<void const*>(reinterpret_cast<struct sigcontext const&>(t_context->uc_mcontext).pc);
-#elif defined(__ppc__) || defined(__powerpc__)
-						t_criticalAddr = reinterpret_cast<void const*>(reinterpret_cast<struct sigcontext const&>(t_context->uc_mcontext).nip); //probably wrong
+						t_criticalAddr = reinterpret_cast<void*>(t_context->uc_mcontext.sp);
 #endif
 					}
 
@@ -1220,7 +1218,7 @@ uint8_t stack_trace(StackTrace_FullInfo& p_trace)
 					Dl_info t_dlinfo;
 					if(dladdr(trace[i], &t_dlinfo) && (t_dlinfo.dli_fbase < trace[i]))
 					{
-						t_info.m_modBase = (uint64_t) t_dlinfo.dli_fbase;
+						t_info.m_modBase = reinterpret_cast<uintptr_t>(t_dlinfo.dli_fbase);
 					}
 					else
 					{

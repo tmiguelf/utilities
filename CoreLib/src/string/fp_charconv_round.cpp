@@ -32,7 +32,8 @@
 
 #include <CoreLib/string/core_fp_to_chars_round.hpp>
 #include <CoreLib/core_type.hpp>
-#include <CoreLib/cpu/x64.hpp>
+
+#include <CoreLib/core_wide_arithmetic.hpp>
 
 #include "fp_traits.hpp"
 
@@ -229,9 +230,9 @@ namespace core
 	struct fp_data_table;
 
 	template<>
-	struct fp_data_table<float32_t>: public fp_common_data_table, public fp_utils_pre<float32_t>
+	struct fp_data_table<float>: public fp_common_data_table, public fp_utils_pre<float>
 	{
-		using fp_type = float32_t;
+		using fp_type = float;
 		using uint_t = uint32_t;
 		using bignum_t = fp_to_chars_round_context<fp_type>::bignum_t;
 
@@ -317,9 +318,9 @@ namespace core
 	};
 
 	template<>
-	struct fp_data_table<float64_t>: public fp_common_data_table, public fp_utils_pre<float64_t>
+	struct fp_data_table<double>: public fp_common_data_table, public fp_utils_pre<double>
 	{
-		using fp_type = float64_t;
+		using fp_type = double;
 		using uint_t = uint64_t;
 		using bignum_t = fp_to_chars_round_context<fp_type>::bignum_t;
 
@@ -521,17 +522,20 @@ namespace core
 
 		static void mul_hack(bignum_t& p_1, uint64_t const p_2)
 		{
-			uint64_t mul_carry = 0;
-			uint64_t carry = 0;
-			uint64_t temp_res = core::umul(p_1[0], p_2, mul_carry);
 
-			if(mul_carry || temp_res >= fp_utils_p::max_pow_10)
+			uint64_t carry = 0;
+	
+			core::widening_mul_result<uint64_t> mul_res = core::widening_mul<uint64_t>(p_1[0], p_2);
+
+			if(mul_res.high_bits || mul_res.low_bits >= fp_utils_p::max_pow_10)
 			{
-				carry = core::udiv(mul_carry, temp_res, fp_utils_p::max_pow_10, p_1[0]);
+				core::div_result<uint64_t> const div_result = narrowing_div<uint64_t>(mul_res.high_bits, mul_res.low_bits, fp_utils_p::max_pow_10);
+				carry = div_result.quotient;
+				p_1[0] = div_result.remainder;
 			}
 			else
 			{
-				p_1[0] = temp_res;
+				p_1[0] = mul_res.low_bits;
 			}
 
 			constexpr uint8_t last_index = fp_utils_p::bignum_width - 1;
@@ -544,18 +548,25 @@ namespace core
 					return;
 				}
 
-				if(core::addcarry(0, carry, core::umul(p_1[i], p_2, mul_carry), temp_res))
+				mul_res = core::widening_mul<uint64_t>(p_1[i], p_2);
+
+				carrying_add_result<uint64_t> sum_result = carrying_add<uint64_t>(carry, mul_res.low_bits, false);
+
+				if(sum_result.overflow)
 				{
-					++mul_carry;
+					++mul_res.high_bits;
+					[[assume(mul_res.high_bits != 0)]];
 				}
 
-				if(mul_carry || temp_res >= fp_utils_p::max_pow_10)
+				if(mul_res.high_bits || sum_result.low_bits >= fp_utils_p::max_pow_10)
 				{
-					carry = core::udiv(mul_carry, temp_res, fp_utils_p::max_pow_10, p_1[i]);
+					core::div_result<uint64_t> const div_result = narrowing_div<uint64_t>(mul_res.high_bits, sum_result.low_bits, fp_utils_p::max_pow_10);
+					carry = div_result.quotient;
+					p_1[i] = div_result.remainder;
 				}
 				else
 				{
-					p_1[i] = temp_res;
+					p_1[i] = sum_result.low_bits;
 					carry = 0;
 				}
 			}
@@ -566,7 +577,10 @@ namespace core
 				return;
 			}
 
-			core::addcarry(0, carry, core::umul(p_1[last_index], p_2, mul_carry), p_1[last_index]);
+
+			mul_res = core::widening_mul<uint64_t>(p_1[last_index], p_2);
+			p_1[last_index] = mul_res.low_bits + carry;
+
 		}
 
 		static inline void pow2_load(bignum_t& p_out, exp_ut const p_pow)
@@ -1052,7 +1066,7 @@ namespace core
 				break;
 			case fp_round::to_zero:
 				fp_utils_t::round_down_at(digits, round_pos);
-				goto lbl$leading;
+				goto label_leading;
 				break;
 			case fp_round::away_zero:
 				fp_utils_t::round_up_at(digits, round_pos);
@@ -1062,7 +1076,7 @@ namespace core
 			last_block      = fp_utils_t::last_block(digits);
 			last_num_digits = fp_utils_t::num_digits(digits[last_block]);
 			num_digits      = static_cast<exp_ut>(last_block * fp_utils_t::max_pow_10_digits + last_num_digits);
-		lbl$leading:
+		label_leading:
 			leading_zeros   = fp_utils_t::leading_zeros(digits);
 
 			sig_digits = static_cast<exp_ut>((num_digits - 1) - leading_zeros);
@@ -1145,7 +1159,7 @@ namespace core
 
 		if(digits_to_precision <= leading_zeros)
 		{ //all digits make it exactly
-			goto lbl$res_size;
+			goto label_res_size;
 		}
 
 		fp_utils_t::fix_rounding_mode(rounding_mode, sign_bit);
@@ -1222,7 +1236,7 @@ namespace core
 			break;
 		case fp_round::to_zero:
 			fp_utils_t::round_down_at(digits, digits_to_precision);
-			goto lbl$leading;
+			goto label_leading;
 			break;
 		case fp_round::away_zero:
 			fp_utils_t::round_up_at(digits, digits_to_precision);
@@ -1232,10 +1246,10 @@ namespace core
 		last_block      = fp_utils_t::last_block(digits);
 		last_num_digits = fp_utils_t::num_digits(digits[last_block]);
 		num_digits      = static_cast<exp_ut>(last_block * fp_utils_t::max_pow_10_digits + last_num_digits);
-	lbl$leading:
+	label_leading:
 		leading_zeros   = fp_utils_t::leading_zeros(digits);
 
-	lbl$res_size:
+	label_res_size:
 		if(leading_zeros < decimal_seperator_offset)
 		{
 			res.size.decimal_size = decimal_seperator_offset - leading_zeros;
@@ -1297,31 +1311,31 @@ namespace core
 			unit_chars, decimal_chars, last_block, last_num_digits, leading_zeros);
 	}
 
-	template fp_to_chars_sci_result to_chars_sci_size<float32_t>(float32_t value, fp_to_chars_sci_context<float32_t>& context, uint16_t significant_digits, fp_round rounding_mode);
-	template fp_to_chars_sci_result to_chars_sci_size<float64_t>(float64_t value, fp_to_chars_sci_context<float64_t>& context, uint16_t significant_digits, fp_round rounding_mode);
+	template fp_to_chars_sci_result to_chars_sci_size<float>(float value, fp_to_chars_sci_context<float>& context, uint16_t significant_digits, fp_round rounding_mode);
+	template fp_to_chars_sci_result to_chars_sci_size<double>(double value, fp_to_chars_sci_context<double>& context, uint16_t significant_digits, fp_round rounding_mode);
 
-	template fp_to_chars_fix_result to_chars_fix_size<float32_t>(float32_t value, fp_to_chars_fix_context<float32_t>& context,  int16_t precision, fp_round rounding_mode);
-	template fp_to_chars_fix_result to_chars_fix_size<float64_t>(float64_t value, fp_to_chars_fix_context<float64_t>& context,  int16_t precision, fp_round rounding_mode);
+	template fp_to_chars_fix_result to_chars_fix_size<float>(float value, fp_to_chars_fix_context<float>& context,  int16_t precision, fp_round rounding_mode);
+	template fp_to_chars_fix_result to_chars_fix_size<double>(double value, fp_to_chars_fix_context<double>& context,  int16_t precision, fp_round rounding_mode);
 
-	template void to_chars_sci_mantissa_unsafe<float32_t, char8_t >(fp_to_chars_sci_context<float32_t> const& context, char8_t * unit_char, char8_t * decimal_chars);
-	template void to_chars_sci_mantissa_unsafe<float32_t, char16_t>(fp_to_chars_sci_context<float32_t> const& context, char16_t* unit_char, char16_t* decimal_chars);
-	template void to_chars_sci_mantissa_unsafe<float32_t, char32_t>(fp_to_chars_sci_context<float32_t> const& context, char32_t* unit_char, char32_t* decimal_chars);
-	template void to_chars_sci_mantissa_unsafe<float64_t, char8_t >(fp_to_chars_sci_context<float64_t> const& context, char8_t * unit_char, char8_t * decimal_chars);
-	template void to_chars_sci_mantissa_unsafe<float64_t, char16_t>(fp_to_chars_sci_context<float64_t> const& context, char16_t* unit_char, char16_t* decimal_chars);
-	template void to_chars_sci_mantissa_unsafe<float64_t, char32_t>(fp_to_chars_sci_context<float64_t> const& context, char32_t* unit_char, char32_t* decimal_chars);
+	template void to_chars_sci_mantissa_unsafe<float, char8_t >(fp_to_chars_sci_context<float> const& context, char8_t * unit_char, char8_t * decimal_chars);
+	template void to_chars_sci_mantissa_unsafe<float, char16_t>(fp_to_chars_sci_context<float> const& context, char16_t* unit_char, char16_t* decimal_chars);
+	template void to_chars_sci_mantissa_unsafe<float, char32_t>(fp_to_chars_sci_context<float> const& context, char32_t* unit_char, char32_t* decimal_chars);
+	template void to_chars_sci_mantissa_unsafe<double, char8_t >(fp_to_chars_sci_context<double> const& context, char8_t * unit_char, char8_t * decimal_chars);
+	template void to_chars_sci_mantissa_unsafe<double, char16_t>(fp_to_chars_sci_context<double> const& context, char16_t* unit_char, char16_t* decimal_chars);
+	template void to_chars_sci_mantissa_unsafe<double, char32_t>(fp_to_chars_sci_context<double> const& context, char32_t* unit_char, char32_t* decimal_chars);
 
-	template void to_chars_sci_exp_unsafe<float32_t, char8_t >(fp_to_chars_sci_context<float32_t> const& context, char8_t * exp_chars);
-	template void to_chars_sci_exp_unsafe<float32_t, char16_t>(fp_to_chars_sci_context<float32_t> const& context, char16_t* exp_chars);
-	template void to_chars_sci_exp_unsafe<float32_t, char32_t>(fp_to_chars_sci_context<float32_t> const& context, char32_t* exp_chars);
-	template void to_chars_sci_exp_unsafe<float64_t, char8_t >(fp_to_chars_sci_context<float64_t> const& context, char8_t * exp_chars);
-	template void to_chars_sci_exp_unsafe<float64_t, char16_t>(fp_to_chars_sci_context<float64_t> const& context, char16_t* exp_chars);
-	template void to_chars_sci_exp_unsafe<float64_t, char32_t>(fp_to_chars_sci_context<float64_t> const& context, char32_t* exp_chars);
+	template void to_chars_sci_exp_unsafe<float, char8_t >(fp_to_chars_sci_context<float> const& context, char8_t * exp_chars);
+	template void to_chars_sci_exp_unsafe<float, char16_t>(fp_to_chars_sci_context<float> const& context, char16_t* exp_chars);
+	template void to_chars_sci_exp_unsafe<float, char32_t>(fp_to_chars_sci_context<float> const& context, char32_t* exp_chars);
+	template void to_chars_sci_exp_unsafe<double, char8_t >(fp_to_chars_sci_context<double> const& context, char8_t * exp_chars);
+	template void to_chars_sci_exp_unsafe<double, char16_t>(fp_to_chars_sci_context<double> const& context, char16_t* exp_chars);
+	template void to_chars_sci_exp_unsafe<double, char32_t>(fp_to_chars_sci_context<double> const& context, char32_t* exp_chars);
 
-	template void to_chars_fix_unsafe<float32_t, char8_t >(fp_to_chars_fix_context<float32_t> const& context, char8_t * unit_chars, char8_t * decimal_chars);
-	template void to_chars_fix_unsafe<float32_t, char16_t>(fp_to_chars_fix_context<float32_t> const& context, char16_t* unit_chars, char16_t* decimal_chars);
-	template void to_chars_fix_unsafe<float32_t, char32_t>(fp_to_chars_fix_context<float32_t> const& context, char32_t* unit_chars, char32_t* decimal_chars);
-	template void to_chars_fix_unsafe<float64_t, char8_t >(fp_to_chars_fix_context<float64_t> const& context, char8_t * unit_chars, char8_t * decimal_chars);
-	template void to_chars_fix_unsafe<float64_t, char16_t>(fp_to_chars_fix_context<float64_t> const& context, char16_t* unit_chars, char16_t* decimal_chars);
-	template void to_chars_fix_unsafe<float64_t, char32_t>(fp_to_chars_fix_context<float64_t> const& context, char32_t* unit_chars, char32_t* decimal_chars);
+	template void to_chars_fix_unsafe<float, char8_t >(fp_to_chars_fix_context<float> const& context, char8_t * unit_chars, char8_t * decimal_chars);
+	template void to_chars_fix_unsafe<float, char16_t>(fp_to_chars_fix_context<float> const& context, char16_t* unit_chars, char16_t* decimal_chars);
+	template void to_chars_fix_unsafe<float, char32_t>(fp_to_chars_fix_context<float> const& context, char32_t* unit_chars, char32_t* decimal_chars);
+	template void to_chars_fix_unsafe<double, char8_t >(fp_to_chars_fix_context<double> const& context, char8_t * unit_chars, char8_t * decimal_chars);
+	template void to_chars_fix_unsafe<double, char16_t>(fp_to_chars_fix_context<double> const& context, char16_t* unit_chars, char16_t* decimal_chars);
+	template void to_chars_fix_unsafe<double, char32_t>(fp_to_chars_fix_context<double> const& context, char32_t* unit_chars, char32_t* decimal_chars);
 
 } //namespace core

@@ -86,7 +86,7 @@ void chrono::set()
 #else
 	struct timespec time;
 	clock_gettime(CLOCK_BOOTTIME, &time);
-	m_ref = (uint64_t)time.tv_sec * g_sec2nsec + time.tv_nsec;
+	m_ref = static_cast<uint64_t>(time.tv_sec) * g_sec2nsec + time.tv_nsec;
 #endif
 }
 
@@ -244,7 +244,7 @@ namespace
 	constexpr uint64_t time_in_400year = days_per_400year * day_100nsec;
 
 #ifdef _WIN32
-	constexpr uint64_t epoch_offset = 0;
+	//constexpr uint64_t epoch_offset = 0;
 #else
 	constexpr uint64_t epoch_offset = time_in_100year * 3 + time_in_4year * 17 + time_in_1year;
 #endif // _WIN32
@@ -312,6 +312,7 @@ namespace
 		_h_time_till_month(11, true)
 	};
 
+#if 0
 	/// \brief Lookup for days in a given month (regular year)
 	//
 	static std::array<uint8_t, 12> const g_daysInMonth =
@@ -347,6 +348,7 @@ namespace
 		_h_days_in_month(10, true),
 		_h_days_in_month(11, true)
 	};
+#endif
 
 	constexpr bool is_leap_year(uint16_t const p_year)
 	{

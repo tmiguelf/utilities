@@ -22,7 +22,7 @@
 #include <cassert>
 #include <cstdint>
 
-#include <CoreLib/cpu/x64.hpp>
+#include <CoreLib/core_wide_arithmetic.hpp>
 
 #ifdef _WIN32
 #include <intrin.h>
@@ -127,16 +127,16 @@
 [[nodiscard]] static inline uint64_t mulShift64(uint64_t const m, std::array<uint64_t, 2> const mul, uint8_t const j)
 {
 	// m is maximum 55 bits
-	uint64_t	   high1;								// 128
-	uint64_t const low1 = core::umul(m, mul[1], high1); // 64
-	uint64_t	   high0;								// 64
-	core::umul(m, mul[0], high0);						// 0
-	uint64_t const sum = high0 + low1;
-	if(sum < high0)
+
+	core::widening_mul_result<uint64_t> result0 = core::widening_mul<uint64_t>(m, mul[0]);
+	core::widening_mul_result<uint64_t> result1 = core::widening_mul<uint64_t>(m, mul[1]);
+
+	uint64_t const sum = result0.high_bits + result1.low_bits;
+	if(sum < result0.high_bits)
 	{
-		++high1; // overflow into high1
+		++result1.high_bits;
 	}
-	return shiftright128(sum, high1, static_cast<uint8_t>(j - 64));
+	return shiftright128(sum, result1.high_bits, static_cast<uint8_t>(j - 64));
 }
 
 [[nodiscard]] static inline uint64_t mulShiftAll64(
