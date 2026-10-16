@@ -9,8 +9,8 @@ file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
-target_link_libraries(${PROJECT_NAME} LINK_PRIVATE MathLib CoreLib)
-target_link_libraries(${PROJECT_NAME} LINK_PRIVATE gtest gtest_main)
+target_link_libraries(${PROJECT_NAME} PRIVATE MathLib CoreLib)
+target_link_libraries(${PROJECT_NAME} PRIVATE gtest gtest_main)
 
 quick_default_post_config()
 if((CMAKE_SYSTEM_NAME STREQUAL "Linux") AND (CMAKE_CXX_COMPILER_ID STREQUAL "Clang") AND (NOT CMAKE_BUILD_TYPE STREQUAL "Debug"))
