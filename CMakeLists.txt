@@ -14,10 +14,19 @@ add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/MathLib")
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/Crashy")
 
 #Tests
-set(BENCHMARK_ENABLE_EXCEPTIONS False)
-set(INSTALL_GTEST OFF)
+
+set(INSTALL_GTEST False)
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/submodules/googletest/")
+
+set(BENCHMARK_ENABLE_EXCEPTIONS False)
+#set(BENCHMARK_ENABLE_LTO True)
+set(BENCHMARK_ENABLE_TESTING False)
+set(BENCHMARK_ENABLE_GTEST_TESTS False)
+set(BENCHMARK_ENABLE_INSTALL False)
+set(BENCHMARK_INSTALL_DOCS False)
+set(BENCHMARK_INSTALL_TOOLS False)
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/submodules/benchmark")
+
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/CoreLib/tests")
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/CoreLib/benchmarks/charconv_benchmark")
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/CoreLib/benchmarks/toPrint_benchmark")
